@@ -111,7 +111,7 @@ cd(wdir)
 # install ANTIC
 
 try
-  run(`git clone https://github.com/wbhart/antic.git`)
+  run(`git clone https://github.com/fieker/antic.git`)
 except
   run(`cd antic ; git pull`)
 end          
