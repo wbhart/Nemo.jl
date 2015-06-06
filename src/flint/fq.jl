@@ -4,7 +4,7 @@
 #
 ###############################################################################
 
-export FiniteField, characteristic, order, fq, FqFiniteField, frobenius,
+export FlintFiniteField, characteristic, order, fq, FqFiniteField, frobenius,
        pth_root, trace, norm
 
 ###############################################################################
@@ -42,7 +42,7 @@ end
 
 function coeff(x::fq, n::Int)
    n < 0 && throw(DomainError())
-   z = ZZ()
+   z = fmpz()
    ccall((:fmpz_poly_get_coeff_fmpz, :libflint), Void, 
                (Ptr{fmpz}, Ptr{fq}, Int), &z, &x, n)
    return z
@@ -76,14 +76,14 @@ isunit(a::fq) = ccall((:fq_is_invertible, :libflint), Bool,
                      (Ptr{fq}, Ptr{FqFiniteField}), &a, &a.parent)
 
 function characteristic(a::FqFiniteField)
-   d = ZZ()
+   d = fmpz()
    ccall((:__fq_ctx_prime, :libflint), Void, 
          (Ptr{fmpz}, Ptr{FqFiniteField}), &d, &a)
    return d
 end
    
 function order(a::FqFiniteField)
-   d = ZZ()
+   d = fmpz()
    ccall((:fq_ctx_order, :libflint), Void, 
          (Ptr{fmpz}, Ptr{FqFiniteField}), &d, &a)
    return d
@@ -188,7 +188,7 @@ function *(x::Int, y::fq)
    return z
 end
 
-*(x::Integer, y::fq) = ZZ(x)*y
+*(x::Integer, y::fq) = fmpz(x)*y
 
 *(x::fq, y::Integer) = y*x
 
@@ -286,14 +286,14 @@ function pth_root(x::fq)
 end
 
 function trace(x::fq)
-   z = ZZ()
+   z = fmpz()
    ccall((:fq_trace, :libflint), Void, 
          (Ptr{fmpz}, Ptr{fq}, Ptr{FqFiniteField}), &z, &x, &x.parent)
    return parent(x)(z)
 end
 
 function norm(x::fq)
-   z = ZZ()
+   z = fmpz()
    ccall((:fq_norm, :libflint), Void, 
          (Ptr{fmpz}, Ptr{fq}, Ptr{FqFiniteField}), &z, &x, &x.parent)
    return parent(x)(z)
@@ -343,7 +343,7 @@ function Base.call(a::FqFiniteField)
    return z
 end
 
-Base.call(a::FqFiniteField, b::Integer) = a(ZZ(b))
+Base.call(a::FqFiniteField, b::Integer) = a(fmpz(b))
 
 function Base.call(a::FqFiniteField, b::Int)
    z = fq(a, b)
@@ -362,17 +362,17 @@ end
 
 ###############################################################################
 #
-#   FiniteField constructor
+#   FlintFiniteField constructor
 #
 ###############################################################################
 
-function FiniteField(char::fmpz, deg::Int, s::String)
+function FlintFiniteField(char::fmpz, deg::Int, s::String)
    S = symbol(s)
    parent_obj = FqFiniteField(char, deg, S)
 
    return parent_obj, gen(parent_obj) 
 end
 
-function FiniteField(char::Integer, deg::Int, s::String)
-   return FiniteField(ZZ(char), deg, s)
+function FlintFiniteField(char::Integer, deg::Int, s::String)
+   return FlintFiniteField(fmpz(char), deg, s)
 end

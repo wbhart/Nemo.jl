@@ -12,7 +12,10 @@ import Base: abs, asin, asinh, atan, atanh, base, bin, call, convert, cos,
 export Collection, Ring, Field, CollectionElem, RingElem, FieldElem, Pari,
        Flint, Antic, Generic
 
-export PolyElem, SeriesElem, ResidueElem, FractionElem
+export PolyElem, SeriesElem, ResidueElem, FractionElem, MatElem
+
+export ZZ, QQ, PadicField, FiniteField, NumberField, CyclotomicField,
+       MaximalRealSubfield, MaximalOrder
 
 include("AbstractTypes.jl")
 
@@ -77,6 +80,35 @@ function __init__()
    println("Nemo comes with absolutely no warranty whatsoever")
    println("")
 end
+
+###############################################################################
+#
+#   Set domain for ZZ, QQ, PadicField, FiniteField to Flint
+#
+###############################################################################
+
+ZZ = FlintZZ
+QQ = FlintQQ
+PadicField = FlintPadicField
+FiniteField = FlintFiniteField
+
+###############################################################################
+#
+#   Set domain for NumberField to Antic
+#
+###############################################################################
+
+NumberField = AnticNumberField
+CyclotomicField = AnticCyclotomicField
+MaximalRealSubfield = AnticMaximalRealSubfield
+
+###############################################################################
+#
+#   Set domain for MaximalOrder to Pari
+#
+###############################################################################
+
+MaximalOrder = PariMaximalOrder
 
 ###############################################################################
 #

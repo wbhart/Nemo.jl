@@ -4,7 +4,7 @@
 #
 ###############################################################################
 
-export PariRationalField, pari_rat, PariQQ, QQ!
+export PariRationalField, pari_rat, PariQQ, fmpq!
 
 ###############################################################################
 #
@@ -55,7 +55,7 @@ end
 
 # this function should be removed once it is
 # possible to pass to ZZ! in pari_int
-function ZZ!(z::Ptr{fmpz}, g::Ptr{Int})
+function fmpz!(z::Ptr{fmpz}, g::Ptr{Int})
    const data_offset = 1 + div(2*sizeof(Cint), sizeof(Int))
    s = (unsafe_load(g, 1) & LGBITS) - 2
    sgn = signe(g + sizeof(Int))
@@ -80,20 +80,20 @@ function ZZ!(z::Ptr{fmpz}, g::Ptr{Int})
    end
 end
 
-function QQ!(z::fmpq, g::Ptr{Int})
+function fmpq!(z::fmpq, g::Ptr{Int})
    num = ccall((:fmpq_numerator_ptr, :libflint), Ptr{fmpz}, (Ptr{fmpq},), &z)
    den = ccall((:fmpq_denominator_ptr, :libflint), Ptr{fmpz}, (Ptr{fmpq},), &z)
    if typ(g) == t_INT
-      ZZ!(num, g)
-      ZZ!(den, reinterpret(Ptr{Int}, unsafe_load(gen_1, 1)))
+      fmpz!(num, g)
+      fmpz!(den, reinterpret(Ptr{Int}, unsafe_load(gen_1, 1)))
    else
-      ZZ!(num, reinterpret(Ptr{Int}, unsafe_load(g, 2)))
-      ZZ!(den, reinterpret(Ptr{Int}, unsafe_load(g, 3)))
+      fmpz!(num, reinterpret(Ptr{Int}, unsafe_load(g, 2)))
+      fmpz!(den, reinterpret(Ptr{Int}, unsafe_load(g, 3)))
    end
 end
 
-function call(::RationalField, g::pari_rat)
-   r = QQ()
-   QQ!(r, g.d)
+function call(::FlintRationalField, g::pari_rat)
+   r = fmpq()
+   fmpq!(r, g.d)
    return r
 end

@@ -10,9 +10,9 @@ type Factor{T <: Ring}
    parent::T
 end
 
-function getindex(a::Factor{IntegerRing}, i::Int)
+function getindex(a::Factor{FlintIntegerRing}, i::Int)
    p, n = a.d[i]
-   return ZZ(p), n
+   return fmpz(p), n
 end
 
 function getindex(a::Factor{FmpzPolyRing}, i::Int)
@@ -38,7 +38,7 @@ end
 
 function factor(n::fmpz)
    f = factor(pari(n))
-   return Factor{IntegerRing}(f, f.len, ZZ)
+   return Factor{FlintIntegerRing}(f, f.len, FlintZZ)
 end
 
 function factor(g::fmpz_poly)

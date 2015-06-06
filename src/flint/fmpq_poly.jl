@@ -1,6 +1,6 @@
 ###############################################################################
 #
-#   fmpq_poly.jl : Flint polynomials over QQ
+#   fmpq_poly.jl : Flint polynomials over fmpq
 #
 ###############################################################################
 
@@ -17,7 +17,7 @@ elem_type(::FmpqPolyRing) = fmpq_poly
 base_ring(a::FmpqPolyRing) = a.base_ring
 
 function denominator(a::fmpq_poly)
-   z = ZZ()
+   z = fmpz()
    ccall((:fmpq_poly_get_denominator, :libflint), Void,
          (Ptr{fmpz}, Ptr{fmpq_poly}), &z, &a)
    return z
@@ -36,7 +36,7 @@ length(x::fmpq_poly) = ccall((:fmpq_poly_length, :libflint), Int,
 
 function coeff(x::fmpq_poly, n::Int)
    n < 0 && throw(DomainError())
-   z = QQ()
+   z = fmpq()
    ccall((:fmpq_poly_get_coeff_fmpq, :libflint), Void, 
                (Ptr{fmpq}, Ptr{fmpq_poly}, Int), &z, &x, n)
    return z
@@ -91,7 +91,7 @@ function show(io::IO, p::FmpqPolyRing)
    show(io, p.base_ring)
 end
 
-show_minus_one(::Type{fmpq_poly}) = show_minus_one(RationalField)
+show_minus_one(::Type{fmpq_poly}) = show_minus_one(FlintRationalField)
 
 ###############################################################################
 #
@@ -241,17 +241,17 @@ end
 
 *(x::fmpq_poly, y::fmpq) = y*x
 
-+(x::Integer, y::fmpq_poly) = y + ZZ(x)
++(x::Integer, y::fmpq_poly) = y + fmpz(x)
 
--(x::Integer, y::fmpq_poly) = ZZ(x) - y
+-(x::Integer, y::fmpq_poly) = fmpz(x) - y
 
-*(x::Integer, y::fmpq_poly) = ZZ(x)*y
+*(x::Integer, y::fmpq_poly) = fmpz(x)*y
 
-+(x::fmpq_poly, y::Integer) = x + ZZ(y)
++(x::fmpq_poly, y::Integer) = x + fmpz(y)
 
--(x::fmpq_poly, y::Integer) = x - ZZ(y)
+-(x::fmpq_poly, y::Integer) = x - fmpz(y)
 
-*(x::fmpq_poly, y::Integer) = ZZ(y)*x
+*(x::fmpq_poly, y::Integer) = fmpz(y)*x
 
 ###############################################################################
 #
@@ -290,7 +290,7 @@ function ==(x::fmpq_poly, y::fmpq)
    if length(x) > 1
       return false
    elseif length(x) == 1 
-      z = QQ()
+      z = fmpq()
       ccall((:fmpq_poly_get_coeff_fmpq, :libflint), Void, 
                        (Ptr{fmpq}, Ptr{fmpq_poly}, Int), &z, &x, 0)
       return ccall((:fmpq_equal, :libflint), Bool, 
@@ -300,7 +300,7 @@ function ==(x::fmpq_poly, y::fmpq)
    end 
 end
 
-==(x::fmpz_poly, y::Integer) = x == ZZ(y)
+==(x::fmpz_poly, y::Integer) = x == fmpz(y)
 
 ###############################################################################
 #
@@ -439,7 +439,7 @@ function divexact(x::fmpq_poly, y::Int)
    return z
 end
 
-divexact(x::fmpq_poly, y::Integer) = divexact(x, ZZ(y)) 
+divexact(x::fmpq_poly, y::Integer) = divexact(x, fmpz(y)) 
 
 ###############################################################################
 #
@@ -456,7 +456,7 @@ function gcd(x::fmpq_poly, y::fmpq_poly)
 end
 
 function content(x::fmpq_poly)
-   z = QQ()
+   z = fmpq()
    ccall((:fmpq_poly_content, :libflint), Void, 
          (Ptr{fmpq}, Ptr{fmpq_poly}), &z, &x)
    return z
@@ -476,20 +476,20 @@ end
 ###############################################################################
 
 function evaluate(x::fmpq_poly, y::fmpz)
-   z = QQ()
+   z = fmpq()
    ccall((:fmpq_poly_evaluate_fmpz, :libflint), Void, 
                 (Ptr{fmpq}, Ptr{fmpq_poly}, Ptr{fmpz}), &z, &x, &y)
    return z
 end
 
 function evaluate(x::fmpq_poly, y::fmpq)
-   z = QQ()
+   z = fmpq()
    ccall((:fmpq_poly_evaluate_fmpq, :libflint), Void, 
                 (Ptr{fmpq}, Ptr{fmpq_poly}, Ptr{fmpq}), &z, &x, &y)
    return z
 end
 
-evaluate(x::fmpq_poly, y::Integer) = evaluate(x, ZZ(y))
+evaluate(x::fmpq_poly, y::Integer) = evaluate(x, fmpz(y))
 
 ###############################################################################
 #
@@ -526,7 +526,7 @@ end
 
 function resultant(x::fmpq_poly, y::fmpq_poly)
    check_parent(x, y)
-   z = QQ()
+   z = fmpq()
    ccall((:fmpq_poly_resultant, :libflint), Void, 
                 (Ptr{fmpq}, Ptr{fmpq_poly}, Ptr{fmpq_poly}), &z, &x, &y)
    return z
@@ -539,7 +539,7 @@ end
 ###############################################################################
 
 function discriminant(x::fmpq_poly)
-   z = QQ()
+   z = fmpq()
    ccall((:fmpq_poly_discriminant, :libflint), Void, 
                 (Ptr{fmpq}, Ptr{fmpq_poly}), &z, &x)
    return z
@@ -620,7 +620,7 @@ function Base.call(a::FmpqPolyRing, b::Int)
 end
 
 function Base.call(a::FmpqPolyRing, b::Integer)
-   z = fmpq_poly(ZZ(b))
+   z = fmpq_poly(fmpz(b))
    z.parent = a
    return z
 end
@@ -657,10 +657,10 @@ end
 #
 ###############################################################################
 
-function PolynomialRing(R::RationalField, s::String)
+function PolynomialRing(R::FlintRationalField, s::String)
    S = symbol(s)
 
    parent_obj = FmpqPolyRing(R, S)
    
-   return parent_obj, parent_obj([QQ(0), QQ(1)])
+   return parent_obj, parent_obj([fmpq(0), fmpq(1)])
 end

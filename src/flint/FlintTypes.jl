@@ -6,14 +6,16 @@
 
 ###############################################################################
 #
-#   IntegerRing / fmpz
+#   FlintIntegerRing / fmpz
 #
 ###############################################################################
 
-type IntegerRing <: Ring{Flint}
+type FlintIntegerRing <: Ring{Flint}
 end
 
-type fmpz <: RingElem
+FlintZZ = FlintIntegerRing()
+
+type fmpz <: IntegerRingElem
     d::Int
 
     function fmpz()
@@ -47,20 +49,39 @@ end
 
 ###############################################################################
 #
-#   RationalField / fmpq
+#   FlintRationalField / fmpq
 #
 ###############################################################################
 
-type RationalField <: Field{Flint}
+type FlintRationalField <: Field{Flint}
 end
+
+FlintQQ = FlintRationalField()
 
 type fmpq <: FractionElem{fmpz}
    num::Int
    den::Int
 
+   function fmpq()
+      z = new()
+      ccall((:fmpq_init, :libflint), Void, (Ptr{fmpq},), &z)
+      finalizer(z, _fmpq_clear_fn)
+      return z
+   end
+
    function fmpq(a::fmpz, b::fmpz)
       z = new()
       ccall((:fmpq_init, :libflint), Void, (Ptr{fmpq},), &z)
+      ccall((:fmpq_set_fmpz_frac, :libflint), Void,
+            (Ptr{fmpq}, Ptr{fmpz}, Ptr{fmpz}), &z, &a, &b)
+      finalizer(z, _fmpq_clear_fn)
+      return z
+   end
+
+   function fmpq(a::fmpz)
+      z = new()
+      ccall((:fmpq_init, :libflint), Void, (Ptr{fmpq},), &z)
+      b = fmpz(1)
       ccall((:fmpq_set_fmpz_frac, :libflint), Void,
             (Ptr{fmpq}, Ptr{fmpz}, Ptr{fmpz}), &z, &a, &b)
       finalizer(z, _fmpq_clear_fn)
@@ -72,6 +93,15 @@ type fmpq <: FractionElem{fmpz}
       ccall((:fmpq_init, :libflint), Void, (Ptr{fmpq},), &z)
       ccall((:fmpq_set_si, :libflint), Void,
             (Ptr{fmpq}, Int, Int), &z, a, b)
+      finalizer(z, _fmpq_clear_fn)
+      return z
+   end
+
+   function fmpq(a::Int)
+      z = new()
+      ccall((:fmpq_init, :libflint), Void, (Ptr{fmpq},), &z)
+      ccall((:fmpq_set_si, :libflint), Void,
+            (Ptr{fmpq}, Int, Int), &z, a, 1)
       finalizer(z, _fmpq_clear_fn)
       return z
    end
@@ -191,7 +221,7 @@ type FmpzPolyRing <: Ring{Flint}
       return try
          FmpzPolyID[s]
       catch
-         FmpzPolyID[s] = new(ZZ, s)
+         FmpzPolyID[s] = new(FlintZZ, s)
       end
    end
 end
@@ -264,7 +294,7 @@ type FmpqPolyRing <: Ring{Flint}
    base_ring::Field
    S::Symbol
 
-   function FmpqPolyRing(R::RationalField, s::Symbol)
+   function FmpqPolyRing(R::FlintRationalField, s::Symbol)
       return try
          FmpqPolyID[s]
       catch
@@ -738,13 +768,13 @@ end
 
 ###############################################################################
 #
-#   PadicField / padic
+#   FlintPadicField / padic
 #
 ###############################################################################
 
 PadicBase = ObjectIdDict()
 
-type PadicField <: Field{Flint}
+type FlintPadicField <: Field{Flint}
    p::Int 
    pinv::Float64
    pow::Ptr{Void}
@@ -753,11 +783,11 @@ type PadicField <: Field{Flint}
    mode::Int
    prec_max::Int
 
-   function PadicField(p::fmpz, prec::Int)
-      !isprime(p) && error("Prime base required in PadicField")
+   function FlintPadicField(p::fmpz, prec::Int)
+      !isprime(p) && error("Prime base required in FlintPadicField")
       d = new()
       ccall((:padic_ctx_init, :libflint), Void, 
-           (Ptr{PadicField}, Ptr{fmpz}, Int, Int, Cint), 
+           (Ptr{FlintPadicField}, Ptr{fmpz}, Int, Int, Cint), 
                                      &d, &p, 0, 0, 1)
       finalizer(d, _padic_ctx_clear_fn)
       d.prec_max = prec
@@ -765,15 +795,15 @@ type PadicField <: Field{Flint}
    end
 end
 
-function _padic_ctx_clear_fn(a::PadicField)
-   ccall((:padic_ctx_clear, :libflint), Void, (Ptr{PadicField},), &a)
+function _padic_ctx_clear_fn(a::FlintPadicField)
+   ccall((:padic_ctx_clear, :libflint), Void, (Ptr{FlintPadicField},), &a)
 end
 
-type padic <: FieldElem
+type padic <: PadicFieldElem
    u :: Int
    v :: Int
    N :: Int
-   parent::PadicField
+   parent::FlintPadicField
 
    function padic(prec::Int)
       d = new()
@@ -804,7 +834,7 @@ type FmpzSeriesRing <: Ring{Flint}
       return try
          FmpzSeriesID[prec, s]
       catch
-         FmpzSeriesID[prec, s] = new(ZZ, prec, s)
+         FmpzSeriesID[prec, s] = new(FlintZZ, prec, s)
       end
    end
 end
@@ -868,7 +898,7 @@ type FmpqSeriesRing <: Ring{Flint}
       return try
          FmpqSeriesID[prec, s]
       catch
-         FmpqSeriesID[prec, s] = new(QQ, prec, s)
+         FmpqSeriesID[prec, s] = new(FlintQQ, prec, s)
       end
    end
 end
@@ -1131,13 +1161,13 @@ FmpzMatID = ObjectIdDict()
 type FmpzMatSpace <: Ring{Flint}
    rows::Int
    cols::Int
-   base_ring::IntegerRing
+   base_ring::FlintIntegerRing
 
    function FmpzMatSpace(r::Int, c::Int)
       return try
          FmpzMatID[r, c]
       catch
-         FmpzMatID[r, c] = new(r, c, ZZ)
+         FmpzMatID[r, c] = new(r, c, FlintZZ)
       end
    end
 end
@@ -1188,7 +1218,7 @@ type fmpz_mat <: MatElem{fmpz}
             el = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
                        (Ptr{fmpz_mat}, Int, Int), &z, i - 1, j - 1)
             ccall((:fmpz_set, :libflint), Void,
-                  (Ptr{fmpz}, Ptr{fmpz}), el, &ZZ(arr[i, j]))
+                  (Ptr{fmpz}, Ptr{fmpz}), el, &fmpz(arr[i, j]))
          end
       end
       return z
@@ -1237,8 +1267,8 @@ type NmodMatSpace <: Ring{Flint}
 
   function NmodMatSpace(R::ResidueRing{fmpz}, r::Int, c::Int)
     (r <= 0 || c <= 0) && error("Dimensions must be positive")
-    ZZ(typemax(UInt)) < abs(R.modulus) &&
-      error("Modulus of ResidueRing must less then ", ZZ(typemax(UInt)))
+    fmpz(typemax(UInt)) < abs(R.modulus) &&
+      error("Modulus of ResidueRing must less then ", fmpz(typemax(UInt)))
     try
       return NmodMatID[R, r, c]
     catch
@@ -1285,8 +1315,6 @@ type nmod_mat <: MatElem{Residue{fmpz}}
     (r <= 0 || c <= 0) && error("Dimensions must be positive")
     (size(arr) != (r,c)) && error("Array of wrong dimension")
     z = new()
-    t = ZZ()
-    tt = UInt(0)
     ccall((:nmod_mat_init, :libflint), Void,
             (Ptr{nmod_mat}, Int, Int, UInt), &z, r, c, n)
     finalizer(z, _nmod_mat_clear_fn)
@@ -1299,7 +1327,7 @@ type nmod_mat <: MatElem{Residue{fmpz}}
   end
 
   function nmod_mat{T <: Integer}(r::Int, c::Int, n::UInt, arr::Array{T, 2})
-    arr = map(ZZ, arr)
+    arr = map(fmpz, arr)
     return nmod_mat(r, c, n, arr)
   end
 
@@ -1307,8 +1335,6 @@ type nmod_mat <: MatElem{Residue{fmpz}}
     (r <= 0 || c <= 0) && error("Dimensions must be positive")
     (size(arr) != (r,c)) && error("Array of wrong dimension")
     z = new()
-    t = ZZ()
-    tt = UInt(0)
     ccall((:nmod_mat_init, :libflint), Void,
             (Ptr{nmod_mat}, Int, Int, UInt), &z, r, c, n)
     finalizer(z, _nmod_mat_clear_fn)
@@ -1337,8 +1363,8 @@ type nmod_mat <: MatElem{Residue{fmpz}}
 
   function nmod_mat(n::fmpz, b::fmpz_mat)
     (n < 0) && error("Modulus must be postive")
-    (n > ZZ(typemax(UInt))) &&
-          error("Exponent must be smaller then ", ZZ(typemax(UInt)))
+    (n > fmpz(typemax(UInt))) &&
+          error("Exponent must be smaller then ", fmpz(typemax(UInt)))
     return nmod_mat(UInt(n), b) 
   end
 end

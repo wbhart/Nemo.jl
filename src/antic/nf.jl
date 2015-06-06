@@ -4,8 +4,8 @@
 #
 ###############################################################################
 
-export NumberField, norm, trace, CyclotomicField, MaximalRealSubfield, add!,
-       sub!, mul!
+export AnticNumberField, norm, trace, CyclotomicField, MaximalRealSubfield,
+       add!, sub!, mul!
 
 ###############################################################################
 #
@@ -42,7 +42,7 @@ end
 
 function coeff(x::nf_elem, n::Int)
    n < 0 && throw(DomainError())
-   z = QQ()
+   z = fmpq()
    ccall((:nf_elem_get_coeff_fmpq, :libflint), Void, 
      (Ptr{fmpq}, Ptr{nf_elem}, Int, Ptr{NfNumberField}), &z, &x, n, &parent(x))
    return z
@@ -241,11 +241,11 @@ function -(a::fmpq, b::nf_elem)
    return r
 end
 
-+(a::nf_elem, b::Integer) = a + ZZ(b)
++(a::nf_elem, b::Integer) = a + fmpz(b)
 
--(a::nf_elem, b::Integer) = a - ZZ(b)
+-(a::nf_elem, b::Integer) = a - fmpz(b)
 
--(a::Integer, b::nf_elem) = ZZ(a) - b
+-(a::Integer, b::nf_elem) = fmpz(a) - b
 
 +(a::Integer, b::nf_elem) = b + a
 
@@ -372,7 +372,7 @@ end
 ###############################################################################
 
 function norm(a::nf_elem)
-   z = QQ()
+   z = fmpq()
    ccall((:nf_elem_norm, :libflint), Void,
          (Ptr{fmpq}, Ptr{nf_elem}, Ptr{NfNumberField}),
          &z, &a, &a.parent)
@@ -380,7 +380,7 @@ function norm(a::nf_elem)
 end
 
 function trace(a::nf_elem)
-   z = QQ()
+   z = fmpq()
    ccall((:nf_elem_trace, :libflint), Void,
          (Ptr{fmpq}, Ptr{nf_elem}, Ptr{NfNumberField}),
          &z, &a, &a.parent)
@@ -441,7 +441,7 @@ function add!(c::nf_elem, a::nf_elem, b::Int)
          &c, &a, &b, &a.parent)
 end
 
-add!(c::nf_elem, a::nf_elem, b::Integer) = add!(c, a, ZZ(b))
+add!(c::nf_elem, a::nf_elem, b::Integer) = add!(c, a, fmpz(b))
 
 function sub!(c::nf_elem, a::nf_elem, b::fmpq)
    ccall((:nf_elem_sub_fmpq, :libflint), Void,
@@ -461,7 +461,7 @@ function sub!(c::nf_elem, a::nf_elem, b::Int)
          &c, &a, &b, &a.parent)
 end
 
-sub!(c::nf_elem, a::nf_elem, b::Integer) = sub!(c, a, ZZ(b))
+sub!(c::nf_elem, a::nf_elem, b::Integer) = sub!(c, a, fmpz(b))
 
 function sub!(c::nf_elem, a::fmpq, b::nf_elem)
    ccall((:nf_elem_fmpq_sub, :libflint), Void,
@@ -481,7 +481,7 @@ function sub!(c::nf_elem, a::Int, b::nf_elem)
          &c, &a, &b, &a.parent)
 end
 
-sub!(c::nf_elem, a::Integer, b::nf_elem) = sub!(c, ZZ(a), b)
+sub!(c::nf_elem, a::Integer, b::nf_elem) = sub!(c, fmpz(a), b)
 
 function mul!(c::nf_elem, a::nf_elem, b::fmpq)
    ccall((:nf_elem_scalar_mul_fmpq, :libflint), Void,
@@ -501,7 +501,7 @@ function mul!(c::nf_elem, a::nf_elem, b::Int)
          &c, &a, b, &a.parent)
 end
 
-mul!(c::nf_elem, a::nf_elem, b::Integer) = mul!(c, a, ZZ(b))
+mul!(c::nf_elem, a::nf_elem, b::Integer) = mul!(c, a, fmpz(b))
 
 ###############################################################################
 #
@@ -569,27 +569,27 @@ end
 
 ###############################################################################
 #
-#   NumberField constructor
+#   AnticNumberField constructor
 #
 ###############################################################################
 
-function NumberField(pol::fmpq_poly, s::String)
+function AnticNumberField(pol::fmpq_poly, s::String)
    S = symbol(s)
    parent_obj = NfNumberField(pol, S)
 
    return parent_obj, gen(parent_obj) 
 end
 
-function CyclotomicField(n::Int, s::String, t = "\$")
-   Zx, x = PolynomialRing(ZZ, string(gensym()))
-   Qx, = PolynomialRing(QQ, t)
+function AnticCyclotomicField(n::Int, s::String, t = "\$")
+   Zx, x = PolynomialRing(FlintZZ, string(gensym()))
+   Qx, = PolynomialRing(FlintQQ, t)
    f = cyclotomic(n, x)
-   return NumberField(Qx(f), s)
+   return AnticNumberField(Qx(f), s)
 end
 
-function MaximalRealSubfield(n::Int, s::String, t = "\$")
-   Zx, x = PolynomialRing(ZZ, string(gensym()))
-   Qx, = PolynomialRing(QQ, t)
+function AnticMaximalRealSubfield(n::Int, s::String, t = "\$")
+   Zx, x = PolynomialRing(FlintZZ, string(gensym()))
+   Qx, = PolynomialRing(FlintQQ, t)
    f = cos_minpoly(n, x)
-   return NumberField(Qx(f), s)
+   return AnticNumberField(Qx(f), s)
 end
