@@ -108,7 +108,7 @@ MaximalRealSubfield = AnticMaximalRealSubfield
 #
 ###############################################################################
 
-MaximalOrder = PariMaximalOrder
+#MaximalOrder = PariMaximalOrder
 
 ###############################################################################
 #
