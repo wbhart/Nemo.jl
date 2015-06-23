@@ -54,7 +54,7 @@ elem_type(::FlintIntegerRing) = fmpz
 
 base_ring(a::FlintIntegerRing) = None
 
-hash(a::fmpz) = hash(BigInt(a))
+hash(a::fmpz) = hash(a, Uint(0))
 
 ###############################################################################
 #
