@@ -286,7 +286,7 @@ end
 ###############################################################################
 
 function ^(a::nf_elem, n::Int)
-   n < 0 && throw(DomainError)
+   n < 0 && return inv(a)^-n
    r = a.parent()
    ccall((:nf_elem_pow, :libflint), Void,
          (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{NfNumberField}),
