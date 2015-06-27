@@ -48,7 +48,7 @@ if !on_windows
    run(`rm m4-1.4.17.tar.bz2`)
    cd("$wdir/m4-1.4.17")
    run(`./configure --prefix=$vdir`)
-   run(`make`)
+   run(`make -j`)
    run(`make install`)
 end
 
@@ -56,10 +56,11 @@ cd(wdir)
 
 # install MPIR
 
-run(`wget http://mpir.org/mpir-2.7.0-alpha11.tar.bz2`)
-run(`tar -xvf mpir-2.7.0-alpha11.tar.bz2`)
-run(`rm mpir-2.7.0-alpha11.tar.bz2`)
-cd("$wdir/mpir-2.7.0")
+mpir_version = "mpir-2.7.0"
+run(`wget http://mpir.org/$mpir_version.tar.bz2`)
+run(`tar -xvf $mpir_version.tar.bz2`)
+run(`rm $mpir_version.tar.bz2`)
+cd("$wdir/$mpir_version")
 
 if on_windows
    ENV["PATH"] = pth
@@ -75,10 +76,10 @@ if on_windows
    ENV["PATH"] = oldpth
 else
    run(`./configure --prefix=$vdir M4=$vdir/bin/m4 --enable-gmpcompat --disable-static --enable-shared`)
-   run(`make -j4`)
+   run(`make -j`)
    run(`make install`)
    cd(wdir)
-   run(`rm -rf mpir-2.7.0`)
+   run(`rm -rf $mpir_version`)
    run(`rm -rf bin`)
 end
 
@@ -86,10 +87,11 @@ cd(wdir)
 
 # install MPFR
 
-run(`wget http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.bz2`)
-run(`tar -xvf mpfr-3.1.2.tar.bz2`)
-run(`rm mpfr-3.1.2.tar.bz2`)
-cd("$wdir/mpfr-3.1.2")
+mpfr_version = "mpfr-3.1.3"
+run(`wget http://www.mpfr.org/mpfr-current/$mpfr_version.tar.bz2`)
+run(`tar -xvf $mpfr_version.tar.bz2`)
+run(`rm $mpfr_version.tar.bz2`)
+cd("$wdir/$mpfr_version")
 
 if on_windows
    ENV["PATH"] = pth
@@ -100,10 +102,10 @@ if on_windows
    ENV["PATH"] = oldpth
 else
    run(`./configure --prefix=$vdir --with-gmp=$vdir --disable-static --enable-shared`)
-   run(`make -j4`)
+   run(`make -j`)
    run(`make install`)
    cd(wdir)
-   run(`rm -rf mpfr-3.1.2`)
+   run(`rm -rf $mpfr_version`)
 end
 
 cd(wdir)
@@ -137,7 +139,7 @@ if on_windows
 else
    cd("$wdir/flint2")
    run(`./configure --prefix=$vdir --extensions="$wdir/antic" --disable-static --enable-shared --with-mpir=$vdir --with-mpfr=$vdir`)
-   run(`make -j4`)
+   run(`make -j`)
    run(`make install`)
 end
 
@@ -151,11 +153,10 @@ except
   run(`cd arb ; git pull`)
 end          
  
-if on_windows
-else
+if !on_windows
    cd("$wdir/arb")
    run(`./configure --prefix=$vdir --disable-static --enable-shared --with-mpir=$vdir --with-mpfr=$vdir --with-flint=$vdir`)
-   run(`make -j4`)
+   run(`make -j`)
    run(`make install`)
    cd(wdir)
 end
@@ -168,15 +169,14 @@ except
   run(`cd pari ; git pull`)
 end  
 
-if on_windows
-else
+if !on_windows
    cd("$wdir/pari")
    env_copy = copy(ENV)
    env_copy["LD_LIBRARY_PATH"] = "$vdir/lib"
    config_str = `./Configure --prefix=$vdir --with-gmp=$vdir --mt=pthread`
    config_str = setenv(config_str, env_copy)
    run(config_str)
-   run(`make -j4 gp`)
+   run(`make -j gp`)
    run(`make doc`)
    run(`make install`)
 end
