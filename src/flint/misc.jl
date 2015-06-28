@@ -21,18 +21,21 @@ function hash_integer(a::fmpz, h::UInt)  ## cloned from the BigInt function
 end
 
 function hash(a::fmpz, h::UInt)
-  return hash_integer(a, h)
+  pow = trailing_zeros(a)
+  h = Base.hash_uint(unsigned(pow) $ h) $ h
+  h = hash_integer(a>>pow, h)
+  return h
 end
 
 function _fmpz_is_small(a::Int)
-  return (reinterpret(Uint64, a)>>62 !=1)
+  return (unsigned(a)>>(WORD_SIZE-2) !=1)
 end
 
 function fmpz_limbs(a::Int)
   if _fmpz_is_small(a)
     return 0
   end
-  b = unsafe_load(reinterpret(Ptr{Int32}, reinterpret(Uint64,a)<<2), 2) 
+  b = unsafe_load(convert(Ptr{Cint}, unsigned(a)<<2), 2)
   return b
 end
 
@@ -40,7 +43,9 @@ function _hash_integer(a::Int, h::UInt)  ## cloned from the BigInt function
                                          ## in Base
   s = fmpz_limbs(a)
   s == 0 && return Base.hash_integer(a, h)
-  p = convert(Ptr{UInt}, unsafe_load(reinterpret(Ptr{Uint64}, reinterpret(Uint64,a)<<2), 2))
+  # get the pointer after the first two Cint
+  d = convert(Ptr{Ptr{UInt}}, unsigned(a)<<2) + 2sizeof(Cint)
+  p = unsafe_load(d)
   b = unsafe_load(p)
   h = Base.hash_uint(ifelse(s < 0, -b, b) $ h) $ h
   for k = 2:abs(s)
