@@ -16,28 +16,28 @@ export nmod_mat, NmodMatSpace, getindex, setindex!, set_entry!, deepcopy, rows,
 ################################################################################
 
 function getindex(a::nmod_mat, i::Int, j::Int)
-  checkbounds(a.r, i)
-  checkbounds(a.c, j)
+  checkbounds(1:a.r, i)
+  checkbounds(1:a.c, j)
   u = ccall((:nmod_mat_get_entry, :libflint), UInt,
               (Ptr{nmod_mat}, Int, Int), &a, i - 1 , j - 1)
   return base_ring(a)(u)
 end
 
 function setindex!(a::nmod_mat, u::UInt, i::Int, j::Int)
-  checkbounds(a.r, i)
-  checkbounds(a.c, j)
+  checkbounds(1:a.r, i)
+  checkbounds(1:a.c, j)
   set_entry!(a, i, j, u)
 end
 
 function setindex!(a::nmod_mat, u::fmpz, i::Int, j::Int)
-  checkbounds(a.r, i)
-  checkbounds(a.c, j)
+  checkbounds(1:a.r, i)
+  checkbounds(1:a.c, j)
   set_entry!(a, i, j, u)
 end
 
 function setindex!(a::nmod_mat, u::Residue{fmpz}, i::Int, j::Int)
-  checkbounds(a.r, i)
-  checkbounds(a.c, j)
+  checkbounds(1:a.r, i)
+  checkbounds(1:a.c, j)
   (base_ring(a) != parent(u)) && error("Parent objects must coincide") 
   set_entry!(a, i, j, u)
 end
@@ -386,10 +386,10 @@ end
 ################################################################################
 
 function window(x::nmod_mat, r1::Int, c1::Int, r2::Int, c2::Int)
-  checkbounds(x.r, r1)
-  checkbounds(x.r, r2)
-  checkbounds(x.c, c1)
-  checkbounds(x.c, c2)
+  checkbounds(1:x.r, r1)
+  checkbounds(1:x.r, r2)
+  checkbounds(1:x.c, c1)
+  checkbounds(1:x.c, c2)
   (r1 > r2 || c1 > c2) && error("Invalid parameters")
   temp = MatrixSpace(parent(x).base_ring, r2 - r1 + 1, c2 - c1 + 1)()
   ccall((:nmod_mat_window_init, :libflint), Void,

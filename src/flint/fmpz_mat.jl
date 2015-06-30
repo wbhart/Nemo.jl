@@ -36,10 +36,10 @@ end
 ###############################################################################
 
 function window(x::fmpz_mat, r1::Int, c1::Int, r2::Int, c2::Int)
-  checkbounds(x.r, r1)
-  checkbounds(x.r, r2)
-  checkbounds(x.c, c1)
-  checkbounds(x.c, c2)
+  checkbounds(1:x.r, r1)
+  checkbounds(1:x.r, r2)
+  checkbounds(1:x.c, c1)
+  checkbounds(1:x.c, c2)
   (r1 > r2 || c1 > c2) && error("Invalid parameters")  
   b = fmpz_mat()
   b.parent = MatrixSpace(parent(x).base_ring, r2 - r1 + 1, c2 - c1 + 1)
@@ -82,8 +82,8 @@ function getindex!(v::fmpz, a::fmpz_mat, r::Int, c::Int)
 end
  
 function getindex(a::fmpz_mat, r::Int, c::Int)
-   checkbounds(a.parent.rows, r)
-   checkbounds(a.parent.cols, c)
+   checkbounds(1:a.parent.rows, r)
+   checkbounds(1:a.parent.cols, c)
    v = fmpz()
    z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
              (Ptr{fmpz_mat}, Int, Int), &a, r - 1, c - 1)
@@ -100,8 +100,8 @@ end
 setindex!(a::fmpz_mat, d::Integer, r::Int, c::Int) = setindex!(a, fmpz(d), r, c)
 
 function setindex!(a::fmpz_mat, d::Int, r::Int, c::Int)
-   checkbounds(a.parent.rows, r)
-   checkbounds(a.parent.cols, c)
+   checkbounds(1:a.parent.rows, r)
+   checkbounds(1:a.parent.cols, c)
    z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
              (Ptr{fmpz_mat}, Int, Int), &a, r - 1, c - 1)
    ccall((:fmpz_set_si, :libflint), Void, (Ptr{fmpz}, Int), z, d)
