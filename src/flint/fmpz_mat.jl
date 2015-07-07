@@ -65,7 +65,7 @@ end
 ###############################################################################
 
 function hash(a::fmpz_mat)
-   h = 0xb14b9caecfda49af
+   h = 0xb14b9caecfda49af%UInt
    for i in 1:rows(a)
       for j in 1:cols(a)
          h $= hash(getindex(a, i, j))

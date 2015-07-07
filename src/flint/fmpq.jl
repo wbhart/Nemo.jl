@@ -45,7 +45,7 @@ end
 ###############################################################################
 
 #function hash(a::fmpq)
-#   h = 0x8a30b0d963237dd5
+#   h = 0x8a30b0d963237dd5%UInt
 #   return h $ hash(num(a)) $ hash(den(a))
 #end
 

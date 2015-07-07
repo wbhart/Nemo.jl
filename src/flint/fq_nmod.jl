@@ -31,7 +31,7 @@ end
 ###############################################################################
 
 function hash(a::fq_nmod)
-   h = 0x78e5f766c8ace18d
+   h = 0x78e5f766c8ace18d%UInt
    for i in 1:degree(parent(a)) + 1
          h $= hash(coeff(a, i))
          h = (h << 1) | (h >> (sizeof(Int)*8 - 1))
