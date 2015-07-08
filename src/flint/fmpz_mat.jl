@@ -845,7 +845,7 @@ end
 function Base.call(a::FmpzMatSpace)
    z = fmpz_mat(a.rows, a.cols)
    z.parent = a
-   return z
+   return z::fmpz_mat
 end
 
 function Base.call(a::FmpzMatSpace, arr::Array{fmpz, 2})
