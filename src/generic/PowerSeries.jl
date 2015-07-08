@@ -43,7 +43,7 @@ end
 ###############################################################################    
    
 function hash(a::SeriesElem)
-   h = 0xb44d6896204881f3
+   h = 0xb44d6896204881f3%UInt
    for i in 0:length(a) - 1
       h $= hash(coeff(a, i))
       h = (h << 1) | (h >> (sizeof(Int)*8 - 1))

@@ -106,13 +106,9 @@ end
 #
 ###############################################################################
 
-function serialize(s::Base.SerializationState, n::fmpz)
-    Base.serialize_type(s, fmpz)
-    serialize(s, base(62, n))
-end
-function serialize(s::Base.IO, n::fmpz)
-    Base.serialize_type(s, fmpz)
-    serialize(s, base(62, n))
+VERSION >= v"0.4.0-dev+5152" || typealias SerializationState Any
+function serialize(s:: SerializationState, n::fmpz)
+    Serializer.serialize_type(s, fmpz)
 end
 
 
@@ -894,15 +890,15 @@ show_minus_one(::Type{fmpz}) = false
 #
 ###############################################################################
 
-bin(n::fmpz) = base(n, 2)
+bin(n::fmpz) = base(2, n)
 
-oct(n::fmpz) = base(n, 8)
+oct(n::fmpz) = base(8, n)
 
-dec(n::fmpz) = base(n, 10)
+dec(n::fmpz) = base(10, n)
 
-hex(n::fmpz) = base(n, 16)
+hex(n::fmpz) = base(16, n)
 
-function base(n::fmpz, b::Integer)
+function base(b::Integer, n::fmpz)
     2 <= b <= 62 || error("invalid base: $b")
     p = ccall((:fmpz_get_str,:libflint), Ptr{Uint8}, 
               (Ptr{Uint8}, Cint, Ptr{fmpz}), C_NULL, b, &n)
@@ -992,8 +988,8 @@ function convert(::Type{Int}, a::fmpz)
    return ccall((:fmpz_get_si, :libflint), Int, (Ptr{fmpz},), &a)
 end
 
-function convert(::Type{UInt64}, x::fmpz)
-   return ccall((:fmpz_get_ui, :libflint), UInt64, (Ptr{fmpz}, ), &x)
+function convert(::Type{UInt}, x::fmpz)
+   return ccall((:fmpz_get_ui, :libflint), UInt, (Ptr{fmpz}, ), &x)
 end
 
 function convert(::Type{Float64}, n::fmpz)

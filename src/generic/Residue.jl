@@ -31,7 +31,7 @@ end
 ###############################################################################
 
 function hash(a::ResidueElem)
-   h = 0x539c1c8715c1adc2
+   h = 0x539c1c8715c1adc2%UInt
    return h $ hash(data(a))
 end
 
