@@ -106,12 +106,17 @@ end
 #
 ###############################################################################
 
-function serialize(s, n::fmpz)
+function serialize(s::Base.SerializationState, n::fmpz)
+    Base.serialize_type(s, fmpz)
+    serialize(s, base(62, n))
+end
+function serialize(s::Base.IO, n::fmpz)
     Base.serialize_type(s, fmpz)
     serialize(s, base(62, n))
 end
 
-deserialize(s, ::Type{fmpz}) = Base.parseint_nocheck(FlintZZ, deserialize(s), 62)
+
+deserialize(s::Base.SerializationState, ::Type{fmpz}) = Base.parseint_nocheck(FlintZZ, deserialize(s), 62)
 
 ###############################################################################
 #

@@ -53,3 +53,5 @@ function hash(a::fmpq, h::UInt)
   return _hash_integer(a.num, _hash_integer(a.den, h))
 end
 
+
+function checkbounds(::Int64, ::Int64); nothing; end;
