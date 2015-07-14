@@ -4,7 +4,7 @@
 #
 ###############################################################################
 
-export AnticNumberField, norm, trace, CyclotomicField, MaximalRealSubfield,
+export AnticNumberField, norm, norm_div, trace, CyclotomicField, MaximalRealSubfield,
        add!, sub!, mul!
 
 ###############################################################################
@@ -378,6 +378,15 @@ function norm(a::nf_elem)
          &z, &a, &a.parent)
    return z
 end
+
+function norm_div(a::nf_elem, d::fmpz, np::Int)
+   z = fmpq()
+   ccall((:nf_elem_norm_div, :libflint), Void,
+         (Ptr{fmpq}, Ptr{nf_elem}, Ptr{NfNumberField}, Ptr{fmpz}, UInt),
+         &z, &a, &a.parent, &d, UInt(np))
+   return z
+end
+
 
 function trace(a::nf_elem)
    z = fmpq()
