@@ -1,10 +1,9 @@
-#! /bin/sh
-cd src
+#! /bin/bash
 
-export LD_LIBRARY_PATH=/home/wbhart/mpir-2.7.0/.libs:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/home/wbhart/mpfr-3.1.2/src/.libs:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/home/wbhart/flint2:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/home/wbhart/sage-local/lib:$LD_LIBRARY_PATH
+### due to libpari wierd path to libgmp... 
+export LD_LIBRARY_PATH="$HOME/.julia/v0.4/Nemo/local/lib:$LD_LIBRARY_PATH"
 
-julia --quiet
+${JULIA:-julia} "$@"
+
+
 
