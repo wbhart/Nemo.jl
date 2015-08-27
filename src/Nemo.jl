@@ -8,7 +8,8 @@ import Base: abs, asin, asinh, atan, atanh, base, bin, call, convert, cos,
              precision, prevpow2, promote_rule, rank, Rational, rem, reverse,
              serialize, setindex!, show, sign, sin, sinh, size, sqrt, string,
              sub, tan, tanh, trace, trailing_zeros, transpose, transpose!,
-             truncate, var, zero, checkbounds
+             truncate, var, zero, checkbounds,
+             +, -, *, ==, &, |, $, <<, >>, ^, ~,<=, >=, <, >, hcat, vcat
 
 export Collection, Ring, Field, CollectionElem, RingElem, FieldElem, Pari,
        Flint, Antic, Generic
