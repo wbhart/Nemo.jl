@@ -26,7 +26,7 @@ end
 
 _checkbounds(sz, i::Int) = 1 <= i <= sz
 
-function checkbounds(A, I::Int, J::Int)
+function checkbounds(A::nmod_mat, I::Int, J::Int)
   @_inline_meta
   (_checkbounds(size(A,1), I) && _checkbounds(size(A,2), J)) || (@_noinline_meta; throw(BoundsError(A, I)))
 end
