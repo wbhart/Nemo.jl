@@ -40,6 +40,14 @@ type fmpz <: IntegerRingElem
         return z
     end
 
+    function fmpz(x::Float64)
+        !isinteger(x) && throw(InexactError())
+        z = new()
+        ccall((:fmpz_set_d, :libflint), Void, (Ptr{fmpz}, Cdouble), &z, x)
+        finalizer(z, _fmpz_clear_fn)
+        return z
+    end
+
     fmpz(x::fmpz) = x
 end
 
@@ -991,6 +999,19 @@ type fmpz_mod_series <: SeriesElem{Residue{fmpz}}
       for i = 1:len
          ccall((:fmpz_mod_poly_set_coeff_fmpz, :libflint), Void, 
                      (Ptr{fmpz_mod_series}, Int, Ptr{fmpz}), &z, i - 1, &a[i])
+      end
+      z.prec = prec
+      finalizer(z, _fmpz_mod_series_clear_fn)
+      return z
+   end
+   
+   function fmpz_mod_series(p::fmpz, a::Array{Residue{fmpz}, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, :libflint), Void, 
+            (Ptr{fmpz_mod_series}, Ptr{fmpz}, Int), &z, &p, len)
+      for i = 1:len
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, :libflint), Void, 
+                     (Ptr{fmpz_mod_series}, Int, Ptr{fmpz}), &z, i - 1, &data(a[i]))
       end
       z.prec = prec
       finalizer(z, _fmpz_mod_series_clear_fn)
