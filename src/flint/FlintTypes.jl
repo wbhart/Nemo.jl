@@ -227,7 +227,7 @@ type FmpzPolyRing <: Ring{Flint}
 
    function FmpzPolyRing(s::Symbol)
       return try
-         FmpzPolyID[s]
+         FmpzPolyID[s]::FmpzPolyRing
       catch
          FmpzPolyID[s] = new(FlintZZ, s)
       end
