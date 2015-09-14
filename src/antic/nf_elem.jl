@@ -1,11 +1,12 @@
 ###############################################################################
 #
-#   nf.jl : Antic number fields
+#   nf_elem.jl : Antic number fields
 #
 ###############################################################################
 
-export NfNumberField, norm, trace, CyclotomicField, MaximalRealSubfield,
+export AnticNumberField, norm, trace, CyclotomicField, MaximalRealSubfield,
        add!, sub!, mul!, norm_div
+
 
 ###############################################################################
 #
@@ -15,11 +16,11 @@ export NfNumberField, norm, trace, CyclotomicField, MaximalRealSubfield,
 
 parent(a::nf_elem) = a.parent
 
-elem_type(::NfNumberField) = nf_elem
+elem_type(::AnticNumberField) = nf_elem
 
-base_ring(a::NfNumberField) = None
+base_ring(a::AnticNumberField) = None
 
-var(a::NfNumberField) = a.S
+var(a::AnticNumberField) = a.S
 
 function check_parent(a::nf_elem, b::nf_elem) 
    a.parent != b.parent && error("Incompatible number field elements")
@@ -44,47 +45,47 @@ function coeff(x::nf_elem, n::Int)
    n < 0 && throw(DomainError())
    z = fmpq()
    ccall((:nf_elem_get_coeff_fmpq, :libflint), Void, 
-     (Ptr{fmpq}, Ptr{nf_elem}, Int, Ptr{NfNumberField}), &z, &x, n, &parent(x))
+     (Ptr{fmpq}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}), &z, &x, n, &parent(x))
    return z
 end
 
-function gen(a::NfNumberField)
+function gen(a::AnticNumberField)
    r = nf_elem(a)
    ccall((:nf_elem_gen, :libflint), Void, 
-         (Ptr{nf_elem}, Ptr{NfNumberField}), &r, &a)
+         (Ptr{nf_elem}, Ptr{AnticNumberField}), &r, &a)
    return r
 end
 
-function one(a::NfNumberField)
+function one(a::AnticNumberField)
    r = nf_elem(a)
    ccall((:nf_elem_one, :libflint), Void, 
-         (Ptr{nf_elem}, Ptr{NfNumberField}), &r, &a)
+         (Ptr{nf_elem}, Ptr{AnticNumberField}), &r, &a)
    return r
 end
 
-function zero(a::NfNumberField)
+function zero(a::AnticNumberField)
    r = nf_elem(a)
    ccall((:nf_elem_zero, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{NfNumberField}), &r, &a)
+         (Ptr{nf_elem}, Ptr{AnticNumberField}), &r, &a)
    return r
 end
 
 function isgen(a::nf_elem)
    return ccall((:nf_elem_is_gen, :libflint), Bool, 
-                (Ptr{nf_elem}, Ptr{NfNumberField}), &a, &a.parent)
+                (Ptr{nf_elem}, Ptr{AnticNumberField}), &a, &a.parent)
 end
 
 function isone(a::nf_elem)
    return ccall((:nf_elem_is_one, :libflint), Bool, 
-                (Ptr{nf_elem}, Ptr{NfNumberField}), &a, &a.parent)
+                (Ptr{nf_elem}, Ptr{AnticNumberField}), &a, &a.parent)
 end
 
 function iszero(a::nf_elem)
    return ccall((:nf_elem_is_zero, :libflint), Bool, 
-                (Ptr{nf_elem}, Ptr{NfNumberField}), &a, &a.parent)
+                (Ptr{nf_elem}, Ptr{AnticNumberField}), &a, &a.parent)
 end
 
-degree(a::NfNumberField) = degree(a.pol)
+degree(a::AnticNumberField) = degree(a.pol)
 
 function deepcopy(d::nf_elem)
    z = nf_elem(parent(d), d)
@@ -97,14 +98,14 @@ end
 #
 ###############################################################################
 
-function show(io::IO, a::NfNumberField)
+function show(io::IO, a::AnticNumberField)
    print(io, "Number field over Rational Field")
    print(io, " with defining polynomial ", a.pol)
 end
 
 function show(io::IO, x::nf_elem)
    cstr = ccall((:nf_elem_get_str_pretty, :libflint), Ptr{Uint8}, 
-                (Ptr{nf_elem}, Ptr{Uint8}, Ptr{NfNumberField}), 
+                (Ptr{nf_elem}, Ptr{Uint8}, Ptr{AnticNumberField}), 
                  &x, bytestring(string(var(parent(x)))), &parent(x))
 
    print(io, bytestring(cstr))
@@ -125,7 +126,7 @@ is_negative(::nf_elem) = false
 function -(a::nf_elem)
    r = a.parent()
    ccall((:nf_elem_neg, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &r, &a, &a.parent)
    return r
 end
@@ -140,7 +141,7 @@ function +(a::nf_elem, b::nf_elem)
    check_parent(a, b)
    r = a.parent()
    ccall((:nf_elem_add, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
@@ -149,7 +150,7 @@ function -(a::nf_elem, b::nf_elem)
    check_parent(a, b)
    r = a.parent()
    ccall((:nf_elem_sub, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
@@ -158,7 +159,7 @@ function *(a::nf_elem, b::nf_elem)
    check_parent(a, b)
    r = a.parent()
    ccall((:nf_elem_mul, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
@@ -172,7 +173,7 @@ end
 function +(a::nf_elem, b::Int)
    r = a.parent()
    ccall((:nf_elem_add_si, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}),
          &r, &a, b, &a.parent)
    return r
 end
@@ -180,7 +181,7 @@ end
 function +(a::nf_elem, b::fmpz)
    r = a.parent()
    ccall((:nf_elem_add_fmpz, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
@@ -188,7 +189,7 @@ end
 function +(a::nf_elem, b::fmpq)
    r = a.parent()
    ccall((:nf_elem_add_fmpq, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
@@ -196,7 +197,7 @@ end
 function -(a::nf_elem, b::Int)
    r = a.parent()
    ccall((:nf_elem_sub_si, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}),
          &r, &a, b, &a.parent)
    return r
 end
@@ -204,7 +205,7 @@ end
 function -(a::nf_elem, b::fmpz)
    r = a.parent()
    ccall((:nf_elem_sub_fmpz, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
@@ -212,32 +213,32 @@ end
 function -(a::nf_elem, b::fmpq)
    r = a.parent()
    ccall((:nf_elem_sub_fmpq, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
 
 function -(a::Int, b::nf_elem)
-   r = a.parent()
+   r = b.parent()
    ccall((:nf_elem_si_sub, :libflint), Void,
-         (Ptr{nf_elem}, Int, Ptr{nf_elem}, Ptr{NfNumberField}),
-         &r, a, &b, &a.parent)
+         (Ptr{nf_elem}, Int, Ptr{nf_elem}, Ptr{AnticNumberField}),
+         &r, a, &b, &b.parent)
    return r
 end
 
 function -(a::fmpz, b::nf_elem)
-   r = a.parent()
+   r = b.parent()
    ccall((:nf_elem_fmpz_sub, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{fmpz}, Ptr{nf_elem}, Ptr{NfNumberField}),
-         &r, &a, &b, &a.parent)
+         (Ptr{nf_elem}, Ptr{fmpz}, Ptr{nf_elem}, Ptr{AnticNumberField}),
+         &r, &a, &b, &b.parent)
    return r
 end
 
 function -(a::fmpq, b::nf_elem)
-   r = a.parent()
+   r = b.parent()
    ccall((:nf_elem_fmpq_sub, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{fmpq}, Ptr{nf_elem}, Ptr{NfNumberField}),
-         &r, &a, &b, &a.parent)
+         (Ptr{nf_elem}, Ptr{fmpq}, Ptr{nf_elem}, Ptr{AnticNumberField}),
+         &r, &a, &b, &b.parent)
    return r
 end
 
@@ -254,7 +255,7 @@ end
 function *(a::nf_elem, b::Int)
    r = a.parent()
    ccall((:nf_elem_scalar_mul_si, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}),
          &r, &a, b, &a.parent)
    return r
 end
@@ -262,7 +263,7 @@ end
 function *(a::nf_elem, b::fmpz)
    r = a.parent()
    ccall((:nf_elem_scalar_mul_fmpz, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
@@ -270,7 +271,7 @@ end
 function *(a::nf_elem, b::fmpq)
    r = a.parent()
    ccall((:nf_elem_scalar_mul_fmpq, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
@@ -286,11 +287,13 @@ end
 ###############################################################################
 
 function ^(a::nf_elem, n::Int)
-   n < 0 && return inv(a)^-n
    r = a.parent()
    ccall((:nf_elem_pow, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{NfNumberField}),
-         &r, &a, n, &a.parent)
+         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}),
+         &r, &a, abs(n), &a.parent)
+   if n < 0
+      r = inv(r)
+   end
    return r
 end
 
@@ -303,7 +306,7 @@ end
 function ==(a::nf_elem, b::nf_elem)
    check_parent(a, b)
    return ccall((:nf_elem_equal, :libflint), Bool, 
-           (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}), &a, &b, &a.parent)
+           (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}), &a, &b, &a.parent)
 end
 
 ###############################################################################
@@ -313,9 +316,10 @@ end
 ###############################################################################
 
 function inv(a::nf_elem)
+   a == 0 && throw(DivideError())
    r = a.parent()
    ccall((:nf_elem_inv, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &r, &a, &a.parent)
    return r
 end
@@ -327,10 +331,11 @@ end
 ###############################################################################
 
 function divexact(a::nf_elem, b::nf_elem)
+   b == 0 && throw(DivideError())
    check_parent(a, b)
    r = a.parent()
    ccall((:nf_elem_div, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
@@ -342,25 +347,28 @@ end
 ###############################################################################
 
 function divexact(a::nf_elem, b::Int)
+   b == 0 && throw(DivideError())
    r = a.parent()
    ccall((:nf_elem_scalar_div_si, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}),
          &r, &a, b, &a.parent)
    return r
 end
 
 function divexact(a::nf_elem, b::fmpz)
+   b == 0 && throw(DivideError())
    r = a.parent()
    ccall((:nf_elem_scalar_div_fmpz, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
 
 function divexact(a::nf_elem, b::fmpq)
+   b == 0 && throw(DivideError())
    r = a.parent()
    ccall((:nf_elem_scalar_div_fmpq, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{AnticNumberField}),
          &r, &a, &b, &a.parent)
    return r
 end
@@ -374,7 +382,7 @@ end
 function norm(a::nf_elem)
    z = fmpq()
    ccall((:nf_elem_norm, :libflint), Void,
-         (Ptr{fmpq}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{fmpq}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &z, &a, &a.parent)
    return z
 end
@@ -391,7 +399,7 @@ end
 function trace(a::nf_elem)
    z = fmpq()
    ccall((:nf_elem_trace, :libflint), Void,
-         (Ptr{fmpq}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{fmpq}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &z, &a, &a.parent)
    return z
 end
@@ -404,25 +412,25 @@ end
 
 function mul!(z::nf_elem, x::nf_elem, y::nf_elem)
    ccall((:nf_elem_mul, :libflint), Void, 
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}), 
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}), 
                                                   &z, &x, &y, &parent(x))
 end
 
 function addeq!(z::nf_elem, x::nf_elem)
    ccall((:nf_elem_add, :libflint), Void, 
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}), 
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}), 
                                                   &z, &z, &x, &parent(x))
 end
 
 function add!(a::nf_elem, b::nf_elem, c::nf_elem)
    ccall((:nf_elem_add, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
 function mul!(a::nf_elem, b::nf_elem, c::nf_elem)
    ccall((:nf_elem_mul, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
@@ -434,19 +442,19 @@ end
 
 function add!(c::nf_elem, a::nf_elem, b::fmpq)
    ccall((:nf_elem_add_fmpq, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
 function add!(c::nf_elem, a::nf_elem, b::fmpz)
    ccall((:nf_elem_add_fmpz, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
 function add!(c::nf_elem, a::nf_elem, b::Int)
    ccall((:nf_elem_add_si, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
@@ -454,19 +462,19 @@ add!(c::nf_elem, a::nf_elem, b::Integer) = add!(c, a, fmpz(b))
 
 function sub!(c::nf_elem, a::nf_elem, b::fmpq)
    ccall((:nf_elem_sub_fmpq, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
 function sub!(c::nf_elem, a::nf_elem, b::fmpz)
    ccall((:nf_elem_sub_fmpz, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
 function sub!(c::nf_elem, a::nf_elem, b::Int)
    ccall((:nf_elem_sub_si, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
@@ -474,19 +482,19 @@ sub!(c::nf_elem, a::nf_elem, b::Integer) = sub!(c, a, fmpz(b))
 
 function sub!(c::nf_elem, a::fmpq, b::nf_elem)
    ccall((:nf_elem_fmpq_sub, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{fmpq}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{fmpq}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
 function sub!(c::nf_elem, a::fmpz, b::nf_elem)
    ccall((:nf_elem_fmpz_sub, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{fmpz}, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{fmpz}, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
 function sub!(c::nf_elem, a::Int, b::nf_elem)
    ccall((:nf_elem_si_sub, :libflint), Void,
-         (Ptr{nf_elem}, Int, Ptr{nf_elem}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Int, Ptr{nf_elem}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
@@ -494,19 +502,19 @@ sub!(c::nf_elem, a::Integer, b::nf_elem) = sub!(c, fmpz(a), b)
 
 function mul!(c::nf_elem, a::nf_elem, b::fmpq)
    ccall((:nf_elem_scalar_mul_fmpq, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpq}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
 function mul!(c::nf_elem, a::nf_elem, b::fmpz)
    ccall((:nf_elem_scalar_mul_fmpz, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{fmpz}, Ptr{AnticNumberField}),
          &c, &a, &b, &a.parent)
 end
 
 function mul!(c::nf_elem, a::nf_elem, b::Int) 
    ccall((:nf_elem_scalar_mul_si, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{NfNumberField}),
+         (Ptr{nf_elem}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}),
          &c, &a, b, &a.parent)
 end
 
@@ -520,51 +528,57 @@ mul!(c::nf_elem, a::nf_elem, b::Integer) = mul!(c, a, fmpz(b))
 
 Base.promote_rule{T <: Integer}(::Type{nf_elem}, ::Type{T}) = nf_elem
 
+Base.promote_rule(::Type{nf_elem}, ::Type{fmpz}) = nf_elem
+
+Base.promote_rule(::Type{nf_elem}, ::Type{fmpq}) = nf_elem
+
+Base.promote_rule(::Type{nf_elem}, ::Type{fmpq_poly}) = nf_elem
+
 ###############################################################################
 #
 #   Parent object call overloads
 #
 ###############################################################################
 
-function Base.call(a::NfNumberField)
+function Base.call(a::AnticNumberField)
    z = nf_elem(a)
    return z
 end
 
-function Base.call(a::NfNumberField, c::Int)
+function Base.call(a::AnticNumberField, c::Int)
    z = nf_elem(a)
    ccall((:nf_elem_set_si, :libflint), Void, 
-         (Ptr{nf_elem}, Int, Ptr{NfNumberField}), &z, c, &a)
+         (Ptr{nf_elem}, Int, Ptr{AnticNumberField}), &z, c, &a)
    return z
 end
 
-function Base.call(a::NfNumberField, c::fmpz)
+function Base.call(a::AnticNumberField, c::fmpz)
    z = nf_elem(a)
    ccall((:nf_elem_set_fmpz, :libflint), Void, 
-         (Ptr{nf_elem}, Ptr{fmpz}, Ptr{NfNumberField}), &z, &c, &a)
+         (Ptr{nf_elem}, Ptr{fmpz}, Ptr{AnticNumberField}), &z, &c, &a)
    return z
 end
 
-function Base.call(a::NfNumberField, c::fmpq)
+function Base.call(a::AnticNumberField, c::fmpq)
    z = nf_elem(a)
    ccall((:nf_elem_set_fmpq, :libflint), Void, 
-         (Ptr{nf_elem}, Ptr{fmpq}, Ptr{NfNumberField}), &z, &c, &a)
+         (Ptr{nf_elem}, Ptr{fmpq}, Ptr{AnticNumberField}), &z, &c, &a)
    return z
 end
 
-function Base.call(a::NfNumberField, b::nf_elem)
+function Base.call(a::AnticNumberField, b::nf_elem)
    parent(b) != a && error("Cannot coerce number field element")
    return b
 end
 
-function Base.call(a::NfNumberField, pol::fmpq_poly)
+function Base.call(a::AnticNumberField, pol::fmpq_poly)
    pol = parent(a.pol)(pol) # check pol has correct parent
    z = nf_elem(a)
    if length(pol) >= length(a.pol)
       pol = mod(pol, a.pol)
    end
    ccall((:nf_elem_set_fmpq_poly, :libflint), Void, 
-         (Ptr{nf_elem}, Ptr{fmpq_poly}, Ptr{NfNumberField}), &z, &pol, &a)
+         (Ptr{nf_elem}, Ptr{fmpq_poly}, Ptr{AnticNumberField}), &z, &pol, &a)
    return z
 end
 
@@ -584,7 +598,7 @@ end
 
 function AnticNumberField(pol::fmpq_poly, s::String)
    S = symbol(s)
-   parent_obj = NfNumberField(pol, S)
+   parent_obj = AnticNumberField(pol, S)
 
    return parent_obj, gen(parent_obj) 
 end

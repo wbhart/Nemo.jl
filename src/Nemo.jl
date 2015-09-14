@@ -14,7 +14,8 @@ import Base: abs, asin, asinh, atan, atanh, base, bin, call, convert, cos,
 export Collection, Ring, Field, CollectionElem, RingElem, FieldElem, Pari,
        Flint, Antic, Generic
 
-export PolyElem, SeriesElem, ResidueElem, FractionElem, MatElem
+export PolyElem, SeriesElem, ResidueElem, FractionElem, MatElem,
+       NumberFieldElem
 
 export ZZ, QQ, PadicField, FiniteField, NumberField, CyclotomicField,
        MaximalRealSubfield, MaximalOrder

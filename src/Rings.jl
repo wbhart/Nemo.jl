@@ -238,11 +238,7 @@ include("flint/fq_nmod_poly.jl")
 
 include("pari/pari_poly2.jl")
 
-include("antic/nf.jl")
-
-include("pari/pari_nf.jl")
-
-include("pari/PariMaximalOrder.jl")
+include("pari/pari_maximal_order_elem.jl")
 
 include("pari/PariIdeal.jl")
 

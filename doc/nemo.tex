@@ -2091,7 +2091,7 @@ g = T(x^4 + x + 2)
 h = divexact(f, g)
 \end{lstlisting}
 
-\subsection{Generic power series rings $R[[x]]$: \code|PowerSeries\{T\}|}
+\subsection{Generic power series rings ($R[[x]]$): \code|PowerSeries\{T\}|}
 
 In Nemo we provide univariate power series rings. The type of a parent object for
 a power series ring is a \code{PowerSeriesRing} which belongs to the \code{Ring}
@@ -2507,8 +2507,8 @@ m = a*d
 $b$.}
 
 \begin{lstlisting}
-*{T <: RingElem}(a::Poly{T}, b::Int)
-*{T <: RingElem}(a::Poly{T}, b::fmpz)
+*{T <: RingElem}(a::PowerSeries{T}, b::Int)
+*{T <: RingElem}(a::PowerSeries{T}, b::fmpz)
 \end{lstlisting}
 
 \desc{Return $ab$. The resulting power series will have the same precision as
@@ -2829,6 +2829,512 @@ a = exp(x + O(x^40))
 b = divexact(x, exp(x + O(x^40)) - 1)
 \end{lstlisting}
 
+\subsection{Generic matrices (Mat$(R)$): \code|Mat\{T\}|}
+
+In Nemo we provide generic matric spaces for $m\times n$ matrices over a ring $R$.
+Note that $m\times n$ matrices do not form a ring.
+
+The type of a parent object for a matrix space is a \code{MatrixSpace}. Currently
+this belongs to the \code{Ring} type class to accomodate the special case when
+working with $n\times n$ matrices. However this will change in a later version
+of Nemo when matrix algebras are provided.
+
+Matrix elements are of type \code{Mat} which belongs to the \code{MatElem} type
+class, which in turn belongs to \code{RingElem}. Again, this is temporary to
+accomodate the special case where matrices happen to be square, forming an actual
+mathematical ring.
+
+There's no need to deal directly with these types, as we provide a function
+\code{MatrixSpace} for constructing the matrix space parent objects and various
+constructors to create matrix objects.
+
+As for other generic types, the \code{Mat} and \code{MatrixSpace}
+types take as parameters the type \code{T} of the elements in the base ring
+over which the matrix space is constructed.
+
+For example, if there wasn't a special Flint type for matrices, the type of
+a matrix space $Mat_{m, n}(\Z)$ over the Flint integers would be denoted
+\code|MatrixSpace{fmpz}| and elements of the matrix space would have type
+\code|Mat{fmpz}|.
+
+\subsubsection{Constructors}
+
+We define the following function for constructing the parent object of a
+matrix space.
+
+\begin{lstlisting}
+MatrixSpace(R::Ring, r::Int, c::Int)
+\end{lstlisting}
+
+\desc{Returns a parent object \code{S} corresponding to the space of $r\times c$
+matrices over the ring \code{R}}.
+
+We also provide various constructors for creating elements of a matrix space. Below
+we assume that $S$ is a matrix space parent object, created for example by the
+following code:
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+\end{lstlisting}
+
+In the following we will also let $r$ stand for the number of rows and $c$ for the
+number of columns, e.g. $r = 3$ and $c = 3$ in the case of $S$ as we just defined it.
+We let $T$ stand for the type of the entries of the matrices.
+
+\begin{lstlisting}
+S()
+\end{lstlisting}
+
+\desc{Create the $r\times c$ matrix with all entries zero.}
+
+\begin{lstlisting}
+S(a::Integer)
+S(a::T)
+\end{lstlisting}
+
+\desc{Create the $r\times c$ diagonal matrix, with diagonal entries equal to
+$a$ (viewed as an element of the base ring).}
+
+\begin{lstlisting}
+S(a::Mat{T})
+\end{lstlisting}
+
+\desc{Return a reference to the matrix \code{a}. No copy of the data is
+made by this function.}
+
+\begin{lstlisting}
+S(a::Array{T, 2})
+\end{lstlisting}
+
+\desc{Create an $r\times c$ given by the entries of the $r\times c$ Julia array
+$a$.}
+
+\begin{lstlisting}
+S(a::RingElem)
+\end{lstlisting}
+
+\desc{Try to coerce $a$ into the base ring of the matrix space and then construct
+the diagonal $r\times c$ matrix with diagonal entries equal to $a$.}
+
+\textbf{Examples.}
+
+Here are some examples of power series constructors.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S()
+B = S(12)
+C = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+D = S(c)
+F = S(R(11))
+\end{lstlisting}
+
+\subsubsection{Basic manipulation}
+
+To access entries of a matrix we overload Julia's \code{getindex} and \code{setindex}
+methods. For example, if $A$ is a \code|Mat{T}|as defined in the example above
+we have the following matrix notation.
+
+\begin{lstlisting}
+A[i::Int, j::Int]
+\end{lstlisting}
+
+\desc{When assigned to, this allows the entry at row $i$ and column $j$ to be assigned
+to. When used in an expression, this allows the entry at row $i$ and column $j$ of
+the matrix to be used in an expression. Note that Julia arrays and Nemo matrices are
+$1$-indexed, i.e. the top left entry is $A[1, 1]$.}
+
+\begin{lstlisting}
+rows{T <: RingElem}(a::Mat{T})
+\end{lstlisting}
+
+\desc{Return the number of rows of the given matrix.}
+
+\begin{lstlisting}
+cols{T <: RingElem}(a::Mat{T})
+\end{lstlisting}
+
+\desc{Return the number of rows of the given matrix.}
+
+\begin{lstlisting}
+zero{T <: RingElem}(R::MatrixSpace{T})
+\end{lstlisting}
+
+\desc{Return the $0$ matrix in the matrix space, i.e. the matrix with all entries
+equal to $0$ in the base ring.}
+
+\begin{lstlisting}
+one{T <: RingElem}(::Type{MatrixSpace{T}})
+\end{lstlisting}
+
+\desc{Return $1$ diagonal matrix in the matrix space, i.e. the matrix with all
+diagonal entries equal to $1$ in the base ring.}
+
+\begin{lstlisting}
+iszero{T <: RingElem}(a::Mat{T})
+\end{lstlisting}
+
+\desc{Return \code{true} if $a$ is arithmetically equal to the $0$ matrix.}
+
+\begin{lstlisting}
+isone{T <: RingElem}(a::Mat{T})
+\end{lstlisting}
+
+\desc{Return \code{true} if $a$ is arithmetically equal to the $1$ diagonal
+matrix.}
+
+\begin{lstlisting}
+deepcopy{T <: RingElem}(a::Mat{T})
+\end{lstlisting}
+
+\desc{Create a new matrix object which is equal to the supplied matrix, i.e.
+with the same entries.}
+
+\textbf{Examples.}
+
+Here are some examples of basic manipulation of matrices.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+B = S([R(2) R(3) R(1); t t + 1 t + 2; R(-1) t^2 t^3])
+
+C = zero(S)
+D = one(S)
+
+f = iszero(C)
+g = isone(D)
+h = A[1, 2]
+B[1, 1] = R(3)
+r = rows(B)
+c = cols(B)
+k = deepcopy(A)
+\end{lstlisting}
+
+\subsubsection{Unary operators}
+
+\begin{lstlisting}
+-{T <: RingElem}(a::Mat{T})
+\end{lstlisting}
+
+\desc{Return $-a$, i.e. the matrix with all entries negated.}
+
+\textbf{Examples.}
+
+Here is an example of unary operators.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+
+B = -A
+\end{lstlisting}
+
+\subsubsection{Binary operators}
+
+\begin{lstlisting}
++{T <: RingElem}(a::Mat{T}, b::Mat{T})
+\end{lstlisting}
+
+\desc{Return $a + b$. The matrices must have the same dimensions otherwise
+an exception is thrown.}
+
+\begin{lstlisting}
+-{T <: RingElem}(a::Mat{T}, b::Mat{T})
+\end{lstlisting}
+
+\desc{Return $a - b$. The matrices must have the same dimensions otherwise
+an exception is thrown.}
+
+\begin{lstlisting}
+-{T <: RingElem}(a::Mat{T}, b::Mat{T})
+\end{lstlisting}
+
+\desc{Return $a - b$. The matrices must have the same dimensions otherwise
+an exception is thrown.}
+
+\begin{lstlisting}
+*{T <: RingElem}(a::Mat{T}, b::Mat{T})
+\end{lstlisting}
+
+\desc{Return $a - b$. The number of columns of $a$ must equal the number of
+rows of $b$, otherwise an exception is thrown.}
+
+\textbf{Examples.}
+
+Here is an example of unary operators.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+B = S([R(2) R(3) R(1); t t + 1 t + 2; R(-1) t^2 t^3])
+
+C = A + B
+D = A - B
+F = A*B
+\end{lstlisting}
+
+\subsubsection{Ad hoc binary operators}
+
+\begin{lstlisting}
++{T <: RingElem}(a::Mat{T}, b::Integer)
++{T <: RingElem}(a::Mat{T}, b::fmpz)
++{T <: RingElem}(a::Mat{T}, b::T)
+\end{lstlisting}
+
+\desc{Return the sum of $a$ and the diagonal matrix with $b$ for the diagonal
+entries.}
+
+\begin{lstlisting}
++{T <: RingElem}(a::Integer, b::Mat{T})
++{T <: RingElem}(a::fmpz, b::Mat{T})
++{T <: RingElem}(a::T, b::Mat{T})
+\end{lstlisting}
+
+\desc{Return the sum of the diagonal matrix with $a$ for the diagonal
+entries and the matrix $b$.}
+
+\begin{lstlisting}
+-{T <: RingElem}(a::Mat{T}, b::Integer)
+-{T <: RingElem}(a::Mat{T}, b::fmpz)
+-{T <: RingElem}(a::Mat{T}, b::T)
+\end{lstlisting}
+
+\desc{Return the difference of $a$ and the diagonal matrix with $b$ for the diagonal
+entries.}
+
+\begin{lstlisting}
+-{T <: RingElem}(a::Integer, b::Mat{T})
+-{T <: RingElem}(a::fmpz, b::Mat{T})
+-{T <: RingElem}(a::T, b::Mat{T})
+\end{lstlisting}
+
+\desc{Return the difference of the diagonal matrix with $a$ for the diagonal
+entries and the matrix $b$.}
+
+\begin{lstlisting}
+*{T <: RingElem}(a::Mat{T}, b::Integer)
+*{T <: RingElem}(a::Mat{T}, b::fmpz)
+*{T <: RingElem}(a::Mat{T}, b::T)
+\end{lstlisting}
+
+\desc{Return the matrix whose entries are those of $a$ multiplied by $b$.}
+
+\begin{lstlisting}
+*{T <: RingElem}(a::Integer, b::Mat{T})
+*{T <: RingElem}(a::fmpz, b::Mat{T})
+*{T <: RingElem}(a::T, b::Mat{T})
+\end{lstlisting}
+
+\desc{Return the matrix whose entries are $a$ multiplied by the entries of
+$b$.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc binary operators.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+
+B = A + 12
+C = fmpz(11) + A
+D = A - (t + 1)
+F = A*3
+G = fmpz(7)*A
+H = (t - 1)*A
+\end{lstlisting}
+
+\subsubsection{Powering}
+
+\begin{lstlisting}
+^{T <: RingElem}(a::Mat{T}, n::Int)
+\end{lstlisting}
+
+\desc{Return the matrix $a$ raised to the power of $n$, i.e. multiplied by
+itself $n$ times. For generic matrices over a ring, binary exponentiation is
+used. If the exponent is $0$ the $1$ diagonal matrix is returned. Currently
+negative powers are not supported and a \code{DomainError()} is raised in
+this case. Note that the matrix must be square for this operation to be
+performed, otherwise an exception is raised.}
+
+\textbf{Examples.}
+
+Here is an example of powering.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+
+B = A^12
+\end{lstlisting}
+
+\subsubsection{Comparisons}
+
+\begin{lstlisting}
+=={T <: RingElem}(a::Mat{T}, b::Mat{T})
+\end{lstlisting}
+
+\desc{Return \code{true} if the two matrices are equal, i.e. if corresponding
+entries are equal, otherwise return \code{false}. The matrices must have the
+same dimensions, otherwise an exception is raised.}
+
+\textbf{Examples.}
+
+Here are some examples of comparison.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+B = S([R(2) R(3) R(1); t t + 1 t + 2; R(-1) t^2 t^3])
+
+A != B
+A == deepcopy(A)
+\end{lstlisting}
+
+\subsubsection{Ad hoc comparisons}
+
+\begin{lstlisting}
+=={T <: RingElem}(a::Mat{T}, b::Integer)
+=={T <: RingElem}(a::Mat{T}, b::fmpz)
+\end{lstlisting}
+
+\desc{Return \code{true} if the matrix $a$ is equal to the diagonal matrix
+of the same dimensions with $b$ for the diagonal entries, otherwise
+return \code{false}.}
+
+\begin{lstlisting}
+=={T <: RingElem}(a::Integer, b::Mat{T})
+=={T <: RingElem}(a::fmpz, b::Mat{T})
+\end{lstlisting}
+
+\desc{Return \code{true} if the diagonal matrix of the same dimensions as $b$,
+with $a$ for the diagonal entries is equal to the matrix $b$, otherwise
+return \code{false}.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc comparison.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+
+A != 12
+fmpz(11) != A
+S(11) == 11
+\end{lstlisting}
+
+\subsubsection{Ad hoc exact division}
+
+\begin{lstlisting}
+divexact{T <: RingElem}(a::Mat{T}, b::Integer)
+divexact{T <: RingElem}(a::Mat{T}, b::fmpz)
+divexact{T <: RingElem}(a::Mat{T}, b::T)
+\end{lstlisting}
+
+\desc{Return $a/b$, i.e. the matrix whose entries are those of $a$ divided
+by $b$. It is assumed that each such division is exact.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc exact division.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+
+B = divexact(A, -1)
+C = divexact(12*A, fmpz(3))
+D = divexact((t^2 - 1)*A, t + 1)
+\end{lstlisting}
+
+\subsubsection{Gram matrix}
+
+\begin{lstlisting}
+gram{T <: RingElem}(a::Mat{T})
+\end{lstlisting}
+
+\desc{Return the Gram matrix of $a$, i.e. if $a$ is an $r\times c$ matrix
+return the $r\times r$ matrix whose entries $i, j$ are the dot products
+of the $i$-th and $j$-th rows, respectively.}
+
+\textbf{Examples.}
+
+Here is an example of computing the Gram matrix.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+
+B = gram(A)
+\end{lstlisting}
+
+\subsubsection{Trace}
+
+\begin{lstlisting}
+trace{T <: RingElem}(a::Mat{T})
+\end{lstlisting}
+
+\desc{Return the trace of the matrix $a$, i.e. the sum of the diagonal
+elementst. We require the matrix to be square.}
+
+\textbf{Examples.}
+
+Here is an example of computing the trace of a matrix.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+
+b = trace(A)
+\end{lstlisting}
+
+\subsubsection{Content}
+
+\begin{lstlisting}
+content{T <: RingElem}(a::Mat{T})
+\end{lstlisting}
+
+\desc{Return the content of the matrix $a$, i.e. the greatest common
+divisor of all its entries, assuming it exists.}
+
+\textbf{Examples.}
+
+Here is an example of computing the content of a matrix.
+
+\begin{lstlisting}
+R, t = PolynomialRing(QQ, "t")
+S = MatrixSpace(R, 3, 3)
+
+A = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
+
+b = content(A)
+\end{lstlisting}
+
 \section{Generic fields}
 
 Nemo provides various constructions of fields. 
@@ -2849,7 +3355,7 @@ a \code{DivideError()}.
 The \code{//} operator doubles as a division operator when passed operands
 in a field. It is an alias for \code{divexact}.
 
-\subsection{Fraction fields (Frac$(R)$): \code|Fraction\{T\}|}
+\subsection{Fraction fields Frac$(R)$: \code|Fraction\{T\}|}
 
 We allow the construction of a fraction field over any ring in Nemo. Not all
 such constructions make sense. Typically it only makes sense to construct the
@@ -2891,9 +3397,9 @@ canonical_unit(u) == u
 canonical_unit(a*b) == canonical_unit(a)*canonical_unit(b)
 \end{lstlisting}
 
-for all values $a$ and $b$ in the base ring and $u$ any invertible element in 
-the base ring. Moreover, \code{canonical_unit} must always return an invertible
-element in the base ring.
+for all nonzero values $a$ and $b$ in the base ring and $u$ any invertible element
+in the base ring. Moreover, \code{canonical_unit} must always return an invertible
+element in the base ring for nonzero elements of the ring.
 
 We overload the \code{//} operator in Nemo for rings whose fraction field can
 be taken (e.g. \code{fmpz} and \code|Poly{T}|), so that elements of the
@@ -2951,6 +3457,8 @@ S(a::T)
 \begin{lstlisting}
 S(a::Integer, b::Integer)
 S(a::T, b::T)
+S(a::T, b::Integer)
+S(a::Integer, b::T)
 \end{lstlisting}
 
 \desc{Construct the canonicalised fraction \code{a//b} in the fraction field. If
@@ -3023,13 +3531,13 @@ den{T <: RingElem}(a::Fraction{T})
 \desc{Return the denominator of the fraction $a$.}
 
 \begin{lstlisting}
-zero{T <: RingElem}(R::FractionField{T}})
+zero{T <: RingElem}(R::FractionField{T})
 \end{lstlisting}
 
 \desc{Return the additive identity of the fraction field of the ring $T$.}
 
 \begin{lstlisting}
-one{T <: RingElem}(R::Type{FractionField{T}})
+one{T <: RingElem}(R::Type{FractionField{T})
 \end{lstlisting}
 
 \desc{Return the multiplicative identity of the fraction field of the ring 
@@ -3343,21 +3851,21 @@ S, x = PolynomialRing(ZZ, "x")
 a = (x + 1)//(-x^2 + 1) 
 b = -x//(2x + 1)
 
-c = a/c
+c = a//c
 \end{lstlisting}
 
 \subsubsection{Ad hoc exact division}
 
 \begin{lstlisting}
-//{T <: RingElem}(a::Fraction{T}, b::Integer)
-//{T <: RingElem}(a::Fraction{T}, b::T)
+divexact{T <: RingElem}(a::Fraction{T}, b::Integer)
+divexact{T <: RingElem}(a::Fraction{T}, b::T)
 \end{lstlisting}
 
 \desc{Return $a / (b/1)$.}
 
 \begin{lstlisting}
-//{T <: RingElem}(a::Integer, b::Fraction{T})
-//{T <: RingElem}(a::T, b::Fraction{T})
+divexact{T <: RingElem}(a::Integer, b::Fraction{T})
+divexact{T <: RingElem}(a::T, b::Fraction{T})
 \end{lstlisting}
 
 \desc{Return $(a/1) / b$.}
@@ -3554,7 +4062,6 @@ d = UInt(b)
 f = Float64(a)
 g = BigFloat(a)
 \end{lstlisting}
-
 
 \subsubsection{Basic manipulation}
 
@@ -5305,6 +5812,574 @@ Here are some examples of factoring.
    U = factor_shape(f*g)
 \end{lstlisting}
 
+\subsection{Flint polynomials over $\Q$: \code{fmpq_poly}}
+
+The Flint type for polynomials over $\Q$ is \code{fmpq_poly}.
+Polynomials of this type are created using the \code{PolynomialRing} constructor with
+\code{FlintRationalField()} as an argument (the same as \code{QQ}, by default).  
+
+\begin{lstlisting}
+S, x = PolynomialRing(QQ, "x")
+\end{lstlisting}
+
+Polynomials in this ring have parent of type \code{FmpqPolyRing}.
+
+We describe functions for \code{fmpq_poly} only where they differ from the functions
+available for generic polynomials.
+
+\subsubsection{Constructors}
+
+In the following constructors we assume that $S$ is an \code{FmpqPolyRing} parent 
+object, as created by the above construction for example.
+
+\begin{lstlisting}
+S(a::Int)
+S(a::fmpz)
+\end{lstlisting}
+
+\desc{Construct the polynomial of degree $0$ with $a$ as its only coefficient (or
+the zero polynomial if $a = 0$).}
+
+\begin{lstlisting}
+S(a::fmpz_poly)
+\end{lstlisting}
+
+\desc{Coerce the given polynomial into the ring $S$, i.e. coerce its coefficients
+into $\Q$ and change the variable to that of $S$.}
+
+\textbf{Examples.}
+
+Here are some examples of constructors.
+
+\begin{lstlisting}
+   S, x = PolynomialRing(QQ, "x")
+
+   a = S(12)
+   b = S(fmpz(12))
+   
+   R, y = PolynomialRing(ZZ, "y")
+
+   c = S(3y^3 + 2y + 1)
+\end{lstlisting}
+
+\subsubsection{Basic manipulation}
+
+Internally, Flint stores \code{fmpq_poly}'s as an array of integers and a single
+common denominator.
+
+\begin{lstlisting}
+den(a::fmpq_poly)
+\end{lstlisting}
+
+\desc{Return the common denominator of the coefficients of the polynomial $a$.}
+
+\textbf{Examples.}
+
+Here is an example of basic manipulation.
+
+\begin{lstlisting}
+   S, x = PolynomialRing(QQ, "x")
+
+   a = den(-fmpz(12)//7*x + 1)
+\end{lstlisting}
+
+\subsubsection{Ad hoc binary operators}
+
+The following ad hoc binary operators are provided over and above the basic ones
+for performance reasons.
+
+\begin{lstlisting}
+*(a::fmpq_poly, b::fmpq)
+*(a::fmpq, b::fmpq_poly)
+\end{lstlisting}
+
+\desc{Return $ab$.}
+
+\begin{lstlisting}
++(a::fmpq_poly, b::Int)
++(a::Int, b::fmpq_poly)
++(a::fmpq_poly, b::fmpz)
++(a::fmpz, b::fmpq_poly)
++(a::fmpq_poly, b::fmpq)
++(a::fmpq, b::fmpq_poly)
+\end{lstlisting}
+
+\desc{Return $a + b$.}
+
+\begin{lstlisting}
+-(a::fmpq_poly, b::Int)
+-(a::Int, b::fmpq_poly)
+-(a::fmpq_poly, b::fmpz)
+-(a::fmpz, b::fmpq_poly)
+-(a::fmpq_poly, b::fmpq)
+-(a::fmpq, b::fmpq_poly)
+\end{lstlisting}
+
+\desc{Return $a - b$.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc binary operators.
+
+\begin{lstlisting}
+   S, x = PolynomialRing(QQ, "x")
+
+   a = 7y^2 + 3y + 2
+
+   b = a + 7
+   c = fmpz(7) - a
+   d = fmpq(2, 3)*a
+\end{lstlisting}
+
+\subsubsection{Ad hoc comparisons}
+
+The following ad hoc binary comparisons are provided over and above the basic ones
+for performance reasons.
+
+\begin{lstlisting}
+==(a::fmpq_poly, b::fmpq)
+==(a::fmpq, b::fmpq_poly)
+\end{lstlisting}
+
+\desc{Return \code{true} if $a$ is equal to $b$, otherwise return \code{false}.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc comparisons.
+
+\begin{lstlisting}
+   S, x = PolynomialRing(QQ, "x")
+
+   a = 7y^2 + 3y + 2
+
+   a != fmpq(2, 3)
+   fmpq(2, 3) == S(fmpq(2, 3))
+\end{lstlisting}
+
+\subsubsection{Ad hoc exact division}
+
+\begin{lstlisting}
+divexact(a::fmpq_poly, b::Int)
+divexact(a::fmpq_poly, b::fmpz)
+\end{lstlisting}
+
+\desc{Return the quotient of $a$ by $b$. A \code{DivideError()} is raised if $b = 0$.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc exact division.
+
+\begin{lstlisting}
+   S, x = PolynomialRing(QQ, "x")
+
+   a = 7y^2 + 3y + 2
+
+   b = divexact(a, 7)
+   c = divexact(a, fmpz(11))
+\end{lstlisting}
+
+\subsection{Flint polynomials over $\F_{p^k}$ (multiprecision $p$): \code{fq_poly}}
+
+The Flint type for polynomials over $\F_{p^k}$ for multiprecision $p$ is \code{fq_poly}.
+Polynomials of this type are created using the \code{PolynomialRing} constructor with
+an \code{FqFiniteField} parent object as parameter. For example
+
+\begin{lstlisting}
+R, x = FiniteField(fmpz(23), 5, "x")
+S, y = PolynomialRing(R, "y")
+\end{lstlisting}
+
+Polynomials in this ring have parent of type \code{FqPolyRing}.
+
+We describe functions for \code{fq_poly} only where they differ from the functions
+available for generic polynomials.
+
+\subsubsection{Constructors}
+
+In the following constructors we assume that $S$ is an \code{FqPolyRing} parent 
+object, as created by the above construction for example.
+
+\begin{lstlisting}
+S(a::fmpz)
+\end{lstlisting}
+
+\desc{Construct the polynomial of degree $0$ with $a$ as its only coefficient (or
+the zero polynomial if $a = 0$).}
+
+\begin{lstlisting}
+S(a::Array{fmpz, 1})
+S{T <: Integer}(a::Array{T, 1})
+\end{lstlisting}
+
+\desc{Construct the polynomial whose coefficients are the integers in the given
+array (thought of as elements of the finite field).}
+
+\begin{lstlisting}
+S(a::fmpz_poly)
+\end{lstlisting}
+
+\desc{Coerce the given polynomial into the ring $S$, i.e. coerce its coefficients
+into the finite field and change the variable to that of $S$.}
+
+\textbf{Examples.}
+
+Here are some examples of constructors.
+
+\begin{lstlisting}
+   R, x = FiniteField(fmpz(23), 5, "x")
+   S, y = PolynomialRing(R, "y")
+
+   a = S(fmpz(12))
+   b = S([1, 2, 3])
+   c = S(3y^3 + 2y + 1)
+\end{lstlisting}
+
+\subsubsection{Ad hoc binary operators}
+
+The following ad hoc binary operators are provided over and above the basic ones
+for performance reasons.
+
+\begin{lstlisting}
+*(a::fq_poly, b::fq)
+*(a::fq, b::fq_poly)
+*(a::fq_poly, b::Integer)
+*(a::Integer, b::fq_poly)
+\end{lstlisting}
+
+\desc{Return $ab$.}
+
+\begin{lstlisting}
++(a::fq_poly, b::Int)
++(a::Int, b::fq_poly)
++(a::fq_poly, b::Integer)
++(a::Integer, b::fq_poly)
++(a::fq_poly, b::fmpz)
++(a::fmpz, b::fq_poly)
++(a::fq_poly, b::fq)
++(a::fq, b::fq_poly)
+\end{lstlisting}
+
+\desc{Return $a + b$.}
+
+\begin{lstlisting}
+-(a::fq_poly, b::Int)
+-(a::Int, b::fq_poly)
+-(a::fq_poly, b::Integer)
+-(a::Integer, b::fq_poly)
+-(a::fq_poly, b::fmpz)
+-(a::fmpz, b::fq_poly)
+-(a::fq_poly, b::fq)
+-(a::fq, b::fq_poly)
+\end{lstlisting}
+
+\desc{Return $a - b$.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc binary operators.
+
+\begin{lstlisting}
+   R, x = FiniteField(fmpz(23), 5, "x")
+   S, y = PolynomialRing(R, "y")
+
+   a = 7y^2 + 3y + 2
+
+   b = a + 7
+   c = fmpz(7) - a
+   d = (x + 1)*a
+\end{lstlisting}
+
+\subsubsection{Ad hoc comparisons}
+
+The following ad hoc binary comparisons are provided over and above the basic ones
+for performance reasons.
+
+\begin{lstlisting}
+==(a::fq_poly, b::fq)
+==(a::fq, b::fq_poly)
+==(a::fq_poly, b::fmpz)
+==(a::fmpz, b::fq_poly)
+\end{lstlisting}
+
+\desc{Return \code{true} if $a$ is equal to $b$, otherwise return \code{false}.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc comparisons.
+
+\begin{lstlisting}
+   R, x = FiniteField(fmpz(23), 5, "x")
+   S, y = PolynomialRing(R, "y")
+
+   a = 7y^2 + 3y + 2
+
+   a != x + 1
+   x + 1 == S(x + 1)
+   a != fmpz(11)
+\end{lstlisting}
+
+\subsubsection{Inflation and deflation}
+
+\begin{lstlisting}
+inflate(f::fq_poly, n::Int)
+\end{lstlisting}
+
+\desc{Given a polynomial $f(x)$, returns $f(x^n)$.}
+
+\begin{lstlisting}
+deflate(f::fq_poly, n::Int)
+\end{lstlisting}
+
+\desc{Given a polynomial $f(x^n)$, returns $f(x)$.}
+
+\textbf{Examples.}
+
+Here is an example of inflation and deflation.
+
+\begin{lstlisting}
+  R, x = FiniteField(fmpz(23), 5, "x")
+  S, y = PolynomialRing(R, "y")
+
+  a = 7y^2 + 3y + 2
+
+  g = inflate(f, 2)
+  h = deflate(g, 2)
+\end{lstlisting}
+
+\subsubsection{Factorisation}
+
+\begin{lstlisting}
+factor(x::fq_poly)
+\end{lstlisting}
+
+\desc{Return an array containing the factorisation of the given polynomial. The entries in
+the array are tuples $(p, e)$ consisting of irreducible polynomials $p$ and their exponent
+$e$ in the factorisation.}
+
+\begin{lstlisting}
+factor_distinct_deg(x::fq_poly)
+\end{lstlisting}
+
+\desc{Return an array containing the distinct degree factorisation of the given polynomial.
+The entries in the array are tuples $(p, e)$ consisting of polynomials $p$ which are the
+products of all the irreducible polynomials of the given degree $e$ in the factorisation.}
+
+\textbf{Examples.}
+
+Here are some examples of factoring.
+
+\begin{lstlisting}
+   R, x = FiniteField(fmpz(23), 5, "x")
+   S, y = PolynomialRing(R, "y")
+
+   f = 7y^2 + 3y + 2
+   g = 11y^3 - 2y^2 + 5
+
+   A = factor(f*g)
+   B = factor_distinct_deg((y + 1)*g*(y^5+y^3+y+1))
+\end{lstlisting}
+
+\subsection{Flint polynomials over $\F_{p^k}$ (small $p$): \code{fq_nmod_poly}}
+
+The Flint type for polynomials over $\F_{p^k}$ for $p$ that fits in an \code{Int} is
+\code{fq_poly}. Polynomials of this type are created using the \code{PolynomialRing}
+constructor with an \code{FqNmodFiniteField} parent object as parameter. For example
+
+\begin{lstlisting}
+R, x = FiniteField(23, 5, "x")
+S, y = PolynomialRing(R, "y")
+\end{lstlisting}
+
+Polynomials in this ring have parent of type \code{FqNmodPolyRing}.
+
+We describe functions for \code{fq_nmod_poly} only where they differ from the functions
+available for generic polynomials.
+
+\subsubsection{Constructors}
+
+In the following constructors we assume that $S$ is an \code{FqNmodPolyRing} parent 
+object, as created by the above construction for example.
+
+\begin{lstlisting}
+S(a::fmpz)
+\end{lstlisting}
+
+\desc{Construct the polynomial of degree $0$ with $a$ as its only coefficient (or
+the zero polynomial if $a = 0$).}
+
+\begin{lstlisting}
+S(a::Array{fmpz, 1})
+S{T <: Integer}(a::Array{T, 1})
+\end{lstlisting}
+
+\desc{Construct the polynomial whose coefficients are the integers in the given
+array (thought of as elements of the finite field).}
+
+\begin{lstlisting}
+S(a::fmpz_poly)
+\end{lstlisting}
+
+\desc{Coerce the given polynomial into the ring $S$, i.e. coerce its coefficients
+into the finite field and change the variable to that of $S$.}
+
+\textbf{Examples.}
+
+Here are some examples of constructors.
+
+\begin{lstlisting}
+   R, x = FiniteField(23, 5, "x")
+   S, y = PolynomialRing(R, "y")
+
+   a = S(fmpz(12))
+   b = S([1, 2, 3])
+   c = S(3y^3 + 2y + 1)
+\end{lstlisting}
+
+\subsubsection{Ad hoc binary operators}
+
+The following ad hoc binary operators are provided over and above the basic ones
+for performance reasons.
+
+\begin{lstlisting}
+*(a::fq_nmod_poly, b::fq_nmod)
+*(a::fq_nmod, b::fq_poly_nmod)
+*(a::fq_nmod_poly, b::Integer)
+*(a::Integer, b::fq_nmod_poly)
+\end{lstlisting}
+
+\desc{Return $ab$.}
+
+\begin{lstlisting}
++(a::fq_nmod_poly, b::Int)
++(a::Int, b::fq_nmod_poly)
++(a::fq_nmod_poly, b::Integer)
++(a::Integer, b::fq_nmod_poly)
++(a::fq_nmod_poly, b::fmpz)
++(a::fmpz, b::fq_nmod_poly)
++(a::fq_nmod_poly, b::fq_nmod)
++(a::fq_nmod, b::fq_nmod_poly)
+\end{lstlisting}
+
+\desc{Return $a + b$.}
+
+\begin{lstlisting}
+-(a::fq_nmod_poly, b::Int)
+-(a::Int, b::fq_nmod_poly)
+-(a::fq_nmod_poly, b::Integer)
+-(a::Integer, b::fq_nmod_poly)
+-(a::fq_nmod_poly, b::fmpz)
+-(a::fmpz, b::fq_nmod_poly)
+-(a::fq_nmod_poly, b::fq_nmod)
+-(a::fq_nmod, b::fq_nmod_poly)
+\end{lstlisting}
+
+\desc{Return $a - b$.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc binary operators.
+
+\begin{lstlisting}
+   R, x = FiniteField(23, 5, "x")
+   S, y = PolynomialRing(R, "y")
+
+   a = 7y^2 + 3y + 2
+
+   b = a + 7
+   c = fmpz(7) - a
+   d = (x + 1)*a
+\end{lstlisting}
+
+\subsubsection{Ad hoc comparisons}
+
+The following ad hoc binary comparisons are provided over and above the basic ones
+for performance reasons.
+
+\begin{lstlisting}
+==(a::fq_nmod_poly, b::fq_nmod)
+==(a::fq_nmod, b::fq_nmod_poly)
+==(a::fq_nmod_poly, b::fmpz)
+==(a::fmpz, b::fq_nmod_poly)
+\end{lstlisting}
+
+\desc{Return \code{true} if $a$ is equal to $b$, otherwise return \code{false}.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc comparisons.
+
+\begin{lstlisting}
+   R, x = FiniteField(23, 5, "x")
+   S, y = PolynomialRing(R, "y")
+
+   a = 7y^2 + 3y + 2
+
+   a != x + 1
+   x + 1 == S(x + 1)
+   a != fmpz(11)
+\end{lstlisting}
+
+\subsubsection{Inflation and deflation}
+
+\begin{lstlisting}
+inflate(f::fq_nmod_poly, n::Int)
+\end{lstlisting}
+
+\desc{Given a polynomial $f(x)$, returns $f(x^n)$.}
+
+\begin{lstlisting}
+deflate(f::fq_nmod_poly, n::Int)
+\end{lstlisting}
+
+\desc{Given a polynomial $f(x^n)$, returns $f(x)$.}
+
+\textbf{Examples.}
+
+Here is an example of inflation and deflation.
+
+\begin{lstlisting}
+  R, x = FiniteField(23, 5, "x")
+  S, y = PolynomialRing(R, "y")
+
+  a = 7y^2 + 3y + 2
+
+  g = inflate(f, 2)
+  h = deflate(g, 2)
+\end{lstlisting}
+
+\subsubsection{Factorisation}
+
+\begin{lstlisting}
+factor(x::fq_nmod_poly)
+\end{lstlisting}
+
+\desc{Return an array containing the factorisation of the given polynomial. The entries in
+the array are tuples $(p, e)$ consisting of irreducible polynomials $p$ and their exponent
+$e$ in the factorisation.}
+
+\begin{lstlisting}
+factor_distinct_deg(x::fq_nmod_poly)
+\end{lstlisting}
+
+\desc{Return an array containing the distinct degree factorisation of the given polynomial.
+The entries in the array are tuples $(p, e)$ consisting of polynomials $p$ which are the
+products of all the irreducible polynomials of the given degree $e$ in the factorisation.}
+
+\textbf{Examples.}
+
+Here are some examples of factoring.
+
+\begin{lstlisting}
+   R, x = FiniteField(23, 5, "x")
+   S, y = PolynomialRing(R, "y")
+
+   f = 7y^2 + 3y + 2
+   g = 11y^3 - 2y^2 + 5
+
+   A = factor(f*g)
+   B = factor_distinct_deg((y + 1)*g*(y^5+y^3+y+1))
+\end{lstlisting}
+
 \subsection{Flint power series over $\Z$: \code{fmpz_series}}
 
 Flint doesn't have a module for power series over $\Z$, but the \code{fmpz_poly}
@@ -5315,7 +6390,7 @@ The power series type in Nemo for polynomials treated as power series is
 \code{fmpz_series}. 
 
 Power series of this type are created using the \code{PowerSeriesRing} constructor.
-It takes a maximim (relative) precision and a variable name as a string.
+It takes a maximum (relative) precision and a variable name as a string.
 
 \begin{lstlisting}
 R, x = PowerSeriesRing(ZZ, 30, "x")
@@ -5336,7 +6411,7 @@ The power series type in Nemo for polynomials treated as power series is
 \code{fmpz_mod_series}. 
 
 Power series of this type are created using the \code{PowerSeriesRing} constructor.
-It takes a maximim (relative) precision and a variable name as a string.
+It takes a maximum (relative) precision and a variable name as a string.
 
 \begin{lstlisting}
 R = ResidueRing(ZZ, 123456789012345678949)
@@ -5373,27 +6448,1126 @@ Here are some examples of power series constructors.
    f = S([R(0), R(3), R(1)], 3, 5)
 \end{lstlisting}
 
-\subsection{The rationals}
+\subsection{Flint power series over $\Q$: \code{fmpq_series}}
 
-The field of rationals in Nemo is \code|Fraction{ZZ}|. For convenience this is
-type aliased with \code{QQ}. Thus for example, one may write
+Flint doesn't have a module for power series over $\Q$, but the \code{fmpq_poly}
+module contains code for power series operations. In Nemo, for the purposes of
+simplicity, we deal with Flint as though it has a module called \code{fmpq_series}.
+
+The power series type in Nemo for polynomials treated as power series is
+\code{fmpq_series}. 
+
+Power series of this type are created using the \code{PowerSeriesRing} constructor.
+It takes a maximum (relative) precision and a variable name as a string.
 
 \begin{lstlisting}
-a = QQ(2)
-
-R, x = PolynomialRing(QQ, "x")
-
-f = ZZ(3)/ZZ(2)*x + ZZ(1)/ZZ(2)
+R, x = PowerSeriesRing(QQ, 30, "x")
 \end{lstlisting}
 
-The \code{QQ} type supports all of the functionality of the previous section. In
-this section we describe additional functionality that is provided for \code{QQ}
-but not for general fraction fields.
+Power series in this ring have parent of type \code{FmpqSeriesRing}.
+
+We describe only the functions which are different to those described for generic
+power series.
+
+\subsubsection{Ad hoc binary operators}
+
+\begin{lstlisting}
+*(x::fmpq_series, y::fmpq)
+*(x::fmpq, y::fmpq_series)
+\end{lstlisting}
+
+\desc{Return $xy$.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc binary operators.
+
+\begin{lstlisting}
+   R, x = PowerSeriesRing(QQ, 30, "x")
+
+   a = 1 + x + 3x^2 + O(x^5)
+   
+   b = a*fmpq(2, 3)
+
+   c = fmpq(2, 3)*a
+\end{lstlisting}
+
+\subsubsection{Special functions}
+
+\begin{lstlisting}
+exp(x::fmpq_series)
+\end{lstlisting}
+
+\desc{Compute the exponential of the given power series. The constant term must be $0$.}
+
+\begin{lstlisting}
+log(x::fmpq_series)
+\end{lstlisting}
+
+\desc{Compute the logarithm of the given power series. The constant term must be $1$.}
+
+\begin{lstlisting}
+sin(x::fmpq_series)
+cos(x::fmpq_series)
+tan(x::fmpq_series)
+asin(x::fmpq_series)
+atan(x::fmpq_series)
+\end{lstlisting}
+
+\desc{Compute the respective trigonometric series by substituting the given power series.
+The constant term must be $0$.}
+
+\begin{lstlisting}
+sinh(x::fmpq_series)
+cosh(x::fmpq_series)
+tanh(x::fmpq_series)
+asinh(x::fmpq_series)
+atanh(x::fmpq_series)
+\end{lstlisting}
+
+\desc{Compute the respective hyperbolic trigonometric series by substituting the given power
+series. The constant term must be $0$.}
+
+\begin{lstlisting}
+sqrt(x::fmpq_series)
+\end{lstlisting}
+
+\desc{Compute the square root of the given power series. The constant term must be $1$.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc binary operators.
+
+\begin{lstlisting}
+   R, x = PowerSeriesRing(QQ, 30, "x")
+
+   a = 1 + x + 3x^2 + O(x^5)
+   b = x + 2x^2 + 5x^3 + O(x^5)
+
+   c = exp(b)
+   d = log(a)
+   f = sqrt(a)
+   g = sin(b)
+   h = atanh(b)   
+\end{lstlisting}
+
+\subsection{Flint power series over $\F_{p^k}$ (multiprecision $p$): \code{fq_series}}
+
+Flint doesn't have a module for power series over $\F_{p^k}$, but the \code{fq_poly}
+module contains code for power series operations. In Nemo, for the purposes of
+simplicity, we deal with Flint as though it has a module called \code{fq_series}.
+
+The power series type in Nemo for polynomials treated as power series is
+\code{fq_series}. 
+
+Power series of this type are created using the \code{PowerSeriesRing} constructor when
+it is passed an \code{FqFiniteField} parent object as argument. The function also takes a
+maximum (relative) precision and a variable name as a string.
+
+\begin{lstlisting}
+R, t = FiniteField(fmpz(23), 5, "t")
+S, x = PowerSeriesRing(R, 30, "x")
+\end{lstlisting}
+
+Power series in this ring have parent of type \code{FqSeriesRing}.
+
+We describe only the functions which are different to those described for generic
+power series.
+
+\subsubsection{Constructors}
+
+In the constructor below we assume $S$ is an \code{FqSeriesRing} parent object, as
+constructed above for example. We assume the maximum precision of the power series
+for this object to be $k$.
+
+\begin{lstlisting}
+S(a::fmpz)
+\end{lstlisting}
+
+\desc{Construct the power series $a + O(x^k)$.}
+
+\textbf{Examples.}
+
+Here is an example of a constructor.
+
+\begin{lstlisting}
+   R, t = FiniteField(fmpz(23), 5, "t")
+   S, x = PowerSeriesRing(R, 30, "x")
+
+   a = S(fmpz(12))
+\end{lstlisting}
+
+\subsubsection{Ad hoc binary operators}
+
+\begin{lstlisting}
+*(x::fq_series, y::fq)
+*(x::fq, y::fq_series)
+\end{lstlisting}
+
+\desc{Return $xy$.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc binary operators.
+
+\begin{lstlisting}
+   R, t = FiniteField(fmpz(23), 5, "t")
+   S, x = PowerSeriesRing(R, 30, "x")
+
+   a = 1 + x + 3x^2 + O(x^5)
+   
+   b = a*(t^2 + 1)
+
+   c = 2t*a
+\end{lstlisting}
+
+\subsubsection{Ad hoc exact division}
+
+\begin{lstlisting}
+divexact(x::fq_series, y::fq)
+\end{lstlisting}
+
+\desc{Return $x/y$. If $y = 0$ this raises a \code{DivideError()}.}
+
+\textbf{Examples.}
+
+Here is an example of ad hoc exact division.
+
+\begin{lstlisting}
+   R, t = FiniteField(fmpz(23), 5, "t")
+   S, x = PowerSeriesRing(R, 30, "x")
+
+   a = 1 + x + 3x^2 + O(x^5)
+   
+   b = divexact(a, t^2 + 1)
+\end{lstlisting}
+
+\subsection{Flint power series over $\F_{p^k}$ (small $p$): \code{fq_nmod_series}}
+
+Flint doesn't have a module for power series over $\F_{p^k}$ for small $p$, but the
+\code{fq_nmod_poly} module contains code for power series operations. In Nemo, for the
+purposes of simplicity, we deal with Flint as though it has a module called
+\code{fq_nmod_series}.
+
+The power series type in Nemo for polynomials treated as power series is
+\code{fq_nmod_series}. 
+
+Power series of this type are created using the \code{PowerSeriesRing} constructor when
+it is passed an \code{FqNmodFiniteField} parent object as argument. The function also
+takes a maximum (relative) precision and a variable name as a string.
+
+\begin{lstlisting}
+R, t = FiniteField(23, 5, "t")
+S, x = PowerSeriesRing(R, 30, "x")
+\end{lstlisting}
+
+Power series in this ring have parent of type \code{FqNmodSeriesRing}.
+
+We describe only the functions which are different to those described for generic
+power series.
+
+\subsubsection{Constructors}
+
+In the constructor below we assume $S$ is an \code{FqNmodSeriesRing} parent object, as
+constructed above for example. We assume the maximum precision of the power series
+for this object to be $k$.
+
+\begin{lstlisting}
+S(a::fmpz)
+\end{lstlisting}
+
+\desc{Construct the power series $a + O(x^k)$.}
+
+\textbf{Examples.}
+
+Here is an example of a constructor.
+
+\begin{lstlisting}
+   R, t = FiniteField(23, 5, "t")
+   S, x = PowerSeriesRing(R, 30, "x")
+
+   a = S(fmpz(12))
+\end{lstlisting}
+
+\subsubsection{Ad hoc binary operators}
+
+\begin{lstlisting}
+*(x::fq_nmod_series, y::fq_nmod)
+*(x::fq_nmod, y::fq_nmod_series)
+\end{lstlisting}
+
+\desc{Return $xy$.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc binary operators.
+
+\begin{lstlisting}
+   R, t = FiniteField(23, 5, "t")
+   S, x = PowerSeriesRing(R, 30, "x")
+
+   a = 1 + x + 3x^2 + O(x^5)
+   
+   b = a*(t^2 + 1)
+
+   c = 2t*a
+\end{lstlisting}
+
+\subsubsection{Ad hoc exact division}
+
+\begin{lstlisting}
+divexact(x::fq_nmod_series, y::fq_nmod)
+\end{lstlisting}
+
+\desc{Return $x/y$. If $y = 0$ this raises a \code{DivideError()}.}
+
+\textbf{Examples.}
+
+Here is an example of ad hoc exact division.
+
+\begin{lstlisting}
+   R, t = FiniteField(23, 5, "t")
+   S, x = PowerSeriesRing(R, 30, "x")
+
+   a = 1 + x + 3x^2 + O(x^5)
+   
+   b = divexact(a, t^2 + 1)
+\end{lstlisting}
+
+\subsection{Flint matrices over $\Z/n\Z$ (small $n$): \code{nmod_mat}}
+
+The Flint type for matrices over $\Z/n\Z$ for small $n$ is \code{nmod_mat}. Matrices
+of this type are created using the \code{MatrixSpace} constructor in Nemo. They are
+automatically created if the modulus $n$ fits into a \code{UInt}.
+
+\begin{lstlisting}
+R = ResidueRing(ZZ, 7)
+S = MatrixSpace(R, 3, 3)
+\end{lstlisting}
+
+Matrices in this matrix space have parent of type \code{NmodMatSpace}.
+
+We describe functions for \code{nmod_mat} only where they differ from the functions
+available for generic matrices.
+
+\subsubsection{Constructors}
+
+In the constructors below $S$ is assumed to be an \code{NmodMatSpace} as constructed above.
+We assume that $r$ is the number of rows and $c$ the number of columns for matrices in this
+space, e.g. $r = 3$ and $c = 3$ in the example above.
+
+\begin{lstlisting}
+S(a::Array{BigInt, 2})
+\end{lstlisting}
+
+\desc{Construct the $r\times c$ matrix with entries given by the Julia array $a$, viewed
+as elements of the base ring.}
+
+\begin{lstlisting}
+S(arr::Array{Int, 1})
+S(arr::Array{BigInt, 1})
+S(arr::Array{fmpz, 1})
+S(arr::Array{Residue{fmpz}, 1})
+\end{lstlisting}
+
+\desc{Given a one dimensional Julia array of length $rc$, construct the matrix with $r$
+rows and $c$ columns with the array entries as matrix entries. The entries are specified
+one row after the other.}
+
+\textbf{Examples.}
+
+Here are some examples of constructors.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+
+   a = S([BigInt(4) 5 6; 7 3 2; 1 4 5])
+   b = S([4, 5, 6, 7, 3, 2, 1, 4, 5])
+   c = S([R(4), R(5), R(6), R(7), R(3), R(2), R(1), R(4), R(5)])
+\end{lstlisting}
+
+\subsubsection{Ad hoc binary operators}
+
+\begin{lstlisting}
+*(a::nmod_mat, b::UInt)
+\end{lstlisting}
+
+\desc{Return $ab$, i.e. the matrix whose entries are those of $a$ multiplied by $b$.}
+
+\begin{lstlisting}
+*(a::UInt, b::nmod_mat)
+\end{lstlisting}
+
+\desc{Return $ab$, i.e. the matrix whose entries are $a$ multiplied by the entries
+of $b$.}
+
+\textbf{Examples.}
+
+Here is an example of ad hoc binary operators.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+
+   b = UInt(5)*a
+\end{lstlisting}
+
+\subsubsection{Row echelon form}
+
+\begin{lstlisting}
+rref(a::nmod_mat)
+\end{lstlisting}
+
+\desc{Return the row echelon form of $a$.}
+
+\begin{lstlisting}
+rref!(a::nmod_mat)
+\end{lstlisting}
+
+\desc{Compute the row echelon form of $a$ in-place. It is the users responsibility
+to ensure this matrix is not aliased elsewhere.}
+
+\textbf{Examples.}
+
+Here is an example of row echelon form.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+
+   b = rref(a)
+\end{lstlisting}
+
+\subsubsection{Determinant}
+
+\begin{lstlisting}
+determinant(a::nmod_mat)
+\end{lstlisting}
+
+\desc{Return the determinant of $a$ as an \code|Residue{fmpz}|.}
+
+\textbf{Examples.}
+
+Here is an example of determinant.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+
+   b = determinant(a)
+\end{lstlisting}
+
+\subsubsection{Rank}
+
+\begin{lstlisting}
+rank(a::nmod_mat)
+\end{lstlisting}
+
+\desc{Return the rank of $a$.}
+
+\textbf{Examples.}
+
+Here is an example of computing the rank.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+
+   b = rank(a)
+\end{lstlisting}
+
+\subsubsection{Inversion}
+
+\begin{lstlisting}
+inv(a::nmod_mat)
+\end{lstlisting}
+
+\desc{Return the matrix inverse of $a$. Note the matrix must be must be square and
+invertible, otherwise an exception is thrown.}
+
+\textbf{Examples.}
+
+Here is an example of inversion.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+
+   a = S([BigInt(4) 5 6; 7 3 2; 1 4 5])
+
+   b = inv(a)
+\end{lstlisting}
+
+\subsubsection{Linear solving}
+
+\begin{lstlisting}
+solve(a::nmod_mat, b::nmod_mat)
+\end{lstlisting}
+
+\desc{Return the column vector $x$ such that $ax = b$ where $x$ and $b$ are column
+vectors with the same number of rows as the $a$. Note that $a$ must be a square
+matrix. If these conditions are not met, an exception is raised.}
+
+\textbf{Examples.}
+
+Here is an example of linear solving.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+   T = MatrixSpace(R, 3, 1)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+   b = T([5, 3, 2])
+
+   x = solve(a, b)
+\end{lstlisting}
+
+\subsubsection{LU decomposition}
+
+\begin{lstlisting}
+lufact(a::nmod_mat)
+\end{lstlisting}
+
+\desc{Compute a tuple of matrices $(l, u, p)$ such that $pa = lu$ where $l$ is a
+lower triangular matrix, $u$ is upper triangular and $p$ is a permutation matrix.}
+
+\textbf{Examples.}
+
+Here is an example of LU decomposition.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+   T = MatrixSpace(R, 3, 1)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+  
+   l, u, p = lufact(a)
+\end{lstlisting}
+
+\subsubsection{Matrix concatenation}
+
+\begin{lstlisting}
+hcat(a::nmod_mat, b::nmod_mat)
+\end{lstlisting}
+
+\desc{Return the matrix that is the horizontal concatenation of $a$ and $b$.
+Both $a$ and $b$ must have the same number of rows, else an exception is raised.}
+
+\begin{lstlisting}
+vcat(a::nmod_mat, b::nmod_mat)
+\end{lstlisting}
+
+\desc{Return the matrix that is the vertical concatenation of $a$ and $b$.
+Both $a$ and $b$ must have the same number of columns, else an exception is raised.}
+
+\textbf{Examples.}
+
+Here are some examples of concatenation.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+   T = MatrixSpace(R, 3, 1)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+   b = S([9 5 3; 2 7 1; 0 6 9])
+  
+   c = hcat(a, b)
+   d = vcat(a, b)
+\end{lstlisting}
+
+\subsubsection{Conversions}
+
+\begin{lstlisting}
+Array(a::nmod_mat)
+\end{lstlisting}
+
+\desc{Return a two dimensional Julia array with entries that are of type
+\code|Residue{fmpz}| containing the entries of the matrix $a$.} 
+
+\textbf{Examples.}
+
+Here is an example of conversion.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+   T = MatrixSpace(R, 3, 1)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+  
+   A = Array(a)
+\end{lstlisting}
+
+\subsubsection{Lifting}
+
+\begin{lstlisting}
+lift(a::nmod_mat)
+\end{lstlisting}
+
+\desc{Return a lift of the matrix $a$ to a matrix over $\Z$, i.e. where the
+entries of the returned matrix are those of $a$ lifted to $\Z$.}
+
+\textbf{Examples.}
+
+Here is an example of lifting.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 3, 3)
+   T = MatrixSpace(R, 3, 1)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+  
+   b = lift(a)
+\end{lstlisting}
+
+\subsection{Flint matrices over $\Z$: \code{fmpz_mat}}
+
+The Flint type for matrices over $\Z$ is \code{fmpz_mat}. Matrices
+of this type are created using the \code{MatrixSpace} constructor in Nemo. 
+
+\begin{lstlisting}
+S = MatrixSpace(ZZ, 3, 3)
+\end{lstlisting}
+
+Matrices in this matrix space have parent of type \code{FmpzMatSpace}.
+
+We describe functions for \code{fmpz_mat} only where they differ from the functions
+available for generic matrices.
+
+\subsubsection{Row echelon form}
+
+\begin{lstlisting}
+rref(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return a tuple $(R, d)$ where $R/d$ is the row echelon form of $a$ over $\Q$.
+Here $R$ is a matrix over $\Z$ and $d$ is an \code{fmpz} denominator.}
+
+\textbf{Examples.}
+
+Here is an example of row echelon form.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 4 1 1])
+   
+   rref(A)
+\end{lstlisting}
+
+\subsubsection{Determinant}
+
+\begin{lstlisting}
+determinant(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return the determinant of $a$.}
+
+\textbf{Examples.}
+
+Here is an example of determinant.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+
+   b = determinant(a)
+\end{lstlisting}
+
+\subsubsection{Rank}
+
+\begin{lstlisting}
+rank(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return the rank of $a$.}
+
+\textbf{Examples.}
+
+Here is an example of computing the rank.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   a = S([4 5 6; 7 3 2; 1 4 5])
+
+   b = rank(a)
+\end{lstlisting}
+
+\subsubsection{Inversion}
+
+\begin{lstlisting}
+inv(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return the matrix inverse of $a$. Note the matrix must be must be square and
+invertible, otherwise an exception is thrown.}
+
+\textbf{Examples.}
+
+Here is an example of inversion.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
+  
+   B = inv(A)
+\end{lstlisting}
+
+\subsubsection{Linear solving}
+
+\begin{lstlisting}
+solve(a::fmpz_mat, b::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return a tuple $(x, d)$ consisting of the column vector $x$ such that $ax/d = b$
+where $x$ and $b$ are column vectors with the same number of rows as the $a$ and $d$ is
+a denominator. Note that $a$ must be a square matrix. If these conditions are not met,
+an exception is raised.}
+
+\begin{lstlisting}
+solve_dixon(a::fmpz_mat, b::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return a tuple $(x, m)$ consisting of the column vector $x$ such that
+$ax = b \pmod{m}$ where $x$ and $b$ are column vectors with the same number of rows as
+the $a$. Note that $a$ must be a square matrix. If these conditions are not met, an
+exception is raised.}
+
+\textbf{Examples.}
+
+Here is an example of linear solving.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+   T = MatrixSpace(ZZ, 3, 1)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])   
+   B = T([fmpz(4), 5, 7])
+
+   X, d = solve(A, B)
+   X, m = solve_dixon(A, B)
+\end{lstlisting}
+
+\subsubsection{Matrix concatenation}
+
+\begin{lstlisting}
+hcat(a::fmpz_mat, b::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return the matrix that is the horizontal concatenation of $a$ and $b$.
+Both $a$ and $b$ must have the same number of rows, else an exception is raised.}
+
+\begin{lstlisting}
+vcat(a::fmpz_mat, b::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return the matrix that is the vertical concatenation of $a$ and $b$.
+Both $a$ and $b$ must have the same number of columns, else an exception is raised.}
+
+\textbf{Examples.}
+
+Here are some examples of concatenation.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+   T = MatrixSpace(ZZ, 3, 6)
+   U = MatrixSpace(ZZ, 6, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
+   B = S([fmpz(1) 4 7; 9 6 7; 4 3 3])
+
+   C = hcat(A, B)
+   D = vcat(A, B)
+\end{lstlisting}
+
+\subsubsection{Transpose}
+
+\begin{lstlisting}
+transpose(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return the transpose of the matrix $a$.}
+
+\textbf{Examples.}
+
+Here is an example of transposing a matrix.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
+ 
+   B = transpose(A)
+\end{lstlisting}
+
+\subsubsection{scaling}
+
+\begin{lstlisting}
+<<(a::fmpz_mat, n::Int)
+\end{lstlisting}
+
+\desc{Return the matrix whose entries are those of $a$ multiplied by $2^n$.}
+
+\begin{lstlisting}
+>>(a::fmpz_mat, n::Int)
+\end{lstlisting}
+
+\desc{Return the matrix whose entries are those of $a$ divided by $2^n$, where
+any remainders are discarded. Rounding is towards zero.}
+
+\textbf{Examples.}
+
+Here are some examples of scaling.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
+ 
+   B = A<<5
+   C = B>>2
+\end{lstlisting}
+
+\subsubsection{Exact division}
+
+\begin{lstlisting}
+divexact(a::fmpz_mat, b::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return $a$ times the inverse of $b$. The matrix $b$ must be square and
+invertible, otherwise an exception is raised.}
+
+\textbf{Examples.}
+
+Here is an example of exact division.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
+   B = S([2 3 4; 7 9 1; 5 4 5])
+ 
+   divexact(B, A)
+\end{lstlisting}
+
+\subsubsection{Modular reduction}
+
+\begin{lstlisting}
+reduce_mod(a::fmpz_mat, m::Int)
+reduce_mod(a::fmpz_mat, m::fmpz)
+\end{lstlisting}
+
+\desc{Return the matrix whose entries are those of $a$ reduced modulo $m$.}
+
+\textbf{Examples.}
+
+Here is an example of modular reduction.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
+   
+   reduce_mod(A, 5)
+   reduce_mod(A, 2)
+\end{lstlisting}
+
+\subsubsection{Hadamard matrix}
+
+\begin{lstlisting}
+hadamard(S::FmpzMatSpace)
+\end{lstlisting}
+
+\desc{Return the Hadamard matrix for the given matrix space. The number of rows must
+equal the number of columns. It is not always possible to create a Hadamard matrix.
+If the algorithm fails, an exception is raised.}
+
+\begin{lstlisting}
+is_hadamard(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return true if the matrix $a$ is a Hadamard matrix. The matrix must be square
+or an exception is raised.}
+
+\textbf{Examples.}
+
+Here is an example of computing the Hadamard matrix.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = hadamard(S)
+   is_hadamard(A) == true
+\end{lstlisting}
+
+\subsubsection{Nullspace}
+
+\begin{lstlisting}
+nullspace(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return a tuple $(N, n)$ consisting of the nullity $n$ and a matrix $N$ with
+$c$ rows and $c$ columns, where $c$ is the number of columns of $a$, such that 
+the first $n$ columns of $N$ are a basis for the nullspace of $a$.}
+
+\textbf{Examples.}
+
+Here is an example of computing the nullspace.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 4 1 1])
+   
+   N, r = nullspace(A)
+\end{lstlisting}
+
+\subsubsection{Hermite normal form}
+
+\begin{lstlisting}
+hnf(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Compute the Hermite normal form of $a$.}
+
+\begin{lstlisting}
+hnf_with_transform(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Compute a tuple $(H, T)$ where $H$ is the Hermite normal form of $a$
+and $T$ is a transformation matrix so that $H = TA$.}
+
+\begin{lstlisting}
+hnf_modular(a::fmpz_mat, m::fmpz)
+\end{lstlisting}
+
+\desc{Compute the Hermite normal form of $a$ given that $m$ is a multiple of
+the determinant of the nonzero rows of $a$.}
+
+\begin{lstlisting}
+is_hnf(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return \code{true} if the matrix $a$ is in Hermite normal form, otherwise
+return false.}
+
+\textbf{Examples.}
+
+Here are some examples of computing the Hermite normal form.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 19 3 7])
+   
+   B = hnf(A)
+   H, T = hnf_with_transform(A)
+   M = hnf_modular(A, fmpz(27))
+   is_hnf(M) == true
+\end{lstlisting}
+
+\subsubsection{LLL reduction}
+
+\begin{lstlisting}
+lll(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Compute the LLL reduction of $a$.}
+
+\begin{lstlisting}
+lll_with_transform(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Compute a tuple $(L, T)$ where $L$ is the LLL reduction of $a$
+and $T$ is a transformation matrix so that $L = TA$.}
+
+\begin{lstlisting}
+lll_gram(g::fmpz_mat)
+\end{lstlisting}
+
+\desc{Given the Gram matrix $g$ of a matrix $a$, compute the Gram matrix of
+the LLL reduction of $a$.}
+
+\begin{lstlisting}
+lll_gram_with_transform(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Given the Gram matrix $g$ of a matrix $a$, compute a tuple $(L, T)$ where
+$G$ is the gram matrix $L$ of the LLL reduction of $a$ and $T$ is a transformation
+matrix so that $L = TA$.}
+
+\begin{lstlisting}
+lll_with_removal(a::fmpz_mat, b::fmpz)
+\end{lstlisting}
+
+\desc{Compute the LLL reduction of $a$ and throw away rows whose norm exceeds
+the given bound $b$. Return a tuple $(r, L)$ where the first $r$ rows of $L$
+are the rows remaining after removal.}
+
+\begin{lstlisting}
+lll_with_removal_transform(a::fmpz_mat, b::fmpz)
+\end{lstlisting}
+
+\desc{Compute a tuple $(r, L, T)$ where the first $r$ rows of $L$ are those
+remaining from the LLL reduction after removal of vectors with norm exceeding
+the bound $b$ and $T$ is a transformation matrix so that $L = TA$.}
+
+\textbf{Examples.}
+
+Here are some examples of computing the LLL reduction.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 19 3 7])
+   
+   L = lll(A)
+   L, T = lll_with_transform(A)
+
+   G == lll_gram(gram(A))
+   G, T = lll_gram_with_transform(gram(A))
+
+   r, L = lll_with_removal(A, fmpz(100))
+   r, L, T = lll_with_removal_transform(A, fmpz(100))
+\end{lstlisting}
+
+\subsubsection{Smith normal form}
+
+\begin{lstlisting}
+snf(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Compute the Smith normal form of $a$.}
+
+\begin{lstlisting}
+is_snf(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return \code{true} if $a$ is in Smith normal form, otherwise return
+\code{false}.}
+
+\begin{lstlisting}
+snf_diagonal(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Given a diagonal matrix $a$ compute the Smith normal form of $a$.}
+
+\textbf{Examples.}
+
+Here are some examples of computing the Smith normal form.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 19 3 7])
+   
+   B = snf(A)
+   is_snf(B) == true
+
+   B = S([fmpz(2) 0 0; 0 4 0; 0 0 7])
+
+   C = snf_diagonal(B)
+\end{lstlisting}
+
+\section{Flint fields}
+
+Flint provides implementations of various explicit fields. We describe their
+Nemo wrappers here.
+
+\subsection{Flint rationals ($\Q$): \code|fmpq|}
+
+Flint provides the module \code{fmpq} for rational numbers. The type of Flint rationals
+in Nemo is also given the name \code{fmpq}.
+
+The parent object for Flint rationals is of type \code{FlintRationalField}, which
+belongs to the \code{Field} type class. Rational number objects have type \code{fmpq}
+which belongs to the \code{FractionElem} type class, which in turn belongs to 
+\code{FieldElem}.
+
+The parent object for the rationals can be constructed using the \code{FractionField}
+function. For example:
+
+\begin{lstlisting}
+R = FractionField(ZZ)
+\end{lstlisting}
+
+By default, Nemo makes \code{QQ = FractionField(ZZ)}, though the user can change this
+assignment.
+
+The \code{fmpq} type supports all of the functionality of the generic fraction field
+section. In this section we describe additional functionality that is provided for
+Flint rationals but not for general fraction fields.
+
+\subsubsection{Constructors}
+
+In the constructors below we assume $R$ is a Flint rational field parent object.
+
+\begin{lstlisting}
+R(a::Rational{BigInt})
+\end{lstlisting}
+
+\desc{Construct an \code{fmpq} from a Julia big rational $a$.}
+
+One can also construct Flint rationals directly using the \code{fmpq} constructors.
+
+\textbf{Examples.}
+
+Here is an example of some constructors.
+
+\begin{lstlisting}
+R = FractionField(ZZ)
+
+a = R(BigInt(1)//2)
+b = fmpq(BigInt(1)//2)
+\end{lstlisting}
+
+\subsubsection{Conversions}
+
+We provide the means to convert Flint \code{fmpz} and \code{fmpq} values to Julia
+rationals.
+
+\begin{lstlisting}
+Rational(a::fmpq)
+Rational(a::fmpz)
+\end{lstlisting}
+
+\desc{Return $a$ as a Julia big rational.}
+
+\textbf{Examples.}
+
+Here is an example of some conversions.
+
+\begin{lstlisting}
+a = Rational(fmpz(12))
+b = Rational(fmpq(3, 7))
+\end{lstlisting}
 
 \subsubsection{Basic manipulation}
 
 \begin{lstlisting}
-height(a::Fraction{ZZ})
+abs(a::fmpq)
+\end{lstlisting}
+
+\desc{Return the absolute value of the rational number $a$.}
+
+\begin{lstlisting}
+height(a::fmpq)
 \end{lstlisting}
 
 \desc{Return the height of the fraction $a$, namely the largest of the absolute
@@ -5401,7 +7575,7 @@ values of the numerator and denominator. The type of the return value is a
 \code{ZZ}.}
 
 \begin{lstlisting}
-height_bits(a::Fraction{ZZ})
+height_bits(a::fmpq)
 \end{lstlisting}
 
 \desc{Return the number of bits of the height of the fraction $a$. The type of
@@ -5412,40 +7586,33 @@ the return value is an \code{Int}.}
 Here are some examples of basic manipulation.
 
 \begin{lstlisting}
-a = -ZZ(2)/ZZ(3)
-b = ZZ(123)/ZZ(234)
+a = -fmpz(2)//3
+b = fmpz(123)//234
 
-c = height(a)
-d = height_bits(b)
+c = abs(a)
+d = height(a)
+e = height_bits(b)
 \end{lstlisting}
 
 \subsubsection{Comparison}
 
 \begin{lstlisting}
-cmp(a::Fraction{ZZ}, b::Fraction{ZZ}) 
-\end{lstlisting}
-
-\desc{Return \code{-1} if $a < b$, \code{0} if $a = b$ and $1$ if $a > b$.}
-
-\begin{lstlisting}
-<(a::Fraction{ZZ}, b::Fraction{ZZ}) 
+isless(a::fmpq, b::fmpq) 
 \end{lstlisting}
 
 \desc{Return \code{true} if $a < b$, otherwise return \code{false}. Julia
-automatically provides corresponding functions \code{>}, \code{<=} and
-\code{>=}.}
+supplies operators $<$, $>$, $\leq$ and $\geq$ from this automatically.}
 
 \textbf{Examples.}
 
 Here are some examples of comparison.
 
 \begin{lstlisting}
-a = -ZZ(2)/ZZ(3)
-b = ZZ(1)/ZZ(2)
+a = -fmpz(2)//3
+b = fmpz(1)//2
 
 a < b
 b >= a
-c = cmp(a, b)
 \end{lstlisting}
 
 \subsubsection{Ad hoc comparison}
@@ -5453,10 +7620,18 @@ c = cmp(a, b)
 The following ad hoc comparison operators are provided for convenience.
 
 \begin{lstlisting}
-<(a::Fraction{ZZ}, b::ZZ)
-<(a::Fraction{ZZ}, b::Int)
-<(a::ZZ, b::Fraction{ZZ})
-<(a::Int, b::Fraction{ZZ})
+==(a::fmpq, b::Int)
+==(a::Int, b::fmpq)
+\end{lstlisting}
+
+\desc{Return \code{true} if $a$ is equal to $b$, otherwise return \code{false}. Julia
+automatically provides \code{!=} from this.}
+
+\begin{lstlisting}
+isless(a::fmpq, b::fmpz)
+isless(a::fmpq, b::Integer)
+isless(a::fmpz, b::fmpq)
+isless(a::Integer, b::fmpq)
 \end{lstlisting}
 
 \desc{Return \code{true} if $a < b$, otherwise return \code{false}. Julia
@@ -5468,35 +7643,35 @@ automatically provides corresponding functions \code{>}, \code{<=} and
 Here are some examples of ad hoc comparison.
 
 \begin{lstlisting}
-a = -ZZ(2)/ZZ(3)
-b = ZZ(1)/ZZ(2)
+a = -fmpz(2)//3
+b = fmpz(1)//2
 
 a < 1
 a <= 0
-b >= ZZ(0)
+b >= fmpz(0)
 \end{lstlisting}
 
-\subsubsection{Ad hoc binary operators}
+\subsubsection{Shifting}
 
 \begin{lstlisting}
->>(a::Fraction{ZZ}, b::Int)
-\end{lstlisting}
-
-\desc{Return $a/2^b$.}
-
-\begin{lstlisting}
-<<(a::Fraction{ZZ}, b::Int)
+<<(a::fmpq, b::Int)
 \end{lstlisting}
 
 \desc{Return $a\times 2^b$.}
+
+\begin{lstlisting}
+>>(a::fmpq, b::Int)
+\end{lstlisting}
+
+\desc{Return $a/2^b$.}
 
 \textbf{Examples.}
 
 Here are some examples of ad hoc binary operators.
 
 \begin{lstlisting}
-a = -ZZ(2)/ZZ(3)
-b = ZZ(1)/ZZ(2)
+a = -fmpz(2)//3
+b = fmpq(1, 2)
 
 c = a << 3
 d = b >> 5
@@ -5505,32 +7680,43 @@ d = b >> 5
 \subsubsection{Modular arithmetic}
 
 \begin{lstlisting}
-mod(a::Fraction{ZZ}, m::Int)
-mod(a::Fraction{ZZ}, m::ZZ)
+mod(a::fmpq, m::Integer)
+mod(a::fmpq, m::fmpz)
 \end{lstlisting}
 
 \desc{If $a = p/q$ this function returns $pq^{-1} \pmod{m}$. This is only
-defined if $q$ is invertible modulo $m$. The result is returned as a \code{ZZ}.}
+defined if $q$ is invertible modulo $m$. The result is returned as an \code{fmpz}.}
 
 \textbf{Examples.}
 
 Here are some examples of modular arithmetic.
 
 \begin{lstlisting}
-a = -ZZ(2)/ZZ(3)
-b = ZZ(1)/ZZ(2)
+a = -fmpz(2)//3
+b = fmpz(1)//2
 
 c = mod(a, 7)
-d = mod(b, ZZ(5))
+d = mod(b, fmpz(5))
 \end{lstlisting}
+
+\subsubsection{GCD}
+
+Nemo defines the greatest common divisor of two rationals as the greatest rational $r$
+such that both the rationals are integer multiples of $r$.
+
+\begin{lstlisting}
+gcd(a::fmpq, b::fmpq)
+\end{lstlisting}
+
+\desc{Return the greatest common divisor of $a$ and $b$.}
 
 \subsubsection{Rational reconstruction}
 
 \begin{lstlisting}
-reconstruct(a::ZZ, m::ZZ)
-reconstruct(a::ZZ, m::Int)
-reconstruct(a::Int, m::ZZ)
-reconstruct(a::Int, m::Int)
+reconstruct(a::fmpz, m::fmpz)
+reconstruct(a::fmpz, m::Integer)
+reconstruct(a::Integer, m::fmpz)
+reconstruct(a::Integer, m::Integer)
 \end{lstlisting}
 
 \desc{Attempt to find a rational number $n/d$ such that 
@@ -5544,14 +7730,14 @@ Here are some examples of rational reconstruction.
 
 \begin{lstlisting}
 a = reconstruct(7, 13)
-b = reconstruct(ZZ(15), 31)
-c = reconstruct(ZZ(123), ZZ(237))
+b = reconstruct(fmpz(15), 31)
+c = reconstruct(fmpz(123), fmpz(237))
 \end{lstlisting}
 
 \subsubsection{Rational enumeration}
 
 \begin{lstlisting}
-next_minimal(x::Fraction{ZZ})
+next_minimal(x::fmpq)
 \end{lstlisting}
 
 \desc{Given $x$, returns the next rational number in the sequence obtained by
@@ -5570,7 +7756,7 @@ Calkin-Wilf enumeration.
 If $x < 0$ we throw a \code{DomainError()}.}
 
 \begin{lstlisting}
-next_signed_minimal(x::Fraction{ZZ})
+next_signed_minimal(x::fmpq)
 \end{lstlisting}
 
 \desc{Given a signed rational number $x$ assumed to be in canonical form, 
@@ -5583,7 +7769,7 @@ Starting with zero, this generates every rational number once and only once,
 in order of minimal height.}
 
 \begin{lstlisting}
-next_calkin_wilf(x::Fraction{ZZ})
+next_calkin_wilf(x::fmpq)
 \end{lstlisting}
 
 \desc{Given $x$ return the next number in the breadth-first traversal of the
@@ -5598,7 +7784,7 @@ will appear late in the sequence. This order has the advantage of being faster
 to produce than the minimal-height order.}
 
 \begin{lstlisting}
-next_signed_calkin_wilf(x::Fraction{ZZ})
+next_signed_calkin_wilf(x::fmpq)
 \end{lstlisting}
 
 \desc{Given a signed rational number $x$ returns the next element in the
@@ -5614,10 +7800,10 @@ but not in order of minimal height.}
 Here are some examples of rational enumeration.
 
 \begin{lstlisting}
-next_minimal(ZZ(2)/ZZ(3))
-next_signed_minimal(-ZZ(21)/ZZ(31))
-next_calkin_wilf(ZZ(321)/ZZ(113))
-next_signed_calkin_wilf(-ZZ(51)/ZZ(17))
+next_minimal(fmpz(2)//3)
+next_signed_minimal(-fmpz(21)//31)
+next_calkin_wilf(fmpz(321)//113)
+next_signed_calkin_wilf(-fmpz(51)//(17))
 \end{lstlisting}
 
 \subsubsection{Special functions}
@@ -5631,10 +7817,10 @@ Table lookup is used for $H_n$ whose numerator and denominator
 fit in a single limb. For larger $n$, a divide and conquer strategy is used.}
 
 \begin{lstlisting}
-dedekind_sum(h::ZZ, k::ZZ)
-dedekind_sum(h::ZZ, k::Int)
-dedekind_sum(h::Int, k::ZZ)
-dedekind_sum(h::Int, k::Int)
+dedekind_sum(h::fmpz, k::fmpz)
+dedekind_sum(h::fmpz, k::Integer)
+dedekind_sum(h::Integer, k::fmpz)
+dedekind_sum(h::Integer, k::Integer)
 \end{lstlisting}
 
 \desc{Computes the Dedekind sum $s(h,k)$ for arbitrary $h$ and $k$.}
@@ -5647,95 +7833,77 @@ Here are some examples of special functions.
 a = harmonic(12)
 
 b = dedekind_sum(12, 13)
-c = dedekind_sum(-120, ZZ(1305))
+c = dedekind_sum(-120, fmpz(1305))
 \end{lstlisting}
 
-\subsection{Finite fields}
+\subsection{Flint finite fields $\F_{p^k}$ (multiprecision $p$): \code|fq|}
 
 We allow the construction of finite fields of any characteristic and degree in
 Nemo. When a Conway polynomial is known, the field is generated using the 
-Conway polynomial. Otherwise a random irreducible polynomial is used. 
+Conway polynomial. Otherwise a random sparse, irreducible polynomial is used. 
 
 (At this stage we make no attempt to compatibly embed finite fields generated 
 using randomly chosen irreducible polynomials, such as with the 
 Bosma-Cannon-Steel construction. But this may change in a later version of 
-Nemo.) 
+Flint/Nemo.) 
 
-The finite field type in Nemo is \code{FinFieldElem}. The uninterested user can skip
-description of the internals of this type, as we provide functions for 
-constructing the type.
+The Flint type for finite fields $\F_{p^k}$ for multiprecision $p$ is
+\code{fq}.
 
-As with the \code{ZZ} type, the \code{FinFieldElem} type in Nemo simply represents a
-flint type. In fact, the contents are the same as an \code{fmpz_poly}, since
-fundamentally an element of a finite field is a polynomial expression.
+The type of elements of Flint \code{fq} fields in Nemo is \code{fq}.
+This type belongs to the \code{FiniteFieldElem} type class, which in turn belongs
+to the \code{FieldElem} class. The type of the parent object for such fields is
+\code{FqFiniteField} which belongs to the \code{Field} type class.
 
-The following is essentially what the Julia definition of the Nemo
-\code{FinFieldElem} type looks like. It mirrors the contents of the
-flint \code{fmpz_poly_struct}, which is how finite field elements are stored
-in flint.
+The parent object for such a field is created using the \code{FiniteField}
+function, e.g.
 
 \begin{lstlisting}
-type FinFieldElem{S} <: Field
-   coeffs :: Ptr{Void}
-   alloc :: Int
-   length :: Int
+FiniteField(p::fmpz, deg::Int, var::String)
 \end{lstlisting}
 
-Actually, in practice, we define an immutable type called 
-\code{fmpz_poly_struct} in Julia which contains precisely the fields above. The
-body of the \code{FinFieldElem} type then contains just an
-\code{fmpz_poly_struct}. But this is not an essential detail.
+\desc{Return a tuple \code{(R, x)} consisting of the parent object \code{R} of
+a finite field of characteristic \code{p} of degree \code{deg}, and a
+generator \code{x}. 
 
-The \code{FinFieldElem} type is parameterised by a symbol \code{S} which holds
-on to a flint context object with information such as the polynomial used to
-generate the field, the characteristic and much more besides.
+The generator \code{x} of the field will be printed as the provided string
+\code{var}. The characteristic \code{p} must be prime, but we do not check this
+condition. The degree \code{deg} must be nonnegative. If \code{deg} is negative
+we throw a \code{DomainError()}.}
 
-There are no user serviceable parts inside, so we omit details of this 
-\code{fq_ctx} type which stores this context object. Needless to say, it
-contains no more and no less than a flint \code{fq_ctx_t}.
+For example, the following code generates a parent object for the finite field
+of characteristic $7$ and degree $5$ (defined by a Conway polynomial).
 
-The \code{FinFieldElem} type belongs to the \code{Field} typeclass, and
-therefore elements of a finite field can be passed to any function which
-operates on field or ring elements.
+\begin{lstlisting}
+S, x = FiniteField(fmpz(7), 5, "x")
+\end{lstlisting}
 
 \subsubsection{Constructors}
 
-We provide the following functions for constructing finite fields in Nemo.
-
-\begin{lstlisting}
-FiniteField(p::ZZ, deg::Int, var::String)
-FiniteField(p::Int, deg::Int, var::String)
-\end{lstlisting}
-
-\desc{Return a tuple \code{(R, x)} consisting of the type \code{R} of a finite
-field of characteristic \code{p} of degree \code{deg} and a generator \code{x}.
 Elements of the finite field \code{R} can be constructed as polynomials of
-degree less than \code{deg} in \code{x}. The generator \code{x} of the field 
-will be printed as the provided string \code{var}.
+degree less than \code{deg} in \code{x}. As usual we overload the parent object
+for the finite field to construct elements of the field.
 
-If a Conway polynomial is known for the given characteristic and degree, it
-will be used to construct the field. Otherwise a random irreducible polynomial
-will be used. We make no attempt to compatibly embed finite fields in the
-latter case.
-
-The characteristic \code{p} must be prime, but we do not check this condition.
-Undefined behaviour, including the possibility of an infinite loop, may result
-otherwise. The degree \code{deg} must be nonnegative. If \code{deg} is 
-negative we throw a \code{DomainError()}.}
-
-We provide various convenient functions for constructing elements of a finite
-field.
+In the constructors below, we take $S$ to be a parent object of a finite field
+as given by the construction above, for example.
 
 \begin{lstlisting}
-FinFieldElem{S}(a::Int)
-FinFieldElem{S}(a::ZZ)
+S()
 \end{lstlisting}
 
-\desc{Return the element \code{a} of the finite field, considered as an element
-of $\F_p$.}
+\desc{Return the element $0$ of the finite field.}
 
 \begin{lstlisting}
-FinFieldElem{S}(a::FinFieldElem{S})
+S(a::Int)
+S(a::Integer)
+S(a::fmpz)
+\end{lstlisting}
+
+\desc{Return the element \code{a} of the finite field, where $a$ is considered 
+an element of $\F_p$.}
+
+\begin{lstlisting}
+S(a::fq)
 \end{lstlisting}
 
 \desc{Return a reference to the element \code{a} of the finite field. No copy
@@ -5746,89 +7914,115 @@ of the data is made by this function.}
 Here are some examples of constructing finite fields and elements in them.
 
 \begin{lstlisting}
-R, x = FiniteField(7, 5, "x")
-S, y = FiniteField(ZZ(17), 3, "y")
+S, y = FiniteField(fmpz(17), 3, "y")
 
-f = 3x^4 + 2x^3 + 4x^2 + x + 1
-g = 2y^2 + 11y + 16
+f = 2y^2 + 11y + 16
 
-h = R(4)
-k = S(11)
-m = R(h)
+g = S(4)
+h = S()
+k = S(g)
 \end{lstlisting}
 
 \subsubsection{Basic manipulation}
 
 \begin{lstlisting}
-zero{S}(::Type{FinFieldElem{S}})
+zero(R::FqFiniteField)
 \end{lstlisting}
 
 \desc{Return the additive identity in the finite field, i.e. $0$.}
 
 \begin{lstlisting}
-one{S}(::Type{FinFieldElem{S}})
+one(R::FqFiniteField)
 \end{lstlisting}
 
 \desc{Return the multiplicative identity in the finite field, i.e. $1$.}
 
 \begin{lstlisting}
-gen{S}(::Type{FinFieldElem{S}})
+gen(R::FqFiniteField)
 \end{lstlisting}
 
 \desc{Return a generator of the finite field, namely one whose
 representation is the monomial of degree $1$ modulo the defining
-polynomial of the field. The generator may not be a multiplicative
-generator.}
+polynomial of the field. The generator is guaranteed to be a multiplicative 
+generator only if the field is generated by a Conway polynomial.}
 
 \begin{lstlisting}
-iszero{S}(a::FinFieldElem{S})
+iszero(a::fq)
 \end{lstlisting}
 
 \desc{Return \code{true} if the element $a$ is the additive identity in the
 finite field, i.e. if it is $0$, otherwise return \code{false}.}
 
 \begin{lstlisting}
-isone{S}(a::FinFieldElem{S})
+isone(a::fq)
 \end{lstlisting}
 
 \desc{Return \code{true} if the element $a$ is the multiplicative identity in
 the finite field, i.e. if it is $1$, otherwise return \code{false}.}
 
 \begin{lstlisting}
-isunit{S}(a::FinFieldElem{S})
+isgen(a::fq)
+\end{lstlisting}
+
+\desc{Return \code{true} if the element $a$ is the generator of the finite field,
+otherwise return \code{false}.}
+
+\begin{lstlisting}
+isunit(a::fq)
 \end{lstlisting}
 
 \desc{Return \code{true} if the element $a$ is invertible in the finite field,
 i.e. if it is not zero, otherwise return \code{false}.}
 
 \begin{lstlisting}
-characteristic{S}(::Type{FinFieldElem{S}})
+characteristic(R::FqFiniteField)
 \end{lstlisting}
 
 \desc{Return the prime characteristic $p$ of the finite field as a bignum
 \code{ZZ}.}
 
 \begin{lstlisting}
-order{S}(::Type{FinFieldElem{S}})
+order(R::FqFiniteField)
 \end{lstlisting}
 
 \desc{Return the number of elements in the finite field, i.e. $q = p^d$
 where \code{p} is the characteristic and $d$ is the degree.}
 
 \begin{lstlisting}
-degree{S}(::Type{FinFieldElem{S}})
+degree(R::FqFiniteField)
 \end{lstlisting}
 
 \desc{If the finite field is $\F_q$ where $q = p^d$, where $p$ is the
 prime characteristic of the field, this function returns the degree
 $d$.}
 
+\begin{lstlisting}
+coeff(a::fq, n::Int)
+\end{lstlisting}
+
+\desc{Return the coefficient of degree $n$ in the polynomial representation
+of the element $a$ of the finite field. If $n < 0$ we throw a
+\code{DomainError()}.}
+
+\begin{lstlisting}
+deepcopy(a::fq)
+\end{lstlisting}
+
+\desc{Return a new finite field element which is arithmetically equal to
+the given element.}
+
+\begin{lstlisting}
+canonical_unit(a::fq)
+\end{lstlisting}
+
+\desc{Used for canonicalising fractions. Simply returns $a$.}
+
 \textbf{Examples.}
 
 Here are some examples of basic manipulations of finite fields.
 
 \begin{lstlisting}
-R, x = FiniteField(7, 5, "x")
+R, x = FiniteField(fmpz(7), 5, "x")
 
 a = zero(R)
 b = one(R)
@@ -5839,12 +8033,465 @@ g = degree(R)
 h = iszero(a)
 k = isone(b)
 m = isunit(x + 1)
+n = deepcopy(c)
 \end{lstlisting}
 
 \subsubsection{Unary operators}
 
 \begin{lstlisting}
--{S}(a::FinFieldElem{S})
+-(a::fq)
+\end{lstlisting}
+
+\desc{Return $-a$.}
+
+\textbf{Examples.}
+
+Here are some examples of unary operators.
+
+\begin{lstlisting}
+R, x = FiniteField(fmpz(7), 5, "x")
+
+a = x^4 + 3x^2 + 6x + 1
+b = -a
+\end{lstlisting}
+
+\subsubsection{Binary operators}
+
+We provide the following binary operators for elements of
+finite fields.
+
+\begin{lstlisting}
++(a::fq, b::fq)
+\end{lstlisting}
+
+\desc{Return $a + b$.}
+
+\begin{lstlisting}
+-(a::fq, b::fq)
+\end{lstlisting}
+
+\desc{Return $a - b$.}
+
+\begin{lstlisting}
+*(a::fq, b::fq)
+\end{lstlisting}
+
+\desc{Return $ab$.}
+
+\textbf{Examples.}
+
+Here are some examples of binary operators.
+
+\begin{lstlisting}
+R, x = FiniteField(fmpz(7), 5, "x")
+
+a = x^4 + 3x^2 + 6x + 1
+b = 3x^4 + 2x^2 + x + 1
+
+c = a + b
+d = a - b
+f = a*b
+\end{lstlisting}
+
+\subsubsection{Ad hoc binary operators}
+
+We provide the following ad hoc binary operators, which are faster than first
+coercing all their arguments into the finite field.
+
+\begin{lstlisting}
+*(x::Int, y::fq)
+*(x::Integer, y::fq)
+*(x::fmpz, y::fq)
+\end{lstlisting}
+
+\desc{Return $xy$, i.e. $y$ added to itself $x$ times.}
+
+\begin{lstlisting}
+*(x::fq, y::Int)
+*(x::fq, y::Integer)
+*(x::fq, y::fmpz)
+\end{lstlisting}
+
+\desc{Return $xy$, i.e. $x$ added to itself $y$ times.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc binary operators.
+
+\begin{lstlisting}
+R, x = FiniteField(fmpz(7), 5, "x")
+
+a = x^4 + 3x^2 + 6x + 1
+
+b = 3a
+c = a*fmpz(5)
+\end{lstlisting}
+
+\subsubsection{Powering}
+
+\begin{lstlisting}
+^(a::fq, n::Int)
+^(a::fq, n::fmpz)
+\end{lstlisting}
+
+\desc{Return $a^n$.}
+
+\textbf{Examples.}
+
+Here are some examples of powering of finite field elements.
+
+\begin{lstlisting}
+R, x = FiniteField(fmpz(7), 5, "x")
+
+a = x^4 + 3x^2 + 6x + 1
+
+b = a^3
+c = a^fmpz(-5)
+\end{lstlisting}
+
+\subsubsection{Comparison}
+
+\begin{lstlisting}
+==(a::fq, b::fq)
+\end{lstlisting}
+
+\desc{Return \code{true} if the finite field elements $a$ and $b$ are 
+arithmetically equal, otherwise return \code{false}.}
+
+Julia automatically provides corresponding \code{!=} functionality.
+
+\textbf{Examples.}
+
+Here are some examples of comparison of finite field elements.
+
+\begin{lstlisting}
+R, x = FiniteField(fmpz(7), 5, "x")
+
+a = x^4 + 3x^2 + 6x + 1
+b = 3x^4 + 2x^2 + 2
+
+b != a
+R(3) == R(3)
+\end{lstlisting}
+
+\subsubsection{Inversion}
+
+\begin{lstlisting}
+inv(a::fq)
+\end{lstlisting}
+
+\desc{Return the multiplicative inverse of $a$ in the finite field, i.e. 
+$a^{-1}$ such that $aa^{-1} = 1$ in the finite field.}
+
+\textbf{Examples.}
+
+Here are some examples of inversion of finite field elements.
+
+\begin{lstlisting}
+R, x = FiniteField(fmpz(7), 5, "x")
+
+a = x^4 + 3x^2 + 6x + 1
+
+b = inv(a)
+b == a^-1
+\end{lstlisting}
+
+\subsubsection{Exact division}
+
+\begin{lstlisting}
+divexact(x::fq, y::fq)
+//(x::fq, y::fq)
+\end{lstlisting}
+
+\desc{Return $x/y$, which is an exact division in a finite field when defined,
+since every nonzero element is invertible. We throw a \code{DivideError()} if
+$y = 0$. Both forms of exact division are the same, one being a synonym for 
+the other.}
+
+\textbf{Examples.}
+
+Here are some examples of exact division of finite field elements.
+
+\begin{lstlisting}
+R, x = FiniteField(fmpz(7), 5, "x")
+
+a = x^4 + 3x^2 + 6x + 1
+b = 3x^4 + 2x^2 + 2
+
+c = divexact(a, b)
+d = b//a
+\end{lstlisting}
+
+\subsubsection{GCD}
+
+\begin{lstlisting}
+gcd(a::fq, b::fq)
+\end{lstlisting}
+
+\desc{Return gcd$(a, b)$. For a finite field this is always $1$ unless both
+$a$ and $b$ are $0$, in which case the gcd is $0$.}
+
+\textbf{Examples.}
+
+Here are some examples of GCD.
+
+\begin{lstlisting}
+R, x = FiniteField(fmpz(7), 5, "x")
+
+a = x^4 + 3x^2 + 6x + 1
+b = 3x^4 + 2x^2 + x + 1
+
+c = gcd(a, b)
+d = gcd(R(0), R(0))
+\end{lstlisting}
+
+\subsubsection{Special functions}
+
+Various special functions with finite field specific behaviour are
+defined.
+
+\begin{lstlisting}
+trace(a::fq)
+\end{lstlisting}
+
+\desc{Return the trace of $a$. This is an element of $\F_p$, but the value
+returned is this value embedded in the original finite field.}
+
+\begin{lstlisting}
+norm(a::fq)
+\end{lstlisting}
+
+\desc{Return the norm of $a$. This is an element of $\F_p$, but the value
+returned is this value embedded in the original finite field.}
+
+\begin{lstlisting}
+frobenius(a::fq, n = 1)
+\end{lstlisting}
+
+\desc{Return the iterated Frobenius $\sigma_p^n(a)$ where $\sigma_p$ is the 
+Frobenius map sending the element $a$ to $a^p$ in the finite field of 
+characteristic $p$. By default the Frobenius map is applied $n = 1$ times if
+$n$ is not specified.}
+
+\begin{lstlisting}
+pth_root(a::fq)
+\end{lstlisting}
+
+\desc{Return the $p$-th root of $a$ in the finite field of characteristic
+$p$. This is the inverse operation to the Frobenius map $\sigma_p$.}
+
+\textbf{Examples.}
+
+Here are some examples of special finite field functionality.
+
+\begin{lstlisting}
+R, x = FiniteField(fmpz(7), 5, "x")
+
+a = x^4 + 3x^2 + 6x + 1
+
+b = trace(a)
+c = norm(a)
+d = frobenius(a)
+f = frobenius(a, 3)
+g = pth_root(a)
+\end{lstlisting}
+
+\subsection{Flint finite fields $\F_{p^k}$ (small $p$): \code|fq_nmod|}
+
+The Flint type for finite fields $\F_{p^k}$ for $p$ that fits in a single machine
+word is \code{fq_nmod}.
+
+When a Conway polynomial is known, such a field is generated using the 
+Conway polynomial. Otherwise a random sparse, irreducible polynomial is used. 
+
+The type of elements of Flint \code{fq_nmod} fields in Nemo is \code{fq_nmod}.
+This type belongs to the \code{FiniteFieldElem} type class, which in turn belongs
+to the \code{FieldElem} class. The type of the parent object for such fields is
+\code{FqNmodFiniteField} which belongs to the \code{Field} type class.
+
+The parent object for such a field is created using the \code{FiniteField}
+function, e.g.
+
+\begin{lstlisting}
+FiniteField(p::Int, deg::Int, var::String)
+\end{lstlisting}
+
+\desc{Return a tuple \code{(R, x)} consisting of the parent object \code{R} of
+a finite field of characteristic \code{p} of degree \code{deg}, and a
+generator \code{x}. 
+
+The generator \code{x} of the field will be printed as the provided string
+\code{var}. The characteristic \code{p} must be prime, but we do not check this
+condition. The degree \code{deg} must be nonnegative. If \code{deg} is negative
+we throw a \code{DomainError()}.}
+
+For example, the following code generates a parent object for the finite field
+of characteristic $7$ and degree $5$ (defined by a Conway polynomial).
+
+\begin{lstlisting}
+S, x = FiniteField(7, 5, "x")\end{lstlisting}
+
+\subsubsection{Constructors}
+
+Elements of the finite field \code{R} can be constructed as polynomials of
+degree less than \code{deg} in \code{x}. As usual we overload the parent object
+for the finite field to construct elements of the field.
+
+In the constructors below, we take $S$ to be a parent object of a finite field
+as given by the construction above, for example.
+
+\begin{lstlisting}
+S()
+\end{lstlisting}
+
+\desc{Return the element $0$ of the finite field.}
+
+\begin{lstlisting}
+S(a::Int)
+S(a::Integer)
+S(a::fmpz)
+\end{lstlisting}
+
+\desc{Return the element \code{a} of the finite field, where $a$ is considered 
+an element of $\F_p$.}
+
+\begin{lstlisting}
+S(a::fq_nmod)
+\end{lstlisting}
+
+\desc{Return a reference to the element \code{a} of the finite field. No copy
+of the data is made by this function.}
+
+\textbf{Examples.}
+
+Here are some examples of constructing finite fields and elements in them.
+
+\begin{lstlisting}
+S, y = FiniteField(17, 3, "y")
+
+f = 2y^2 + 11y + 16
+
+g = S(4)
+h = S()
+k = S(g)
+\end{lstlisting}
+
+\subsubsection{Basic manipulation}
+
+\begin{lstlisting}
+zero(R::FqNmodFiniteField)
+\end{lstlisting}
+
+\desc{Return the additive identity in the finite field, i.e. $0$.}
+
+\begin{lstlisting}
+one(R::FqNmodFiniteField)
+\end{lstlisting}
+
+\desc{Return the multiplicative identity in the finite field, i.e. $1$.}
+
+\begin{lstlisting}
+gen(R::FqNmodFiniteField)
+\end{lstlisting}
+
+\desc{Return a generator of the finite field, namely one whose
+representation is the monomial of degree $1$ modulo the defining
+polynomial of the field. The generator is guaranteed to be a multiplicative 
+generator only if the field is generated by a Conway polynomial.}
+
+\begin{lstlisting}
+iszero(a::fq_nmod)
+\end{lstlisting}
+
+\desc{Return \code{true} if the element $a$ is the additive identity in the
+finite field, i.e. if it is $0$, otherwise return \code{false}.}
+
+\begin{lstlisting}
+isone(a::fq_nmod)
+\end{lstlisting}
+
+\desc{Return \code{true} if the element $a$ is the multiplicative identity in
+the finite field, i.e. if it is $1$, otherwise return \code{false}.}
+
+\begin{lstlisting}
+isgen(a::fq_nmod)
+\end{lstlisting}
+
+\desc{Return \code{true} if the element $a$ is the generator of the finite field,
+otherwise return \code{false}.}
+
+\begin{lstlisting}
+isunit(a::fq_nmod)
+\end{lstlisting}
+
+\desc{Return \code{true} if the element $a$ is invertible in the finite field,
+i.e. if it is not zero, otherwise return \code{false}.}
+
+\begin{lstlisting}
+characteristic(R::FqNmodFiniteField)
+\end{lstlisting}
+
+\desc{Return the prime characteristic $p$ of the finite field as a bignum
+\code{ZZ}.}
+
+\begin{lstlisting}
+order(R::FqNmodFiniteField)
+\end{lstlisting}
+
+\desc{Return the number of elements in the finite field, i.e. $q = p^d$
+where \code{p} is the characteristic and $d$ is the degree.}
+
+\begin{lstlisting}
+degree(R::FqNmodFiniteField)
+\end{lstlisting}
+
+\desc{If the finite field is $\F_q$ where $q = p^d$, where $p$ is the
+prime characteristic of the field, this function returns the degree
+$d$.}
+
+\begin{lstlisting}
+coeff(a::fq_nmod, n::Int)
+\end{lstlisting}
+
+\desc{Return the coefficient of degree $n$ in the polynomial representation
+of the element $a$ of the finite field. If $n < 0$ we throw a
+\code{DomainError()}.}
+
+\begin{lstlisting}
+deepcopy(a::fq_nmod)
+\end{lstlisting}
+
+\desc{Return a new finite field element which is arithmetically equal to
+the given element.}
+
+\begin{lstlisting}
+canonical_unit(a::fq_nmod)
+\end{lstlisting}
+
+\desc{Used for canonicalising fractions. Simply returns $a$.}
+
+\textbf{Examples.}
+
+Here are some examples of basic manipulations of finite fields.
+
+\begin{lstlisting}
+R, x = FiniteField(7, 5, "x")
+a = zero(R)
+b = one(R)
+c = gen(R)
+d = characteristic(R)
+f = order(R)
+g = degree(R)
+h = iszero(a)
+k = isone(b)
+m = isunit(x + 1)
+n = deepcopy(c)
+\end{lstlisting}
+
+\subsubsection{Unary operators}
+
+\begin{lstlisting}
+-(a::fq_nmod)
 \end{lstlisting}
 
 \desc{Return $-a$.}
@@ -5855,56 +8502,45 @@ Here are some examples of unary operators.
 
 \begin{lstlisting}
 R, x = FiniteField(7, 5, "x")
-
 a = x^4 + 3x^2 + 6x + 1
 b = -a
 \end{lstlisting}
 
-\subsubsection{Binary operators and functions}
+\subsubsection{Binary operators}
 
-We provide the following binary operators and functions for elements of
+We provide the following binary operators for elements of
 finite fields.
 
 \begin{lstlisting}
-+{S}(a::FinFieldElem{S}, b::FinFieldElem{S})
++(a::fq_nmod, b::fq_nmod)
 \end{lstlisting}
 
 \desc{Return $a + b$.}
 
 \begin{lstlisting}
--{S}(a::FinFieldElem{S}, b::FinFieldElem{S})
+-(a::fq_nmod, b::fq_nmod)
 \end{lstlisting}
 
 \desc{Return $a - b$.}
 
 \begin{lstlisting}
-*{S}(a::FinFieldElem{S}, b::FinFieldElem{S})
+*(a::fq_nmod, b::fq_nmod)
 \end{lstlisting}
 
 \desc{Return $ab$.}
 
-\begin{lstlisting}
-gcd{S}(a::FinFieldElem{S}, b::FinFieldElem{S})
-\end{lstlisting}
-
-\desc{Return gcd$(a, b)$. For a finite field this is always $1$ unless both
-$a$ and $b$ are $0$, in which case the gcd is $0$.}
-
 \textbf{Examples.}
 
-Here are some examples of binary operators and functions.
+Here are some examples of binary operators.
 
 \begin{lstlisting}
 R, x = FiniteField(7, 5, "x")
-
 a = x^4 + 3x^2 + 6x + 1
 b = 3x^4 + 2x^2 + x + 1
 
 c = a + b
 d = a - b
 f = a*b
-g = gcd(a, b)
-h = gcd(R(0), R(0))
 \end{lstlisting}
 
 \subsubsection{Ad hoc binary operators}
@@ -5913,15 +8549,17 @@ We provide the following ad hoc binary operators, which are faster than first
 coercing all their arguments into the finite field.
 
 \begin{lstlisting}
-*{S}(x::Int, y::FinFieldElem{S})
-*{S}(x::ZZ, y::FinFieldElem{S})
+*(x::Int, y::fq_nmod)
+*(x::Integer, y::fq_nmod)
+*(x::fmpz, y::fq_nmod)
 \end{lstlisting}
 
 \desc{Return $xy$, i.e. $y$ added to itself $x$ times.}
 
 \begin{lstlisting}
-*{S}(x::FinFieldElem{S}, y::Int)
-*{S}(x::FinFieldElem{S}, y::ZZ)
+*(x::fq_nmod, y::Int)
+*(x::fq_nmod, y::Integer)
+*(x::fq_nmod, y::fmpz)
 \end{lstlisting}
 
 \desc{Return $xy$, i.e. $x$ added to itself $y$ times.}
@@ -5932,18 +8570,17 @@ Here are some examples of ad hoc binary operators.
 
 \begin{lstlisting}
 R, x = FiniteField(7, 5, "x")
-
 a = x^4 + 3x^2 + 6x + 1
 
 b = 3a
-c = a*ZZ(5)
+c = a*fmpz(5)
 \end{lstlisting}
 
 \subsubsection{Powering}
 
 \begin{lstlisting}
-^{S}(a::FinFieldElem{S}, n::Int)
-^{S}(a::FinFieldElem{S}, n::ZZ)
+^(a::fq_nmod, n::Int)
+^(a::fq_nmod, n::fmpz)
 \end{lstlisting}
 
 \desc{Return $a^n$.}
@@ -5954,17 +8591,16 @@ Here are some examples of powering of finite field elements.
 
 \begin{lstlisting}
 R, x = FiniteField(7, 5, "x")
-
 a = x^4 + 3x^2 + 6x + 1
 
 b = a^3
-c = a^ZZ(-5)
+c = a^fmpz(-5)
 \end{lstlisting}
 
 \subsubsection{Comparison}
 
 \begin{lstlisting}
-=={S}(a::FinFieldElem{S}, b::FinFieldElem{S})
+==(a::fq_nmod, b::fq_nmod)
 \end{lstlisting}
 
 \desc{Return \code{true} if the finite field elements $a$ and $b$ are 
@@ -5972,20 +8608,12 @@ arithmetically equal, otherwise return \code{false}.}
 
 Julia automatically provides corresponding \code{!=} functionality.
 
-\begin{lstlisting}
-isequal{S}(a::FinFieldElem{S}, b::FinFieldElem{S})
-\end{lstlisting}
-
-\desc{For finite fields the \code{isequal} function is simply an alias for
-the \code{==} operator.}
-
 \textbf{Examples.}
 
 Here are some examples of comparison of finite field elements.
 
 \begin{lstlisting}
 R, x = FiniteField(7, 5, "x")
-
 a = x^4 + 3x^2 + 6x + 1
 b = 3x^4 + 2x^2 + 2
 
@@ -5993,11 +8621,32 @@ b != a
 R(3) == R(3)
 \end{lstlisting}
 
+\subsubsection{Inversion}
+
+\begin{lstlisting}
+inv(a::fq_nmod)
+\end{lstlisting}
+
+\desc{Return the multiplicative inverse of $a$ in the finite field, i.e. 
+$a^{-1}$ such that $aa^{-1} = 1$ in the finite field.}
+
+\textbf{Examples.}
+
+Here are some examples of inversion of finite field elements.
+
+\begin{lstlisting}
+R, x = FiniteField(7, 5, "x")
+a = x^4 + 3x^2 + 6x + 1
+
+b = inv(a)
+b == a^-1
+\end{lstlisting}
+
 \subsubsection{Exact division}
 
 \begin{lstlisting}
-divexact{S}(x::FinFieldElem{S}, y::FinFieldElem{S})
-/{S}(x::FinFieldElem{S}, y::FinFieldElem{S})
+divexact(x::fq_nmod, y::fq_nmod)
+//(x::fq_nmod, y::fq_nmod)
 \end{lstlisting}
 
 \desc{Return $x/y$, which is an exact division in a finite field when defined,
@@ -6011,34 +8660,33 @@ Here are some examples of exact division of finite field elements.
 
 \begin{lstlisting}
 R, x = FiniteField(7, 5, "x")
-
 a = x^4 + 3x^2 + 6x + 1
 b = 3x^4 + 2x^2 + 2
 
 c = divexact(a, b)
-d = b/a
+d = b//a
 \end{lstlisting}
 
-\subsubsection{Inversion}
+\subsubsection{GCD}
 
 \begin{lstlisting}
-inv{S}(a::FinFieldElem{S})
+gcd(a::fq_nmod, b::fq_nmod)
 \end{lstlisting}
 
-\desc{Return the multiplicative inverse of $a$ in the finite field, i.e. 
-$a^{-1}$ such that $aa^{-1} = 1$ in the finite field.}
+\desc{Return gcd$(a, b)$. For a finite field this is always $1$ unless both
+$a$ and $b$ are $0$, in which case the gcd is $0$.}
 
 \textbf{Examples.}
 
-Here are some examples of inversion of finite field elements.
+Here are some examples of GCD.
 
 \begin{lstlisting}
 R, x = FiniteField(7, 5, "x")
-
 a = x^4 + 3x^2 + 6x + 1
+b = 3x^4 + 2x^2 + x + 1
 
-b = inv(a)
-b == a^-1
+c = gcd(a, b)
+d = gcd(R(0), R(0))
 \end{lstlisting}
 
 \subsubsection{Special functions}
@@ -6047,21 +8695,21 @@ Various special functions with finite field specific behaviour are
 defined.
 
 \begin{lstlisting}
-trace{S}(a::FinFieldElem{S})
+trace(a::fq_nmod)
 \end{lstlisting}
 
 \desc{Return the trace of $a$. This is an element of $\F_p$, but the value
 returned is this value embedded in the original finite field.}
 
 \begin{lstlisting}
-norm{S}(a::FinFieldElem{S})
+norm(a::fq_nmod)
 \end{lstlisting}
 
 \desc{Return the norm of $a$. This is an element of $\F_p$, but the value
 returned is this value embedded in the original finite field.}
 
 \begin{lstlisting}
-frobenius{S}(a::FinFieldElem{S}, n = 1)
+frobenius(a::fq_nmod, n = 1)
 \end{lstlisting}
 
 \desc{Return the iterated Frobenius $\sigma_p^n(a)$ where $\sigma_p$ is the 
@@ -6070,7 +8718,7 @@ characteristic $p$. By default the Frobenius map is applied $n = 1$ times if
 $n$ is not specified.}
 
 \begin{lstlisting}
-pth_root{S}(a::FinFieldElem{S})
+pth_root(a::fq_nmod)
 \end{lstlisting}
 
 \desc{Return the $p$-th root of $a$ in the finite field of characteristic
@@ -6082,7 +8730,6 @@ Here are some examples of special finite field functionality.
 
 \begin{lstlisting}
 R, x = FiniteField(7, 5, "x")
-
 a = x^4 + 3x^2 + 6x + 1
 
 b = trace(a)
@@ -6092,59 +8739,24 @@ f = frobenius(a, 3)
 g = pth_root(a)
 \end{lstlisting}
 
-\subsection{The p-adics}
+\subsection{Flint $p$-adics $\Q_p$: \code{padic}}
 
-We define a parametric type \code{Padic} to contain elements of the $p$-adic
-numbers in Nemo. As usual, the user need not know the details of the type, as
-we define a function \code{PadicField} for constructing it.
+The Flint type for $p$-adic numbers is \code{padic}. In Nemo elements of a
+$p$-adic field are of type \code{padic}. These belong to a \code{PadicFieldElem}
+type class, which in turn belongs to \code{FieldElem}. The parent objects for 
+the $p$-adic fields are of type \code{FlintPadicField} which belongs to the
+\code{Field} type class.
 
-We describe here the internals of the \code{Padic} type, but the reader may
-skip ahead to the section on constructors if so desired.
+As usual, the user need not deal directly with the types, as we define a function
+\code{FlintPadicField} for constructing parent objects for $p$-adic fields.
 
-The \code{Padic} type takes a single parameter \code{S}, which is a symbol.
-This symbol is the name of a variable which contains, amongst other things,
-the prime $p$ for the $p$-adic type.
+By default, the global variable \code{PadicField} is defined to be
+\code{FlintPadicField} so that \code{PadicField} also constructs parent objects
+for $p$-adic fields.
 
-The first part of the \code{Padic} type in Nemo mirrors the internals of the
-flint \code{padic_t} type. Here is its definition.
-
-\begin{lstlisting}
-type Padic{S} <: Field
-   u :: Int 
-   v :: Int
-   N :: Int
-   exact :: Bool
-end
-\end{lstlisting}
-
-The \code{u}, \code{v} and \code{N} fields correspond to the $p$-adic unit
-(actually of type \code{fmpz} in flint), the valuation and precision
-respectively. 
-
-There is one additional field, called \code{exact}. We use this to specify
-when a $p$-adic number is exact (i.e. when it exactly represents a rational
-number with denominator a power of $p$). We require this because of the way
-flint handles $p$-adic precision.
-
-The flint $p$-adic interface ignores the precision of inputs to its $p$-adic
-functions and only pays attention to the desired precision as set in the
-output(s). We modify this behaviour in Nemo by computing on-the-fly the best
-possible output precision given the input precisions. We then use this for the
-required output precision when calling flint.
-
-However, the flint $p$-adic type has no way to specify an infinite precision
-output, e.g. when the input precisions are in fact known exactly. The
-additional \code{exact} field in the Nemo type allows us to handle such cases
-specially.
-
-Flint does provide some functions which ignore the specified output precision,
-interpreting the result as exact. We use these in combination with the Nemo
-\code{exact} field to provide operations on infinite precision $p$-adics.
-
-There is also a flint \code{padic_ctx_t} type which is mirrored in a Julia
-\code{padic_ctx} type. As the details are not important we omit the definition
-here. It is this \code{padic_ctx} that is attached to the symbol \code{S} on
-which the Nemo \code{Padic} type is parameterised.
+The $p$-adics implement a capped relative precision model. This has consistent
+behaviour for multiplicative operations on $p$-adics, but not for additive
+operations, where cancellation can occur.
 
 \subsubsection{Constructors}
 
@@ -6152,24 +8764,14 @@ We provide the following simple function for creating the type of the $p$-adic
 numbers.
 
 \begin{lstlisting}
-PadicField(p::Int)
-PadicField(p::ZZ)
+PadicField(p::Int, prec::Int)
+PadicField(p::ZZ, prec::Int)
 \end{lstlisting}
 
 \desc{This function returns a type corresponding to the $p$-adic numbers for
 the given prime $p$. We test that $p$ is actually prime before constructing
-the type. If not, an exception is thrown.}
-
-No default precision is used for the $p$-adic type in Nemo. Elements can be
-constructed with any desired precision and the results of computations are
-computed to the best possible output precision given the precision of the
-inputs. 
-
-This includes the possibility of infinite precision in the case of exact
-rational values with a power of the prime $p$ as denominator. Nemo will throw
-an exception if an output value has infinite precision in theory but which
-cannot be represented exactly due to requiring infinite space (e.g. negative
-integers or fractions with something other than a power of $p$ as denominator).
+the type. If not, an exception is thrown. The second argument is a default
+(absolute) precision for elements in this field.}
 
 To construct values of $p$-adic type we use the \code{O} operator. It requires
 the $p$-adic type as a parameter for reasons of type soundness and so that
@@ -6177,55 +8779,65 @@ expressions such as $O(7^0)$ can be entered unambiguously (as \code{O(R, 7^0)},
 say).
 
 \begin{lstlisting}
-O{S}(::Type{Padic{S}}, m::Int)
-O{S}(::Type{Padic{S}}, m::ZZ)
-O{S}(::Type{Padic{S}}, m::QQ)
+O(R::FlintPadicField, m::Int)
+O(R::FlintPadicField m::fmpz)
+O(R::FlintPadicField, m::fmpq)
 \end{lstlisting}
 
 \desc{Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results
-if $m$ is not found to be a power of \code{p = prime(Padic{S})}.}
+if $m$ is not found to be a power of \code{p = prime(R)}.}
 
 The \code{O(p^n)} construction can be used to construct $p$-adic values of
 precision $n$ by adding it to integer values representing the $p$-adic value
 modulo $p^n$. See the examples below for details.
 
-\begin{lstlisting}
-Padic{S}()
-\end{lstlisting}
-
-\desc{Construct the $p$-adic value $0$ with precision $0$, i.e. $0 + O(p^0)$.}
+In the constructors below, we assume $S$ is a $p$-adic field parent object,
+constructed using the \code{PadicField} function, for example:
 
 \begin{lstlisting}
-Padic{S}(a::Int)
-Padic{S}(a::ZZ)
-Padic{S}(a::QQ)
+S = PadicField(17, 30)
 \end{lstlisting}
 
-\desc{Construct the exact (infinite precision) $p$-adic value representing the
-integer or rational $a$. An exception will result if $a < 0$ or if the 
-denominator of $a$ is not a power of $p$.}
+We also assume below that $p$ is the prime passed to the \code{PadicField}
+constructor, e.g. $p = 17$ in the above and that $k$ is the default precision,
+e.g. $k = 30$ in the above.
+
+\begin{lstlisting}
+S()
+\end{lstlisting}
+
+\desc{Construct the $p$-adic value $0$ with default precision, i.e. $0 + O(p^k)$.}
+
+\begin{lstlisting}
+S(a::Int)
+S(a::fmpz)
+S(a::fmpq)
+\end{lstlisting}
+
+\desc{Construct the $p$-adic value representing the integer or rational $a$ to
+precision $k$.}
 
 \textbf{Examples.}
 
 Here are some examples of constructing $p$-adics.
 
 \begin{lstlisting}
-R = PadicField(7)
-S = PadicField(ZZ(65537))
+R = PadicField(7, 30)
+S = PadicField(fmpz(65537), 30)
 
 a = R()
 b = R(1)
-c = R(ZZ(123))
-d = R(ZZ(1)/7^2)
+c = R(fmpz(123))
+d = R(fmpz(1)//7^2)
 
 f = 1 + 2*7 + 4*7^2 + O(R, 7^3)
-g = 13 + 357*ZZ(65537) + O(S, ZZ(65537)^12)
-h = ZZ(1)/7^2 + ZZ(2)/7 + 3 + 4*7 + O(R, 7^2)
+g = 13 + 357*fmpz(65537) + O(S, fmpz(65537)^12)
+h = fmpz(1)//7^2 + fmpz(2)//7 + 3 + 4*7 + O(R, 7^2)
 \end{lstlisting}
 
 Beware that the expression \code{1 + 2*p + 3*p^2 + O(R, p^n)} is actually computed as
 a normal Julia expression. Therefore if \code{Int} values are used instead of
-\code{ZZ}'s, overflow may result in evaluating the value.
+\code{fmpz}'s, overflow may result in evaluating the value.
 
 Also note that one cannot use \code{7^-2} in a $p$-adic expression, since the 
 exponentiation operator must always return an integer, for reasons of type soundness.
@@ -6233,67 +8845,59 @@ exponentiation operator must always return an integer, for reasons of type sound
 \subsubsection{Basic manipulation}
 
 \begin{lstlisting}
-prime{S}(::Type{Padic{S}})
+prime(R::PadicField)
 \end{lstlisting}
 
 \desc{Return the prime $p$ on which the $p$-adic type is based. The returned
-value is of type \code{ZZ}.}
+value is of type \code{fmpz}.}
 
 \begin{lstlisting}
-precision{S}(a::Padic{S})
+precision(a::padic)
 \end{lstlisting}
 
 \desc{Return the precision of the given $p$-adic value, e.g. the precision of
-$1 + 7 + 2*7^2 + O(7^3)$ is $3$. The precision is meaningless for an
-exact value.}
+$1 + 7 + 2*7^2 + O(7^3)$ is $3$.}
 
 \begin{lstlisting}
-valuation{S}(a::Padic{S})
+valuation(a::padic)
 \end{lstlisting}
 
 \desc{Return the $p$-adic valuation of the given $p$-adic value.}
 
 \begin{lstlisting}
-isexact{S}(a::Padic{S})
+zero(R::PadicField)
 \end{lstlisting}
 
-\desc{Return \code{true} if the given $p$-adic value is exact, i.e. infinite
-precision, otherwise return \code{false}.}
+\desc{Return the additive identity, i.e. $0$ in the field of $p$-adic
+numbers to the default precision.}
 
 \begin{lstlisting}
-zero{S}(::Type{Padic{S}})
+one(R::PadicField)
 \end{lstlisting}
 
-\desc{Return the additive identity, i.e. exact $0$ in the field of $p$-adic
-numbers.}
+\desc{Return the multiplicative identity, i.e. $1$ in the field of
+$p$-adic numbers to the default precision.}
 
 \begin{lstlisting}
-one{S}(::Type{Padic{S}})
+iszero(a::padic)
 \end{lstlisting}
 
-\desc{Return the multiplicative identity, i.e. exact $1$ in the field of
-$p$-adic numbers.}
+\desc{Return \code{true} if the given $p$-adic value is equal to the additive identity,
+i.e. $0$, otherwise return \code{false}.}
 
 \begin{lstlisting}
-iszero{S}(a::Padic{S})
+isone(a::padic)
 \end{lstlisting}
 
-\desc{Return \code{true} if the given $p$-adic value is the additive identity,
-i.e. exact $0$, otherwise return \code{false}.}
-
-\begin{lstlisting}
-isone{S}(a::Padic{S})
-\end{lstlisting}
-
-\desc{Return \code{true} if the given $p$-adic value is the multiplicative
-identity, i.e. exact $1$, otherwise return \code{false}.}
+\desc{Return \code{true} if the given $p$-adic value is equal to the multiplicative
+identity, i.e. $1$, otherwise return \code{false}.}
 
 \textbf{Examples.}
 
 Here are some examples of basic manipulations of $p$-adics.
 
 \begin{lstlisting}
-R = PadicField(7)
+R = PadicField(7, 30)
 
 a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
 b = 7^2 + 3*7^3 + O(R, 7^5)
@@ -6303,28 +8907,25 @@ d = one(R)
 f = zero(R)
 g = isone(d)
 h = iszero(f)
-k = isexact(c)
-n = precision(a)
-p = prime(R)
-v = valuation(b)
+k = precision(a)
+m = prime(R)
+n = valuation(b)
 \end{lstlisting}
 
 \subsubsection{Unary operators}
 
 \begin{lstlisting}
--{S}(x::Padic{S})
+-(x::padic)
 \end{lstlisting}
 
-\desc{Return $-x$. Note that if $x$ is for example a positive integer
-represented exactly, then $-x$ may not be representable exactly as a $p$-adic.
-In this case an exception is raised.}
+\desc{Return $-x$.}
 
 \textbf{Examples.}
 
 Here are some examples of unary operators.
 
 \begin{lstlisting}
-R = PadicField(7)
+R = PadicField(7, 30)
 
 a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
 b = R(0)
@@ -6336,22 +8937,21 @@ d = -b
 \subsubsection{Binary operators}
 
 \begin{lstlisting}
-+{S}(x::Padic{S}, y::Padic{S})
++(x::padic, y::padic)
 \end{lstlisting}
 
 \desc{Return $x + y$. The output precision will be the least of the input
 precisions.}
 
 \begin{lstlisting}
--{S}(x::Padic{S}, y::Padic{S})
+-(x::padic, y::padic)
 \end{lstlisting}
 
 \desc{Return $x - y$. The output precision will be the least of the input
-precisions. Note that if $x$ and $y$ are exact and $x - y$ cannot be
-represented exactly, an exception will be raised.}
+precisions.}
 
 \begin{lstlisting}
-*{S}(x::Padic{S}, y::Padic{S})
+*(x::padic, y::padic)
 \end{lstlisting}
 
 \desc{Return $xy$. The output precision will be the least of valuation$(x) +$
@@ -6362,7 +8962,7 @@ precision$(y)$ and precision$(x) +$ valuation$(y)$.}
 Here are some examples of binary operators for $p$-adics.
 
 \begin{lstlisting}
-R = PadicField(7)
+R = PadicField(7, 30)
 
 a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
 b = 7^2 + 3*7^3 + O(R, 7^5)
@@ -6379,65 +8979,63 @@ k = a*d
 \subsubsection{Ad hoc binary operators}
 
 \begin{lstlisting}
-+{S}(x::Padic{S}, y::Int)
-+{S}(x::Padic{S}, y::ZZ)
-+{S}(x::Padic{S}, y::QQ)
++(x::padic, y::Int)
++(x::padic, y::fmpz)
++(x::padic, y::fmpq)
 \end{lstlisting}
 
-\desc{Return $x + y$ where $y$ is interpreted as an exact $p$-adic value. If
-the result is unrepresentable, an exception results.}
+\desc{Return $x + y$ where $y$ is interpreted as a $p$-adic value to the default
+precision.}
 
 \begin{lstlisting}
-+{S}(x::Int, y::Padic{S})
-+{S}(x::ZZ, y::Padic{S})
-+{S}(x::QQ, y::Padic{S})
++(x::Int, y::padic)
++(x::fmpz, y::padic)
++(x::fmpq, y::padic)
 \end{lstlisting}
 
-\desc{Return $x + y$ where $x$ is interpreted as an exact $p$-adic value. If
-the result is unrepresentable, an exception results.}
+\desc{Return $x + y$ where $x$ is interpreted as a $p$-adic value to the default
+precision.}
 
 \begin{lstlisting}
--{S}(x::Padic{S}, y::Int)
--{S}(x::Padic{S}, y::ZZ)
--{S}(x::Padic{S}, y::QQ)
+-(x::padic, y::Int)
+-(x::padic, y::fmpz)
+-(x::padic, y::fmpq)
 \end{lstlisting}
 
-\desc{Return $x - y$ where $y$ is interpreted as an exact $p$-adic value. If
-the result is unrepresentable, an exception results.}
+\desc{Return $x - y$ where $y$ is interpreted as a $p$-adic value to the default
+precision.}
 
 \begin{lstlisting}
--{S}(x::Int, y::Padic{S})
--{S}(x::ZZ, y::Padic{S})
--{S}(x::QQ, y::Padic{S})
+-(x::Int, y::padic)
+-(x::fmpz, y::padic)
+-(x::fmpq, y::padic)
 \end{lstlisting}
 
-\desc{Return $x - y$ where $x$ is interpreted as an exact $p$-adic value. If
-the result is unrepresentable, an exception results.}
+\desc{Return $x - y$ where $x$ is interpreted as a $p$-adic value to the default
+precision.}
 
 \begin{lstlisting}
-*{S}(x::Padic{S}, y::Int)
-*{S}(x::Padic{S}, y::ZZ)
-*{S}(x::Padic{S}, y::QQ)
+*(x::padic, y::Int)
+*(x::padic, y::fmpz)
+*(x::padic, y::fmpq)
 \end{lstlisting}
 
-\desc{Return $xy$. If $y$ is negative or the result is not representable, an
-exception results.}
+\desc{Return $xy$.}
 
 \begin{lstlisting}
-*{S}(x::Int, y::Padic{S})
-*{S}(x::ZZ, y::Padic{S})
-*{S}(x::QQ, y::Padic{S})
+*(x::Int, y::padic)
+*(x::fmpz, y::padic)
+*(x::fmpq, y::padic)
 \end{lstlisting}
 
-\desc{Return $xy$. If $x$ is negative or the result is not representable, an 
-exception results.}
+\desc{Return $xy$.}
 
 \textbf{Examples.}
 
 Here are some examples of ad hoc binary operators.
 
 \begin{lstlisting}
-R = PadicField(7)
+R = PadicField(7, 30)
 
 a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
 b = 7^2 + 3*7^3 + O(R, 7^5)
@@ -6446,43 +9044,41 @@ d = R(2)
 
 f = a + 2
 g = 3 - b
-h = a*ZZ(5)
-j = ZZ(3)*c
+h = a*fmpz(5)
+j = fmpz(3)*c
 k = 2*d
 l = 2 + d
-m = d - ZZ(2)
-n = a + ZZ(1)/7^2
-p = (ZZ(12)/11)*b
-q = c*(ZZ(1)/7)
+m = d - fmpz(2)
+n = a + fmpz(1)//7^2
+p = (fmpz(12)//11)*b
+q = c*(fmpz(1)//7)
 \end{lstlisting}
 
 \subsubsection{Comparison}
 
 \begin{lstlisting}
-=={S}(a::Padic{S}, b::Padic{S})
+==(a::padic, b::padic)
 \end{lstlisting}
 
 \desc{Compare the given $p$-adic values at the least of the two precisions and
 return \code{true} if they are equal to that precision, otherwise return
-\code{false}. With this definition \code{0 == 0 + O(7^3)} returns
-\code{true}. If one wishes to compare with exact $0$, one should use
-\code{iszero}.}
+\code{false}.}
 
 Julia automatically supplies a corresponding \code{!=} operator.
 
 \begin{lstlisting}
-isequal{S}(a::Padic{S}, b::Padic{S})
+isequal(a::padic, b::padic)
 \end{lstlisting}
 
-\desc{Return \code{true} if \code{a == b} and if they are either both exact or
-if the precisions are the same, otherwise return \code{false}.}
+\desc{Return \code{true} if \code{a == b} and their precisions are the same,
+otherwise return \code{false}.}
 
 \textbf{Examples.}
 
 Here are some examples of comparison.
 
 \begin{lstlisting}
-R = PadicField(7)
+R = PadicField(7, 30)
 
 a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
 b = 3*7^3 + O(R, 7^5)
@@ -6493,30 +9089,29 @@ a == 1 + 2*7 + O(R, 7^2)
 b == c
 c == R(0)
 d == R(2)
+isequal(b, c) == false
 \end{lstlisting}
 
 \subsubsection{Ad hoc comparison}
 
-The following ad hoc comparison operators are provided for convenience. They
-allow comparison with exact values (up to the precision of the $p$-adic value
-supplied).
+The following ad hoc comparison operators are provided for convenience. 
 
 \begin{lstlisting}
-=={S}(a::Padic{S}, b::Int)
-=={S}(a::Padic{S}, b::ZZ)
-=={S}(a::Padic{S}, b::QQ)
+==(a::padic, b::Int)
+==(a::padic, b::fmpz)
+==(a::padic, b::fmpq)
 \end{lstlisting}
 
-\desc{Return \code{true} if the exact value $b$ is equal to the $p$-adic 
+\desc{Return \code{true} if the value $b$ is equal to the $p$-adic 
 value $a$ up to the precision of $a$, otherwise return \code{false}.}
 
 \begin{lstlisting}
-=={S}(a::Int, b::Padic{S})
-=={S}(a::ZZ, b::Padic{S})
-=={S}(a::QQ, b::Padic{S})
+==(a::Int, b::padic)
+==(a::fmpz, b::padic)
+==(a::fmpq, b::padic)
 \end{lstlisting}
 
-\desc{Return \code{true} if the exact value $a$ is equal to the $p$-adic 
+\desc{Return \code{true} if the value $a$ is equal to the $p$-adic 
 value $b$ up to the precision of $b$, otherwise return \code{false}.}
 
 \textbf{Examples.}
@@ -6524,37 +9119,35 @@ value $b$ up to the precision of $b$, otherwise return \code{false}.}
 Here are some examples of ad hoc comparison.
 
 \begin{lstlisting}
-R = PadicField(7)
+R = PadicField(7, 30)
 
 a = 1 + O(R, 7^3)
 b = O(R, 7^5)
 c = R(2)
 
 a == 1
-b == ZZ(0)
+b == fmpz(0)
 c == 2
-ZZ(2) == c
-a == ZZ(344)/1
+fmpz(2) == c
+a == fmpz(344)//1
 \end{lstlisting}
 
 \subsubsection{Powering}
 
 \begin{lstlisting}
-^{S}(a::Padic{S}, n::Int)
+^(a::padic, n::Int)
 \end{lstlisting}
 
 \desc{Return $a^n$. The output precision will be the same as if $a$ had been
 multiplied by itself $n$ times, i.e. precision$(a) + (n - 1)\times$
-valuation$(a)$. If the input is exact and $n \geq 0$ the output will be
-exact. If $n < 0$ and $a$ is exact, it may be that the output is not
-representable. In such cases an exception is raised.}
+valuation$(a)$.}
 
 \textbf{Examples.}
 
 Here are some examples of powering.
 
 \begin{lstlisting}
-R = PadicField(7)
+R = PadicField(7, 30)
 
 a = 1 + 7 + 2*7^2 + O(R, 7^3)
 b = O(R, 7^5)
@@ -6565,86 +9158,21 @@ f = b^3
 g = c^7
 \end{lstlisting}
 
-\subsubsection{Exact division}
-
-\begin{lstlisting}
-divexact{S}(a::Padic{S}, b::Padic{S})
-/{S}(a::Padic{S}, b::Padic{S})
-\end{lstlisting}
-
-\desc{Return $a/b$. The output precision will be the minimum of 
-precision$(a) -$ valuation$(b)$ and precision$(b) - 2\times$valuation$(b) +$
-valuation$(a)$. If the result is not representable, an exception is
-thrown. If \code{b == 0} a \code{DivideError()} is thrown.}
-
-\begin{lstlisting}
-divexact{S}(a::Padic{S}, b::Int)
-divexact{S}(a::Padic{S}, b::ZZ)
-divexact{S}(a::Padic{S}, b::QQ)
-/{S}(a::Padic{S}, b::Int)
-/{S}(a::Padic{S}, b::ZZ)
-/{S}(a::Padic{S}, b::QQ)
-\end{lstlisting}
-
-\desc{Return $a/b$. The output precision will be precision$(a) -$ 
-valuation$(b)$. If the result is not representable, an exception is
-thrown. If \code{b == 0} a \code{DivideError()} is thrown.}
-
-\begin{lstlisting}
-divexact{S}(a::Int, b::Padic{S})
-divexact{S}(a::ZZ, b::Padic{S})
-divexact{S}(a::QQ, b::Padic{S})
-/{S}(a::Int, b::Padic{S})
-/{S}(a::ZZ, b::Padic{S})
-/{S}(a::QQ, b::Padic{S})
-\end{lstlisting}
-
-\desc{Return $a/b$. The output precision will be 
-precision$(b) - 2\times$valuation$(b) +$ valuation$(a)$. If the result is not
-representable, an exception is thrown. If \code{b == 0} a \code{DivideError()}
-is thrown.}
-
-\textbf{Examples.}
-
-Here are some examples of exact division.
-
-\begin{lstlisting}
-R = PadicField(7)
-
-a = 1 + 7 + 2*7^2 + O(R, 7^3)
-b = 2 + 3*7 + O(R, 7^5)
-c = 7^2 + 2*7^3 + O(R, 7^4)
-d = 7 + 2*7^2 + O(R, 7^5)
-
-f = divexact(a, b)
-g = divexact(c, d)
-h = divexact(d, R(7^3))
-j = divexact(R(34), R(17))
-
-k = a/2
-l = b/ZZ(7)
-m = c/(ZZ(12)/7^2)
-n = 2/d
-p = R(3)/3
-q = (ZZ(5)/7)/R(5)
-\end{lstlisting}
-
 \subsubsection{Inversion}
 
 \begin{lstlisting}
-inv{S}(a::Padic{S})
+inv(a::padic)
 \end{lstlisting}
 
 \desc{Return the multiplicative inverse of $a$, i.e. $1/a$. If \code{a == 0}
-a \code{DivideError()} is thrown. If the result is not representable, an
-exception is thrown.}
+a \code{DivideError()} is thrown.}
 
 \textbf{Examples.}
 
 Here are some examples of inversion.
 
 \begin{lstlisting}
-R = PadicField(7)
+R = PadicField(7, 30)
 
 a = 1 + 7 + 2*7^2 + O(R, 7^3)
 b = 2 + 3*7 + O(R, 7^5)
@@ -6658,23 +9186,121 @@ k = inv(d)
 l = inv(R(1))
 \end{lstlisting}
 
+\subsubsection{Exact division}
+
+\begin{lstlisting}
+divexact(a::padic, b::padic)
+//(a::padic, b::padic)
+\end{lstlisting}
+
+\desc{Return $a/b$. The output precision will be the minimum of 
+precision$(a) -$ valuation$(b)$ and precision$(b) - 2\times$valuation$(b) +$
+valuation$(a)$. If \code{b == 0} a \code{DivideError()} is thrown.}
+
+\textbf{Examples.}
+
+Here are some examples of exact division.
+
+\begin{lstlisting}
+R = PadicField(7, 30)
+
+a = 1 + 7 + 2*7^2 + O(R, 7^3)
+b = 2 + 3*7 + O(R, 7^5)
+c = 7^2 + 2*7^3 + O(R, 7^4)
+d = 7 + 2*7^2 + O(R, 7^5)
+
+f = divexact(a, b)
+g = divexact(c, d)
+h = divexact(d, R(7^3))
+j = divexact(R(34), R(17))
+\end{lstlisting}
+
+
+\subsubsection{Ad hoc exact division}
+
+\begin{lstlisting}
+divexact(a::padic, b::Int)
+divexact(a::padic, b::fmpz)
+divexact(a::padic, b::fmpq)
+//(a::padic, b::Int)
+//(a::padic, b::fmpz)
+//(a::padic, b::fmpq)
+\end{lstlisting}
+
+\desc{Return $a/b$. The output precision will be precision$(a) -$ 
+valuation$(b)$. If \code{b == 0} a \code{DivideError()} is thrown.}
+
+\begin{lstlisting}
+divexact(a::Int, b::padic)
+divexact(a::fmpz, b::padic)
+divexact(a::fmpq, b::padic)
+//(a::Int, b::padic)
+//(a::fmpz, b::padic)
+//(a::fmpq, b::padic)
+\end{lstlisting}
+
+\desc{Return $a/b$. The output precision will be 
+precision$(b) - 2\times$valuation$(b) +$ valuation$(a)$. If \code{b == 0}
+a \code{DivideError()} is thrown.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc exact division.
+
+\begin{lstlisting}
+R = PadicField(7, 30)
+
+a = 1 + 7 + 2*7^2 + O(R, 7^3)
+b = 2 + 3*7 + O(R, 7^5)
+c = 7^2 + 2*7^3 + O(R, 7^4)
+d = 7 + 2*7^2 + O(R, 7^5)
+
+f = a//2
+g = b//fmpz(7)
+h = c//(fmpz(12)//7^2)
+k = 2//d
+l = R(3)//3
+m = (fmpz(5)//7)//R(5)
+\end{lstlisting}
+
+\subsubsection{GCD}
+
+\begin{lstlisting}
+gcd(a::padic, b::padic)
+\end{lstlisting}
+
+\desc{Returns $1$ unless both $a$ and $b$ are $0$, in which case it returns $0$.}
+
+\textbf{Examples.}
+
+Here are some examples of GCD.
+
+\begin{lstlisting}
+R = PadicField(7, 30)
+
+a = 1 + 7 + 2*7^2 + O(R, 7^3)
+b = 2 + 3*7 + O(R, 7^5)
+
+d = gcd(a, b)
+f = gcd(R(0), R(0))
+\end{lstlisting}
+
 \subsubsection{Square root}
 
 \begin{lstlisting}
-sqrt{S}(a::Padic{S})
+sqrt(a::padic)
 \end{lstlisting}
 
 \desc{Return the $p$-adic square root of $a$. We define this only when the
 valuation of $a$ is even. The precision of the output will be precision$(a) -$
-valuation$(a)/2$. If the square root does not exist or is unrepresentable, an
-exception is thrown.}
+valuation$(a)/2$. If the square root does not exist, an exception is thrown.}
 
 \textbf{Examples.}
 
 Here are some examples of taking a $p$-adic square root.
 
 \begin{lstlisting}
-R = PadicField(7)
+R = PadicField(7, 30)
 
 a = 1 + 7 + 2*7^2 + O(R, 7^3)
 b = 2 + 3*7 + O(R, 7^5)
@@ -6689,39 +9315,39 @@ g = sqrt(R(121))
 \subsubsection{Special functions}
 
 \begin{lstlisting}
-exp{S}(a::Padic{S})
+exp(a::padic)
 \end{lstlisting}
 
 \desc{Return the $p$-adic exponential of $a$. We define this only when the
 valuation of $a$ is positive (unless \code{a == 0}). The precision of the
-output will be the same as the precision of the input. If the result is not
-representable an exception is thrown.}
+output will be the same as the precision of the input. If the input is not
+valid an exception is thrown.}
 
 \begin{lstlisting}
-log{S}(a::Padic{S})
+log(a::padic)
 \end{lstlisting}
 
 \desc{Return the $p$-adic logarithm of $a$. We define this only when the
 valuation of $a$ is zero (but not for \code{a == 0}). The precision of the
-output will be the same as the precision of the input. If the result is not
-representable an exception is thrown.}
+output will be the same as the precision of the input. If the input is not
+valid an exception is thrown.}
 
 \begin{lstlisting}
-teichmuller{S}(a::Padic{S})
+teichmuller(a::padic)
 \end{lstlisting}
 
 \desc{Return the Teichmuller lift of the $p$-adic value $a$. We require the
 valuation of $a$ to be nonnegative. The precision of the output will be the
 same as the precision of the input. For convenience, if $a$ is congruent to
-zero modulo $p$ we return zero. If the result is not representable an
-exception is thrown.}
+zero modulo $p$ we return zero. If the input is not valid an exception is
+thrown.}
 
 \textbf{Examples.}
 
 Here are some examples of special functions.
 
 \begin{lstlisting}
-R = PadicField(7)
+R = PadicField(7, 30)
 
 a = 1 + 7 + 2*7^2 + O(R, 7^3)
 b = 2 + 5*7 + 3*7^2 + O(R, 7^3)
@@ -6732,6 +9358,591 @@ d = log(a)
 c = exp(R(0))
 d = log(R(1))
 f = teichmuller(b) 
+\end{lstlisting}
+
+\section{Antic fields}
+
+Antic is a library for number fields, built on top of Flint. For now it provides us
+with number field arithmetic.
+
+\subsection{Antic number fields $\Q[x]/(f)$: \code|nf_elem|}
+
+Number fields in Antic are represented by an irreducible polynomial $f$ over $\Q$,
+with special code to deal with the case where $f$ happens to be defined over $\Z$
+and monic.
+
+Antic has a type \code{nf_elem} for elements of a number field.
+
+In Nemo the parent object of a number field has type \code{AnticNumberField} which
+belongs to the \code{Field} type class. Elements of a number field are of type
+\code{nf_elem} which belongs to the \code{NumberFieldElem} type class, which belongs
+to code{FieldElem}.
+
+The user need not deal with the types directly since we provide a function
+\code{AnticNumberField} to create parent objects for number fields and we also
+provide various constructors to create elements of a number field.
+
+By default, the global variable \code{NumberField} is set equal to
+\code{AnticNumberField} which means that the following code can be used to
+create number field objects in Nemo.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+\end{lstlisting}
+
+Here, $x^3 + 3x + 1$ is the irreducible polynomial over $\Q$ giving the minimum
+polynomial of the generator $a$ of the number field $K$ (though it need not be
+a monic polynomial).
+
+\subsubsection{Constructors}
+
+Various constructors are provided to create elements of a number field in Nemo.
+In the constructors below we assume that $K$ is the parent object of a number field,
+for example created by the construction above.
+
+\begin{lstlisting}
+K()
+\end{lstlisting}
+
+\desc{Create the element $0$ of the number field.}
+
+\begin{lstlisting}
+K(a::Int)
+K(a::fmpz)
+K(a::fmpq)
+\end{lstlisting}
+
+\desc{Create the element of the number field represented by the degree $0$
+polynomial with constant coefficient $a$.}
+
+\begin{lstlisting}
+K(g::fmpq_poly)
+\end{lstlisting}
+
+\desc{Create the element of the number field represented by the polynomial
+$g$. The polynomial is first reduced modulo the defining polynomial $f$ of
+the number field, thus they must both belong to the same polynomial ring.}
+
+\begin{lstlisting}
+K(d::nf_elem)
+\end{lstlisting}
+
+\desc{Return a reference to the number field element $d$. No copy is made
+of the data.}
+
+\textbf{Examples.}
+
+Here are some examples of constructors.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+k = K()
+l = K(123)
+m = K(fmpz(12))
+n = K(x^2 + 2x - 7)
+p = K(n)
+\end{lstlisting}
+
+\subsubsection{Conversions}
+
+If $R$ is the parent object of the polynomial ring to which the defining
+polynomial $f$ of the number field belongs, we can coerce the polynomial
+representation $g$ of a number field element $d$ into the polynomial ring
+defined by $R$. This allows us to retrieve the polynomial representation
+of number field elements as a polynomial.
+
+\begin{lstlisting}
+R(d::nf_elem)
+\end{lstlisting}
+
+\desc{Return the polynomial representation of the number field element $d$
+in the polynomial ring $R$ which was used to define the number field.}
+
+\textbf{Examples.}
+
+Here is an example of a conversion.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+k = K(x^2 + 2x - 7)
+l = R(k)
+\end{lstlisting}
+
+\subsubsection{Basic manipulation}
+
+\begin{lstlisting}
+zero(R::AnticNumberField)
+\end{lstlisting}
+
+\desc{Return the element $0$ of the number field with parent object $R$.}
+
+\begin{lstlisting}
+one(R::AnticNumberField)
+\end{lstlisting}
+
+\desc{Return the element $1$ of the number field with parent object $R$.}
+
+\begin{lstlisting}
+gen(R::AnticNumberField)
+\end{lstlisting}
+
+\desc{Return the generator of the number field with parent object $R$.}
+
+\begin{lstlisting}
+degree(R::AnticNumberField)
+\end{lstlisting}
+
+\desc{Return the degree of the number field.}
+
+\begin{lstlisting}
+iszero(d::nf_elem)
+\end{lstlisting}
+
+\desc{Return \code{true} if the given element $d$ is equal to $0$, else return
+\code{false}.}
+
+\begin{lstlisting}
+isone(d::nf_elem)
+\end{lstlisting}
+
+\desc{Return \code{true} if the given element $d$ is equal to $1$, else return
+\code{false}.}
+
+\begin{lstlisting}
+isgen(d::nf_elem)
+\end{lstlisting}
+
+\desc{Return \code{true} if the given element $d$ is the generator of the
+number field it belongs to, else return \code{false}.}
+
+\begin{lstlisting}
+coeff(d::nf_elem, n::int)
+\end{lstlisting}
+
+\desc{Return the coefficient of degree $n$ of the polynomial representation
+of the number field element $d$. If $n < 0$ we throw a \code{DomainError()}.
+If $n$ is bigger than the degree of the element $d$ we return $0$.}
+
+\begin{lstlisting}
+deepcopy(d::nf_elem)
+\end{lstlisting}
+
+\desc{Return a new number field element arithmetically equal to $d$.}
+
+\textbf{Examples.}
+
+Here are some examples of basic manipulation.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+d = a^2 + 2a - 7
+
+k = zero(K)
+l = one(K)
+m = gen(K)
+n = deepcopy(d)
+p = coeff(d, 1)
+isgen(m) == true
+isone(l) == true
+q = degree(K)
+\end{lstlisting}
+
+\subsubsection{Unary operators}
+
+\begin{lstlisting}
+-(d::nf_elem)
+\end{lstlisting}
+
+\desc{Return $-d$.}
+
+\textbf{Examples.}
+
+Here is an example of unary operators.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+d = a^2 + 2a - 7
+
+f = -d
+\end{lstlisting}
+
+\subsubsection{Binary operators}
+
+\begin{lstlisting}
++(c::nf_elem, d::nf_elem)
+\end{lstlisting}
+
+\desc{Return $c + d$.}
+
+\begin{lstlisting}
+-(c::nf_elem, d::nf_elem)
+\end{lstlisting}
+
+\desc{Return $c - d$.}
+
+\begin{lstlisting}
+*(c::nf_elem, d::nf_elem)
+\end{lstlisting}
+
+\desc{Return $cd$.}
+
+\textbf{Examples.}
+
+Here are some examples of binary operators.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+c = a^2 + 2a - 7
+d = 3a^2 - a + 1
+
+f = c + d
+g = c - d
+h = c*d
+\end{lstlisting}
+
+\subsubsection{Ad hoc binary operators}
+
+\begin{lstlisting}
++(c::nf_elem, d::Int)
++(c::nf_elem, d::fmpz)
++(c::nf_elem, d::fmpq)
+\end{lstlisting}
+
+\desc{Return $c + d$ where $d$ is coerced into the number field.}
+
+\begin{lstlisting}
++(c::Int, d::nf_elem)
++(c::fmpz, d::nf_elem)
++(c::fmpq, d::nf_elem)
+\end{lstlisting}
+
+\desc{Return $c + d$ where $c$ is coerced into the number field.}
+
+\begin{lstlisting}
+-(c::nf_elem, d::Int)
+-(c::nf_elem, d::fmpz)
+-(c::nf_elem, d::fmpq)
+\end{lstlisting}
+
+\desc{Return $c - d$ where $d$ is coerced into the number field.}
+
+\begin{lstlisting}
+-(c::Int, d::nf_elem)
+-(c::fmpz, d::nf_elem)
+-(c::fmpq, d::nf_elem)
+\end{lstlisting}
+
+\desc{Return $c - d$ where $c$ is coerced into the number field.}
+
+\begin{lstlisting}
+*(c::nf_elem, d::Int)
+*(c::nf_elem, d::fmpz)
+*(c::nf_elem, d::fmpq)
+\end{lstlisting}
+
+\desc{Return $cd$ where $d$ is coerced into the number field.}
+
+\begin{lstlisting}
+*(c::Int, d::nf_elem)
+*(c::fmpz, d::nf_elem)
+*(c::fmpq, d::nf_elem)
+\end{lstlisting}
+
+\desc{Return $cd$ where $c$ is coerced into the number field.}
+
+\textbf{Examples.}
+
+Here is an example of ad hoc binary operators.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+d = a^2 + 2a - 7
+
+f = d + 21
+g = fmpz(3) + d
+h = d - fmpq(2, 3)
+k = fmpq(2, 7)*d
+l = d*fmpz(5)
+\end{lstlisting}
+
+\subsubsection{Powering}
+
+\begin{lstlisting}
+^(d::nf_elem, n::Int)
+\end{lstlisting}
+
+\desc{Return $d^n$.}
+
+\textbf{Examples.}
+
+Here are some examples of powering.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+d = a^2 + 2a - 7
+
+f = d^5
+g = d^(-2)
+h = d^0
+\end{lstlisting}
+
+\subsubsection{Comparison}
+
+\begin{lstlisting}
+==(c::nf_elem, d::nf_elem)
+\end{lstlisting}
+
+\desc{Return \code{true} if $c$ is equal to $d$ in the number field.}
+
+\textbf{Examples.}
+
+Here are some examples of comparison.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+c = 3a^2 - a + 1
+d = a^2 + 2a - 7
+
+c != d
+c == 3a^2 - a + 1
+\end{lstlisting}
+
+\subsubsection{Inversion}
+
+\begin{lstlisting}
+inv(c::nf_elem)
+\end{lstlisting}
+
+\desc{Return the multiplicative inverse of $c$ in the number field. If $c = 0$
+we throw a \code{DivideError()}.}
+
+\textbf{Examples.}
+
+Here is an example of inversion.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+c = 3a^2 - a + 1
+
+c*inv(c) == 1
+\end{lstlisting}
+
+\subsubsection{Exact division}
+
+\begin{lstlisting}
+divexact(c::nf_elem, d::nf_elem)
+\end{lstlisting}
+
+\desc{Return $c$ times the inverse of $d$ in the number field. If $d = 0$ we
+throw a \code{DivideError()}.}
+
+\textbf{Examples.}
+
+Here are some examples of exact division.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+c = 3a^2 - a + 1
+d = a^2 + 2a - 7
+
+divexact(c, d) == c*inv(d)
+\end{lstlisting}
+
+\subsubsection{Ad hoc exact division}
+
+\begin{lstlisting}
+divexact(c::nf_elem, d::Int)
+divexact(c::nf_elem, d::fmpz)
+divexact(c::nf_elem, d::fmpq)
+\end{lstlisting}
+
+\desc{Return $c$ divided by $d$ in the number field. If $d = 0$ we
+throw a \code{DivideError()}.}
+
+\textbf{Examples.}
+
+Here are some examples of ad hoc exact division.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+c = 3a^2 - a + 1
+
+divexact(7c, 7) == c
+divexact(fmpq(2, 3)*c, fmpq(2, 3)) == c
+\end{lstlisting}
+
+\subsubsection{Norm and trace}
+
+\begin{lstlisting}
+norm(c::nf_elem)
+\end{lstlisting}
+
+\desc{Return the norm of the given number field element $c$ as an \code{fmpq}.}
+
+\begin{lstlisting}
+trace(c::nf_elem)
+\end{lstlisting}
+
+\desc{Return the trace of the given number field element $c$ as an \code{fmpq}.}
+
+\textbf{Examples.}
+
+Here are some examples of norm and trace.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+
+c = 3a^2 - a + 1
+
+norm(c)
+trace(c)
+\end{lstlisting}
+
+\section{Pari rings}
+
+Pari is a library for algebraic number theory, maintained in Bordeaux, France.
+We currently use Pari to provide arithmetic in maximal orders (rings of integers)
+of number fields and ideals of number fields.
+
+Pari is dynamically typed, though on a lower level it has specific types for a
+range of rings and fields. Many Pari objects are however represented not by
+special objects, but simply by their low level representation in terms of vectors
+of lower level objects, etc.
+
+We give Nemo types to Pari objects where they have none in Pari.
+
+\subsection{Pari maximal orders: \code|pari_maximal_order_elem|}
+
+Pari has no specific type for an element of a maximal order. In Nemo a maximal
+order parent object has type \code{PariMaximalOrder}, which belongs to the
+\code{Ring} type class. Elements of a maximal order are given the type
+\code{pari_maximal_order_elem} which belongs to the \code{MaximalOrderElem}
+type class, which in turn belongs to \code{RingElem}.
+
+The user need not deal with the types directly since we provide a function
+\code{PariMaximalOrder} to create parent objects for Pari maximal orders and we
+also provide various constructors to create elements of such orders.
+
+By default, the global variable \code{MaximalOrder} is set equal to
+\code{PariMaximalOrder} which means that the following code can be used to
+create maximal order parent objects in Nemo.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+\end{lstlisting}
+
+Here, $x^3 + 3x + 1$ is the irreducible polynomial over $\Q$ giving the minimum
+polynomial of the generator $a$ of the number field $K$ (though it need not be
+a monic polynomial).
+
+Note that at the present time, Pari maximal orders are constructed from Antic
+number fields. This may change in a later version of Nemo.
+
+\subsubsection{Constructors}
+
+Various constructors are provided to create elements of a Pari maximal order.
+In the constructors below we assume that $O$ is the parent object of such a maximal
+order, for example created by the construction above.
+
+\begin{lstlisting}
+O()
+\end{lstlisting}
+
+\desc{Create the element $0$ of the number field.}
+
+\begin{lstlisting}
+O(d::Integer)
+O(d::fmpz)
+\end{lstlisting}
+
+\desc{Create the element of the maximal order which results from mapping the
+integer $d$ into the maximal order via the embedding of the integers into the
+order.}
+
+\begin{lstlisting}
+O(d::fmpq_poly)
+\end{lstlisting}
+
+\desc{Given a polynomial $d$, consider the polynomial to be an element of the
+number field $K$ and embed it into the maximal order $O$. The element is
+represented in terms of a basis for $O$.}
+
+\begin{lstlisting}
+O(d::nf_elem)
+\end{lstlisting}
+
+\desc{Embed the number field element $d$ into the maximal order $O$. The element
+is represented in terms of a basis for $O$.}
+
+\begin{lstlisting}
+O(d::pari_maximal_order_elem)
+\end{lstlisting}
+
+\desc{Return a reference to the maximal order element $d$. No copy of the data is
+made.}
+
+\textbf{Examples.}
+
+Here are some examples of constructors.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+k = O()
+l = O(123)
+m = O(fmpz(12))
+n = O(x^2 + 2x - 7)
+p = O(a^2 + 2a - 7)
+q = O(n)
+\end{lstlisting}
+
+\subsubsection{Basic manipulation}
+
+\begin{lstlisting}
+basis(O::PariMaximalOrder)
+\end{lstlisting}
+
+\desc{Return the basis of the maximal order $O$. This is a vector of Pari
+polynomials representing the basis elements. They can be accessed using
+array notation and coerced into the ring of Flint polynomials over the
+rationals.}
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+B = basis(O)
+b3 = B[3]
+c = R(b3)
 \end{lstlisting}
 
 \end{document}

@@ -1,8 +1,11 @@
 include("generic/Fraction-test.jl")
 
-include("FiniteFields-test.jl")
-include("Padics-test.jl")
-include("fmpq-test.jl")
+include("flint/fmpq-test.jl")
+include("flint/fq-test.jl")
+include("flint/fq_nmod-test.jl")
+include("flint/padic-test.jl")
+
+include("antic/nf_elem-test.jl")
 
 function test_fields_resultant()
    print("Fields.resultant...")
@@ -28,9 +31,12 @@ end
 function test_fields()
    test_fraction()
 
-   test_ffield()
-   test_padics()
    test_fmpq()
+   test_fq()
+   test_fq_nmod()
+   test_padic()
 
+   test_nf_elem()
+   
    test_fields_resultant()
 end
