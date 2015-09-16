@@ -1,15 +1,15 @@
 module Nemo
 
-import Base: abs, asin, asinh, atan, atanh, base, bin, call, convert, cos,
-             cosh, dec, deepcopy, den, deserialize, div, divrem, exp, factor,
-             gcd, gcdx, getindex, hash, hex, inv, invmod, intersect, isequal,
-             isless, isprime, isqrt, lcm, length, log, lufact, mod, ndigits,
-             nextpow2, norm, nullspace, num, oct, one, parent, parseint,
-             precision, prevpow2, promote_rule, rank, Rational, rem, reverse,
-             serialize, setindex!, show, sign, sin, sinh, size, sqrt, string,
-             sub, tan, tanh, trace, trailing_zeros, transpose, transpose!,
-             truncate, var, zero, checkbounds, //, cmp,
-             +, -, *, ==, &, |, $, <<, >>, ^, ~,<=, >=, <, >, hcat, vcat
+import Base: abs, asin, asinh, atan, atanh, base, bin, call, checkbounds,
+             convert, cmp, cos, cosh, dec, deepcopy, den, deserialize, div,
+             divrem, exp, factor, gcd, gcdx, getindex, hash, hex, inv, invmod,
+             isequal, isless, isprime, isqrt, lcm, length, log, lufact, mod,
+             ndigits, nextpow2, norm, nullspace, num, oct, one, parent,
+             parseint, precision, prevpow2, promote_rule, rank, Rational, rem,
+             reverse, serialize, setindex!, show, sign, sin, sinh, size, sqrt,
+             string, sub, tan, tanh, trace, trailing_zeros, transpose,
+             transpose!, truncate, var, zero, +, -, *, ==, ^, &, |, $, <<,
+             >>, ~, <=, >=, <, >, hcat, vcat, //
 
 export Collection, Ring, Field, CollectionElem, RingElem, FieldElem, Pari,
        Flint, Antic, Generic
@@ -18,7 +18,7 @@ export PolyElem, SeriesElem, ResidueElem, FractionElem, MatElem,
        NumberFieldElem
 
 export ZZ, QQ, PadicField, FiniteField, NumberField, CyclotomicField,
-       MaximalRealSubfield, MaximalOrder
+       MaximalRealSubfield, MaximalOrder, Ideal
 
 export create_accessors, get_handle, package_handle
 
@@ -39,7 +39,7 @@ if on_windows
    push!(Libdl.DL_LOAD_PATH, "$pkgdir\\local\\lib")
 else
    try
-      if "HOSTNAME" in ENV && ENV["HOSTNAME"] == "juliabox"
+      if "HOSTNAME" in keys(ENV) && ENV["HOSTNAME"] == "juliabox"
          push!(Libdl.DL_LOAD_PATH, "/usr/local/lib")
       elseif on_linux
          push!(Libdl.DL_LOAD_PATH, "$pkgdir/local/lib")
@@ -143,11 +143,12 @@ MaximalRealSubfield = AnticMaximalRealSubfield
 
 ###############################################################################
 #
-#   Set domain for MaximalOrder to Pari
+#   Set domain for MaximalOrder and Ideal to Pari
 #
 ###############################################################################
 
-#MaximalOrder = PariMaximalOrder
+MaximalOrder = PariMaximalOrder
+Ideal = PariIdeal
 
 ###############################################################################
 #
