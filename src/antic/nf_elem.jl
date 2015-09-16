@@ -390,7 +390,7 @@ end
 function norm_div(a::nf_elem, d::fmpz, np::Int)
    z = fmpq()
    ccall((:nf_elem_norm_div, :libflint), Void,
-         (Ptr{fmpq}, Ptr{nf_elem}, Ptr{NfNumberField}, Ptr{fmpz}, UInt),
+         (Ptr{fmpq}, Ptr{nf_elem}, Ptr{AnticNumberField}, Ptr{fmpz}, UInt),
          &z, &a, &a.parent, &d, UInt(np))
    return z
 end
