@@ -416,6 +416,12 @@ function mul!(z::nf_elem, x::nf_elem, y::nf_elem)
                                                   &z, &x, &y, &parent(x))
 end
 
+function mul_red!(z::nf_elem, x::nf_elem, y::nf_elem, red::Bool)
+   ccall((:nf_elem_mul_red, :libflint), Void, 
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}, Cint), 
+                                                &z, &x, &y, &parent(x), red)
+end
+
 function addeq!(z::nf_elem, x::nf_elem)
    ccall((:nf_elem_add, :libflint), Void, 
          (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}), 
@@ -425,13 +431,12 @@ end
 function add!(a::nf_elem, b::nf_elem, c::nf_elem)
    ccall((:nf_elem_add, :libflint), Void,
          (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
-         &c, &a, &b, &a.parent)
+         &a, &b, &c, &a.parent)
 end
 
-function mul!(a::nf_elem, b::nf_elem, c::nf_elem)
-   ccall((:nf_elem_mul, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
-         &c, &a, &b, &a.parent)
+function reduce!(x::nf_elem)
+   ccall((:nf_elem_canonicalise, :libflint), Void, 
+         (Ptr{nf_elem}, Ptr{AnticNumberField}), &x, &parent(x))
 end
 
 ###############################################################################
@@ -519,6 +524,54 @@ function mul!(c::nf_elem, a::nf_elem, b::Int)
 end
 
 mul!(c::nf_elem, a::nf_elem, b::Integer) = mul!(c, a, fmpz(b))
+
+###############################################################################
+#
+#   Speedups for polynomials over number fields
+#
+###############################################################################
+
+function *(a::Poly{nf_elem}, b::Poly{nf_elem})
+   check_parent(a, b)
+   lena = length(a)
+   lenb = length(b)
+
+   if lena == 0 || lenb == 0
+      return parent(a)()
+   end
+
+   t = base_ring(a)()
+
+   lenz = lena + lenb - 1
+   d = Array(nf_elem, lenz)
+   
+   for i = 1:lena
+      d[i] = base_ring(a)()
+      mul_red!(d[i], coeff(a, i - 1), coeff(b, 0), false)
+   end
+
+   for i = 2:lenb
+      d[lena + i - 1] = base_ring(a)()
+      mul_red!(d[lena + i - 1], a.coeffs[lena], coeff(b, i - 1), false)
+   end
+   
+   for i = 1:lena - 1
+      for j = 2:lenb
+         mul_red!(t, coeff(a, i - 1), b.coeffs[j], false)
+         addeq!(d[i + j - 1], t)
+      end
+   end
+   
+   for i = 1:lenz
+      reduce!(d[i])
+   end
+
+   z = parent(a)(d)
+        
+   set_length!(z, normalise(z, lenz))
+
+   return z
+end
 
 ###############################################################################
 #
