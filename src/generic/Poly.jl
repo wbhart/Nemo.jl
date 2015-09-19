@@ -253,6 +253,64 @@ function -{T <: RingElem}(a::Poly{T}, b::Poly{T})
    return z
 end
 
+function mul_karatsuba{T <: RingElem}(a::Poly{T}, b::Poly{T})
+   # we assume len(a) != 0 != lenb and parent(a) == parent(b)
+
+   lena = length(a)
+   lenb = length(b)
+
+   m = div(max(lena, lenb) + 1, 2)
+
+   if m < lena
+      a1 = shift_right(a, m)
+      a0 = truncate(a, m)
+   else
+      return a*truncate(b, m) + shift_left(a*shift_right(b, m), m)
+   end
+
+   if a !== b
+      if m < lenb
+         b1 = shift_right(b, m)
+         b0 = truncate(b, m)
+      else
+         return b*truncate(a, m) + shift_left(b*shift_right(a, m), m)
+      end
+   else
+      b1 = a1
+      b0 = a0
+   end
+
+   z0 = a0*b0
+   z2 = a1*b1
+   if a !== b
+      z1 = (a1 + a0)*(b1 + b0) - z2 - z0
+   else
+      s = a1 + a0
+      z1 = s*s - z2 - z0
+   end
+
+   A = Array(T, lena + lenb - 1)
+
+   for i = 1:length(z0)
+      A[i] = coeff(z0, i - 1)
+   end
+   for i = length(z0) + 1:2m
+      A[i] = base_ring(a)()
+   end
+
+   for i = 1:length(z2)
+      A[2m + i] = coeff(z2, i - 1)
+   end
+
+   r = parent(a)(A)
+
+   for i = 1:length(z1)
+      addeq!(r.coeffs[i + m], coeff(z1, i - 1))
+   end
+
+   return r
+end
+
 function *{T <: RingElem}(a::Poly{T}, b::Poly{T})
    check_parent(a, b)
    lena = length(a)
