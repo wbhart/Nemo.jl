@@ -470,6 +470,14 @@ function test_fmpz_number_theoretic()
 
    @test jacobi(fmpz(2), fmpz(5)) == -1
 
+   if !((@windows? true : false) && Int == Int64)
+
+      @test numpart(10) == 42
+
+      @test numpart(fmpz(1000)) == fmpz("24061467864032622473692149727991")
+
+   end
+
    println("PASS")
 end
 

@@ -14,9 +14,9 @@ export fq_nmod, FqNmodFiniteField
 
 elem_type(::FqNmodFiniteField) = fq_nmod
 
-base_ring(a::FqNmodFiniteField) = None
+base_ring(a::FqNmodFiniteField) = Union{}
 
-base_ring(a::fq_nmod) = None
+base_ring(a::fq_nmod) = Union{}
 
 parent(a::fq_nmod) = a.parent
 
@@ -41,7 +41,7 @@ end
 
 function coeff(x::fq_nmod, n::Int)
    n < 0 && throw(DomainError())
-   return ccall((:nmod_poly_get_coeff_ui, :libflint), Uint, 
+   return ccall((:nmod_poly_get_coeff_ui, :libflint), UInt, 
                 (Ptr{fq_nmod}, Int), &x, n) 
 end
 
@@ -112,17 +112,17 @@ canonical_unit(x::fq_nmod) = x
 
 ###############################################################################
 #
-#   String I/O
+#   AbstractString{} I/O
 #
 ###############################################################################
 
 function show(io::IO, x::fq_nmod)
-   cstr = ccall((:fq_nmod_get_str_pretty, :libflint), Ptr{Uint8}, 
+   cstr = ccall((:fq_nmod_get_str_pretty, :libflint), Ptr{UInt8}, 
                 (Ptr{fq_nmod}, Ptr{FqNmodFiniteField}), &x, &x.parent)
 
    print(io, bytestring(cstr))
 
-   ccall((:flint_free, :libflint), Void, (Ptr{Uint8},), cstr)
+   ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
 end
 
 function show(io::IO, a::FqNmodFiniteField)
@@ -384,14 +384,14 @@ end
 #
 ###############################################################################
 
-function FlintFiniteField(char::Int, deg::Int, s::String)
+function FlintFiniteField(char::Int, deg::Int, s::AbstractString{})
    S = symbol(s)
    parent_obj = FqNmodFiniteField(fmpz(char), deg, S)
 
    return parent_obj, gen(parent_obj) 
 end
 
-function FlintFiniteField(pol::nmod_poly, s::String)
+function FlintFiniteField(pol::nmod_poly, s::AbstractString{})
    S = symbol(s)
    parent_obj = FqNmodFiniteField(pol, S)
 

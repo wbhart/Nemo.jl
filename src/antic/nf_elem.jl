@@ -18,7 +18,7 @@ parent(a::nf_elem) = a.parent
 
 elem_type(::AnticNumberField) = nf_elem
 
-base_ring(a::AnticNumberField) = None
+base_ring(a::AnticNumberField) = Union{}
 
 var(a::AnticNumberField) = a.S
 
@@ -94,7 +94,7 @@ end
 
 ###############################################################################
 #
-#   String I/O
+#   AbstractString{} I/O
 #
 ###############################################################################
 
@@ -104,13 +104,13 @@ function show(io::IO, a::AnticNumberField)
 end
 
 function show(io::IO, x::nf_elem)
-   cstr = ccall((:nf_elem_get_str_pretty, :libflint), Ptr{Uint8}, 
-                (Ptr{nf_elem}, Ptr{Uint8}, Ptr{AnticNumberField}), 
+   cstr = ccall((:nf_elem_get_str_pretty, :libflint), Ptr{UInt8}, 
+                (Ptr{nf_elem}, Ptr{UInt8}, Ptr{AnticNumberField}), 
                  &x, bytestring(string(var(parent(x)))), &parent(x))
 
    print(io, bytestring(cstr))
 
-   ccall((:flint_free, :libflint), Void, (Ptr{Uint8},), cstr)
+   ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
 end
 
 needs_parentheses(::Nemo.nf_elem) = true
@@ -692,21 +692,21 @@ end
 #
 ###############################################################################
 
-function AnticNumberField(pol::fmpq_poly, s::String)
+function AnticNumberField(pol::fmpq_poly, s::AbstractString{})
    S = symbol(s)
    parent_obj = AnticNumberField(pol, S)
 
    return parent_obj, gen(parent_obj) 
 end
 
-function AnticCyclotomicField(n::Int, s::String, t = "\$")
+function AnticCyclotomicField(n::Int, s::AbstractString{}, t = "\$")
    Zx, x = PolynomialRing(FlintZZ, string(gensym()))
    Qx, = PolynomialRing(FlintQQ, t)
    f = cyclotomic(n, x)
    return AnticNumberField(Qx(f), s)
 end
 
-function AnticMaximalRealSubfield(n::Int, s::String, t = "\$")
+function AnticMaximalRealSubfield(n::Int, s::AbstractString{}, t = "\$")
    Zx, x = PolynomialRing(FlintZZ, string(gensym()))
    Qx, = PolynomialRing(FlintQQ, t)
    f = cos_minpoly(n, x)

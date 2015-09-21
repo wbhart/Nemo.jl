@@ -39,8 +39,8 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash, fac,
        combit!, crt, divisible, divisor_lenstra, fdivrem, tdivrem, fmodpow2,
        gcdinv, isprobabprime, issquare, jacobi, remove, root, size, isqrtrem,
        sqrtmod, trailing_zeros, sigma, eulerphi, fib, moebiusmu, primorial,
-       risingfac, canonical_unit, needs_parentheses, is_negative, isless,
-       show_minus_one, parseint, addeq!, mul!, isunit, isequal, num, den
+       risingfac, numpart, canonical_unit, needs_parentheses, is_negative,
+       isless, show_minus_one, parseint, addeq!, mul!, isunit, isequal, num, den
 
 ###############################################################################
 #
@@ -52,7 +52,7 @@ parent(a::fmpz) = FlintZZ
 
 elem_type(::FlintIntegerRing) = fmpz
 
-base_ring(a::FlintIntegerRing) = None
+base_ring(a::FlintIntegerRing) = Union{}
 
 hash(a::fmpz) = hash(a, Uint(0))
 
@@ -77,7 +77,7 @@ sign(a::fmpz) = Int(ccall((:fmpz_sgn, :libflint), Cint, (Ptr{fmpz},), &a))
 fits(::Type{Int}, a::fmpz) = ccall((:fmpz_fits_si, :libflint), Bool, 
                                    (Ptr{fmpz},), &a)
 
-fits(::Type{Uint}, a::fmpz) = sign(a) < 0 ? false : 
+fits(::Type{UInt}, a::fmpz) = sign(a) < 0 ? false : 
               ccall((:fmpz_abs_fits_ui, :libflint), Bool, (Ptr{fmpz},), &a)
 
 size(a::fmpz) = Int(ccall((:fmpz_size, :libflint), Cint, (Ptr{fmpz},), &a))
@@ -382,10 +382,10 @@ function ^(x::fmpz, y::Int)
     if y < 0; throw(DomainError()); end
     if x == 1; return x; end
     if x == -1; return isodd(y) ? x : -x; end
-    if y > typemax(Uint); throw(DomainError()); end
+    if y > typemax(UInt); throw(DomainError()); end
     if y == 0; return one(FlintZZ); end
     if y == 1; return x; end
-    return x^Uint(y)
+    return x^UInt(y)
 end
 
 ###############################################################################
@@ -622,7 +622,7 @@ end
 #
 ###############################################################################
 
-popcount(x::fmpz) = Int(ccall((:fmpz_popcnt, :libflint), Culong, 
+popcount(x::fmpz) = Int(ccall((:fmpz_popcnt, :libflint), UInt, 
                               (Ptr{fmpz},), &x))
 
 prevpow2(x::fmpz) = x < 0 ? -prevpow2(-x) :
@@ -781,7 +781,7 @@ end
 function fac(x::Int)
     x < 0 && throw(DomainError())
     z = fmpz()
-    ccall((:fmpz_fac_ui, :libflint), Void, (Ptr{fmpz}, Culong), &z, x)
+    ccall((:fmpz_fac_ui, :libflint), Void, (Ptr{fmpz}, UInt), &z, x)
     return z
 end
 
@@ -789,7 +789,7 @@ function risingfac(x::fmpz, y::Int)
     y < 0 && throw(DomainError())
     z = fmpz()
     ccall((:fmpz_rfac_ui, :libflint), Void, 
-          (Ptr{fmpz}, Ptr{fmpz}, Culong), &z, &x, y)
+          (Ptr{fmpz}, Ptr{fmpz}, UInt), &z, &x, y)
     return z
 end
 
@@ -803,7 +803,7 @@ function risingfac(x::Int, y::Int)
        end
     else
        ccall((:fmpz_rfac_uiui, :libflint), Void, 
-             (Ptr{fmpz}, Culong, Culong), &z, x, y)
+             (Ptr{fmpz}, UInt, UInt), &z, x, y)
     end
     return z
 end
@@ -812,7 +812,7 @@ function primorial(x::Int)
     x < 0 && throw(DomainError()) 
     z = fmpz()
     ccall((:fmpz_primorial, :libflint), Void, 
-          (Ptr{fmpz}, Culong), &z, x)
+          (Ptr{fmpz}, UInt), &z, x)
     return z
 end
 
@@ -820,7 +820,7 @@ function fib(x::Int)
     x < 0 && throw(DomainError())
     z = fmpz()
     ccall((:fmpz_fib_ui, :libflint), Void, 
-          (Ptr{fmpz}, Culong), &z, x)
+          (Ptr{fmpz}, UInt), &z, x)
     return z
 end
 
@@ -829,7 +829,7 @@ function binom(n::Int, k::Int)
     k < 0 && return fmpz(0)
     z = fmpz()
     ccall((:fmpz_bin_uiui, :libflint), Void, 
-          (Ptr{fmpz}, Culong, Culong), &z, n, k)
+          (Ptr{fmpz}, UInt, UInt), &z, n, k)
     return z
 end
 
@@ -862,9 +862,31 @@ function eulerphi(x::fmpz)
    return z
 end
 
+function numpart(x::Int) 
+   if (@windows? true : false) && Int == Int64
+      error("not yet supported on win64")
+   end
+   x < 0 && throw(DomainError())
+   z = fmpz()
+   ccall((:partitions_fmpz_ui, :libarb), Void, 
+         (Ptr{fmpz}, UInt), &z, x)
+   return z
+end
+
+function numpart(x::fmpz) 
+   if (@windows? true : false) && Int == Int64
+      error("not yet supported on win64")
+   end
+   x < 0 && throw(DomainError())
+   z = fmpz()
+   ccall((:partitions_fmpz_fmpz, :libarb), Void, 
+         (Ptr{fmpz}, Ptr{fmpz}, Int), &z, &x, 0)
+   return z
+end
+
 ###############################################################################
 #
-#   String I/O
+#   AbstractString{} I/O
 #
 ###############################################################################
 
@@ -896,15 +918,15 @@ hex(n::fmpz) = base(16, n)
 
 function base(b::Integer, n::fmpz)
     2 <= b <= 62 || error("invalid base: $b")
-    p = ccall((:fmpz_get_str,:libflint), Ptr{Uint8}, 
-              (Ptr{Uint8}, Cint, Ptr{fmpz}), C_NULL, b, &n)
-    len = Int(ccall(:strlen, Csize_t, (Ptr{Uint8},), p))
-    ASCIIString(pointer_to_array(p, len, true))
+    p = ccall((:fmpz_get_str,:libflint), Ptr{UInt8}, 
+              (Ptr{UInt8}, Cint, Ptr{fmpz}), C_NULL, b, &n)
+    len = Int(ccall(:strlen, Csize_t, (Ptr{UInt8},), p))
+    ASCIIString{}{}(pointer_to_array(p, len, true))
 end
 
 function ndigits_internal(x::fmpz, b::Integer = 10)
     # fmpz_sizeinbase might return an answer 1 too big
-    n = Int(ccall((:fmpz_sizeinbase, :libflint), Culong, 
+    n = Int(ccall((:fmpz_sizeinbase, :libflint), UInt, 
                   (Ptr{fmpz}, Int32), &x, b))
     abs(x) < fmpz(b)^(n - 1) ? n - 1 : n
 end
@@ -923,7 +945,7 @@ call(::FlintIntegerRing) = fmpz()
 
 call(::FlintIntegerRing, a::Integer) = fmpz(a)
 
-call(::FlintIntegerRing, a::String) = fmpz(a)
+call(::FlintIntegerRing, a::AbstractString{}) = fmpz(a)
 
 call(::FlintIntegerRing, a::fmpz) = a
 
@@ -937,18 +959,18 @@ call(::FlintIntegerRing, a::BigFloat) = fmpz(BigInt(a))
 
 ###############################################################################
 #
-#   String parser
+#   AbstractString{} parser
 #
 ###############################################################################
 
-function parseint(::Type{fmpz}, s::String, base::Int = 10)
+function parseint(::Type{fmpz}, s::AbstractString{}, base::Int = 10)
     s = bytestring(s)
     sgn = s[1] == '-' ? -1 : 1
     i = 1 + (sgn == -1)
     z = fmpz()
     err = ccall((:fmpz_set_str, :libflint),
-               Int32, (Ptr{fmpz}, Ptr{Uint8}, Int32),
-               &z, bytestring(SubString(s, i)), base)
+               Int32, (Ptr{fmpz}, Ptr{UInt8}, Int32),
+               &z, bytestring(SubString{}{}(s, i)), base)
     err == 0 || error("Invalid big integer: $(repr(s))")
     return sgn < 0 ? -z : z
 end
@@ -959,7 +981,7 @@ end
 #
 ###############################################################################
 
-fmpz(s::String) = parseint(fmpz, s)
+fmpz(s::AbstractString{}) = parseint(fmpz, s)
 
 fmpz(z::Integer) = fmpz(BigInt(z))
 

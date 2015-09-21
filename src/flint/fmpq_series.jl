@@ -88,7 +88,7 @@ end
 
 ###############################################################################
 #
-#   String I/O
+#   AbstractString{} I/O
 #
 ###############################################################################
 
@@ -96,12 +96,12 @@ function show(io::IO, x::fmpq_series)
    if length(x) == 0
       print(io, "0")
    else
-      cstr = ccall((:fmpq_poly_get_str_pretty, :libflint), Ptr{Uint8}, 
-        (Ptr{fmpq_series}, Ptr{Uint8}), &x, bytestring(string(var(parent(x)))))
+      cstr = ccall((:fmpq_poly_get_str_pretty, :libflint), Ptr{UInt8}, 
+        (Ptr{fmpq_series}, Ptr{UInt8}), &x, bytestring(string(var(parent(x)))))
 
       print(io, bytestring(cstr))
 
-      ccall((:flint_free, :libflint), Void, (Ptr{Uint8},), cstr)
+      ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
    end
    print(io, "+O(", string(var(parent(x))), "^", x.prec, ")")
 end
@@ -736,7 +736,7 @@ end
 #
 ###############################################################################
 
-function PowerSeriesRing(R::FlintRationalField, prec::Int, s::String)
+function PowerSeriesRing(R::FlintRationalField, prec::Int, s::AbstractString{})
    S = symbol(s)
 
    parent_obj = FmpqSeriesRing(prec, S)

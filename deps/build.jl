@@ -3,59 +3,29 @@ on_windows = @windows ? true : false
 oldwdir = pwd()
 
 pkgdir = Pkg.dir("Nemo") 
+wdir = Pkg.dir("Nemo", "deps")
+vdir = Pkg.dir("Nemo", "local")
 
-if on_windows
-   wdir = "$pkgdir\\deps"
-   vdir = "$pkgdir\\local"
-   wdir2 = split(wdir, "\\")
-   s = lowercase(shift!(wdir2)[1])
-   unshift!(wdir2, string(s))
-   unshift!(wdir2, "")
-   wdir2 = join(wdir2, "/") 
-   vdir2 = split(vdir, "\\")
-   s = lowercase(shift!(vdir2)[1])
-   unshift!(vdir2, string(s))
-   unshift!(vdir2, "")
-   vdir2 = join(vdir2, "/") 
-else
-   wdir = "$pkgdir/deps"
-   vdir = "$pkgdir/local"
+if !ispath(Pkg.dir("Nemo", "local"))
+    mkdir(Pkg.dir("Nemo", "local"))
+end
+if !ispath(Pkg.dir("Nemo", "local", "lib"))
+    mkdir(Pkg.dir("Nemo", "local", "lib"))
 end
 
 cd(wdir)
 
-f = open("../deps/deps.jl", "w")
-if on_windows
-pd=join(split(pkgdir, "\\"), "\\\\")
-write(f, "const libdir = \"$pd\\\\local\\\\lib\"\n")
-write(f, "const libgmp = \"$pd\\\\local\\\\lib\\\\libgmp\"\n")
-write(f, "const libmpfr = \"$pd\\\\local\\\\lib\\\\libmpfr\"\n")
-write(f, "const libflint = \"$pd\\\\local\\\\lib\\\\libflint\"\n")
-write(f, "const libpari = \"$pd\\\\local\\\\lib\\\\libpari\"\n")
-else
-write(f, "const libdir = \"$pkgdir/local/lib\"\n")
-write(f, "const libgmp = \"$pkgdir/local/lib/libgmp\"\n")
-write(f, "const libmpfr = \"$pkgdir/local/lib/libmpfr\"\n")
-write(f, "const libflint = \"$pkgdir/local/lib/libflint\"\n")
-write(f, "const libpari = \"$pkgdir/local/lib/libpari\"\n")
-end
-close(f)
+#install libpthreads
 
 if on_windows
-   oldpth = ENV["PATH"]
-   pth = split(oldpth, ";")
-   shift!(pth)
-   shift!(pth)
-   pth = join(pth, ";")
-
-   start = ENV["COMSPEC"]
-
    if Int == Int32
-      ENV["MSYSTEM"]="MINGW32"
+      download("http://nemocas.org/binaries/w32-libwinpthread-1.dll", joinpath(vdir, "lib", "libwinpthread-1.dll"))
    else
-      ENV["MSYSTEM"]="MINGW64"
+      download("http://nemocas.org/binaries/w64-libwinpthread-1.dll", joinpath(vdir, "lib", "libwinpthread-1.dll"))
    end
 end
+
+cd(wdir)
 
 # install M4
 
@@ -71,26 +41,25 @@ end
 
 cd(wdir)
 
-# install MPIR
-
-mpir_version = "mpir-2.7.0"
-run(`wget http://mpir.org/$mpir_version.tar.bz2`)
-run(`tar -xvf $mpir_version.tar.bz2`)
-run(`rm $mpir_version.tar.bz2`)
-cd("$wdir/$mpir_version")
+# install GMP/MPIR
 
 if on_windows
-   ENV["PATH"] = pth
+   download("https://gmplib.org/download/gmp/gmp-6.0.0a.tar.bz2", joinpath(wdir, "gmp-6.0.0a.tar.bz2"))
+   run(`tar -xvf gmp-6.0.0a.tar.bz2`)
+   run(`rm gmp-6.0.0a.tar.bz2`)
+else
+   run(`wget http://mpir.org/mpir-2.7.0.tar.bz2`)
+   run(`tar -xvf mpir-2.7.0.tar.bz2`)
+   run(`rm mpir-2.7.0.tar.bz2`)
+   cd("$wdir/mpir-2.7.0")
+end
+
+if on_windows
    if Int == Int32
-      run(`$start /e:4096 /c sh configure --prefix=$vdir2 --enable-gmpcompat --disable-static --enable-shared ABI=32`)
+      download("http://nemocas.org/binaries/w32-libgmp-10.dll", joinpath(vdir, "lib", "libgmp-10.dll"))
    else
-      run(`$start /e:4096 /c sh configure --prefix=$vdir2 --enable-gmpcompat --disable-static --enable-shared ABI=64`)
+      download("http://nemocas.org/binaries/w64-libgmp-10.dll", joinpath(vdir, "lib", "libgmp-10.dll"))
    end
-   run(`$start /e:4096 /c sh -c "make -j"`)
-   run(`$start /e:4096 /c sh -c "make install"`) # naturally autotools fails to do this correctly
-   run(`$start /e:4096 /c sh -c "cp .libs/libgmp*.dll $vdir2/lib"`)  # so we do it ourselves
-   run(`$start /e:4096 /c sh -c "cp .libs/libmpir*.dll $vdir2/lib"`) 
-   ENV["PATH"] = oldpth
 else
    run(`./configure --prefix=$vdir M4=$vdir/bin/m4 --enable-gmpcompat --disable-static --enable-shared`)
    run(`make -j`)
@@ -104,19 +73,23 @@ cd(wdir)
 
 # install MPFR
 
-mpfr_version = "mpfr-3.1.3"
-run(`wget http://www.mpfr.org/mpfr-current/$mpfr_version.tar.bz2`)
-run(`tar -xvf $mpfr_version.tar.bz2`)
-run(`rm $mpfr_version.tar.bz2`)
-cd("$wdir/$mpfr_version")
+if on_windows
+   download("http://www.mpfr.org/mpfr-current/mpfr-3.1.3.tar.bz2", joinpath(wdir, "mpfr-3.1.3.tar.bz2"))
+   run(`tar -xvf mpfr-3.1.3.tar.bz2`)
+   run(`rm mpfr-3.1.3.tar.bz2`)
+else
+   run(`wget http://www.mpfr.org/mpfr-current/mpfr-3.1.3.tar.bz2`)
+   run(`tar -xvf mpfr-3.1.3.tar.bz2`)
+   run(`rm mpfr-3.1.3.tar.bz2`)
+   cd("$wdir/mpfr-3.1.3")
+end
 
 if on_windows
-   ENV["PATH"] = pth
-   run(`$start /e:4096 /c sh configure --prefix=$vdir2 --with-gmp=$vdir2 --disable-static --enable-shared`)
-   run(`$start /e:4096 /c sh -c "make -j"`)
-   run(`$start /e:4096 /c sh -c "make install"`) # naturally autotools fails to do this correctly
-   run(`$start /e:4096 /c sh -c "cp src/.libs/libmpfr*.dll $vdir2/lib"`)  # so we do it ourselves
-   ENV["PATH"] = oldpth
+   if Int == Int32
+      download("http://nemocas.org/binaries/w32-libmpfr-4.dll", joinpath(vdir, "lib", "libmpfr-4.dll"))
+   else
+      download("http://nemocas.org/binaries/w64-libmpfr-4.dll", joinpath(vdir, "lib", "libmpfr-4.dll"))
+   end
 else
    run(`./configure --prefix=$vdir --with-gmp=$vdir --disable-static --enable-shared`)
    run(`make -j`)
@@ -143,16 +116,16 @@ except
 end          
 
 if on_windows
-   cd("$wdir\\flint2")
-   ENV["PATH"] = pth
    if Int == Int32
-      run(`$start /e:4096 /c sh configure --extensions="$wdir2\antic" --prefix=$vdir2 --disable-static --enable-shared --with-mpir=$vdir2 --with-mpfr=$vdir2 ABI=32`)
+      download("http://nemocas.org/binaries/w32-libflint.dll", joinpath(vdir, "lib", "libflint.dll"))
    else
-      run(`$start /e:4096 /c sh configure --extensions="$wdir2\antic" --prefix=$vdir2 --disable-static --enable-shared --with-mpir=$vdir2 --with-mpfr=$vdir2 ABI=64`)
+      download("http://nemocas.org/binaries/w64-libflint.dll", joinpath(vdir, "lib", "libflint.dll"))
    end
-   run(`$start /e:4096 /c sh -c "make -j"`)
-   run(`$start /e:4096 /c sh -c "make install"`)
-   ENV["PATH"] = oldpth
+   try
+      run(`ln -s $vdir\\lib\\libflint.dll $vdir\\lib\\libflint-13.dll`)
+   except
+      # ignore error
+   end
 else
    cd("$wdir/flint2")
    run(`./configure --prefix=$vdir --extensions="$wdir/antic" --disable-static --enable-shared --with-mpir=$vdir --with-mpfr=$vdir`)
@@ -170,7 +143,11 @@ except
   run(`cd arb ; git pull`)
 end          
  
-if !on_windows
+if on_windows
+   if Int == Int32
+      download("http://nemocas.org/binaries/w32-libarb.dll", joinpath(vdir, "lib", "libarb.dll"))
+   end
+else
    cd("$wdir/arb")
    run(`./configure --prefix=$vdir --disable-static --enable-shared --with-mpir=$vdir --with-mpfr=$vdir --with-flint=$vdir`)
    run(`make -j`)
@@ -180,13 +157,26 @@ end
 
 # install PARI
 
-try
-  run(`git clone http://pari.math.u-bordeaux.fr/git/pari.git`)
-except
-  run(`cd pari ; git pull`)
+if on_windows
+   # git clone pari doesn't seem to work on Windows
+   download("http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-2.7.4.tar.gz", joinpath(wdir, "pari-2.7.4.tar.gz"))
+   run(`tar -xvf pari-2.7.4.tar.gz`)
+   run(`rm pari-2.7.4.tar.gz`)
+else
+   try
+      run(`git clone http://pari.math.u-bordeaux.fr/git/pari.git`)
+   except
+      run(`cd pari ; git pull`)
+   end
 end  
 
-if !on_windows
+if on_windows
+   if Int == Int32
+      download("http://nemocas.org/binaries/w32-libpari.dll", joinpath(vdir, "lib", "libpari.dll"))
+   else
+      download("http://nemocas.org/binaries/w64-libpari.dll", joinpath(vdir, "lib", "libpari.dll"))
+   end
+else
    cd("$wdir/pari")
    env_copy = copy(ENV)
    env_copy["LD_LIBRARY_PATH"] = "$vdir/lib"
@@ -201,11 +191,7 @@ end
 
 cd(wdir)
 
-if on_windows
-   push!(Libdl.DL_LOAD_PATH, "$pkgdir\\local\\lib")
-else
-   push!(Libdl.DL_LOAD_PATH, "$pkgdir/local/lib")
-end
+push!(Libdl.DL_LOAD_PATH, Pkg.dir("Nemo", "local", "lib"))
 
 cd(oldwdir)
 

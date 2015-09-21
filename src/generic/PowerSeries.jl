@@ -123,7 +123,7 @@ end
 
 ###############################################################################
 #
-#   String I/O
+#   AbstractString{} I/O
 #
 ###############################################################################
 
@@ -802,7 +802,7 @@ end
 #
 ###############################################################################
 
-function PowerSeriesRing(R::Ring, prec::Int, s::String)
+function PowerSeriesRing(R::Ring, prec::Int, s::AbstractString{})
    S = symbol(s)
    T = elem_type(R)
    parent_obj = PowerSeriesRing{T}(R, prec, S)
@@ -810,7 +810,7 @@ function PowerSeriesRing(R::Ring, prec::Int, s::String)
    base = base_ring(R)
    R2 = R
    parent_type = PowerSeries{T}
-   while base_ring(R2) != None
+   while base_ring(R2) != Union{}
       R2 = base_ring(R2)
       T2 = elem_type(R2)
       eval(:(Base.promote_rule(::Type{$parent_type}, ::Type{$T2}) = $parent_type))

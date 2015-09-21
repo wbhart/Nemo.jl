@@ -51,9 +51,9 @@ O(R::FlintPadicField, n::Integer) = O(R, fmpz(n))
 
 elem_type(::FlintPadicField) = padic
 
-base_ring(a::FlintPadicField) = None
+base_ring(a::FlintPadicField) = Union{}
 
-base_ring(a::padic) = None
+base_ring(a::padic) = Union{}
 
 parent(a::padic) = a.parent
 
@@ -101,19 +101,19 @@ isone(a::padic) = Bool(ccall((:padic_is_one, :libflint), Cint,
 
 ###############################################################################
 #
-#   String I/O
+#   AbstractString{} I/O
 #
 ###############################################################################
 
 function show(io::IO, x::padic)
    ctx = parent(x)
-   cstr = ccall((:padic_get_str, :libflint), Ptr{Uint8}, 
+   cstr = ccall((:padic_get_str, :libflint), Ptr{UInt8}, 
                (Ptr{Void}, Ptr{padic}, Ptr{FlintPadicField}),
                    C_NULL, &x, &ctx)
 
    print(io, bytestring(cstr))
 
-   ccall((:flint_free, :libflint), Void, (Ptr{Uint8},), cstr)
+   ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
    print(io, " + O(")
    print(io, prime(ctx))
    print(io, "^$(x.N))")
