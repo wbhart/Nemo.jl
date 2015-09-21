@@ -100,15 +100,15 @@ function __init__()
 
    global cb_pari_sigint = cglobal((:cb_pari_sigint, libpari), Ptr{Ptr{Void}})
 
-   global cb_pari_handle_exception = cglobal((:cb_pari_handle_exception, libpari), Ptr{Ptr{Void}})
+   #global cb_pari_handle_exception = cglobal((:cb_pari_handle_exception, libpari), Ptr{Ptr{Void}})
 
-   global cb_pari_err_recover = cglobal((:cb_pari_err_recover, libpari), Ptr{Ptr{Void}})
+   #global cb_pari_err_recover = cglobal((:cb_pari_err_recover, libpari), Ptr{Ptr{Void}})
 
    unsafe_store!(cb_pari_sigint, cfunction(pari_sigint_handler, Void, ()), 1)
 
-   unsafe_store!(cb_pari_handle_exception, cfunction(pari_error_handler, Cint, (Cint,)), 1)
+   #unsafe_store!(cb_pari_handle_exception, cfunction(pari_error_handler, Cint, (Cint,)), 1)
 
-   unsafe_store!(cb_pari_err_recover, cfunction(pari_error_recover, Void, (Cint,)), 1)
+   #unsafe_store!(cb_pari_err_recover, cfunction(pari_error_recover, Void, (Cint,)), 1)
 
    println("")
    println("Welcome to Nemo version 0.3")
