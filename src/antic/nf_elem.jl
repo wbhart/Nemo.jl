@@ -451,6 +451,11 @@ function add!(a::nf_elem, b::nf_elem, c::nf_elem)
          &a, &b, &c, &a.parent)
 end
 
+function sub!(a::nf_elem, b::nf_elem, c::nf_elem)
+   ccall((:nf_elem_sub, :libflint), Void,
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
+         &a, &b, &c, &a.parent)
+end
 
 ###############################################################################
 #
