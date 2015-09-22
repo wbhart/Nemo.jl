@@ -102,7 +102,7 @@ canonical_unit{T <: RingElem}(x::PolyElem{T}) = canonical_unit(lead(x))
 
 ###############################################################################
 #
-#   String I/O
+#   AbstractString{} I/O
 #
 ###############################################################################
 
@@ -253,6 +253,64 @@ function -{T <: RingElem}(a::Poly{T}, b::Poly{T})
    return z
 end
 
+function mul_karatsuba{T <: RingElem}(a::Poly{T}, b::Poly{T})
+   # we assume len(a) != 0 != lenb and parent(a) == parent(b)
+
+   lena = length(a)
+   lenb = length(b)
+
+   m = div(max(lena, lenb) + 1, 2)
+
+   if m < lena
+      a1 = shift_right(a, m)
+      a0 = truncate(a, m)
+   else
+      return a*truncate(b, m) + shift_left(a*shift_right(b, m), m)
+   end
+
+   if a !== b
+      if m < lenb
+         b1 = shift_right(b, m)
+         b0 = truncate(b, m)
+      else
+         return b*truncate(a, m) + shift_left(b*shift_right(a, m), m)
+      end
+   else
+      b1 = a1
+      b0 = a0
+   end
+
+   z0 = a0*b0
+   z2 = a1*b1
+   if a !== b
+      z1 = (a1 + a0)*(b1 + b0) - z2 - z0
+   else
+      s = a1 + a0
+      z1 = s*s - z2 - z0
+   end
+
+   A = Array(T, lena + lenb - 1)
+
+   for i = 1:length(z0)
+      A[i] = coeff(z0, i - 1)
+   end
+   for i = length(z0) + 1:2m
+      A[i] = base_ring(a)()
+   end
+
+   for i = 1:length(z2)
+      A[2m + i] = coeff(z2, i - 1)
+   end
+
+   r = parent(a)(A)
+
+   for i = 1:length(z1)
+      addeq!(r.coeffs[i + m], coeff(z1, i - 1))
+   end
+
+   return r
+end
+
 function *{T <: RingElem}(a::Poly{T}, b::Poly{T})
    check_parent(a, b)
    lena = length(a)
@@ -260,6 +318,10 @@ function *{T <: RingElem}(a::Poly{T}, b::Poly{T})
 
    if lena == 0 || lenb == 0
       return parent(a)()
+   end
+
+   if min(lena, lenb) > 30
+      return mul_karatsuba(a, b)
    end
 
    t = base_ring(a)()
@@ -346,15 +408,15 @@ function ^{T <: RingElem}(a::PolyElem{T}, b::Int)
    elseif b == 0
       return one(parent(a))
    else
-      bit = ~((~Uint(0)) >> 1)
-      while (Uint(bit) & b) == 0
+      bit = ~((~UInt(0)) >> 1)
+      while (UInt(bit) & b) == 0
          bit >>= 1
       end
       z = a
       bit >>= 1
       while bit != 0
          z = z*z
-         if (Uint(bit) & b) != 0
+         if (UInt(bit) & b) != 0
             z *= a
          end
          bit >>= 1
@@ -540,13 +602,13 @@ end
 #
 ###############################################################################
 
-function mulmod{T <: Union(ResidueElem, FieldElem)}(a::PolyElem{T}, b::PolyElem{T}, d::PolyElem{T})
+function mulmod{T <: Union{ResidueElem, FieldElem}}(a::PolyElem{T}, b::PolyElem{T}, d::PolyElem{T})
    check_parent(a, b)
    check_parent(a, d)
    return mod(a*b, d)
 end
 
-function powmod{T <: Union(ResidueElem, FieldElem)}(a::PolyElem{T}, b::Int, d::PolyElem{T})
+function powmod{T <: Union{ResidueElem, FieldElem}}(a::PolyElem{T}, b::Int, d::PolyElem{T})
    check_parent(a, d)
    if length(a) == 0
       return zero(parent(a))
@@ -559,15 +621,15 @@ function powmod{T <: Union(ResidueElem, FieldElem)}(a::PolyElem{T}, b::Int, d::P
          a = invmod(a, d)
          b = -b
       end
-      bit = ~((~Uint(0)) >> 1)
-      while (Uint(bit) & b) == 0
+      bit = ~((~UInt(0)) >> 1)
+      while (UInt(bit) & b) == 0
          bit >>= 1
       end
       z = a
       bit >>= 1
       while bit !=0
          z = mulmod(z, z, d)
-         if (Uint(bit) & b) != 0
+         if (UInt(bit) & b) != 0
             z = mulmod(z, a, d)
          end
          bit >>= 1
@@ -576,7 +638,7 @@ function powmod{T <: Union(ResidueElem, FieldElem)}(a::PolyElem{T}, b::Int, d::P
    end
 end
 
-function invmod{T <: Union(ResidueElem, FieldElem)}(a::PolyElem{T}, b::PolyElem{T})
+function invmod{T <: Union{ResidueElem, FieldElem}}(a::PolyElem{T}, b::PolyElem{T})
    check_parent(a, b)
    g, z = gcdinv(a, b)
    if g != 1
@@ -648,7 +710,7 @@ end
 #
 ###############################################################################
 
-function mod{T <: Union(ResidueElem, FieldElem)}(f::PolyElem{T}, g::PolyElem{T})
+function mod{T <: Union{ResidueElem, FieldElem}}(f::PolyElem{T}, g::PolyElem{T})
    check_parent(f, g)
    if length(g) == 0
       raise(DivideError())
@@ -664,7 +726,7 @@ function mod{T <: Union(ResidueElem, FieldElem)}(f::PolyElem{T}, g::PolyElem{T})
    return f
 end
 
-function divrem{T <: Union(ResidueElem, FieldElem)}(f::PolyElem{T}, g::PolyElem{T})
+function divrem{T <: Union{ResidueElem, FieldElem}}(f::PolyElem{T}, g::PolyElem{T})
    check_parent(f, g)
    if length(g) == 0
       raise(DivideError())
@@ -774,7 +836,7 @@ function gcd{T <: RingElem}(a::PolyElem{T}, b::PolyElem{T})
    return c*primpart(b)
 end
 
-function gcd{T <: Union(ResidueElem, FieldElem)}(a::PolyElem{T}, b::PolyElem{T})
+function gcd{T <: Union{ResidueElem, FieldElem}}(a::PolyElem{T}, b::PolyElem{T})
    check_parent(a, b)
    if length(a) > length(b)
       (a, b) = (b, a)
@@ -876,7 +938,7 @@ end
 #
 ###############################################################################
 
-function integral{T <: Union(ResidueElem, FieldElem)}(x::PolyElem{T})
+function integral{T <: Union{ResidueElem, FieldElem}}(x::PolyElem{T})
    len = length(x)
    v = Array(T, len + 1)
    v[1] = zero(base_ring(x))
@@ -941,7 +1003,7 @@ function resultant{T <: RingElem}(a::PolyElem{T}, b::PolyElem{T})
    res = c1^(lenb - 1)*c2^(lena - 1)*s*sgn
 end
 
-function resultant{T <: Union(ResidueElem, FieldElem)}(a::PolyElem{T}, b::PolyElem{T})
+function resultant{T <: Union{ResidueElem, FieldElem}}(a::PolyElem{T}, b::PolyElem{T})
    check_parent(a, b)
    if length(a) == 0 || length(b) == 0
       return zero(base_ring(a))
@@ -1054,7 +1116,7 @@ function gcdx{T <: RingElem}(a::PolyElem{T}, b::PolyElem{T})
    return res, u2, v2
 end
 
-function gcdx{T <: Union(ResidueElem, FieldElem)}(a::PolyElem{T}, b::PolyElem{T})
+function gcdx{T <: Union{ResidueElem, FieldElem}}(a::PolyElem{T}, b::PolyElem{T})
    check_parent(a, b)
    if length(a) == 0
       return b, zero(parent(a)), one(parent(a))
@@ -1092,7 +1154,7 @@ function gcdx{T <: Union(ResidueElem, FieldElem)}(a::PolyElem{T}, b::PolyElem{T}
    return d*A, d*u1, d*v1
 end
 
-function gcdinv{T <: Union(ResidueElem, FieldElem)}(a::PolyElem{T}, b::PolyElem{T})
+function gcdinv{T <: Union{ResidueElem, FieldElem}}(a::PolyElem{T}, b::PolyElem{T})
    check_parent(a, b)
    if length(a) == 0
       if length(b) == 0
@@ -1338,7 +1400,7 @@ end
 #
 ###############################################################################
 
-function PolynomialRing(R::Ring, s::String)
+function PolynomialRing(R::Ring, s::AbstractString{})
    S = symbol(s)
    T = elem_type(R)
    parent_obj = PolynomialRing{T}(R, S)
@@ -1346,7 +1408,7 @@ function PolynomialRing(R::Ring, s::String)
    base = base_ring(R)
    R2 = R
    parent_type = Poly{T}
-   while base_ring(R2) != None
+   while base_ring(R2) != Union{}
       R2 = base_ring(R2)
       T2 = elem_type(R2)
       eval(:(Base.promote_rule(::Type{$parent_type}, ::Type{$T2}) = $parent_type))

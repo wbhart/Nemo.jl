@@ -3913,6 +3913,39 @@ implementations where available.
 
 We only describe the details that differ from the generic implementations above.
 
+\subsection{General Flint functions}
+
+\begin{lstlisting}
+flint_cleanup()
+\end{lstlisting}
+
+\desc{Free any internal caches used by Flint, Arb and Antic.
+Examples of cached data include \code{mpz} integers used internally
+to speed up allocation of bignums,
+prime numbers, and high-precision values of mathematical constants.
+Normally, these caches should not take up too much memory, but there may
+be extreme circumstances where the user needs to free them manually.
+This function is safe to call at any time.}
+
+\begin{lstlisting}
+flint_set_num_threads(n::Int)
+\end{lstlisting}
+
+\desc{Set the number of threads that Flint may use internally (the default
+value is 1). Most functions are currently unaffected by this setting.}
+
+\textbf{Examples.}
+
+Here are some examples of the above functions.
+
+\begin{lstlisting}
+flint_cleanup()
+
+flint_set_num_threads(2)
+
+flint_set_num_threads(1)
+\end{lstlisting}
+
 \subsection{Flint integers ($\Z$): \code{fmpz}}
 
 Multi-precision integers can be created in Nemo using \code{ZZ}. For example, to create the integer
@@ -4963,6 +4996,16 @@ eulerphi(x::fmpz)
 \desc{Return the value of the Euler phi function, i.e. the number of $0 < d \leq x$ such
 that gcd$(d, x) = 1$. If $x < 0$ we throw a \code{DomainError()}.}
 
+\begin{lstlisting}
+numpart(x::fmpz)
+numpart(x::Int)
+\end{lstlisting}
+
+\desc{Return the number of partitions of $x$, i.e. $p(x)$. Since $p(x)$
+has $O(\sqrt{x})$ digits, this function can only be computed up to
+about $x = 10^{19}$. For large $x$, the result is computed faster if one
+sets \code{flint_num_threads(2)}.}
+
 \textbf{Examples.}
 
 Here are some examples of number theoretic and combinatorial functions.
@@ -4975,6 +5018,8 @@ end
 n = fac(100)
 s = sigma(fmpz(128), 10)
 a = eulerphi(fmpz(12480))
+
+p = numpart(1000)
 \end{lstlisting}
 
 \subsection{Flint polynomials over $\Z$: \code{fmpz_poly}}
@@ -5133,7 +5178,7 @@ f = x^3 + 3x + 1
 \subsubsection{Special polynomials}
 
 The following functions compute univariate special polynomials over \code{fmpz}. It is expected
-that the final argument in each of these function is the generator of the polynomial ring.
+that the final argument in each of these function is an element of the polynomial ring.
 
 \begin{lstlisting}
 chebyshev_t(n::Int, x::fmpz_poly)
@@ -5210,6 +5255,7 @@ j = swinnerton_dyer(5, x)
 k = cos_minpoly(30, x)
 l = theta_qexp(3, 30, x)
 m = eta_qexp(24, 30, x)
+o = cyclotomic(10, 1+x+x^2)
 \end{lstlisting}
 
 \subsection{Flint polynomials over $\Z/n\Z$ (multiprecision $n$): \code{fmpz_mod_poly}}
@@ -7127,6 +7173,28 @@ Here is an example of inversion.
    A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
   
    B = inv(A)
+\end{lstlisting}
+
+\subsubsection{Pseudo inversion}
+
+\begin{lstlisting}
+pseudo_inv(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return a tuple $(R, d)$ where $R/d$ is the inverse of $a$ over $\Q$.
+Here $R$ is a matrix over $\Z$ and $d$ is an \code{fmpz} denominator.
+Note that the matrix must be square and and non-singular, otherwise an exception is thrown.}
+
+\textbf{Examples.}
+
+Here is an example of inversion.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([1 0 1; 2 3 1; 5 6 7])
+  
+   B, d = pseudo_inv(A)
 \end{lstlisting}
 
 \subsubsection{Linear solving}
@@ -10069,6 +10137,294 @@ T = bounded_ideals(O, 100)
 
 a = S[2]
 b = T[97][1]
+\end{lstlisting}
+
+\subsubsection{Basic manipulation}
+
+\begin{lstlisting}
+numden(a::PariIdeal)
+\end{lstlisting}
+
+\desc{Return a pair $(n, d)$ consisting of the numerator and denominator
+of the given ideal (as ideals).}
+
+\begin{lstlisting}
+valuation(a::PariIdeal, p::PariIdeal)
+\end{lstlisting}
+
+\desc{Given a prime ideal $p$ as returned by \code{prime_decomposition}, return
+the valuation of $a$ at $p$.}
+
+\textbf{Examples.}
+
+Here are some examples of basic manipulation.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+S = Ideal(O, x + 1)
+T = Ideal(O, fmpq(2, 3)*x + 1)
+A = prime_decomposition(O, 3)
+
+valuation(S, A[1])
+(n, d) = numden(T)
+\end{lstlisting}
+
+\subsubsection{Ideal norm}
+
+\begin{lstlisting}
+norm(a::PariIdeal)
+\end{lstlisting}
+
+\desc{Return the norm of the ideal as an \code{fmpz} integer.}
+
+\textbf{Examples.}
+
+Here is an example of ideal norm.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+S = Ideal(O, x + 1)
+
+a = norm(S)
+\end{lstlisting}
+
+\subsubsection{Binary operators}
+
+\begin{lstlisting}
++(a::PariIdeal, b::PariIdeal)
+\end{lstlisting}
+
+\desc{Return the sum of the given ideals.}
+
+\begin{lstlisting}
+*(a::PariIdeal, b::PariIdeal)
+\end{lstlisting}
+
+\desc{Return the product of the given ideals.}
+
+\begin{lstlisting}
+intersect(a::PariIdeal, b::PariIdeal)
+\end{lstlisting}
+
+\desc{Return the intersection of the given ideals.}
+
+\textbf{Examples.}
+
+Here are some examples of binary operators.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+S = Ideal(O, x + 1)
+T = Ideal(O, 3)
+
+A = S + T
+B = S*T
+C = intersect(S, T)
+\end{lstlisting}
+
+\subsubsection{Comparison}
+
+\begin{lstlisting}
+==(a::PariIdeal, b::PariIdeal)
+\end{lstlisting}
+
+\desc{Return \code{true} if the ideals are arithmetically the same ideal.}
+
+\textbf{Examples.}
+
+Here are some examples of comparison.
+
+\begin{lstlisting}
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   O = MaximalOrder(K)
+
+   S = Ideal(O, x + 1)
+   T = Ideal(O, 3)
+
+   S == S
+   S != T
+\end{lstlisting}
+
+\subsubsection{Powering}
+
+\begin{lstlisting}
+^(a::PariIdeal, n::Int)
+\end{lstlisting}
+
+\desc{Return $a^n$.}
+
+\textbf{Examples.}
+
+Here is an example of powering.
+
+\begin{lstlisting}
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   O = MaximalOrder(K)
+
+   S = Ideal(O, x + 1)
+   
+   T = S^3
+\end{lstlisting}
+
+\subsubsection{Exact division}
+
+\begin{lstlisting}
+divexact(a::PariIdeal, b::PariIdeal)
+\end{lstlisting}
+
+\desc{Return the exact quotient of the ideals $a$ and $b$.}
+
+\textbf{Examples.}
+
+Here is an example of exact division.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+S = Ideal(O, x + 1)
+T = Ideal(O, 3)
+
+divexact(S*T, T)
+\end{lstlisting}
+
+\subsubsection{Inverse}
+
+\begin{lstlisting}
+inv(a::PariIdeal)
+\end{lstlisting}
+
+\desc{Return the inverse of the given ideal.}
+
+\textbf{Examples.}
+
+Here is an example of inversion.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+S = Ideal(O, x + 1)
+
+inv(S)
+\end{lstlisting}
+
+\subsubsection{Extended GCD}
+
+\begin{lstlisting}
+gcdx(a::PariIdeal, b::PariIdeal)
+\end{lstlisting}
+
+\desc{Given two coprime integer ideals $a$ and $b$ return a pair of values $(s, t)$,
+with $s \in a$ and $t \in b$ such that $s + t = 1$. The values $s$ and $t$ will be
+returned as \code{fmpq_poly}'s.}
+
+\textbf{Examples.}
+
+Here is an example of extended GCD.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+S = Ideal(O, x + 1)
+T = Ideal(O, 2x)
+
+(s, t) = gcdx(S, T)
+\end{lstlisting}
+
+\subsubsection{Ideal factorisation}
+
+\begin{lstlisting}
+factor(a::PariIdeal)
+\end{lstlisting}
+
+\desc{Return the prime factorisation of the given ideal. This is given as a Julia
+array of tuples $(P, n)$ consisting of a prime ideal $P$ and its exponent in the
+factorisation of $a$.}
+
+\begin{lstlisting}
+factor_mul(a::PariFactor{pari_maximal_order_elem})
+\end{lstlisting}
+
+\desc{Given a factorisation of an ideal $a$ into prime factors as returned by
+\code{factor}, this function retrieves the original ideal $a$.}
+
+\textbf{Examples.}
+
+Here is an example of ideal factorisation.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+S = Ideal(O, 3)
+
+A = factor(S)
+T = factor_mul(A)
+\end{lstlisting}
+
+\subsubsection{Ideal approximation}
+
+\begin{lstlisting}
+approx(a::PariIdeal)
+\end{lstlisting}
+
+\desc{Return an element of the given ideal which approximates the ideal, in the
+sense that the valuation at all prime ideals dividing $a$ is the same, and the
+valuation at all other prime ideals is non-negative.}
+
+\textbf{Examples.}
+
+Here is an example of ideal factorisation.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+S = Ideal(O, 3)
+
+f = approx(S)
+\end{lstlisting}
+
+\subsubsection{Coprime ideal construction}
+
+\begin{lstlisting}
+coprime_multiplier(x::PariIdeal, y::PariIdeal)
+\end{lstlisting}
+
+\desc{Return an element of the number field $b$ such that $bx$ is an integral
+ideal coprime to the ideal $y$.}
+
+\textbf{Examples.}
+
+Here is an example of coprime ideal construction.
+
+\begin{lstlisting}
+R, x = PolynomialRing(QQ, "x")
+K, a = NumberField(x^3 + 3x + 1, "a")
+O = MaximalOrder(K)
+
+S = Ideal(O, 3)
+T = Ideal(O, x + 1)
+
+f = coprime_multiplier(S, T)
 \end{lstlisting}
 
 

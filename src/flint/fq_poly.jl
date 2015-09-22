@@ -87,7 +87,7 @@ canonical_unit(a::fq_poly) = canonical_unit(lead(a))
   
 ################################################################################
 #
-#  String I/O
+#  AbstractString{} I/O
 #
 ################################################################################
 
@@ -95,12 +95,12 @@ function show(io::IO, x::fq_poly)
    if length(x) == 0
       print(io, "0")
    else
-      cstr = ccall((:fq_poly_get_str_pretty, :libflint), Ptr{Uint8}, 
-                  (Ptr{fq_poly}, Ptr{Uint8}, Ptr{FqFiniteField}),
+      cstr = ccall((:fq_poly_get_str_pretty, :libflint), Ptr{UInt8}, 
+                  (Ptr{fq_poly}, Ptr{UInt8}, Ptr{FqFiniteField}),
                   &x, bytestring(string(var(parent(x)))),
                   &((x.parent).base_ring))
       print(io, bytestring(cstr))
-      ccall((:flint_free, :libflint), Void, (Ptr{Uint8},), cstr)
+      ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
    end
 end
 
@@ -662,7 +662,7 @@ end
 #
 ################################################################################
 
-function PolynomialRing(R::FqFiniteField, s::String)
+function PolynomialRing(R::FqFiniteField, s::AbstractString{})
    S = symbol(s)
    parent_obj = FqPolyRing(R, S)
    return parent_obj, parent_obj([R(0), R(1)])

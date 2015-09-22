@@ -1,7 +1,3 @@
-using Base.Test, Nemo
-
-pkgdir = Pkg.dir("Nemo")
-pwd = "$pkgdir/src"
-push!(Libdl.DL_LOAD_PATH, "$pwd/../src/lib")
+using Nemo, Base.Test
 
 Nemo.Test.test_all()

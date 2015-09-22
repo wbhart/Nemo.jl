@@ -18,7 +18,7 @@ parent(a::nf_elem) = a.parent
 
 elem_type(::AnticNumberField) = nf_elem
 
-base_ring(a::AnticNumberField) = None
+base_ring(a::AnticNumberField) = Union{}
 
 var(a::AnticNumberField) = a.S
 
@@ -108,6 +108,31 @@ function iszero(a::nf_elem)
                 (Ptr{nf_elem}, Ptr{AnticNumberField}), &a, &a.parent)
 end
 
+function den(a::nf_elem)
+   z = fmpz()
+   ccall((:nf_elem_get_den, :libflint), Void,
+         (Ptr{fmpz}, Ptr{nf_elem}, Ptr{AnticNumberField}),
+         &z, &a, &a.parent)
+   return z
+end
+
+function elem_from_mat_row(a::AnticNumberField, b::fmpz_mat, i::Int, d::fmpz)
+   _checkbounds(b.parent.rows, i) || throw(BoundsError())
+   b.parent.cols == degree(a) || error("Wrong number of columns")
+   z = a()
+   ccall((:nf_elem_set_fmpz_mat_row, :libflint), Void,
+        (Ptr{nf_elem}, Ptr{fmpz_mat}, Cint, Ptr{fmpz}, Ptr{AnticNumberField}),
+        &z, &b, i - 1, &d, &a)
+   return z
+end
+
+function elem_to_mat_row!(a::fmpz_mat, i::Int, d::fmpz, b::nf_elem)
+   ccall((:nf_elem_get_fmpz_mat_row, :libflint), Void,
+         (Ptr{fmpz_mat}, Cint, Ptr{fmpz}, Ptr{nf_elem}, Ptr{AnticNumberField}),
+         &a, i - 1, &d, &b, &b.parent)
+   nothing
+ end
+
 degree(a::AnticNumberField) = degree(a.pol)
 
 function deepcopy(d::nf_elem)
@@ -117,7 +142,7 @@ end
 
 ###############################################################################
 #
-#   String I/O
+#   AbstractString{} I/O
 #
 ###############################################################################
 
@@ -127,13 +152,13 @@ function show(io::IO, a::AnticNumberField)
 end
 
 function show(io::IO, x::nf_elem)
-   cstr = ccall((:nf_elem_get_str_pretty, :libflint), Ptr{Uint8}, 
-                (Ptr{nf_elem}, Ptr{Uint8}, Ptr{AnticNumberField}), 
+   cstr = ccall((:nf_elem_get_str_pretty, :libflint), Ptr{UInt8}, 
+                (Ptr{nf_elem}, Ptr{UInt8}, Ptr{AnticNumberField}), 
                  &x, bytestring(string(var(parent(x)))), &parent(x))
 
    print(io, bytestring(cstr))
 
-   ccall((:flint_free, :libflint), Void, (Ptr{Uint8},), cstr)
+   ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
 end
 
 needs_parentheses(::Nemo.nf_elem) = true
@@ -303,6 +328,14 @@ end
 
 *(a::fmpq, b::nf_elem) = b * a
 
+//(a::nf_elem, b::Int) = divexact(a, b)
+
+//(a::nf_elem, b::fmpz) = divexact(a, b)
+
+//(a::nf_elem, b::Integer) = a//fmpz(b)
+
+//(a::nf_elem, b::fmpq) = divexact(a, b)
+
 ###############################################################################
 #
 #   Powering
@@ -439,6 +472,12 @@ function mul!(z::nf_elem, x::nf_elem, y::nf_elem)
                                                   &z, &x, &y, &parent(x))
 end
 
+function mul_red!(z::nf_elem, x::nf_elem, y::nf_elem, red::Bool)
+   ccall((:nf_elem_mul_red, :libflint), Void, 
+         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}, Cint), 
+                                                &z, &x, &y, &parent(x), red)
+end
+
 function addeq!(z::nf_elem, x::nf_elem)
    ccall((:nf_elem_add, :libflint), Void, 
          (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}), 
@@ -454,7 +493,13 @@ end
 function sub!(a::nf_elem, b::nf_elem, c::nf_elem)
    ccall((:nf_elem_sub, :libflint), Void,
          (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
+ 
          &a, &b, &c, &a.parent)
+end
+
+function reduce!(x::nf_elem)
+   ccall((:nf_elem_reduce, :libflint), Void, 
+         (Ptr{nf_elem}, Ptr{AnticNumberField}), &x, &parent(x))
 end
 
 ###############################################################################
@@ -545,6 +590,97 @@ mul!(c::nf_elem, a::nf_elem, b::Integer) = mul!(c, a, fmpz(b))
 
 ###############################################################################
 #
+#   Speedups for polynomials over number fields
+#
+###############################################################################
+
+function sqr(a::Poly{nf_elem})
+   lena = length(a)
+   
+   t = base_ring(a)()
+
+   lenz = 2*lena - 1
+   d = Array(nf_elem, lenz)
+   
+   for i = 1:lena - 1
+      d[2i - 1] = base_ring(a)()
+      d[2i] = base_ring(a)()
+      mul_red!(d[2i - 1], coeff(a, i - 1), coeff(a, i - 1), false)
+   end
+   d[2*lena - 1] = base_ring(a)()
+   mul_red!(d[2*lena - 1], coeff(a, lena - 1), coeff(a, lena - 1), false)
+
+   for i = 1:lena
+      for j = i + 1:lena
+         mul_red!(t, coeff(a, i - 1), coeff(a, j - 1), false)
+         addeq!(d[i + j - 1], t)
+         addeq!(d[i + j - 1], t)
+      end
+   end
+   
+   for i = 1:lenz
+      reduce!(d[i])
+   end
+
+   z = parent(a)(d)
+        
+   set_length!(z, normalise(z, lenz))
+
+   return z
+end
+
+function *(a::Poly{nf_elem}, b::Poly{nf_elem})
+   check_parent(a, b)
+   lena = length(a)
+   lenb = length(b)
+
+   if lena == 0 || lenb == 0
+      return parent(a)()
+   end
+
+   if min(lena, lenb) > 10 # karatsuba crossover
+      return mul_karatsuba(a, b)
+   end
+
+   if a == b
+       return sqr(a)
+   end
+
+   t = base_ring(a)()
+
+   lenz = lena + lenb - 1
+   d = Array(nf_elem, lenz)
+   
+   for i = 1:lena
+      d[i] = base_ring(a)()
+      mul_red!(d[i], coeff(a, i - 1), coeff(b, 0), false)
+   end
+
+   for i = 2:lenb
+      d[lena + i - 1] = base_ring(a)()
+      mul_red!(d[lena + i - 1], a.coeffs[lena], coeff(b, i - 1), false)
+   end
+   
+   for i = 1:lena - 1
+      for j = 2:lenb
+         mul_red!(t, coeff(a, i - 1), b.coeffs[j], false)
+         addeq!(d[i + j - 1], t)
+      end
+   end
+   
+   for i = 1:lenz
+      reduce!(d[i])
+   end
+
+   z = parent(a)(d)
+        
+   set_length!(z, normalise(z, lenz))
+
+   return z
+end
+
+###############################################################################
+#
 #   Promotions
 #
 ###############################################################################
@@ -619,21 +755,21 @@ end
 #
 ###############################################################################
 
-function AnticNumberField(pol::fmpq_poly, s::String)
+function AnticNumberField(pol::fmpq_poly, s::AbstractString{})
    S = symbol(s)
    parent_obj = AnticNumberField(pol, S)
 
    return parent_obj, gen(parent_obj) 
 end
 
-function AnticCyclotomicField(n::Int, s::String, t = "\$")
+function AnticCyclotomicField(n::Int, s::AbstractString{}, t = "\$")
    Zx, x = PolynomialRing(FlintZZ, string(gensym()))
    Qx, = PolynomialRing(FlintQQ, t)
    f = cyclotomic(n, x)
    return AnticNumberField(Qx(f), s)
 end
 
-function AnticMaximalRealSubfield(n::Int, s::String, t = "\$")
+function AnticMaximalRealSubfield(n::Int, s::AbstractString{}, t = "\$")
    Zx, x = PolynomialRing(FlintZZ, string(gensym()))
    Qx, = PolynomialRing(FlintQQ, t)
    f = cos_minpoly(n, x)
