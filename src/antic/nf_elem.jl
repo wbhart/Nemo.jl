@@ -5,7 +5,7 @@
 ###############################################################################
 
 export AnticNumberField, norm, trace, CyclotomicField, MaximalRealSubfield,
-       add!, sub!, mul!, norm_div
+       add!, sub!, mul!, norm_div, zero!, one!, gen!
 
 
 ###############################################################################
@@ -69,6 +69,29 @@ function zero(a::AnticNumberField)
          (Ptr{nf_elem}, Ptr{AnticNumberField}), &r, &a)
    return r
 end
+
+function gen!(r::nf_elem)
+   a = parent(r)
+   ccall((:nf_elem_gen, :libflint), Void, 
+         (Ptr{nf_elem}, Ptr{AnticNumberField}), &r, &a)
+   return r
+end
+
+function one!(r::nf_elem)
+   a = parent(r)
+   ccall((:nf_elem_one, :libflint), Void, 
+         (Ptr{nf_elem}, Ptr{AnticNumberField}), &r, &a)
+   return r
+end
+
+function zero!(r::nf_elem)
+   a = parent(r)
+   ccall((:nf_elem_zero, :libflint), Void, 
+         (Ptr{nf_elem}, Ptr{AnticNumberField}), &r, &a)
+   return r
+end
+
+
 
 function isgen(a::nf_elem)
    return ccall((:nf_elem_is_gen, :libflint), Bool, 
@@ -425,14 +448,9 @@ end
 function add!(a::nf_elem, b::nf_elem, c::nf_elem)
    ccall((:nf_elem_add, :libflint), Void,
          (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
-         &c, &a, &b, &a.parent)
+         &a, &b, &c, &a.parent)
 end
 
-function mul!(a::nf_elem, b::nf_elem, c::nf_elem)
-   ccall((:nf_elem_mul, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
-         &c, &a, &b, &a.parent)
-end
 
 ###############################################################################
 #
