@@ -326,6 +326,8 @@ end
 
 *(a::Integer, b::nf_elem) = b * a
 
+*(a::nf_elem, b::Integer) = a * fmpz(b)
+
 *(a::fmpq, b::nf_elem) = b * a
 
 //(a::nf_elem, b::Int) = divexact(a, b)
@@ -335,6 +337,8 @@ end
 //(a::nf_elem, b::Integer) = a//fmpz(b)
 
 //(a::nf_elem, b::fmpq) = divexact(a, b)
+
+//(a::Integer, b::nf_elem) = parent(b)(a)//b
 
 ###############################################################################
 #
