@@ -5,8 +5,7 @@
 ###############################################################################
 
 export AnticNumberField, norm, trace, CyclotomicField, MaximalRealSubfield,
-       add!, sub!, mul!, norm_div
-
+       add!, sub!, mul!, signature
 
 ###############################################################################
 #
@@ -111,6 +110,8 @@ function elem_to_mat_row!(a::fmpz_mat, i::Int, d::fmpz, b::nf_elem)
  end
 
 degree(a::AnticNumberField) = degree(a.pol)
+
+signature(a::AnticNumberField) = signature(a.pol)
 
 function deepcopy(d::nf_elem)
    z = nf_elem(parent(d), d)
