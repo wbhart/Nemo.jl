@@ -42,6 +42,92 @@ one(R::ArbField) = R(1)
 
 ################################################################################
 #
+#  Parent object overloading
+#
+################################################################################
+
+function call(r::ArbField)
+  z = arb()
+  z.parent = r
+  return z
+end
+
+function call(r::ArbField, x::Int)
+  z = arb(fmpz(x), r.prec)
+  z.parent = r
+  return z
+end
+
+function call(r::ArbField, x::UInt)
+  z = arb(fmpz(x), r.prec)
+  z.parent = r
+  return z
+end
+
+function call(r::ArbField, x::fmpz)
+  z = arb(x, r.prec)
+  z.parent = r
+  return z
+end
+
+function call(r::ArbField, x::fmpq)
+  z = arb(x, r.prec)
+  z.parent = r
+  return z
+end
+  
+#function call(r::ArbField, x::arf)
+#  z = arb(arb(x), r.prec)
+#  z.parent = r
+#  return z
+#end
+
+function call(r::ArbField, x::Float64)
+  z = arb(x, r.prec)
+  z.parent = r
+  return z
+end
+
+function call(r::ArbField, x::arb)
+  z = arb(x, r.prec)
+  z.parent = r
+  return z
+end
+
+function call(r::ArbField, x::AbstractString)
+  z = arb(x, r.prec)
+  z.parent = r
+  return z
+end
+
+function call(r::ArbField, x::Irrational)
+  if x == pi
+    return const_pi(r)
+  elseif x == e
+    return const_e(r.prec)
+  else
+    error("constant not supported")
+  end
+end
+
+################################################################################
+#
+#  Conversions
+#
+################################################################################
+
+function convert(::Type{Float64}, x::arb)
+    t = arf_struct(0, 0, 0, 0)
+    t.exp = x.mid_exp
+    t.size = x.mid_size
+    t.d1 = x.mid_d1
+    t.d2 = x.mid_d2
+    # rounds to zero
+    return ccall((:arf_get_d, :libarb), Float64, (Ptr{arf_struct}, Int), &t, 0)
+end
+
+################################################################################
+#
 #  String I/O
 #
 ################################################################################
