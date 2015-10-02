@@ -146,7 +146,7 @@ cd(wdir)
 # INSTALL ARB 
 
 try
-  run(`git clone https://github.com/fredrik-johansson/arb.git`)
+  run(`git clone https://github.com/thofma/arb.git`)
 catch
   cd("$wdir/arb")
   run(`git pull`)
