@@ -159,6 +159,7 @@ if on_windows
    end
 else
    cd("$wdir/arb")
+   run(`git checkout julia`)
    run(`./configure --prefix=$vdir --disable-static --enable-shared --with-mpir=$vdir --with-mpfr=$vdir --with-flint=$vdir`)
    run(`make -j`)
    run(`make install`)
