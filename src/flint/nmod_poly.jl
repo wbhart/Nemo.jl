@@ -11,7 +11,7 @@ export NmodPolyRing, nmod_poly, parent, base_ring, elem_type, length, zero,
        isirreducible, issquarefree, factor, factor_squarefree,
        factor_distinct_deg, factor_shape, setcoeff!, canonical_unit,
        add!, sub!, mul!, call, PolynomialRing, check_parent, gcdx, mod,
-       invmod, gcdinv, mulmod, powmod
+       invmod, gcdinv, mulmod, powmod, div, valuation
 
 ################################################################################
 #
@@ -385,6 +385,10 @@ function divexact(x::nmod_poly, y::Residue{fmpz})
   return divexact(x, parent(x)(y))
 end
 
+#CF: div is neccessary for general Euc operations!
+
+div(x::nmod_poly, y::nmod_poly) = divexact(x,y)  # seems to do a Euclidean division anyhow....
+
 ################################################################################
 #
 #  Division with remainder
@@ -730,6 +734,25 @@ function factor_shape(x::nmod_poly)
   return res3
 end  
 
+################################################################################
+#
+# Valuation
+#
+################################################################################
+#CF TODO: use squaring for fast large valuation
+#         use divrem to combine steps
+
+function valuation(z::nmod_poly, p::nmod_poly)
+  check_parent(z,p)
+  z == 0 && error("Not yet implemented")
+  v = 0
+  while mod(z, p) == 0
+    z = div(z, p)
+    v += 1
+  end
+  return v, z
+end 
+  
 ################################################################################
 #
 #  Unsafe functions
