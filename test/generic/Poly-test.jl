@@ -1,6 +1,14 @@
 function test_poly_constructors()
    print("Poly.constructors...")
  
+   R, x = ZZ["x"]
+   S, y = R["y"]
+
+   @test typeof(R) <: Nemo.Ring
+   @test typeof(S) <: PolynomialRing
+
+   @test isa(y, PolyElem)
+
    R, x = PolynomialRing(ZZ, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -428,6 +436,40 @@ function test_poly_gcdx()
    println("PASS")
 end
 
+function test_poly_newton_representation()
+   print("Poly.newton_representation...")
+
+   R, x = PolynomialRing(ZZ, "x")
+   S, y = PolynomialRing(R, "y")
+
+   f = 3x*y^2 + (x + 1)*y + 3
+
+   g = deepcopy(f)
+   roots = [R(1), R(2), R(3)]
+   monomial_to_newton!(g.coeffs, roots)
+   newton_to_monomial!(g.coeffs, roots)
+
+   @test f == g
+
+   println("PASS")
+end
+
+function test_poly_interpolation()
+   print("Poly.interpolation...")
+
+   R, x = PolynomialRing(ZZ, "x")
+   S, y = PolynomialRing(R, "y")
+
+   xs = [R(1), R(2), R(3), R(4)]
+   ys = [R(1), R(4), R(9), R(16)]
+
+   f = interpolate(S, xs, ys)
+
+   @test f == y^2
+
+   println("PASS")
+end
+
 function test_poly_special()
    print("Poly.special...")
 
@@ -496,6 +538,8 @@ function test_poly()
    test_poly_resultant()
    test_poly_discriminant()
    test_poly_gcdx()
+   test_poly_newton_representation()
+   test_poly_interpolation()
    test_poly_special()
    test_poly_mul_karatsuba()
    test_poly_mul_ks()

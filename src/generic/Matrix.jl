@@ -809,7 +809,6 @@ end
 ###############################################################################
 
 function determinant_clow{T <: RingElem}(M::Mat{T})
-   rows(M) != cols(M) && error("Dimensions don't match in determinant")
    R = base_ring(M)
    n = rows(M)
    A = Array(T, n, n)
@@ -821,7 +820,7 @@ function determinant_clow{T <: RingElem}(M::Mat{T})
          B[i, j] = R()
       end
    end
-   for k = 1:n-1
+   for k = 1:n - 1
       for i = 1:n
          for j = 1:i
             if !iszero(A[i, j])
@@ -867,8 +866,7 @@ function determinant_df{T <: RingElem}(M::Mat{T})
    return isodd(n) ? -d : d
 end
 
-function determinant{T <: FieldElem}(M::Mat{T})
-   rows(M) != cols(M) && error("Not a square matrix in determinant")
+function determinant_fflu{T <: RingElem}(M::Mat{T})
    n = rows(M)
    if n == 0
       return base_ring(M)()
@@ -879,25 +877,20 @@ function determinant{T <: FieldElem}(M::Mat{T})
    return r < n ? base_ring(M)() : (parity(P) == 0 ? d : -d)
 end
 
-function determinant{T <: RingElem}(M::Mat{T})
+function determinant{T <: FieldElem}(M::Mat{T})
    rows(M) != cols(M) && error("Not a square matrix in determinant")
-   n = rows(M)
-   R = base_ring(M)
-   if n == 0
-      return R()
-   end       
+   return determinant_fflu(M)
+end
+
+function determinant{T <: RingElem}(M::Mat{T})
    try
-      A = deepcopy(M)
-      P = FlintPermGroup(n)()
-      r, d = fflu!(P, A)
-      return r < n ? base_ring(M)() : (parity(P) == 0 ? d : -d)
+      return determinant_fflu(M)
    catch
       return determinant_df(M)
    end
 end
 
-function determinant(M::Mat{fmpz_poly})
-   rows(M) != cols(M) && error("Not a square matrix in determinant")
+function determinant_interpolation{T <: RingElem}(M::Mat{Poly{T}})
    n = rows(M)
    R = base_ring(M)
    if n == 0
@@ -918,8 +911,10 @@ function determinant(M::Mat{fmpz_poly})
    S = MatrixSpace(base_ring(R), n, n)
    X = S()
    b2 = div(bound, 2)
+   pt1 = base_ring(R)(1 - b2)
    for i = 1:bound
       x[i] = base_ring(R)(i - b2)
+      (x[i] == pt1 && i != 1) && error("Not enough interpolation points in ring")
       for j = 1:n
          for k = 1:n
             X[j, k] = evaluate(M[j, k], x[i])
@@ -928,6 +923,44 @@ function determinant(M::Mat{fmpz_poly})
       d[i] = determinant(X)
    end
    return interpolate(R, x, d)
+end
+
+function determinant{T <: RingElem}(M::Mat{Poly{T}})
+   rows(M) != cols(M) && error("Not a square matrix in determinant")
+   try
+      return determinant_interpolation(M)
+   catch
+      # no point trying fflu, since it probably fails
+      # for same reason as determinant_interpolation
+      return determinant_df(M)
+   end
+end
+
+###############################################################################
+#
+#   Rank
+#
+###############################################################################
+
+function rank{T <: RingElem}(M::Mat{T})
+   n = rows(M)
+   if n == 0
+      return 0
+   end
+   A = deepcopy(M)
+   P = FlintPermGroup(n)()
+   r, d = fflu!(P, A)
+   return r
+end
+
+function rank{T <: FieldElem}(M::Mat{T})
+   n = rows(M)
+   if n == 0
+      return 0
+   end
+   A = deepcopy(M)
+   P = FlintPermGroup(n)()
+   return lufact!(P, A)   
 end
 
 ###############################################################################

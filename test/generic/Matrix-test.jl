@@ -353,7 +353,7 @@ function test_matrix_determinant()
    R, x = PolynomialRing(QQ, "x")
    K, a = NumberField(x^3 + 3x + 1, "a")
 
-   function randelem(n)
+   function randelem(K::AnticNumberField, n)
       s = K(0)
       for i = 1:3
          s += rand(-n:n)*a^(i-1)
@@ -361,12 +361,12 @@ function test_matrix_determinant()
       return s
    end
 
-   function randmat{T <: FieldElem}(S::MatrixSpace{T}, n::Int)
+   function randmat{T <: RingElem}(S::MatrixSpace{T}, n::Int)
       M = S()
       d = rows(M)
       for i = 1:d
          for j = 1:d
-            M[i, j] = randelem(n)
+            M[i, j] = randelem(base_ring(S), n)
          end
       end
       return M
@@ -380,7 +380,73 @@ function test_matrix_determinant()
       @test determinant(M) == Nemo.determinant_clow(M)
    end
 
+   R, x = PolynomialRing(ZZ, "x")
+   S, y = PolynomialRing(R, "y")
+   
+   function randelem(R::FmpzPolyRing, n)
+      s = R(0)
+      x = gen(R)
+      for i = 1:3
+         s += rand(-n:n)*x^(i-1)
+      end
+      return s
+   end
+
+   function randelem(R, n)
+      s = R(0)
+      x = gen(R)
+      for i = 1:3
+         s += randelem(base_ring(R), n)*x^(i-1)
+      end
+      return s
+   end
+
+   for dim = 0:10
+      T = MatrixSpace(S, dim, dim)
+      M = randmat(T, 20)
+      
+      @test determinant(M) == Nemo.determinant_clow(M)
+   end
+
    println("PASS")
+end
+
+function test_matrix_rank()
+   print("Matrix.rank...")
+
+   S, x = PolynomialRing(ResidueRing(ZZ, 1009*2003), "x")
+   R = MatrixSpace(S, 3, 3)
+
+   M = R([S(3) S(2) S(1); S(2021024) S(2021025) S(2021026); 3*x^2+5*x+2021024 2021022*x^2+4*x+5 S(2021025)])
+
+   @test rank(M) == 2
+
+   S, z = PolynomialRing(ZZ, "z")
+   R = MatrixSpace(S, 4, 4)
+
+   M = R([S(-2) S(0) S(5) S(3); 5*z^2+5*z-5 S(0) S(-z^2+z) 5*z^2+5*z+1; 2*z-1 S(0) z^2+3*z+2 S(-4*z); 3*z-5 S(0) S(-5*z+5) S(1)])
+
+   @test rank(M) == 3
+
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   S = MatrixSpace(K, 3, 3)
+
+   M = S([a a^2 + 2*a - 1 2*a^2 - 1*a; 2*a+2 2*a^2 + 2*a (-2*a^2 - 2*a); (-a) (-a^2) a^2])
+
+   @test rank(M) == 2
+
+   R, x = PolynomialRing(ZZ, "x")
+   S, y = PolynomialRing(R, "y")
+   T = MatrixSpace(S, 3, 3)
+
+   M = T([(2*x^2)*y^2+(-2*x^2-2*x)*y+(-x^2+2*x) S(0) (-x^2-2)*y^2+(x^2+2*x+2)*y+(2*x^2-x-1); 
+    (-x)*y^2+(-x^2+x-1)*y+(x^2-2*x+2) S(0) (2*x^2+x-1)*y^2+(-2*x^2-2*x-2)*y+(x^2-x);
+    (-x+2)*y^2+(x^2+x+1)*y+(-x^2+x-1) S(0) (-x^2-x+2)*y^2+(-x-1)*y+(-x-1)])
+
+   @test rank(M) == 2
+
+   println("PASS")   
 end
 
 function test_matrix()
@@ -400,6 +466,7 @@ function test_matrix()
    test_matrix_lufact()
    test_matrix_fflu()
    test_matrix_determinant()
+   test_matrix_rank()
 
    println("")
 end
