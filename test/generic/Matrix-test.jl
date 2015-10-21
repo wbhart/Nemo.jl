@@ -1,3 +1,169 @@
+function randpoly(S, d::Int, n::Int)
+   r = S()
+   x = gen(S)
+   for i = 0:rand(0:d)
+      r += rand(-n:n)*x^i
+   end
+   return r
+end
+
+function randelem(K::AnticNumberField, n)
+   s = K(0)
+   a = gen(K)
+   for i = 1:3
+      s += rand(-n:n)*a^(i-1)
+   end
+   return s
+end
+
+function randelem(R::FmpzPolyRing, n)
+   s = R(0)
+   x = gen(R)
+   for i = 1:3
+      s += rand(-n:n)*x^(i-1)
+   end
+   return s
+end
+
+function randelem(R, n)
+   s = R(0)
+   x = gen(R)
+   for i = 1:3
+      s += randelem(base_ring(R), n)*x^(i-1)
+   end
+   return s
+end
+
+function randmat{T <: RingElem}(R::MatrixSpace{T}, d::Int, c::Int)
+   m = R.rows
+   n = R.cols
+   r = R()
+   for i = 1:m
+      for j = 1:n
+         r[i, j] = randpoly(base_ring(R), d, c)
+      end
+   end
+   return r
+end
+
+function randmat{T <: RingElem}(S::MatrixSpace{T}, c::Int)
+   M = S()
+   m = rows(M)
+   n = cols(M)
+   for i = 1:m
+      for j = 1:n
+         M[i, j] = randelem(base_ring(S), c)
+      end
+   end
+   return M
+end
+
+function randmat_triu{T <: RingElem}(R::MatrixSpace{T}, d::Int, c::Int)
+   m = R.rows
+   n = R.cols
+   r = R()
+   for i = 1:m
+      for j = 1:i - 1
+         r[i, j] = base_ring(R)()
+      end
+      for j = i:n
+         r[i, j] = randpoly(base_ring(R), d, c)
+      end
+      while r[i, i] == 0
+         r[i, i] = randpoly(base_ring(R), d, c)
+      end
+   end
+   return r
+end
+
+function randmat_triu{T <: RingElem}(S::MatrixSpace{T}, c::Int)
+   M = S()
+   m = rows(M)
+   n = cols(M)
+   for i = 1:m
+      for j = 1:i - 1
+         M[i, j] = base_ring(S)()
+      end
+      for j = i:n
+         M[i, j] = randelem(base_ring(S), c)
+      end
+      while M[i, i] == 0
+         M[i, i] = randelem(base_ring(S), c)
+      end
+   end
+   return M
+end
+
+function randmat_with_rank{T <: RingElem}(R::MatrixSpace{T}, d::Int, c::Int, rank::Int)
+   m = R.rows
+   n = R.cols
+   r = R()
+   for i = 1:rank
+      for j = 1:i - 1
+         r[i, j] = base_ring(R)()
+      end
+      r[i, i] = randpoly(base_ring(R), d, c)
+      while r[i, i] == 0
+         r[i, i] = randpoly(base_ring(R), d, c)
+      end
+      for j = i + 1:n
+         r[i, j] = randpoly(base_ring(R), d, c)
+      end
+   end
+   for i = rank + 1:m
+      for j = 1:n
+         r[i, j] = base_ring(R)()
+      end
+   end
+   if m > 1
+      for i = 1:4m
+         r1 = rand(1:m)
+         r2 = rand(1:m - 1)
+         r2 = r2 >= r1 ? r2 + 1 : r2
+         d = rand(-5:5)
+         for j = 1:n
+            r[r1, j] = r[r1, j] + d*r[r2, j]
+         end
+      end
+   end
+   return r
+end
+
+function randmat_with_rank{T <: RingElem}(S::MatrixSpace{T}, c::Int, rank::Int)
+   M = S()
+   m = rows(M)
+   n = cols(M)
+   for i = 1:rank
+      for j = 1:i - 1
+         M[i, j] = base_ring(S)()
+      end
+      M[i, i] = randelem(base_ring(S), c)
+      while M[i, i] == 0
+         M[i, i] = randelem(base_ring(S), c)
+      end
+      for j = i + 1:n
+         M[i, j] = randelem(base_ring(S), c)
+      end
+   end
+   for i = rank + 1:m
+      for j = 1:n
+         M[i, j] = base_ring(S)()
+      end
+   end
+   if m > 1
+      for i = 1:4m
+         r1 = rand(1:m)
+         r2 = rand(1:m - 1)
+         r2 = r2 >= r1 ? r2 + 1 : r2
+         d = rand(-5:5)
+         for j = 1:n
+            M[r1, j] = M[r1, j] + d*M[r2, j]
+         end
+      end
+   end
+   return M
+end
+
 function test_matrix_constructors()
    print("Matrix.constructors...")
  
@@ -236,31 +402,73 @@ function test_matrix_lufact()
    R, x = PolynomialRing(QQ, "x")
    K, a = NumberField(x^3 + 3x + 1, "a")
    S = MatrixSpace(K, 3, 3)
-   T = PermutationGroup(3)
-
+   
    A = S([a + 1 2a + 3 a^2 + 1; 2a^2 - 1 a - 1 2a; a^2 + 3a + 1 2a K(1)])
 
-   P = T()
-   r, L, U = lufact(P, A)
+   r, P, L, U = lufact(A)
 
    @test r == 3
    @test P*A == L*U
 
    A = S([K(0) 2a + 3 a^2 + 1; a^2 - 2 a - 1 2a; a^2 + 3a + 1 2a K(1)])
 
-   P = T()
-   r, L, U = lufact(P, A)
+   r, P, L, U = lufact(A)
 
    @test r == 3
    @test P*A == L*U
 
    A = S([K(0) 2a + 3 a^2 + 1; a^2 - 2 a - 1 2a; a^2 - 2 a - 1 2a])
 
-   P = T()
-   r, L, U = lufact(P, A)
+   r, P, L, U = lufact(A)
 
    @test r == 2
    @test P*A == L*U
+
+   println("PASS")
+end
+
+function test_matrix_fflu()
+   print("Matrix.fflu...")
+
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   S = MatrixSpace(K, 3, 3)
+   
+   A = S([a + 1 2a + 3 a^2 + 1; 2a^2 - 1 a - 1 2a; a^2 + 3a + 1 2a K(1)])
+
+   r, d, P, L, U = fflu(A)
+
+   D = S()
+   D[1, 1] = inv(U[1, 1])
+   D[2, 2] = inv(U[1, 1]*U[2, 2])
+   D[3, 3] = inv(U[2, 2])
+   
+   @test r == 3
+   @test P*A == L*D*U
+
+   A = S([K(0) 2a + 3 a^2 + 1; a^2 - 2 a - 1 2a; a^2 + 3a + 1 2a K(1)])
+
+   r, d, P, L, U = fflu(A)
+
+   D = S()
+   D[1, 1] = inv(U[1, 1])
+   D[2, 2] = inv(U[1, 1]*U[2, 2])
+   D[3, 3] = inv(U[2, 2])
+   
+   @test r == 3
+   @test P*A == L*D*U
+
+   A = S([K(0) 2a + 3 a^2 + 1; a^2 - 2 a - 1 2a; a^2 - 2 a - 1 2a])
+
+   r, d, P, L, U = fflu(A)
+
+   D = S()
+   D[1, 1] = inv(U[1, 1])
+   D[2, 2] = inv(U[1, 1]*U[2, 2])
+   D[3, 3] = inv(U[2, 2])
+   
+   @test r == 2
+   @test P*A == L*D*U
 
    println("PASS")
 end
@@ -270,26 +478,6 @@ function test_matrix_determinant()
 
    S, x = PolynomialRing(ResidueRing(ZZ, 1009*2003), "x")
 
-   function randpoly(d::Int, n::Int)
-      r = S()
-      x = gen(S)
-      for i = 0:rand(0:d)
-         r += rand(-n:n)*x^i
-      end
-      return r
-   end
-
-   function randmat(R, d::Int, n::Int)
-      m = R.rows
-      r = R()
-      for i = 1:m
-         for j = 1:m
-            r[i, j] = randpoly(d, n)
-         end
-      end
-      return r
-   end
-
    for dim = 0:10
       R = MatrixSpace(S, dim, dim)
 
@@ -298,7 +486,323 @@ function test_matrix_determinant()
       @test determinant(M) == Nemo.determinant_clow(M)
    end
 
+   S, z = PolynomialRing(ZZ, "z")
+
+   for dim = 0:10
+      R = MatrixSpace(S, dim, dim)
+
+      M = randmat(R, 3, 20);
+
+      @test determinant(M) == Nemo.determinant_clow(M)
+   end
+
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   
+   for dim = 0:10
+      S = MatrixSpace(K, dim, dim)
+
+      M = randmat(S, 100);
+
+      @test determinant(M) == Nemo.determinant_clow(M)
+   end
+
+   R, x = PolynomialRing(ZZ, "x")
+   S, y = PolynomialRing(R, "y")
+   
+   for dim = 0:10
+      T = MatrixSpace(S, dim, dim)
+      M = randmat(T, 20)
+      
+      @test determinant(M) == Nemo.determinant_clow(M)
+   end
+
    println("PASS")
+end
+
+function test_matrix_rank()
+   print("Matrix.rank...")
+
+   S, x = PolynomialRing(ResidueRing(ZZ, 1009*2003), "x")
+   R = MatrixSpace(S, 3, 3)
+
+   M = R([S(3) S(2) S(1); S(2021024) S(2021025) S(2021026); 3*x^2+5*x+2021024 2021022*x^2+4*x+5 S(2021025)])
+
+   @test rank(M) == 2
+
+   S, x = PolynomialRing(ResidueRing(ZZ, 20011*10007), "x")
+   R = MatrixSpace(S, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(R, 5, 100, i)
+
+      @test rank(M) == i
+   end
+
+   S, z = PolynomialRing(ZZ, "z")
+   R = MatrixSpace(S, 4, 4)
+
+   M = R([S(-2) S(0) S(5) S(3); 5*z^2+5*z-5 S(0) S(-z^2+z) 5*z^2+5*z+1; 2*z-1 S(0) z^2+3*z+2 S(-4*z); 3*z-5 S(0) S(-5*z+5) S(1)])
+
+   @test rank(M) == 3
+
+   R = MatrixSpace(S, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(R, 3, 20, i)
+
+      @test rank(M) == i
+   end
+
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   S = MatrixSpace(K, 3, 3)
+
+   M = S([a a^2 + 2*a - 1 2*a^2 - 1*a; 2*a+2 2*a^2 + 2*a (-2*a^2 - 2*a); (-a) (-a^2) a^2])
+
+   @test rank(M) == 2
+
+   S = MatrixSpace(K, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(S, 100, i)
+
+      @test rank(M) == i
+   end
+
+   R, x = PolynomialRing(ZZ, "x")
+   S, y = PolynomialRing(R, "y")
+   T = MatrixSpace(S, 3, 3)
+
+   M = T([(2*x^2)*y^2+(-2*x^2-2*x)*y+(-x^2+2*x) S(0) (-x^2-2)*y^2+(x^2+2*x+2)*y+(2*x^2-x-1); 
+    (-x)*y^2+(-x^2+x-1)*y+(x^2-2*x+2) S(0) (2*x^2+x-1)*y^2+(-2*x^2-2*x-2)*y+(x^2-x);
+    (-x+2)*y^2+(x^2+x+1)*y+(-x^2+x-1) S(0) (-x^2-x+2)*y^2+(-x-1)*y+(-x-1)])
+
+   @test rank(M) == 2
+
+   T = MatrixSpace(S, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(T, 20, i)
+
+      @test rank(M) == i
+   end
+
+   println("PASS")   
+end
+
+function test_matrix_solve()
+   print("Matrix.solve...")
+
+   S, x = PolynomialRing(ResidueRing(ZZ, 20011*10007), "x")
+
+   for dim = 0:10
+      R = MatrixSpace(S, dim, dim)
+      U = MatrixSpace(S, dim, rand(1:5))
+
+      M = randmat_with_rank(R, 5, 100, dim);
+      b = randmat(U, 5, 100);
+
+      x, d = solve(M, b)
+
+      @test M*x == d*b
+   end
+
+   S, z = PolynomialRing(ZZ, "z")
+
+   for dim = 0:10
+      R = MatrixSpace(S, dim, dim)
+      U = MatrixSpace(S, dim, rand(1:5))
+
+      M = randmat_with_rank(R, 3, 20, dim);
+      b = randmat(U, 3, 20);
+
+      x, d = solve(M, b)
+
+      @test M*x == d*b
+   end
+
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   
+   for dim = 0:10
+      S = MatrixSpace(K, dim, dim)
+      U = MatrixSpace(K, dim, rand(1:5))
+
+      M = randmat_with_rank(S, 100, dim);
+      b = randmat(U, 100);
+
+      x = solve(M, b)
+
+      @test M*x == b
+   end
+
+   R, x = PolynomialRing(ZZ, "x")
+   S, y = PolynomialRing(R, "y")
+   
+   for dim = 0:10
+      T = MatrixSpace(S, dim, dim)
+      U = MatrixSpace(S, dim, rand(1:5))
+     
+      M = randmat_with_rank(T, 20, dim)
+      b = randmat(U, 20)
+ 
+      x, d = solve(M, b)
+
+      @test M*x == d*b
+   end
+
+   R, t = PolynomialRing(QQ, "t")
+   K, a = NumberField(t^3 + 3t + 1, "a")
+   S, y = PolynomialRing(K, "y")
+   T = MatrixSpace(S, 3, 3)
+   U = MatrixSpace(S, 3, 1)
+
+   M = T([3y*a^2 + (y + 1)*a + 2y (5y+1)*a^2 + 2a + y - 1 a^2 + (-a) + 2y; (y + 1)*a^2 + 2y - 4 3y*a^2 + (2y - 1)*a + y (4y - 1)*a^2 + (y - 1)*a + 5; 2a + y + 1 (2y + 2)*a^2 + 3y*a + 3y a^2 + (-y-1)*a + (-y - 3)])
+   b = U([4y*a^2 + 4y*a + 2y + 1 5y*a^2 + (2y + 1)*a + 6y + 1 (y + 1)*a^2 + 3y*a + 2y + 4]')
+
+   x, d = solve(M, b)
+
+   @test M*x == d*b
+
+   println("PASS")
+end
+
+function test_matrix_solve_triu()
+   print("Matrix.solve_triu...")
+
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   
+   for dim = 0:10
+      S = MatrixSpace(K, dim, dim)
+      U = MatrixSpace(K, dim, rand(1:5))
+
+      M = randmat_triu(S, 100);
+      b = randmat(U, 100);
+
+      x = solve_triu(M, b, false)
+
+      @test M*x == b
+   end
+
+   println("PASS")
+end
+
+function test_matrix_rref()
+   print("Matrix.rref...")
+
+   S, x = PolynomialRing(ResidueRing(ZZ, 20011*10007), "x")
+   R = MatrixSpace(S, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(R, 5, 100, i)
+
+      r, d, A = rref(M)
+
+      @test r == i
+      @test is_rref(A)
+   end
+
+   S, z = PolynomialRing(ZZ, "z")
+   R = MatrixSpace(S, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(R, 3, 20, i)
+
+      r, d, A = rref(M)
+
+      @test r == i
+      @test is_rref(A)
+   end
+
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   S = MatrixSpace(K, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(S, 100, i)
+
+      r, A = rref(M)
+
+      @test r == i
+      @test is_rref(A)
+   end
+
+   R, x = PolynomialRing(ZZ, "x")
+   S, y = PolynomialRing(R, "y")
+   T = MatrixSpace(S, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(T, 20, i)
+
+      r, d, A = rref(M)
+
+      @test r == i
+      @test is_rref(A)
+   end
+
+   println("PASS")   
+end
+
+function test_matrix_nullspace()
+   print("Matrix.nullspace...")
+
+   S, x = PolynomialRing(ResidueRing(ZZ, 20011*10007), "x")
+   R = MatrixSpace(S, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(R, 5, 100, i)
+
+      n, N = nullspace(M)
+
+      @test n == 5 - i
+      @test rank(N) == n
+      @test iszero(M*N)
+   end
+
+   S, z = PolynomialRing(ZZ, "z")
+   R = MatrixSpace(S, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(R, 3, 20, i)
+
+      n, N = nullspace(M)
+
+      @test n == 5 - i
+      @test rank(N) == n
+      @test iszero(M*N)
+   end
+
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   S = MatrixSpace(K, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(S, 100, i)
+
+      n, N = nullspace(M)
+
+      @test n == 5 - i
+      @test rank(N) == n
+      @test iszero(M*N)
+   end
+
+   R, x = PolynomialRing(ZZ, "x")
+   S, y = PolynomialRing(R, "y")
+   T = MatrixSpace(S, 5, 5)
+
+   for i = 0:5
+      M = randmat_with_rank(T, 20, i)
+
+      n, N = nullspace(M)
+
+      @test n == 5 - i
+      @test rank(N) == n
+      @test iszero(M*N)
+   end
+
+   println("PASS")   
 end
 
 function test_matrix()
@@ -316,7 +820,13 @@ function test_matrix()
    test_matrix_trace()
    test_matrix_content()
    test_matrix_lufact()
+   test_matrix_fflu()
    test_matrix_determinant()
+   test_matrix_rank()
+   test_matrix_solve()
+   test_matrix_solve_triu()
+   test_matrix_rref()
+   test_matrix_nullspace()
 
    println("")
 end
