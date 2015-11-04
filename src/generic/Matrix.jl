@@ -4,7 +4,10 @@
 #
 ###############################################################################
 
-export Mat, MatrixSpace, fflu!, fflu, solve_triu, is_rref
+export Mat, MatrixSpace, fflu!, fflu, solve_triu, is_rref,
+       charpoly_danilevsky!, charpoly_danilevsky_ff!, hessenberg!, hessenberg,
+       is_hessenberg, charpoly_hessenberg!, minpoly, typed_hvcat, typed_hcat,
+       powers, similarity!
 
 ###############################################################################
 #
@@ -148,7 +151,11 @@ function -(x::Mat)
 end
 
 function transpose(x::Mat)
-   par = parent(x)
+   if rows(x) == cols(x)
+      par = parent(x)
+   else
+      par = MatrixSpace(base_ring(x), cols(x), rows(x))
+   end
    return par(x.entries')
 end
 
@@ -415,6 +422,23 @@ function ^{T <: RingElem}(a::MatElem{T}, b::Int)
       end
       return z
    end
+end
+
+function powers{T <: RingElem}(a::MatElem{T}, d::Int)
+   rows(a) != cols(a) && error("Dimensions do not match in powers")
+   d <= 0 && throw(DomainError())
+   S = parent(a)
+   A = Array(MatElem{T}, d + 1)
+   A[1] = one(S)
+   if d > 1
+      c = a
+      A[2] = a
+      for i = 2:d
+         c *= a
+         A[i + 1] = c
+      end
+   end
+   return A
 end
 
 ###############################################################################
@@ -994,6 +1018,86 @@ function is_rref{T <: FieldElem}(M::MatElem{T})
       end   
    end
    return true
+end
+
+# Reduce row n of the matrix A, assuming the first n - 1 rows are in Gauss
+# form. However those rows may not be in order. The i-th entry of the array
+# P is the row of A which has a pivot in the i-th column. If no such row
+# exists, the entry of P will be 0. The function returns the column in which
+# the n-th row has a pivot after reduction. This will always be chosen to be
+# the first available column for a pivot from the left. This information is
+# also updated in P. The i-th entry of the array L contains the last column
+# of A for which the row i is nonzero. This speeds up reduction in the case
+# that A is chambered on the right. Otherwise the entries can all be set to
+# the number of columns of A. The entries of L must be monotonic increasing.
+
+function reduce_row!{T <: FieldElem}(A::MatElem{T}, P::Array{Int}, L::Array{Int}, m::Int)
+   R = base_ring(A)
+   n = cols(A)
+   t = R()
+   for i = 1:n
+      if A[m, i] != 0
+         h = -A[m, i]
+         r = P[i]
+         if r != 0
+            A[m, i] = R()
+            for j = i + 1:L[r]
+               mul!(t, A[r, j], h)
+               s = A[m, j]
+               addeq!(s, t)
+               A[m, j] = s
+            end 
+         else
+            h = inv(A[m, i])
+            A[m, i] = R(1)
+            for j = i + 1:L[m]
+               s = A[m, j]
+               mul!(s, s, h)
+               A[m, j] = s
+            end
+            P[i] = m
+            return i
+         end
+      end
+   end
+   return 0
+end
+
+function reduce_row!{T <: RingElem}(A::MatElem{T}, P::Array{Int}, L::Array{Int}, m::Int)
+   R = base_ring(A)
+   n = cols(A)
+   t = R()
+   c = R(1)
+   for i = 1:n
+      if A[m, i] != 0
+         h = -A[m, i]
+         r = P[i]
+         if r != 0
+            d = A[r, i]
+            A[m, i] = R()
+            for j = i + 1:L[r]
+               mul!(t, A[r, j], h)
+               s = A[m, j]
+               mul!(s, s, d)
+               addeq!(s, t)
+               A[m, j] = s
+            end 
+            for j = L[r] + 1:L[m]
+               s = A[m, j]
+               mul!(s, s, d)
+               A[m, j] = s
+            end
+            for j = i + 1:L[m]
+               A[m, j] = divexact(A[m, j], c)
+            end
+            c = d
+         else
+            P[i] = m
+            return i
+         end
+      end
+   end
+   return 0
 end
 
 ###############################################################################
@@ -1609,9 +1713,328 @@ end
 
 ###############################################################################
 #
+#   Hessenberg form
+#
+###############################################################################
+
+function hessenberg!{T <: RingElem}(A::MatElem{T})
+   rows(A) != cols(A) && error("Dimensions don't match in hessenberg")
+   R = base_ring(A)
+   n = rows(A)
+   u = R()
+   t = R()
+   for m = 2:n - 1
+      i = m + 1
+      while i <= n && A[i, m - 1] == 0
+         i += 1
+      end
+      if i != n + 1
+         if A[m, m - 1] != 0
+            i = m
+         end
+         h = -inv(A[i, m - 1])
+         if i > m
+            for j = m - 1:n
+               A[i, j], A[m, j] = A[m, j], A[i, j]
+            end
+            for j = 1:n
+               A[j, i], A[j, m] = A[j, m], A[j, i]
+            end
+         end
+         for i = m + 1:n
+            if A[i, m - 1] != 0
+               mul!(u, A[i, m - 1], h)
+               for j = m:n
+                  mul!(t, u, A[m, j])
+                  s = A[i, j]
+                  addeq!(s, t)
+                  A[i, j] = s
+               end
+               u = -u
+               for j = 1:n
+                  mul!(t, u, A[j, i])
+                  s = A[j, m]
+                  addeq!(s, t)
+                  A[j, m] = s
+               end
+               A[i, m - 1] = R()
+            end
+         end
+      end
+   end
+end
+
+function hessenberg{T <: RingElem}(A::MatElem{T})
+   rows(A) != cols(A) && error("Dimensions don't match in hessenberg")
+   M = deepcopy(A)
+   hessenberg!(M)
+   return M
+end
+
+function is_hessenberg{T <: RingElem}(A::MatElem{T})
+   n = rows(A)
+   for i = 3:n
+      for j = 1:i - 2
+         if A[i, j] != 0
+            return false
+         end
+      end
+   end
+   return true
+end
+
+###############################################################################
+#
 #   Characteristic polynomial
 #
 ###############################################################################
+
+function charpoly_hessenberg!{T <: RingElem}(S::Ring, A::MatElem{T})
+   rows(A) != cols(A) && error("Dimensions don't match in charpoly")
+   R = base_ring(A)
+   base_ring(S) != base_ring(A) && error("Cannot coerce into polynomial ring")
+   n = rows(A)
+   if n == 0
+      return S(1)
+   end
+   if n == 1
+      return gen(S) - A[1, 1]
+   end
+   hessenberg!(A)
+   P = Array(elem_type(S), n + 1)
+   P[1] = S(1)
+   x = gen(S)
+   for m = 1:n
+      P[m + 1] = (x - A[m, m])*P[m]
+      t = R(1)
+      for i = 1:m - 1
+         mul!(t, t, A[m - i + 1, m - i])
+         P[m + 1] -= t*A[m - i, m]*P[m - i]
+      end
+   end
+   return P[n + 1]
+end
+
+function charpoly_danilevsky_ff!{T <: RingElem}(S::Ring, A::MatElem{T})
+   rows(A) != cols(A) && error("Dimensions don't match in charpoly")
+   R = base_ring(A)
+   base_ring(S) != base_ring(A) && error("Cannot coerce into polynomial ring")
+   n = rows(A)
+   if n == 0
+      return S(1)
+   end
+   if n == 1
+      return gen(S) - A[1, 1]
+   end
+   d = R(1)
+   t = R()
+   V = Array(T, n)
+   W = Array(T, n)
+   pol = S(1)
+   i = 1
+   while i < n
+      h = A[n - i + 1, n - i]
+      while h == 0
+         k = 1
+         while k < n - i && A[n - i + 1, n - i - k] == 0
+            k += 1
+         end
+         if k == n - i
+            b = S()
+            fit!(b, i + 1)
+            setcoeff!(b, i, R(1))
+            for k = 1:i
+               setcoeff!(b, k - 1, -A[n - i + 1, n - k + 1]*d)
+            end
+            pol *= b
+            n -= i
+            i = 1
+            if n == 1
+               pol *= (gen(S) - A[1, 1]*d)
+               return pol
+            end
+         else
+            for j = 1:n
+               A[n - i - k, j], A[n - i, j] = A[n - i, j], A[n - i - k, j]
+            end
+            for j = 1:n - i + 1
+               A[j, n - i - k], A[j, n - i] = A[j, n - i], A[j, n - i - k]
+            end
+         end
+         h = A[n - i + 1, n - i]
+      end
+      for j = 1:n
+         V[j] = -A[n - i + 1, j]
+         W[j] = deepcopy(A[n - i + 1, j])
+      end
+      for j = 1:n - i
+         for k = 1:n - i - 1
+            mul!(t, A[j, n - i], V[k])
+            u = A[j, k]*h
+            addeq!(u, t)
+            A[j, k] = u
+         end
+         for k = n - i + 1:n
+            mul!(t, A[j, n - i], V[k])
+            u = A[j, k]*h
+            addeq!(u, t)
+            A[j, k] = u
+         end
+      end
+      for k = 1:n
+         A[n - i + 1, k] = R()
+      end
+      for j = 1:n - i
+         for k = 1:n - i - 1
+            mul!(A[j, k], A[j, k], d)
+         end
+         for k = n - i + 1:n
+            mul!(A[j, k], A[j, k], d)
+         end
+      end
+      A[n - i + 1, n - i] = deepcopy(h)
+      for j = 1:n - i - 1
+         s = R()
+         for k = 1:n - i
+            mul!(t, A[k, j], W[k])
+            addeq!(s, t)
+         end
+         A[n - i, j] = s
+      end
+      for j = n - i:n - 1
+         s = R()
+         for k = 1:n - i
+            mul!(t, A[k, j], W[k])
+            addeq!(s, t)
+         end
+         mul!(t, h, W[j + 1])
+         addeq!(s, t)
+         A[n - i, j] = s
+      end
+      s = R()
+      for k = 1:n - i
+         mul!(t, A[k, n], W[k])
+         addeq!(s, t)
+      end
+      A[n - i, n] = s
+      for k = 1:n
+         mul!(A[n - i, k], A[n - i, k], d)
+      end
+      d = inv(h)
+      i += 1
+   end
+   b = S()
+   fit!(b, n + 1)
+   setcoeff!(b, n, R(1))
+   for i = 1:n
+      setcoeff!(b, i - 1, -A[1, n - i + 1]*d)
+   end
+   return pol*b
+end
+
+function charpoly_danilevsky!{T <: RingElem}(S::Ring, A::MatElem{T})
+   rows(A) != cols(A) && error("Dimensions don't match in charpoly")
+   R = base_ring(A)
+   base_ring(S) != base_ring(A) && error("Cannot coerce into polynomial ring")
+   n = rows(A)
+   if n == 0
+      return S(1)
+   end
+   if n == 1
+      return gen(S) - A[1, 1]
+   end
+   t = R()
+   V = Array(T, n)
+   W = Array(T, n)
+   pol = S(1)
+   i = 1
+   while i < n
+      h = A[n - i + 1, n - i]
+      while h == 0
+         k = 1
+         while k < n - i && A[n - i + 1, n - i - k] == 0
+            k += 1
+         end
+         if k == n - i
+            b = S()
+            fit!(b, i + 1)
+            setcoeff!(b, i, R(1))
+            for k = 1:i
+               setcoeff!(b, k - 1, -A[n - i + 1, n - k + 1])
+            end
+            pol *= b
+            n -= i
+            i = 1
+            if n == 1
+               pol *= (gen(S) - A[1, 1])
+               return pol
+            end
+         else
+            for j = 1:n
+               A[n - i - k, j], A[n - i, j] = A[n - i, j], A[n - i - k, j]
+            end
+            for j = 1:n - i + 1
+               A[j, n - i - k], A[j, n - i] = A[j, n - i], A[j, n - i - k]
+            end
+         end
+         h = A[n - i + 1, n - i]
+      end
+      h = -inv(h)
+      for j = 1:n
+         V[j] = A[n - i + 1, j]*h
+         W[j] = deepcopy(A[n - i + 1, j])
+      end
+      h = -h
+      for j = 1:n - i
+         for k = 1:n - i - 1
+            mul!(t, A[j, n - i], V[k])
+            u = A[j, k]
+            addeq!(u, t)
+            A[j, k] = u
+         end
+         for k = n - i + 1:n
+            mul!(t, A[j, n - i], V[k])
+            u = A[j, k]
+            addeq!(u, t)
+            A[j, k] = u
+         end
+         u = A[j, n - i]
+         mul!(u, u, h)
+         A[j, n - i] = u
+      end
+      for j = 1:n - i - 1
+         s = R()
+         for k = 1:n - i
+            mul!(t, A[k, j], W[k])
+            addeq!(s, t)
+         end
+         A[n - i, j] = s
+      end
+      for j = n - i:n - 1
+         s = R()
+         for k = 1:n - i
+            mul!(t, A[k, j], W[k])
+            addeq!(s, t)
+         end
+         addeq!(s, W[j + 1])
+         A[n - i, j] = s
+      end
+      s = R()
+      for k = 1:n - i
+         mul!(t, A[k, n], W[k])
+         addeq!(s, t)
+      end
+      A[n - i, n] = s
+      i += 1
+   end
+   b = S()
+   fit!(b, n + 1)
+   setcoeff!(b, n, R(1))
+   for i = 1:n
+      setcoeff!(b, i - 1, -A[1, n - i + 1])
+   end
+   return pol*b
+end
 
 function charpoly{T <: RingElem}(V::Ring, Y::MatElem{T})
    rows(Y) != cols(Y) && error("Dimensions don't match in determinant")
@@ -1619,7 +2042,7 @@ function charpoly{T <: RingElem}(V::Ring, Y::MatElem{T})
    base_ring(V) != base_ring(Y) && error("Cannot coerce into polynomial ring")
    n = rows(Y)
    if n == 0
-      return V()
+      return V(1)
    end
    F = Array(elem_type(R), n)
    A = Array(elem_type(R), n)
@@ -1664,6 +2087,250 @@ function charpoly{T <: RingElem}(V::Ring, Y::MatElem{T})
       setcoeff!(f, n - i, F[i])
    end
    return f
+end
+
+###############################################################################
+#
+#   Minimum polynomial
+#
+###############################################################################
+
+# We let the rows of A be the Krylov sequence v, Mv, M^2v, ... where v
+# is a standard basis vector. We find a minimum polynomial P_v by finding
+# a linear relation amongst the rows (rows are added one at a time until
+# a relation is found). We then append the rows from A to B and row reduce
+# by all the rows already in B. We then look for a new standard basis vector
+# v not in the span of the rows in B and repeat the above. The arrays P1 and
+# P2 are because we can't efficiently swap rows. The i-th entry encodes the
+# row of A (in the case of P1) or B (in the case of P2) which has a pivot in
+# column i. The arrays L1 and L2 encode the number of columns that contain
+# nonzero entries for each row of A and B respectively. These are required
+# by the reduce_row! function. If charpoly_only is set to true, the function
+# will return just the polynomial obtained from the first Krylov subspace.
+# If the charpoly is the minpoly, this returned polynomial will be the
+# charpoly iff it has degree n. Otherwise it is meaningless (but it is
+# extremely fast to compute over some fields).
+
+function minpoly{T <: FieldElem}(S::Ring, M::MatElem{T}, charpoly_only = false)
+   rows(M) != cols(M) && error("Not a square matrix in minpoly")
+   base_ring(S) != base_ring(M) && error("Unable to coerce polynomial")
+   n = rows(M)
+   if n == 0
+      return S(1)
+   end
+   R = base_ring(M)
+   p = S(1)
+   A = MatrixSpace(R, n + 1, 2n + 1)()
+   B = MatrixSpace(R, n, n)()
+   U = MatrixSpace(R, n, 1)
+   L1 = [n + i for i in 1:n + 1]
+   L2 = [n for i in 1:n]
+   P2 = zeros(Int, n)
+   P2[1] = 1
+   c2 = 1
+   r2 = 1
+   first_poly = true
+   while r2 <= n
+      P1 = [0 for i in 1:2n + 1]
+      v = zero(U)
+      for j = 1:n
+         B[r2, j] = v[j, 1]
+         A[1, j] = R()
+      end
+      P1[c2] = 1
+      P2[c2] = r2
+      v[c2, 1] = R(1)
+      B[r2, c2] = v[c2, 1]
+      A[1, c2] = R(1)
+      A[1, n + 1] = R(1)
+      indep = true
+      r1 = 1
+      c1 = 0
+      while c1 <= n && r1 <= n
+         r1 += 1
+         r2 = indep ? r2 + 1 : r2
+         v = M*v
+         for j = 1:n
+            A[r1, j] = deepcopy(v[j, 1])
+         end
+         for j = n + 1:n + r1 - 1
+            A[r1, j] = R(0)
+         end
+         A[r1, n + r1] = R(1)
+         c1 = reduce_row!(A, P1, L1, r1)
+         if indep && r2 <= n && !first_poly
+            for j = 1:n
+               B[r2, j] = deepcopy(v[j, 1])
+            end
+            c = reduce_row!(B, P2, L2, r2)
+            indep = c != 0
+         end
+      end
+      if first_poly
+         for j = 1:n
+            P2[j] = P1[j]
+         end
+         r2 = r1
+      end
+      c = 0 
+      for j = c2 + 1:n
+         if P2[j] == 0
+            c = j
+            break
+         end
+      end
+      c2 = c
+      b = S()
+      fit!(b, r1)
+      h = inv(A[r1, n + r1])
+      for i = 1:r1
+         setcoeff!(b, i - 1, A[r1, n + i]*h)
+      end
+      p = lcm(p, b)
+      if charpoly_only == true
+         return p
+      end
+      if first_poly && r2 <= n
+         for j = 1:r1 - 1
+            for k = 1:n
+               B[j, k] = A[j, k]
+            end
+         end
+      end
+      first_poly = false
+   end
+   return p
+end
+
+function minpoly{T <: RingElem}(S::Ring, M::MatElem{T}, charpoly_only = false)
+   rows(M) != cols(M) && error("Not a square matrix in minpoly")
+   base_ring(S) != base_ring(M) && error("Unable to coerce polynomial")
+   n = rows(M)
+   if n == 0
+      return S(1)
+   end
+   R = base_ring(M)
+   p = S(1)
+   A = MatrixSpace(R, n + 1, 2n + 1)()
+   B = MatrixSpace(R, n, n)()
+   U = MatrixSpace(R, n, 1)
+   L1 = [n + i for i in 1:n + 1]
+   L2 = [n for i in 1:n]
+   P2 = zeros(Int, n)
+   P2[1] = 1
+   c2 = 1
+   r2 = 1
+   first_poly = true
+   while r2 <= n
+      P1 = [0 for i in 1:2n + 1]
+      v = zero(U)
+      for j = 1:n
+         B[r2, j] = v[j, 1]
+         A[1, j] = R()
+      end
+      P1[c2] = 1
+      P2[c2] = r2
+      v[c2, 1] = R(1)
+      B[r2, c2] = v[c2, 1]
+      A[1, c2] = R(1)
+      A[1, n + 1] = R(1)
+      indep = true
+      r1 = 1
+      c1 = 0
+      while c1 <= n && r1 <= n
+         r1 += 1
+         r2 = indep ? r2 + 1 : r2
+         v = M*v
+         for j = 1:n
+            A[r1, j] = deepcopy(v[j, 1])
+         end
+         for j = n + 1:n + r1 - 1
+            A[r1, j] = R(0)
+         end
+         A[r1, n + r1] = R(1)
+         c1 = reduce_row!(A, P1, L1, r1)
+         if indep && r2 <= n && !first_poly
+            for j = 1:n
+               B[r2, j] = deepcopy(v[j, 1])
+            end
+            c = reduce_row!(B, P2, L2, r2)
+            indep = c != 0
+         end
+      end
+      if first_poly
+         for j = 1:n
+            P2[j] = P1[j]
+         end
+         r2 = r1
+      end
+      c = 0 
+      for j = c2 + 1:n
+         if P2[j] == 0
+            c = j
+            break
+         end
+      end
+      c2 = c
+      b = S()
+      fit!(b, r1)
+      for i = 1:r1
+         setcoeff!(b, i - 1, A[r1, n + i])
+      end
+      b = reverse(b, r1)
+      b = primpart(b)
+      b = reverse(b, r1)
+      p = lcm(p, b)
+      if charpoly_only == true
+         return p
+      end
+      if first_poly && r2 <= n
+         for j = 1:r1 - 1
+            for k = 1:n
+               B[j, k] = A[j, k]
+            end
+         end
+      end
+      first_poly = false
+   end
+   return p
+end
+
+###############################################################################
+#
+#   Transforms
+#
+###############################################################################
+
+function similarity!{T <: RingElem}(A::MatElem{T}, r::Int, d::T)
+   n = rows(A)
+   t = base_ring(A)()
+   for i = 1:n
+      for j = 1:r - 1
+         mul!(t, A[i, r], d)
+         s = A[i, j]
+         addeq!(s, t)
+         A[i, j] = s
+      end
+      for j = r + 1:n
+         mul!(t, A[i, r], d)
+         s = A[i, j]
+         addeq!(s, t)
+         A[i, j] = s
+      end
+   end
+   d = -d
+   for i = 1:n
+      s = A[r, i]
+      for j = 1:r - 1
+         mul!(t, A[j, i], d)
+         addeq!(s, t)
+      end
+      for j = r + 1:n
+         mul!(t, A[j, i], d)
+         addeq!(s, t)
+      end
+      A[r, i] = s
+   end
 end
 
 ###############################################################################
@@ -1758,3 +2425,28 @@ function MatrixSpace(R::Ring, r::Int, c::Int)
    return MatrixSpace{T}(R, r, c)
 end
 
+function typed_hvcat(R::Ring, dims, d...)
+   T = elem_type(R)
+   r = length(dims)
+   c = dims[1]
+   A = Array(T, r, c)
+   for i = 1:r
+      dims[i] != c && throw(ArgumentError("row $i has mismatched number of columns (expected $c, got $(dims[i]))"))
+      for j = 1:c
+         A[i, j] = R(d[(i - 1)*c + j])
+      end
+   end 
+   S = MatrixSpace(R, r, c)
+   return S(A)
+end
+
+function typed_hcat(R::Ring, d...)
+   T = elem_type(R)
+   r = length(d)
+   A = Array(T, 1, r)
+   for i = 1:r
+      A[1, i] = R(d[i])
+   end
+   S = MatrixSpace(R, 1, r)
+   return S(A)
+end

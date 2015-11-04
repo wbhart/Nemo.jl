@@ -1380,6 +1380,38 @@ g = (x + 1)*y + (x^3 + 2x + 2)
 h = compose(f, g)
 \end{lstlisting}
 
+\subsubsection{Substitution}
+
+\begin{lstlisting}
+subst{T <: RingElem}(f::Poly{T}, c)
+\end{lstlisting}
+
+\desc{Return the value of the polynomial $f$ at $c$, i.e. return the value
+$f(c)$. The value can live in any ring or be any object for which (associative)
+addition and multiplication and scalar multiplication by the coefficients of
+$f$ are defined.}
+
+In order to make evaluation of polynomials at arbitrary values more convenient
+we also overload the call operator for polynomial objects so that the
+expression $f(c)$ will return the value of $f$ at $c$. For efficiency,
+polynomial evaluation and composition are called instead when evaluating at
+polynomials or scalars in the coefficient ring.
+
+Here are some examples of substitution.
+
+\begin{lstlisting}
+R, x = PolynomialRing(ZZ, "x")
+S, y = PolynomialRing(R, "y")
+
+M = R[x + 1 2x; x - 3 2x - 1]
+
+f = x*y^2 + (x + 1)*y + 3
+
+g = subst(f, M)
+h = f(M)
+k = f(23)
+\end{lstlisting}
+
 \subsubsection{Derivative}
 
 \begin{lstlisting}
@@ -2995,9 +3027,30 @@ S(a::RingElem)
 \desc{Try to coerce $a$ into the base ring of the matrix space and then construct
 the diagonal $r\times c$ matrix with diagonal entries equal to $a$.}
 
+We also allow arrays to be constructed by passing an explicit list of rows or an
+explicit list of entries for a row vector, as for arrays and row vectors of
+Julia types. Each entry is coerced into the given base ring.
+
+\begin{lstlisting}
+R[a b c...;...]
+\end{lstlisting}
+
+\desc{Create the matrix with entries in $R$ consisting of the given rows
+(separated by semicolons). Each entry is coerced into $R$ automatically.}
+
+\begin{lstlisting}
+R[a b c...]
+\end{lstlisting}
+
+\desc{Create the row vector with entries in $R$ consisting of the given
+entries (separated by spaces). Each entry is coerced into $R$ automatically.}
+
+To create a column vector, one can transpose a row vector using the \code{'}
+operator.
+
 \textbf{Examples.}
 
-Here are some examples of power series constructors.
+Here are some examples of matrix constructors.
 
 \begin{lstlisting}
 R, t = PolynomialRing(QQ, "t")
@@ -3006,8 +3059,12 @@ S = MatrixSpace(R, 3, 3)
 A = S()
 B = S(12)
 C = S([t + 1 t R(1); t^2 t t; R(-2) t + 2 t^2 + t + 1])
-D = S(c)
+D = S(C)
 F = S(R(11))
+
+G = R[t + 1 1; t^2 0]
+H = R[t + 1 2 t]
+K = R[1 2 t]'
 \end{lstlisting}
 
 \subsubsection{Basic manipulation}
@@ -3643,13 +3700,16 @@ Here are some examples of computing the reduced row echelon form.
 \subsubsection{Nullspace}
 
 \begin{lstlisting}
-rref{T <: RingElem}(M::Mat{T})
+nullspace{T <: RingElem}(M::Mat{T})
 \end{lstlisting}
 
 \desc{Returns a tuple $(\nu, N)$ consisting of the nullity $\nu$ of $M$ and
 a basis $N$ (consisting of column vectors) for the right nullspace of $M$,
 i.e. such that $MN$ is the zero matrix. If $M$ is an $m\times n$ matrix
-$N$ will be an $n\times \nu$ matrix.}
+$N$ will be an $n\times \nu$ matrix. Note that the nullspace is taken to be
+the vector space kernel over the fraction field of the base ring if the
+latter is not a field. In Nemo we use the name ``kernel'' for a function to
+compute an integral kernel.}
 
 \textbf{Examples.}
 
@@ -3665,6 +3725,113 @@ Here is an example of computing the nullspace.
           -10*x^2+10*x+20 -20*x^2+70*x-25 150*x^2-140*x-85 105*x^2+90*x-50])
    
    n, N = nullspace(M)
+\end{lstlisting}
+
+\subsubsection{Hessenberg form}
+
+\begin{lstlisting}
+hessenberg{T <: FieldElem}(M::Mat{T})
+\end{lstlisting}
+
+\desc{Returns the Hessenberg form of $M$, i.e. an upper Hessenberg matrix
+which is similar to $M$. The upper Hessenberg form has nonzero entries
+above and on the diagonal and in the diagonal line immediately below the
+diagonal.}
+
+\begin{lstlisting}
+is_hessenberg{T <: FieldElem}(M::Mat{T})
+\end{lstlisting}
+
+\desc{Returns \code{true} if $M$ is in Hessenberg form, otherwise returns
+false.}
+
+\textbf{Examples.}
+
+Here is an example of computing the Hessenberg form.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 4, 4)
+   
+   M = S([R(1) R(2) R(4) R(3); R(2) R(5) R(1) R(0);
+          R(6) R(1) R(3) R(2); R(1) R(1) R(3) R(5)])
+   
+   A = hessenberg(M)
+   is_hessenberg(A) == true
+\end{lstlisting}
+
+\subsubsection{Similarity transform}
+
+\begin{lstlisting}
+similarity!{T <: RingElem}(M::MatElem{T}, r::Int, d::T)
+\end{lstlisting}
+
+\desc{Applies a similarity transform to the $n\times n$ matrix $M$ in-place.
+Let $P$ be the $n\times n$ identity matrix that has had all zero entries
+of row $r$ replaced with $d$, then the transform applied is equivalent to
+$M = P^{-1}MP$. We require $M$ to be a square matrix. A similarity transform
+preserves the minimal and characteristic polynomials of a matrix.}
+
+\textbf{Examples.}
+
+Here is an example of applying a similarity transform.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 4, 4)
+   
+   M = S([R(1) R(2) R(4) R(3); R(2) R(5) R(1) R(0);
+          R(6) R(1) R(3) R(2); R(1) R(1) R(3) R(5)])
+   
+   similarity!(M, 1, R(3))
+\end{lstlisting}
+
+\subsubsection{Characteristic polynomial}
+
+\begin{lstlisting}
+charpoly{T <: RingElem}(R::Ring, M::Mat{T})
+\end{lstlisting}
+
+\desc{Returns the characteristic polynomial $p$ of the matrix $M$. The
+polynomial ring $R$ of the resulting polynomial must be supplied.}
+
+\textbf{Examples.}
+
+Here is an example of computing the characteristic polynomial.
+
+\begin{lstlisting}
+   R = ResidueRing(ZZ, 7)
+   S = MatrixSpace(R, 4, 4)
+   T, x = PolynomialRing(R, "x")
+
+   M = S([R(1) R(2) R(4) R(3); R(2) R(5) R(1) R(0);
+          R(6) R(1) R(3) R(2); R(1) R(1) R(3) R(5)])
+   
+   A = charpoly(T, M)
+\end{lstlisting}
+
+\subsubsection{Minimal polynomial}
+
+\begin{lstlisting}
+minpoly{T <: RingElem}(R::Ring, M::Mat{T})
+\end{lstlisting}
+
+\desc{Returns the minimal polynomial $p$ of the matrix $M$. The
+polynomial ring $R$ of the resulting polynomial must be supplied.}
+
+\textbf{Examples.}
+
+Here is an example of computing the minimal polynomial.
+
+\begin{lstlisting}
+   R, x = FiniteField(13, 1, "x")
+   T, y = PolynomialRing(R, "y")
+   
+   M = R[7 6 1;
+         7 7 5;
+         8 12 5]
+
+   A = minpoly(T, M)
 \end{lstlisting}
 
 \section{Generic fields}
@@ -4236,6 +4403,36 @@ S, x = PolynomialRing(ZZ, "x")
 a = -x//(2x + 1)
 
 f = gcd(a, (x + 1)/(x - 1))
+\end{lstlisting}
+
+\section{Top level types and functions}
+
+Not all Nemo functions and constructors can be classified as Set, Group, Ring or Field
+operations. We introduce here some additional top level types and functions defined
+thereon.
+
+\subsection{Arrays}
+
+Given a Nemo parent object $R$ we can construct Julia arrays of such objects.
+
+\begin{lstlisting}
+Array(R, dims...)
+\end{lstlisting}
+
+\desc{Construct an array of objects with the given dimensions.}
+
+\begin{lstlisting}
+zeros(R, dims...)
+\end{lstlisting}
+
+\desc{Construct an array of objects with the given dimensions and initialise each
+entry to the zero of the given ring.}
+
+\begin{lstlisting}
+R, x = PolynomialRing(ZZ, "x")
+
+A = Array(R, 2, 3)
+B = zeros(R, 2, 3)
 \end{lstlisting}
 
 \section{Flint rings}

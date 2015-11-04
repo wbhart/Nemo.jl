@@ -25,6 +25,10 @@ function randelem(R::FmpzPolyRing, n)
    return s
 end
 
+function randelem(R::ResidueRing{fmpz}, n)
+   return R(rand(-n:n))
+end
+
 function randelem(R, n)
    s = R(0)
    x = gen(R)
@@ -861,6 +865,197 @@ function test_matrix_inversion()
    println("PASS")   
 end
 
+function test_matrix_hessenberg()
+   print("Matrix.hessenberg...")
+
+   R = ResidueRing(ZZ, 18446744073709551629)
+
+   for dim = 0:5
+      S = MatrixSpace(R, dim, dim)
+      U, x = PolynomialRing(R, "x")
+
+      for i = 1:10
+         M = randmat(S, 5)
+
+         A = hessenberg(M)
+
+         @test is_hessenberg(A)
+      end
+   end
+
+   println("PASS")   
+end
+
+function test_matrix_charpoly()
+   print("Matrix.charpoly...")
+
+   R = ResidueRing(ZZ, 18446744073709551629)
+
+   for dim = 0:5
+      S = MatrixSpace(R, dim, dim)
+      U, x = PolynomialRing(R, "x")
+
+      for i = 1:10
+         M = randmat(S, 5)
+
+         p1 = charpoly(U, M)
+         p2 = charpoly_danilevsky!(U, M)
+
+         @test p1 == p2
+      end
+
+      for i = 1:10
+         M = randmat(S, 5)
+
+         p1 = charpoly(U, M)
+         p2 = charpoly_danilevsky_ff!(U, M)
+
+         @test p1 == p2
+      end
+
+      for i = 1:10
+         M = randmat(S, 5)
+
+         p1 = charpoly(U, M)
+         p2 = charpoly_hessenberg!(U, M)
+
+         @test p1 == p2
+      end
+   end
+
+   R, x = PolynomialRing(ZZ, "x")
+   U, z = PolynomialRing(R, "z")
+   T = MatrixSpace(R, 6, 6)
+
+   M = T()
+   for i = 1:3
+      for j = 1:3
+         M[i, j] = randelem(R, 10)
+         M[i + 3, j + 3] = deepcopy(M[i, j])
+      end
+   end
+
+   p1 = charpoly(U, M)
+
+   for i = 1:10
+      similarity!(M, rand(1:6), R(randelem(R, 3)))
+   end
+
+   p2 = charpoly(U, M)
+
+   @test p1 == p2
+
+   println("PASS")   
+end
+
+function test_matrix_minpoly()
+   print("Matrix.minpoly...")
+
+   R, x = FiniteField(103, 1, "x")
+   T, y = PolynomialRing(R, "y")
+
+   M = R[92 97 8;
+          0 5 13;
+          0 16 2]
+
+   @test minpoly(T, M) == y^2+96*y+8
+
+   R, x = FiniteField(3, 1, "x")
+   T, y = PolynomialRing(R, "y")
+
+   M = R[1 2 0 2;
+         1 2 1 0;
+         1 2 2 1;
+         2 1 2 0]
+
+   @test minpoly(T, M) == y^2 + 2y
+
+   R, x = FiniteField(13, 1, "x")
+   T, y = PolynomialRing(R, "y")
+
+   M = R[7 6 1;
+         7 7 5;
+         8 12 5]
+
+   @test minpoly(T, M) == y^2+10*y
+
+   M = R[4 0 9 5;
+         1 0 1 9;
+         0 0 7 6;
+         0 0 3 10]
+
+   @test minpoly(T, M) == y^2 + 9y
+
+   M = R[2 7 0 0 0 0;
+         1 0 0 0 0 0;
+         0 0 2 7 0 0;
+         0 0 1 0 0 0;
+         0 0 0 0 4 3;
+         0 0 0 0 1 0]
+
+   @test minpoly(T, M) == (y^2+9*y+10)*(y^2+11*y+6)
+
+   M = R[2 7 0 0 0 0;
+         1 0 1 0 0 0;
+         0 0 2 7 0 0;
+         0 0 1 0 0 0;
+         0 0 0 0 4 3;
+         0 0 0 0 1 0]
+
+   @test minpoly(T, M) == (y^2+9*y+10)*(y^2+11*y+6)^2
+
+   S = MatrixSpace(R, 1, 1)
+   M = S()
+
+   @test minpoly(T, M) == y
+
+   S = MatrixSpace(R, 0, 0)
+   M = S()
+
+   @test minpoly(T, M) == 1
+
+   R, x = PolynomialRing(ZZ, "x")
+   S, y = PolynomialRing(R, "y")
+   U, z = PolynomialRing(S, "z")
+   T = MatrixSpace(S, 6, 6)
+
+   M = T()
+   for i = 1:3
+      for j = 1:3
+         M[i, j] = randelem(S, 10)
+         M[i + 3, j + 3] = deepcopy(M[i, j])
+      end
+   end
+
+   f = minpoly(U, M)
+
+   @test degree(f) <= 3
+
+   R, x = PolynomialRing(ZZ, "x")
+   U, z = PolynomialRing(R, "z")
+   T = MatrixSpace(R, 6, 6)
+
+   M = T()
+   for i = 1:3
+      for j = 1:3
+         M[i, j] = randelem(R, 10)
+         M[i + 3, j + 3] = deepcopy(M[i, j])
+      end
+   end
+
+   p1 = minpoly(U, M)
+
+   for i = 1:10
+      similarity!(M, rand(1:6), R(randelem(R, 3)))
+   end
+
+   p2 = minpoly(U, M)
+
+   @test p1 == p2
+
+   println("PASS")   
+end
+
 function test_matrix()
    test_matrix_constructors()
    test_matrix_manipulation()
@@ -884,6 +1079,9 @@ function test_matrix()
    test_matrix_rref()
    test_matrix_nullspace()
    test_matrix_inversion()
+   test_matrix_hessenberg()
+   test_matrix_charpoly()
+   test_matrix_minpoly()
 
    println("")
 end
