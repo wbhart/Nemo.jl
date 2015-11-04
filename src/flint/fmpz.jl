@@ -54,7 +54,7 @@ elem_type(::FlintIntegerRing) = fmpz
 
 base_ring(a::FlintIntegerRing) = Union{}
 
-hash(a::fmpz) = hash(a, Uint(0))
+hash(a::fmpz) = hash(BigInt(a))
 
 ###############################################################################
 #
@@ -95,20 +95,6 @@ end
 function num(a::fmpz)
   return a
 end
-
-###############################################################################
-#
-#   Serialisation
-#
-###############################################################################
-
-VERSION >= v"0.4.0-dev+5152" || typealias SerializationState Any
-function serialize(s:: SerializationState, n::fmpz)
-    Serializer.serialize_type(s, fmpz)
-end
-
-
-deserialize(s::Base.SerializationState, ::Type{fmpz}) = Base.parseint_nocheck(FlintZZ, deserialize(s), 62)
 
 ###############################################################################
 #
@@ -916,15 +902,15 @@ show_minus_one(::Type{fmpz}) = false
 #
 ###############################################################################
 
-bin(n::fmpz) = base(2, n)
+bin(n::fmpz) = base(n, 2)
 
-oct(n::fmpz) = base(8, n)
+oct(n::fmpz) = base(n, 8)
 
-dec(n::fmpz) = base(10, n)
+dec(n::fmpz) = base(n, 10)
 
-hex(n::fmpz) = base(16, n)
+hex(n::fmpz) = base(n, 16)
 
-function base(b::Integer, n::fmpz)
+function base(n::fmpz, b::Integer)
     2 <= b <= 62 || error("invalid base: $b")
     p = ccall((:fmpz_get_str,:libflint), Ptr{UInt8}, 
               (Ptr{UInt8}, Cint, Ptr{fmpz}), C_NULL, b, &n)
