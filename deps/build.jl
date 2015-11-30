@@ -48,12 +48,12 @@ cd(wdir)
 
 # install GMP/MPIR
 
-if !ispath(Pkg.dir("Nemo", "local", "mpir-2.7.1"))
-   download("http://mpir.org/mpir-2.7.1.tar.bz2", joinpath(wdir, "mpir-2.7.1.tar.bz2"))
-   run(`tar -xvf mpir-2.7.1.tar.bz2`)
-   run(`rm mpir-2.7.1.tar.bz2`)
+if !ispath(Pkg.dir("Nemo", "local", "mpir-2.7.0"))
+   download("http://mpir.org/mpir-2.7.0.tar.bz2", joinpath(wdir, "mpir-2.7.0.tar.bz2"))
+   run(`tar -xvf mpir-2.7.0.tar.bz2`)
+   run(`rm mpir-2.7.0.tar.bz2`)
 end
-cd("$wdir/mpir-2.7.1")
+cd("$wdir/mpir-2.7.0")
 
 if on_windows
    if Int == Int32
