@@ -10613,6 +10613,13 @@ norm(c::nf_elem)
 \desc{Return the norm of the given number field element $c$ as an \code{fmpq}.}
 
 \begin{lstlisting}
+norm_div(c::nf_elem, div::fmpz, nb::UInt)
+\end{lstlisting}
+
+\desc{Return the norm divided by div of the given number field element $c$
+as an \code{fmpq} assuming the quotient is integral and has at most nb bits.}
+
+\begin{lstlisting}
 trace(c::nf_elem)
 \end{lstlisting}
 

@@ -448,11 +448,11 @@ function norm(a::nf_elem)
    return z
 end
 
-function norm_div(a::nf_elem, d::fmpz, np::Int)
+function norm_div(a::nf_elem, d::fmpz, nb::Int)
    z = fmpq()
    ccall((:nf_elem_norm_div, :libflint), Void,
          (Ptr{fmpq}, Ptr{nf_elem}, Ptr{AnticNumberField}, Ptr{fmpz}, UInt),
-         &z, &a, &a.parent, &d, UInt(np))
+         &z, &a, &a.parent, &d, UInt(nb))
    return z
 end
 
