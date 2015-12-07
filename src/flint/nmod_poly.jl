@@ -373,7 +373,7 @@ end
 function divexact(x::nmod_poly, y::nmod_poly)
   check_parent(x, y)
   iszero(y) && throw(DivideError())
-  d = gcd(UInt(data(lead(y))), modulus(x))
+  d = gcd(data(lead(y)), fmpz(modulus(x)))
   d != 1 && error("Impossible inverse in divexact")
   z = parent(x)()
   ccall((:nmod_poly_div, :libflint), Void, 
@@ -405,13 +405,15 @@ div(x::nmod_poly, y::nmod_poly) = divexact(x,y)  # seems to do a Euclidean divis
 
 function divrem(x::nmod_poly, y::nmod_poly)
   check_parent(x,y)
-  iszero(y) && throw(DivideError()) 
+  iszero(y) && throw(DivideError())
+  g = gcd(data(lead(y)), fmpz(modulus(x)))
+  g != 1 && error("Impossible inverse in divrem") 
   q = parent(x)()
   r = parent(x)()
   ccall((:nmod_poly_divrem, :libflint), Void,
           (Ptr{nmod_poly}, Ptr{nmod_poly}, Ptr{nmod_poly}, Ptr{nmod_poly}),
           &q, &r, &x, &y)
-  return q,r
+  return q, r
 end
 
 ################################################################################
@@ -423,6 +425,8 @@ end
 function rem(x::nmod_poly, y::nmod_poly)
   check_parent(x,y)
   iszero(y) && throw(DivideError()) 
+  g = gcd(data(lead(y)), fmpz(modulus(x)))
+  g != 1 && error("Impossible inverse in rem") 
   z = parent(x)()
   ccall((:nmod_poly_rem, :libflint), Void,
           (Ptr{nmod_poly}, Ptr{nmod_poly}, Ptr{nmod_poly}), &z, &x, &y)
@@ -439,6 +443,7 @@ mod(x::nmod_poly, y::nmod_poly) = rem(x,y)
 
 function gcd(x::nmod_poly, y::nmod_poly)
   check_parent(x,y)
+  !isprime(modulus(x)) && error("Modulus not prime in gcd")
   z = parent(x)()
   ccall((:nmod_poly_gcd, :libflint), Void,
           (Ptr{nmod_poly}, Ptr{nmod_poly}, Ptr{nmod_poly}), &z, &x, &y)
@@ -447,6 +452,7 @@ end
 
 function gcdx(x::nmod_poly, y::nmod_poly)
   check_parent(x,y)
+  !isprime(modulus(x)) && error("Modulus not prime in gcdx")
   g = parent(x)()
   s = parent(x)()
   t = parent(x)()
@@ -458,6 +464,7 @@ end
 
 function gcdinv(x::nmod_poly, y::nmod_poly)
   check_parent(x,y)
+  !isprime(modulus(x)) && error("Modulus not prime in gcdinv")
   length(y) <= 1 && error("Length of second argument must be >= 2")
   g = parent(x)()
   s = parent(x)()
@@ -512,6 +519,7 @@ end
 
 function resultant(x::nmod_poly, y::nmod_poly)
   check_parent(x,y)
+  !isprime(modulus(x)) && error("Modulus not prime in resultant")
   z = parent(x)()
   r = ccall((:nmod_poly_resultant, :libflint), UInt,
           (Ptr{nmod_poly}, Ptr{nmod_poly}), &x, &y)
@@ -648,6 +656,7 @@ end
 ################################################################################
 
 function isirreducible(x::nmod_poly)
+  !isprime(modulus(x)) && error("Modulus not prime in isirreducible")
   return Bool(ccall((:nmod_poly_is_irreducible, :libflint), Int32,
           (Ptr{nmod_poly}, ), &x))
 end
@@ -659,7 +668,8 @@ end
 ################################################################################
 
 function issquarefree(x::nmod_poly)
-  return Bool(ccall((:nmod_poly_is_squarefree, :libflint), Int32, 
+   !isprime(modulus(x)) && error("Modulus not prime in issquarefree")
+   return Bool(ccall((:nmod_poly_is_squarefree, :libflint), Int32, 
        (Ptr{nmod_poly}, ), &x))
 end
 
@@ -670,6 +680,7 @@ end
 ################################################################################
 
 function factor(x::nmod_poly)
+  !isprime(modulus(x)) && error("Modulus not prime in factor")
   fac = nmod_poly_factor(x._mod_n)
   ccall((:nmod_poly_factor, :libflint), UInt,
           (Ptr{nmod_poly_factor}, Ptr{nmod_poly}), &fac, &x)
@@ -685,6 +696,7 @@ function factor(x::nmod_poly)
 end  
 
 function factor_squarefree(x::nmod_poly)
+  !isprime(modulus(x)) && error("Modulus not prime in factor_squarefree")
   fac = nmod_poly_factor(x._mod_n)
   ccall((:nmod_poly_factor_squarefree, :libflint), UInt,
           (Ptr{nmod_poly_factor}, Ptr{nmod_poly}), &fac, &x)
@@ -701,6 +713,7 @@ end
 
 function factor_distinct_deg(x::nmod_poly)
   !issquarefree(x) && error("Polynomial must be squarefree")
+  !isprime(modulus(x)) && error("Modulus not prime in factor_distinct_deg")
   degs = Array(Int, degree(x))
   degss = [ pointer(degs) ]
   fac = nmod_poly_factor(x._mod_n)
