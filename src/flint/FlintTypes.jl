@@ -305,12 +305,13 @@ type NmodPolyRing <: Ring{Flint}
   S::Symbol
   _n::UInt
 
-  function NmodPolyRing(R::ResidueRing{fmpz}, s::Symbol)
+  function NmodPolyRing(R::ResidueRing{fmpz}, s::Symbol, cached=true)
     m = UInt(modulus(R))
     return try
        NmodPolyRingID[m, s]
     catch
-       NmodPolyRingID[m, s] = new(R, s, m)
+       S = new(R, s, m)
+       cached ? NmodPolyRingID[m, s] = S : S
     end
   end
 end
@@ -447,12 +448,13 @@ type FmpzModPolyRing <: Ring{Flint}
   S::Symbol
   _n::fmpz
 
-  function FmpzModPolyRing(R::ResidueRing{fmpz}, s::Symbol)
+  function FmpzModPolyRing(R::ResidueRing{fmpz}, s::Symbol, cached=true)
     m = modulus(R)
     return try
        FmpzModPolyRingID[m, s]
     catch
-       FmpzModPolyRingID[m, s] = new(R, s, m)
+       S = new(R, s, m)
+       cached ? FmpzModPolyRingID[m, s] = S : S
     end
   end
 end
@@ -1307,7 +1309,7 @@ type NmodMatSpace <: Ring{Flint}
   cols::Int
 
   function NmodMatSpace(R::ResidueRing{fmpz}, r::Int, c::Int)
-    (r <= 0 || c <= 0) && error("Dimensions must be positive")
+    (r < 0 || c < 0) && error("Dimensions must be non-negative")
     fmpz(typemax(UInt)) < abs(R.modulus) &&
       error("Modulus of ResidueRing must less then ", fmpz(typemax(UInt)))
     try
@@ -1329,7 +1331,7 @@ type nmod_mat <: MatElem{Residue{fmpz}}
   parent::NmodMatSpace
 
   function nmod_mat(r::Int, c::Int, n::UInt)
-    (r <= 0 || c <= 0) && error("Dimensions must be positive")
+    (r < 0 || c < 0) && error("Dimensions must be non-negative")
     z = new()
     ccall((:nmod_mat_init, :libflint), Void,
             (Ptr{nmod_mat}, Int, Int, UInt), &z, r, c, n)
@@ -1338,7 +1340,7 @@ type nmod_mat <: MatElem{Residue{fmpz}}
   end
 
   function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{UInt, 2})
-    (r <= 0 || c <= 0) && error("Dimensions must be positive")
+    (r < 0 || c < 0) && error("Dimensions must be non-negative")
     (size(arr) != (r,c)) && error("Array of wrong dimension")
     z = new()
     ccall((:nmod_mat_init, :libflint), Void,
@@ -1353,7 +1355,7 @@ type nmod_mat <: MatElem{Residue{fmpz}}
   end
 
   function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{fmpz, 2})
-    (r <= 0 || c <= 0) && error("Dimensions must be positive")
+    (r < 0 || c < 0) && error("Dimensions must be non-negative")
     (size(arr) != (r,c)) && error("Array of wrong dimension")
     z = new()
     ccall((:nmod_mat_init, :libflint), Void,
@@ -1373,7 +1375,7 @@ type nmod_mat <: MatElem{Residue{fmpz}}
   end
 
   function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{Residue{fmpz}, 2})
-    (r <= 0 || c <= 0) && error("Dimensions must be positive")
+    (r < 0 || c < 0) && error("Dimensions must be non-negative")
     (size(arr) != (r,c)) && error("Array of wrong dimension")
     z = new()
     ccall((:nmod_mat_init, :libflint), Void,

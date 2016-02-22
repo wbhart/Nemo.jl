@@ -188,6 +188,12 @@ function addeq!(z::fmpz, x::fmpz)
          (Ptr{fmpz}, Ptr{fmpz}, Ptr{fmpz}), &z, &z, &x)
 end
 
+function add!(z::fmpz, x::fmpz, y::fmpz)
+   ccall((:fmpz_add, :libflint), Void, 
+         (Ptr{fmpz}, Ptr{fmpz}, Ptr{fmpz}), &z, &x, &y)
+end
+
+
 ###############################################################################
 #
 #   Ad hoc binary operators
@@ -678,32 +684,36 @@ function clog(x::fmpz, c::Int)
                  (Ptr{fmpz}, Int), &x, c)
 end
     
-###############################################################################
+################################################################################
+##
+##   Array arithmetic
+##
+################################################################################
 #
-#   Array arithmetic
+# CF: Julia has build-in mapreduce stuff. The native prod/ sum is actually
+#     slightly better than this, it is the "same" algorithm as the
+#     fmpz_vec_prod function in C.
+#     If this becomes critical, I have an even better one in Hecke...
+#function sum(arr::AbstractArray{fmpz})
+#    n = fmpz(0)
+#    for i in arr
+#        ccall((:fmpz_add, :libflint), Void,
+#            (Ptr{fmpz}, Ptr{fmpz}, Ptr{fmpz}),
+#            &n, &n, &i)
+#    end
+#    return n
+#end
 #
-###############################################################################
-
-function sum(arr::AbstractArray{fmpz})
-    n = fmpz(0)
-    for i in arr
-        ccall((:fmpz_add, :libflint), Void,
-            (Ptr{fmpz}, Ptr{fmpz}, Ptr{fmpz}),
-            &n, &n, &i)
-    end
-    return n
-end
-
-function prod(arr::AbstractArray{fmpz})
-    n = fmpz(1)
-    for i in arr
-        ccall((:fmpz_mul, :libflint), Void,
-            (Ptr{fmpz}, Ptr{fmpz}, Ptr{fmpz}),
-            &n, &n, &i)
-    end
-    return n
-end
-
+#function prod(arr::AbstractArray{fmpz})
+#    n = fmpz(1)
+#    for i in arr
+#        ccall((:fmpz_mul, :libflint), Void,
+#            (Ptr{fmpz}, Ptr{fmpz}, Ptr{fmpz}),
+#            &n, &n, &i)
+#    end
+#    return n
+#end
+#
 ###############################################################################
 #
 #   Number theoretic/combinatorial
