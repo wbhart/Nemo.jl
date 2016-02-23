@@ -149,6 +149,14 @@ function divexact(x::fmpz, y::fmpz)
     z
 end
 
+function divexact!(z::fmpz, x::fmpz, y::fmpz)
+    y == 0 && throw(DivideError())
+    ccall((:fmpz_divexact, :libflint), Void, 
+          (Ptr{fmpz}, Ptr{fmpz}, Ptr{fmpz}), &z, &x, &y)
+    z
+end
+
+
 function flog(x::fmpz, c::fmpz)
     c <= 0 && throw(DomainError())
     x <= 0 && throw(DomainError())
@@ -193,6 +201,15 @@ function add!(z::fmpz, x::fmpz, y::fmpz)
          (Ptr{fmpz}, Ptr{fmpz}, Ptr{fmpz}), &z, &x, &y)
 end
 
+function lcm!(z::fmpz, x::fmpz, y::fmpz)
+   ccall((:fmpz_lcm, :libflint), Void, 
+         (Ptr{fmpz}, Ptr{fmpz}, Ptr{fmpz}), &z, &x, &y)
+end
+
+function gcd!(z::fmpz, x::fmpz, y::fmpz)
+   ccall((:fmpz_gcd, :libflint), Void, 
+         (Ptr{fmpz}, Ptr{fmpz}, Ptr{fmpz}), &z, &x, &y)
+end
 
 ###############################################################################
 #
