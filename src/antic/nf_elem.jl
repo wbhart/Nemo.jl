@@ -92,15 +92,6 @@ function den(a::nf_elem)
    return z
 end
 
-function num(a::nf_elem)
-   const _one = fmpz(1)
-   z = copy(a)
-   ccall((:nf_elem_set_den, :libflint), Void,
-         (Ptr{nf_elem}, Ptr{fmpz}, Ptr{AnticNumberField}),
-         &z, &_one, &a.parent)
-   return z
-end
-
 function elem_from_mat_row(a::AnticNumberField, b::fmpz_mat, i::Int, d::fmpz)
    _checkbounds(b.parent.rows, i) || throw(BoundsError())
    b.parent.cols == degree(a) || error("Wrong number of columns")
@@ -126,8 +117,6 @@ function deepcopy(d::nf_elem)
    z = nf_elem(parent(d), d)
    return z
 end
-
-copy(d::nf_elem) = deepcopy(d)
 
 ###############################################################################
 #
