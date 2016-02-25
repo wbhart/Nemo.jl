@@ -48,6 +48,8 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash, fac, bell,
 #
 ###############################################################################
 
+parent_type(::Type{fmpz}) = FlintIntegerRing
+
 parent(a::fmpz) = FlintZZ
 
 elem_type(::FlintIntegerRing) = fmpz
@@ -377,7 +379,9 @@ function ^(x::fmpz, y::Int)
     if y > typemax(UInt); throw(DomainError()); end
     if y == 0; return one(FlintZZ); end
     if y == 1; return x; end
-    return x^UInt(y)
+    z = fmpz()
+    ccall((:fmpz_pow_ui, :libflint), Void, (Ptr{fmpz}, Ptr{fmpz}, UInt), &z, &x, UInt(y))
+    return z
 end
 
 ###############################################################################
@@ -925,7 +929,9 @@ end
 
 ndigits(x::fmpz, b::Integer = 10) = x == 0 ? 1 : ndigits_internal(x, b)
 
-nbits(x::fmpz) = x == 0 ? 0 : ndigits(x, 2)
+nbits(x::fmpz) = x == 0 ? 0 : Int(ccall((:fmpz_sizeinbase, :libflint), UInt,
+                  (Ptr{fmpz}, Int32), &x, 2))  # docu states: always correct
+                                #if base is power of 2
 
 ###############################################################################
 #
