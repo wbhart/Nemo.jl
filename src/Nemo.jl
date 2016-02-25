@@ -1,5 +1,4 @@
 VERSION >= v"0.4.0-dev+6521" && __precompile__()
-
 module Nemo
 
 import Base: Array, abs, asin, asinh, atan, atanh, base, bin, call,
@@ -78,23 +77,37 @@ function __init__()
        Libdl.dlopen(libgmp)
        Libdl.dlopen(libmpfr)
        Libdl.dlopen(libflint)
-       Libdl.dlopen(libpari)
+#       Libdl.dlopen(libpari)
        Libdl.dlopen(libarb)
    else
       push!(Libdl.DL_LOAD_PATH, libdir)
    end
  
-   ccall((:pari_init, libpari), Void, (Int, Int), 300000000, 10000)
+#   ccall((:pari_init, libpari), Void, (Int, Int), 300000000, 10000)
   
-   global avma = cglobal((:avma, libpari), Ptr{Int})
+#   global avma = cglobal((:avma, libpari), Ptr{Int})
 
-   global gen_0 = cglobal((:gen_0, libpari), Ptr{Int})
+#   global gen_0 = cglobal((:gen_0, libpari), Ptr{Int})
 
-   global gen_1 = cglobal((:gen_1, libpari), Ptr{Int})
+#   global gen_1 = cglobal((:gen_1, libpari), Ptr{Int})
 
-   global pari_sigint = cglobal((:cb_pari_sigint, libpari), Ptr{Void})
+#   global pari_sigint = cglobal((:cb_pari_sigint, libpari), Ptr{Void})
 
-   unsafe_store!(pari_sigint, cfunction(pari_sigint_handler, Void, ()), 1)
+#   unsafe_store!(pari_sigint, cfunction(pari_sigint_handler, Void, ()), 1)
+
+   ccall((:__gmp_set_memory_functions, :libgmp), Void,
+      (Ptr{Void},Ptr{Void},Ptr{Void}),
+      cglobal(:jl_gc_counted_malloc),
+      cglobal(:jl_gc_counted_realloc_with_old_size),
+      cglobal(:jl_gc_counted_free))
+
+   ccall((:__flint_set_memory_functions, :libflint), Void,
+      (Ptr{Void},Ptr{Void},Ptr{Void},Ptr{Void}),
+      cglobal(:jl_malloc),
+      cglobal(:jl_calloc),
+      cglobal(:jl_realloc),
+      cglobal(:jl_free))
+
 
    println("")
    println("Welcome to Nemo version 0.4.0")
