@@ -77,23 +77,30 @@ function __init__()
        Libdl.dlopen(libgmp)
        Libdl.dlopen(libmpfr)
        Libdl.dlopen(libflint)
-#       Libdl.dlopen(libpari)
+       Libdl.dlopen(libpari)
        Libdl.dlopen(libarb)
    else
       push!(Libdl.DL_LOAD_PATH, libdir)
    end
  
-#   ccall((:pari_init, libpari), Void, (Int, Int), 300000000, 10000)
-  
-#   global avma = cglobal((:avma, libpari), Ptr{Int})
+   ccall((:pari_set_memory_functions, :libpari), Void,
+      (Ptr{Void},Ptr{Void},Ptr{Void},Ptr{Void}),
+      cglobal(:jl_malloc),
+      cglobal(:jl_calloc),
+      cglobal(:jl_realloc),
+      cglobal(:jl_free))
 
-#   global gen_0 = cglobal((:gen_0, libpari), Ptr{Int})
+   ccall((:pari_init, libpari), Void, (Int, Int), 300000000, 10000)
 
-#   global gen_1 = cglobal((:gen_1, libpari), Ptr{Int})
+   global avma = cglobal((:avma, libpari), Ptr{Int})
 
-#   global pari_sigint = cglobal((:cb_pari_sigint, libpari), Ptr{Void})
+   global gen_0 = cglobal((:gen_0, libpari), Ptr{Int})
 
-#   unsafe_store!(pari_sigint, cfunction(pari_sigint_handler, Void, ()), 1)
+   global gen_1 = cglobal((:gen_1, libpari), Ptr{Int})
+
+   global pari_sigint = cglobal((:cb_pari_sigint, libpari), Ptr{Void})
+
+   unsafe_store!(pari_sigint, cfunction(pari_sigint_handler, Void, ()), 1)
 
    ccall((:__gmp_set_memory_functions, :libgmp), Void,
       (Ptr{Void},Ptr{Void},Ptr{Void}),
@@ -114,6 +121,10 @@ function __init__()
    println("")
    println("Nemo comes with absolutely no warranty whatsoever")
    println("")
+end
+
+function _flint_free(p::Ptr{Void})
+  ccall(:jl_free, Void, (Ptr{Void}, ), p)
 end
 
 function flint_set_num_threads(a::Int)
