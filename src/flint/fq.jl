@@ -13,6 +13,8 @@ export FlintFiniteField, characteristic, order, fq, FqFiniteField, frobenius,
 #
 ###############################################################################
 
+parent_type(::Type{fq}) = FqFiniteField
+
 elem_type(::FqFiniteField) = fq
 
 base_ring(a::FqFiniteField) = Union{}
@@ -31,13 +33,18 @@ end
 #
 ###############################################################################
 
+<<<<<<< HEAD
 function hash(a::fq)
    h = 0xb310fb6ea97e1f1a%UInt
+=======
+function Base.hash(a::fq, h::UInt)
+   b = 0xb310fb6ea97e1f1a
+>>>>>>> 508a753c6b74f2b54f565639dbfcd6fd476618ab
    for i in 1:degree(parent(a)) + 1
-         h $= hash(coeff(a, i))
-         h = (h << 1) | (h >> (sizeof(Int)*8 - 1))
+         b $= hash(coeff(a, i), h) $ h
+         b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
    end
-   return h
+   return b
 end
 
 function coeff(x::fq, n::Int)

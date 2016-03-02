@@ -21,11 +21,13 @@ function O{T}(a::PowerSeries{T})
    return z
 end
 
+parent_type{T}(::Type{PowerSeries{T}}) = PowerSeriesRing{T}
+
 parent(a::SeriesElem) = a.parent
 
 elem_type{T <: RingElem}(::PowerSeriesRing{T}) = PowerSeries{T}
 
-base_ring(R::PowerSeriesRing) = R.base_ring
+base_ring{T}(R::PowerSeriesRing{T}) = R.base_ring::parent_type(T)
 
 base_ring(a::SeriesElem) = base_ring(parent(a))
 
@@ -42,13 +44,18 @@ end
 #
 ###############################################################################    
    
+<<<<<<< HEAD
 function hash(a::SeriesElem)
    h = 0xb44d6896204881f3%UInt
+=======
+function Base.hash(a::SeriesElem, h::UInt)
+   b = 0xb44d6896204881f3
+>>>>>>> 508a753c6b74f2b54f565639dbfcd6fd476618ab
    for i in 0:length(a) - 1
-      h $= hash(coeff(a, i))
-      h = (h << 1) | (h >> (sizeof(Int)*8 - 1))
+      b $= hash(coeff(a, i), h) $ h
+      b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
    end
-   return h
+   return b
 end
 
 length(x::PowerSeries) = x.length
@@ -804,10 +811,10 @@ end
 #
 ###############################################################################
 
-function PowerSeriesRing(R::Ring, prec::Int, s::AbstractString{})
+function PowerSeriesRing(R::Ring, prec::Int, s::AbstractString{}; cached=true)
    S = symbol(s)
    T = elem_type(R)
-   parent_obj = PowerSeriesRing{T}(R, prec, S)
+   parent_obj = PowerSeriesRing{T}(R, prec, S, cached)
 
    base = base_ring(R)
    R2 = R

@@ -180,7 +180,7 @@ cd(wdir)
 
 # install PARI
 
-if !ispath(Pkg.dir("Nemo", "deps", "pari-2.7.4"))
+if !ispath(Pkg.dir("Nemo", "local", "pari-2.7.4"))
    # git clone pari doesn't seem to work on Windows
    # bison is too old on OSX for pari git
    # so we use the 2.7.4 tarball
@@ -198,6 +198,7 @@ elseif on_osx
    run(`tar -xvf pari-2.7.4.tar.gz`)
    run(`rm pari-2.7.4.tar.gz`)
    cd("$wdir/pari-2.7.4")
+   run(`patch -p1 -i ../patch-alloc-2.7.4`)
    withenv("DYLD_LIBRARY_PATH"=>"$vdir/lib", "DLCFLAGS"=>DLCFLAGS) do
       run(`./Configure --prefix=$vdir --with-gmp=$vdir`)
       run(`make -j4 gp`)
@@ -207,6 +208,7 @@ else
    run(`tar -xvf pari-2.7.4.tar.gz`)
    run(`rm pari-2.7.4.tar.gz`)
    cd("$wdir/pari-2.7.4")
+   run(`patch -p1 -i ../patch-alloc-2.7.4`)
    withenv("LD_LIBRARY_PATH"=>"$vdir/lib", "DLLDFLAGS"=>LDFLAGS) do
       run(`./Configure --prefix=$vdir --with-gmp=$vdir`)
       run(`make -j4 gp`)
