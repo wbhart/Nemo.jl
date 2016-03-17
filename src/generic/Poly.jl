@@ -42,13 +42,8 @@ end
 #
 ###############################################################################    
 
-<<<<<<< HEAD
-function hash(a::PolyElem)
-   h = 0x53dd43cd511044d1%UInt
-=======
 function Base.hash(a::PolyElem, h::UInt)
-   b = 0x53dd43cd511044d1
->>>>>>> 508a753c6b74f2b54f565639dbfcd6fd476618ab
+   b = 0x53dd43cd511044d1%UInt
    for i in 0:length(a) - 1
       b $= hash(coeff(a, i), h) $ h
       b = (b << 1) | (b >> (sizeof(Int)*8 - 1))

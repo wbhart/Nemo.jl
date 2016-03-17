@@ -32,13 +32,8 @@ end
 #
 ###############################################################################
 
-<<<<<<< HEAD
-function hash(a::fq_nmod)
-   h = 0x78e5f766c8ace18d%UInt
-=======
 function Base.hash(a::fq_nmod, h::UInt)
-   b = 0x78e5f766c8ace18d
->>>>>>> 508a753c6b74f2b54f565639dbfcd6fd476618ab
+   b = 0x78e5f766c8ace18d%UInt
    for i in 1:degree(parent(a)) + 1
          b $= hash(coeff(a, i), h) $ h
          b = (b << 1) | (b >> (sizeof(Int)*8 - 1))

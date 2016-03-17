@@ -11,7 +11,7 @@ export fmpz_mat, FmpzMatSpace, getindex, getindex!, setindex!, rows, cols,
        lll_with_removal, lll_with_removal_transform,
        nullspace, rank, rref, reduce_mod, snf, snf_diagonal, is_snf, solve,
        solve_dixon, trace, transpose, content, hcat, vcat, addmul!, zero!,
-       window, pseudo_inv, hnf_modular_eldiv
+       window, pseudo_inv, hnf_modular_eldiv, nullspace_over_Q
 
 ###############################################################################
 #
@@ -26,7 +26,7 @@ base_ring(a::FmpzMatSpace) = a.base_ring
 parent(a::fmpz_mat) = a.parent
 
 function check_parent(a::fmpz_mat, b::fmpz_mat)
-   parent(a) != parent(b) && error("Incompatible moduli in residue operation")
+   parent(a) != parent(b) && error("Incompatible matrices - wrong dimension")
 end
 
 ###############################################################################
@@ -68,7 +68,6 @@ size(t::fmpz_mat, d) = d <= 2 ? size(t)[d] : 1
 #
 ###############################################################################
 
-<<<<<<< HEAD
 function hash(a::fmpz_mat)
    h = 0xb14b9caecfda49af%UInt
    for i in 1:rows(a)
@@ -80,8 +79,6 @@ function hash(a::fmpz_mat)
    return h
 end
 
-=======
->>>>>>> 508a753c6b74f2b54f565639dbfcd6fd476618ab
 function getindex!(v::fmpz, a::fmpz_mat, r::Int, c::Int)
    z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
              (Ptr{fmpz_mat}, Int, Int), &a, r - 1, c - 1)
@@ -705,6 +702,25 @@ end
 ###############################################################################
 
 function nullspace(x::fmpz_mat)
+  H, T = hnf_with_transform(x')
+  for i = rows(H):-1:1
+    for j = 1:cols(H)
+      if !iszero(H[i,j])
+        N = MatrixSpace(FlintZZ, cols(x), rows(H)-i)()
+        for k = 1:rows(N)
+          for l = 1:cols(N)
+            N[k,l] = T[rows(T)-l+1, k]
+          end
+        end
+        return N, cols(N)
+      end
+    end
+  end
+  return MatrixSpace(FlintZZ, cols(x), 0)(), 0
+end
+
+function nullspace_over_Q(x::fmpz_mat)  # will only find a Q-basis for the nullspace
+                                        # NOT a Z-basis
    z = parent(x)()
    if rows(x) == cols(x)
       parz = parent(x)
@@ -913,7 +929,11 @@ function Base.call{T <: Integer}(a::FmpzMatSpace, arr::Array{T, 2})
    return z
 end
 
-Base.call(a::FmpzMatSpace, arr::Array{fmpz, 1}) = a(arr'')
+function Base.call(a::FmpzMatSpace, arr::Array{fmpz, 1})
+   z = fmpz_mat(a.rows, a.cols, arr)
+   z.parent = a
+   return z
+end
 
 Base.call{T <: Integer}(a::FmpzMatSpace, arr::Array{T, 1}) = a(arr'')
 

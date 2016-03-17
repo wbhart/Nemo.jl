@@ -33,15 +33,13 @@ end
 #
 ###############################################################################
 
-<<<<<<< HEAD
-function hash(a::nf_elem)
-   h = 0xc2a44fbe466a1827%UInt
-=======
 function hash(a::nf_elem, h::UInt)
    b = 0xc2a44fbe466a1827
->>>>>>> 508a753c6b74f2b54f565639dbfcd6fd476618ab
+   d = den(a)
+   b = hash(d, b)
    for i in 1:degree(parent(a)) + 1
-         b $= hash(coeff(a, i), h) $ h
+         num_coeff!(d, a, i)
+         b $= hash(d, h) $ h
          b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
    end
    return b
@@ -54,6 +52,15 @@ function coeff(x::nf_elem, n::Int)
      (Ptr{fmpq}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}), &z, &x, n, &parent(x))
    return z
 end
+
+function num_coeff!(z::fmpz, x::nf_elem, n::Int)
+   n < 0 && throw(DomainError())
+   ccall((:nf_elem_get_coeff_fmpz, :libflint), Void, 
+     (Ptr{fmpq}, Ptr{nf_elem}, Int, Ptr{AnticNumberField}), &z, &x, n, &parent(x))
+   return z
+end
+
+
 
 function gen(a::AnticNumberField)
    r = nf_elem(a)
@@ -384,7 +391,7 @@ end
 ###############################################################################
 
 function inv(a::nf_elem)
-   a == 0 && throw(DivideError())
+   iszero(a) && throw(DivideError())
    r = a.parent()
    ccall((:nf_elem_inv, :libflint), Void,
          (Ptr{nf_elem}, Ptr{nf_elem}, Ptr{AnticNumberField}),
@@ -399,7 +406,7 @@ end
 ###############################################################################
 
 function divexact(a::nf_elem, b::nf_elem)
-   b == 0 && throw(DivideError())
+   iszero(b) && throw(DivideError())
    check_parent(a, b)
    r = a.parent()
    ccall((:nf_elem_div, :libflint), Void,
