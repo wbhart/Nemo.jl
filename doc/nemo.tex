@@ -8073,12 +8073,32 @@ Here is an example of computing the Hadamard matrix.
 \subsubsection{Nullspace}
 
 \begin{lstlisting}
-nullspace(a::fmpz_mat)
+nullspace_over_Q(a::fmpz_mat)
 \end{lstlisting}
 
 \desc{Return a tuple $(N, n)$ consisting of the nullity $n$ and a matrix $N$ with
 $c$ rows and $c$ columns, where $c$ is the number of columns of $a$, such that 
-the first $n$ columns of $N$ are a basis for the nullspace of $a$.}
+the first $n$ columns of $N$ are a $Q$-basis for the nullspace of $a$.}
+
+\textbf{Examples.}
+
+Here is an example of computing the nullspace.
+
+\begin{lstlisting}
+   S = MatrixSpace(ZZ, 3, 3)
+
+   A = S([fmpz(2) 3 5; 1 4 7; 4 1 1])
+   
+   N, r = nullspace_over_Q(A)
+\end{lstlisting}
+
+\begin{lstlisting}
+nullspace(a::fmpz_mat)
+\end{lstlisting}
+
+\desc{Return a tuple $(N, n)$ consisting of the nullity $n$ and a matrix $N$ with
+$c$ rows and $r$ columns, where $c$ is the number of columns of $a$, such that 
+the columns of $N$ are a $Z$-basis for the nullspace of $a$, i.e. $aN=0$.}
 
 \textbf{Examples.}
 

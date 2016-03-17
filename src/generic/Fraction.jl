@@ -61,15 +61,9 @@ end
 #
 ###############################################################################
 
-<<<<<<< HEAD
-function hash(a::FractionElem)
-   h = 0x8a30b0d963237dd5%UInt
-   return h $ hash(num(a)) $ hash(den(a))
-=======
 function Base.hash(a::FractionElem, h::UInt)
-   b = 0x8a30b0d963237dd5
+   b = 0x8a30b0d963237dd5%UInt
    return b $ hash(num(a), h) $ hash(den(a), h) $ h
->>>>>>> 508a753c6b74f2b54f565639dbfcd6fd476618ab
 end
 
 function num(a::Fraction)
