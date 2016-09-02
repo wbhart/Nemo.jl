@@ -1105,3 +1105,17 @@ Base.promote_rule(::Type{fmpz_mat}, ::Type{fmpz}) = fmpz_mat
 function MatrixSpace(R::FlintIntegerRing, r::Int, c::Int)
    return FmpzMatSpace(r, c)
 end
+
+###############################################################################
+#
+#   Conversion
+#
+###############################################################################
+
+function Base.convert(::Type{Matrix{Int}}, x::Nemo.fmpz_mat)
+    m,n = size(x)
+    mat = Int[x[i,j] for i = 1:m, j = 1:n]
+    return mat
+end
+
+Base.convert(::Type{Matrix}, x::Nemo.fmpz_mat) = convert(Matrix{Int}, x)
