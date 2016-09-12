@@ -651,7 +651,7 @@ Base.call(a::FmpqMatSpace, d::fmpq_mat) = d
 
 ###############################################################################
 #
-#   Promotions
+#   Promotions and convert
 #
 ###############################################################################
 
@@ -660,6 +660,13 @@ Base.promote_rule{T <: Integer}(::Type{fmpq_mat}, ::Type{T}) = fmpq_mat
 Base.promote_rule(::Type{fmpq_mat}, ::Type{fmpq}) = fmpq_mat
 
 Base.promote_rule(::Type{fmpq_mat}, ::Type{fmpz}) = fmpq_mat
+
+function Base.convert{T<:Integer}(::Type{Matrix{Rational{T}}}, A::fmpq_mat)
+    m,n = size(A)
+    mat::Matrix{Rational{T}} = [Rational{T}(A[i,j]) for i = 1:m, j = 1:n]
+    return mat
+end
+
 
 ###############################################################################
 #
