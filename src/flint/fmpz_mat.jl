@@ -871,7 +871,7 @@ function rref(x::fmpz_mat)
    d = fmpz()
    ccall((:fmpz_mat_rref, :libflint), Void,
          (Ptr{fmpz_mat}, Ptr{fmpz}, Ptr{fmpz_mat}), &z, &d, &x)
-   return z, d
+   return d, z
 end
 
 ###############################################################################
