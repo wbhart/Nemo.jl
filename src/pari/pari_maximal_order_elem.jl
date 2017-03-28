@@ -23,9 +23,9 @@ parent(a::pari_maximal_order_elem) = a.parent
 residue(data::Ptr{Int}) = pari_load(data, 3)
 
 modulus(data::Ptr{Int}) = pari_load(data, 2)
-   
+
 function basistoalg(nf::Ptr{Int}, data::Ptr{Int})
-   return ccall((:basistoalg, :libpari), Ptr{Int}, 
+   return ccall((:basistoalg, :libpari), Ptr{Int},
                 (Ptr{Int}, Ptr{Int}), nf, data)
 end
 
@@ -74,48 +74,48 @@ end
 #
 ###############################################################################
 
-function Base.call(ord::PariMaximalOrder)
+function (ord::PariMaximalOrder)()
    av = unsafe_load(avma, 1)
-   data = ccall((:algtobasis, :libpari), Ptr{Int}, 
+   data = ccall((:algtobasis, :libpari), Ptr{Int},
                  (Ptr{Int}, Ptr{Int}), ord.pari_nf.data, pari(fmpz()).d)
    unsafe_store!(avma, av, 1)
    return pari_maximal_order_elem(data, ord)
 end
 
-function Base.call(ord::PariMaximalOrder, b::fmpq_poly)
+function (ord::PariMaximalOrder)(b::fmpq_poly)
    av = unsafe_load(avma, 1)
-   data = ccall((:algtobasis, :libpari), Ptr{Int}, 
+   data = ccall((:algtobasis, :libpari), Ptr{Int},
                  (Ptr{Int}, Ptr{Int}), ord.pari_nf.data, pari(b).d)
    unsafe_store!(avma, av, 1)
    return pari_maximal_order_elem(data, ord)
 end
 
-function Base.call(ord::PariMaximalOrder, b::nf_elem)
+function (ord::PariMaximalOrder)(b::nf_elem)
    av = unsafe_load(avma, 1)
    par = b.parent.pol.parent
-   data = ccall((:algtobasis, :libpari), Ptr{Int}, 
+   data = ccall((:algtobasis, :libpari), Ptr{Int},
                  (Ptr{Int}, Ptr{Int}), ord.pari_nf.data, pari(par(b)).d)
    unsafe_store!(avma, av, 1)
    return pari_maximal_order_elem(data, ord)
 end
 
-function Base.call(ord::PariMaximalOrder, b::fmpz)
+function (ord::PariMaximalOrder)(b::fmpz)
    av = unsafe_load(avma, 1)
-   data = ccall((:algtobasis, :libpari), Ptr{Int}, 
+   data = ccall((:algtobasis, :libpari), Ptr{Int},
                  (Ptr{Int}, Ptr{Int}), ord.pari_nf.data, pari(b).d)
    unsafe_store!(avma, av, 1)
    return pari_maximal_order_elem(data, ord)
 end
 
-function Base.call(ord::PariMaximalOrder, b::Integer)
+function (ord::PariMaximalOrder)(b::Integer)
    av = unsafe_load(avma, 1)
-   data = ccall((:algtobasis, :libpari), Ptr{Int}, 
+   data = ccall((:algtobasis, :libpari), Ptr{Int},
                  (Ptr{Int}, Ptr{Int}), ord.pari_nf.data, pari(fmpz(b)).d)
    unsafe_store!(avma, av, 1)
    return pari_maximal_order_elem(data, ord)
 end
 
-function Base.call(ord::PariMaximalOrder, b::pari_maximal_order_elem)
+function (ord::PariMaximalOrder)(b::pari_maximal_order_elem)
    parent(b) != ord && error("Unable to coerce maximal order element")
    return b
 end

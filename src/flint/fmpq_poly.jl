@@ -661,7 +661,7 @@ Base.promote_rule(::Type{fmpq_poly}, ::Type{fmpq}) = fmpq_poly
 #
 ###############################################################################
 
-Base.call(f::fmpq_poly, a::fmpq) = evaluate(f, a)
+(f::fmpq_poly)(a::fmpq) = evaluate(f, a)
 
 ###############################################################################
 #
@@ -669,45 +669,45 @@ Base.call(f::fmpq_poly, a::fmpq) = evaluate(f, a)
 #
 ###############################################################################
 
-function Base.call(a::FmpqPolyRing)
+function (a::FmpqPolyRing)()
    z = fmpq_poly()
    z.parent = a
    return z
 end
 
-function Base.call(a::FmpqPolyRing, b::Int)
+function (a::FmpqPolyRing)(b::Int)
    z = fmpq_poly(b)
    z.parent = a
    return z
 end
 
-function Base.call(a::FmpqPolyRing, b::Integer)
+function (a::FmpqPolyRing)(b::Integer)
    z = fmpq_poly(fmpz(b))
    z.parent = a
    return z
 end
 
-function Base.call(a::FmpqPolyRing, b::fmpz)
+function (a::FmpqPolyRing)(b::fmpz)
    z = fmpq_poly(b)
    z.parent = a
    return z
 end
 
-function Base.call(a::FmpqPolyRing, b::fmpq)
+function (a::FmpqPolyRing)(b::fmpq)
    z = fmpq_poly(b)
    z.parent = a
    return z
 end
 
-function Base.call(a::FmpqPolyRing, b::Array{fmpq, 1})
+function (a::FmpqPolyRing)(b::Array{fmpq, 1})
    z = fmpq_poly(b)
    z.parent = a
    return z
 end
 
-Base.call(a::FmpqPolyRing, b::fmpq_poly) = b
+(a::FmpqPolyRing)(b::fmpq_poly) = b
 
-function Base.call(a::FmpqPolyRing, b::fmpz_poly)
+function (a::FmpqPolyRing)(b::fmpz_poly)
    z = fmpq_poly(b)
    z.parent = a
    return z

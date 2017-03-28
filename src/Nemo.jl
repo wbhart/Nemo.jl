@@ -1,14 +1,14 @@
-VERSION >= v"0.4.0-dev+6521" && __precompile__()
+__precompile__()
 
 module Nemo
- 
-import Base: Array, abs, asin, asinh, atan, atanh, base, bin, call,
+
+import Base: Array, abs, asin, asinh, atan, atanh, base, bin,
              checkbounds, convert, cmp, contains, cos, cosh, dec,
              deepcopy, deepcopy_internal, den, deserialize, det, div, divrem,
              exp, factor, gcd, gcdx, getindex, hash, hcat, hex, intersect, inv,
              invmod, isequal, isfinite, isless, isprime, isqrt, isreal, lcm,
              ldexp, length, log, lufact, lufact!, mod, ndigits, nextpow2, norm,
-             nullspace, num, oct, one, parent, parity, parseint, precision,
+             nullspace, num, oct, one, parent, parity, precision,
              prevpow2, promote_rule, rank, Rational, rem, reverse, serialize,
              setindex!, show, sign, sin, sinh, size, sqrt, string, sub, tan,
              tanh, trace, trailing_zeros, transpose, transpose!, truncate,
@@ -49,12 +49,11 @@ include("AbstractTypes.jl")
 #   Set up environment / load libraries
 #
 ###############################################################################
-
-on_windows64 = (@windows ? true : false) && (Int == Int64)
+const on_windows64 = is_windows() && (Int == Int64)
 
 const pkgdir = realpath(joinpath(dirname(@__FILE__), ".."))
 const libdir = joinpath(pkgdir, "local", "lib")
-if (@windows ? true : false)
+@static if is_windows()
    const libgmp = joinpath(pkgdir, "local", "lib", "libgmp-16")
 else
    const libgmp = joinpath(pkgdir, "local", "lib", "libgmp")
@@ -79,8 +78,8 @@ end
 
 function __init__()
 
-   on_windows = @windows ? true : false
-   on_linux = @linux ? true : false
+   const on_windows = is_windows()
+   const on_linux = is_linux()
 
    if "HOSTNAME" in keys(ENV) && ENV["HOSTNAME"] == "juliabox"
        push!(Libdl.DL_LOAD_PATH, "/usr/local/lib")
@@ -191,10 +190,10 @@ end
 function create_accessors(T, S, handle)
    accessor_name = gensym()
    @eval begin
-      function $(symbol(:get, accessor_name))(a::$T)
+      function $(Symbol(:get, accessor_name))(a::$T)
          return a.auxilliary_data[$handle]::$S
       end,
-      function $(symbol(:set, accessor_name))(a::$T, b::$S)
+      function $(Symbol(:set, accessor_name))(a::$T, b::$S)
          if $handle > length(a.auxilliary_data)
             resize(a.auxilliary_data, $handle)
          end

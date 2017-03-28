@@ -743,37 +743,37 @@ Base.promote_rule(::Type{arb_poly}, ::Type{fmpq_poly}) = arb_poly
 #
 ################################################################################
 
-function Base.call(a::ArbPolyRing)
+function (a::ArbPolyRing)()
    z = arb_poly()
    z.parent = a
    return z
 end
 
-function Base.call(a::ArbPolyRing, b::Union{Int,fmpz,fmpq,Float64,arb})
+function (a::ArbPolyRing)(b::Union{Int,fmpz,fmpq,Float64,arb})
    z = arb_poly(base_ring(a)(b), a.base_ring.prec)
    z.parent = a
    return z
 end
 
-function Base.call(a::ArbPolyRing, b::Array{arb, 1})
+function (a::ArbPolyRing)(b::Array{arb, 1})
    z = arb_poly(b, a.base_ring.prec)
    z.parent = a
    return z
 end
 
-function Base.call(a::ArbPolyRing, b::fmpz_poly)
+function (a::ArbPolyRing)(b::fmpz_poly)
    z = arb_poly(b, a.base_ring.prec)
    z.parent = a
    return z
 end
 
-function Base.call(a::ArbPolyRing, b::fmpq_poly)
+function (a::ArbPolyRing)(b::fmpq_poly)
    z = arb_poly(b, a.base_ring.prec)
    z.parent = a
    return z
 end
 
-function Base.call(a::ArbPolyRing, b::arb_poly)
+function (a::ArbPolyRing)(b::arb_poly)
    z = arb_poly(b, a.base_ring.prec)
    z.parent = a
    return z

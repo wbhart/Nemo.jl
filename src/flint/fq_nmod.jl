@@ -399,27 +399,27 @@ Base.promote_rule(::Type{fq_nmod}, ::Type{fmpz}) = fq_nmod
 #
 ###############################################################################
 
-function Base.call(a::FqNmodFiniteField)
+function (a::FqNmodFiniteField)()
    z = fq_nmod(a)
    z.parent = a
    return z
 end
 
-Base.call(a::FqNmodFiniteField, b::Integer) = a(fmpz(b))
+(a::FqNmodFiniteField)(b::Integer) = a(fmpz(b))
 
-function Base.call(a::FqNmodFiniteField, b::Int)
+function (a::FqNmodFiniteField)(b::Int)
    z = fq_nmod(a, b)
    z.parent = a
    return z
 end
 
-function Base.call(a::FqNmodFiniteField, b::fmpz)
+function (a::FqNmodFiniteField)(b::fmpz)
    z = fq_nmod(a, b)
    z.parent = a
    return z
 end
 
-function Base.call(a::FqNmodFiniteField, b::fq_nmod)
+function (a::FqNmodFiniteField)(b::fq_nmod)
    parent(b) != a && error("Coercion between finite fields not implemented")
    return b
 end

@@ -1146,55 +1146,55 @@ doc"""
 > Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
 > $y < 0$ we throw a `DomainError()`.
 """
-function sigma(x::fmpz, y::Int) 
+function sigma(x::fmpz, y::Int)
    y < 0 && throw(DomainError())
    z = fmpz()
-   ccall((:fmpz_divisor_sigma, :libflint), Void, 
+   ccall((:fmpz_divisor_sigma, :libflint), Void,
          (Ptr{fmpz}, Ptr{fmpz}, Int), &z, &x, y)
    return z
 end
 
 doc"""
-    eulerphi(x::fmpz) 
+    eulerphi(x::fmpz)
 > Return the value of the Euler phi function at $x$, i.e. the number of
 > positive integers less than $x$ that are coprime with $x$.
 """
-function eulerphi(x::fmpz) 
+function eulerphi(x::fmpz)
    x < 0 && throw(DomainError())
    z = fmpz()
-   ccall((:fmpz_euler_phi, :libflint), Void, 
+   ccall((:fmpz_euler_phi, :libflint), Void,
          (Ptr{fmpz}, Ptr{fmpz}), &z, &x)
    return z
 end
 
 doc"""
-    numpart(x::Int) 
+    numpart(x::Int)
 > Return the number of partitions of $x$. This function is not available on
 > Windows 64.
 """
-function numpart(x::Int) 
-   if (@windows? true : false) && Int == Int64
+function numpart(x::Int)
+   if (@static is_windows() ? true : false) && Int == Int64
       error("not yet supported on win64")
    end
    x < 0 && throw(DomainError())
    z = fmpz()
-   ccall((:partitions_fmpz_ui, :libarb), Void, 
+   ccall((:partitions_fmpz_ui, :libarb), Void,
          (Ptr{fmpz}, UInt), &z, x)
    return z
 end
 
 doc"""
-    numpart(x::fmpz) 
+    numpart(x::fmpz)
 > Return the number of partitions of $x$. This function is not available on
 > Windows 64.
 """
-function numpart(x::fmpz) 
-   if (@windows? true : false) && Int == Int64
+function numpart(x::fmpz)
+   if (@static is_windows() ? true : false) && Int == Int64
       error("not yet supported on win64")
    end
    x < 0 && throw(DomainError())
    z = fmpz()
-   ccall((:partitions_fmpz_fmpz, :libarb), Void, 
+   ccall((:partitions_fmpz_fmpz, :libarb), Void,
          (Ptr{fmpz}, Ptr{fmpz}, Int), &z, &x, 0)
    return z
 end
@@ -1360,21 +1360,21 @@ end
 #
 ###############################################################################
 
-call(::FlintIntegerRing) = fmpz()
+(::FlintIntegerRing)() = fmpz()
 
-call(::FlintIntegerRing, a::Integer) = fmpz(a)
+(::FlintIntegerRing)(a::Integer) = fmpz(a)
 
-call(::FlintIntegerRing, a::AbstractString{}) = fmpz(a)
+(::FlintIntegerRing)(a::AbstractString{}) = fmpz(a)
 
-call(::FlintIntegerRing, a::fmpz) = a
+(::FlintIntegerRing)(a::fmpz) = a
 
-call(::FlintIntegerRing, a::Float64) = fmpz(a)
+(::FlintIntegerRing)(a::Float64) = fmpz(a)
 
-call(::FlintIntegerRing, a::Float32) = fmpz(Float64(a))
+(::FlintIntegerRing)(a::Float32) = fmpz(Float64(a))
 
-call(::FlintIntegerRing, a::Float16) = fmpz(Float64(a))
+(::FlintIntegerRing)(a::Float16) = fmpz(Float64(a))
 
-call(::FlintIntegerRing, a::BigFloat) = fmpz(BigInt(a))
+(::FlintIntegerRing)(a::BigFloat) = fmpz(BigInt(a))
 
 ###############################################################################
 #

@@ -592,27 +592,27 @@ promote_rule(::Type{padic}, ::Type{fmpq}) = padic
 #
 ###############################################################################
 
-function Base.call(R::FlintPadicField)
+function (R::FlintPadicField)()
    z = padic(R.prec_max)
    z.parent = R
    return z
 end
 
-function Base.call(R::FlintPadicField, n::fmpz)
+function (R::FlintPadicField)(n::fmpz)
    if n == 1
       N = 0
    else
       p = prime(R)
-      N, = remove(n, p) 
+      N, = remove(n, p)
    end
    z = padic(N + R.prec_max)
-   ccall((:padic_set_fmpz, :libflint), Void, 
+   ccall((:padic_set_fmpz, :libflint), Void,
          (Ptr{padic}, Ptr{fmpz}, Ptr{FlintPadicField}), &z, &n, &R)
    z.parent = R
    return z
 end
 
-function Base.call(R::FlintPadicField, n::fmpq)
+function (R::FlintPadicField)(n::fmpq)
    m = den(n)
    if m == 1
       return R(num(n))
@@ -621,18 +621,18 @@ function Base.call(R::FlintPadicField, n::fmpq)
    if m == p
       N = -1
    else
-     N = -flog(m, p) 
+     N = -flog(m, p)
    end
    z = padic(N + R.prec_max)
-   ccall((:padic_set_fmpq, :libflint), Void, 
+   ccall((:padic_set_fmpq, :libflint), Void,
          (Ptr{padic}, Ptr{fmpq}, Ptr{FlintPadicField}), &z, &n, &R)
    z.parent = R
    return z
 end
 
-Base.call(R::FlintPadicField, n::Integer) = R(fmpz(n))
+(R::FlintPadicField)(n::Integer) = R(fmpz(n))
 
-function Base.call(R::FlintPadicField, n::padic)
+function (R::FlintPadicField)(n::padic)
    parent(n) != R && error("Unable to coerce into p-adic field")
    return n
 end

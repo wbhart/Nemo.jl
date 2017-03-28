@@ -1691,63 +1691,63 @@ end
 #
 ################################################################################
 
-function call(r::ArbField)
+function (r::ArbField)()
   z = arb()
   z.parent = r
   return z
 end
 
-function call(r::ArbField, x::Int)
+function (r::ArbField)(x::Int)
   z = arb(fmpz(x), r.prec)
   z.parent = r
   return z
 end
 
-function call(r::ArbField, x::UInt)
+function (r::ArbField)(x::UInt)
   z = arb(fmpz(x), r.prec)
   z.parent = r
   return z
 end
 
-function call(r::ArbField, x::fmpz)
+function (r::ArbField)(x::fmpz)
   z = arb(x, r.prec)
   z.parent = r
   return z
 end
 
-call(r::ArbField, x::Integer) = r(fmpz(x))
+(r::ArbField)(x::Integer) = r(fmpz(x))
 
-function call(r::ArbField, x::fmpq)
+function (r::ArbField)(x::fmpq)
   z = arb(x, r.prec)
   z.parent = r
   return z
 end
-  
-#function call(r::ArbField, x::arf)
+
+#function (r::ArbField)(x::arf)
 #  z = arb(arb(x), r.prec)
 #  z.parent = r
 #  return z
 #end
 
-function call(r::ArbField, x::Float64)
+function (r::ArbField)(x::Float64)
   z = arb(x, r.prec)
   z.parent = r
   return z
 end
 
-function call(r::ArbField, x::arb)
+function (r::ArbField)(x::arb)
   z = arb(x, r.prec)
   z.parent = r
   return z
 end
 
-function call(r::ArbField, x::AbstractString)
+function (r::ArbField)(x::AbstractString)
   z = arb(x, r.prec)
   z.parent = r
   return z
 end
 
-function call(r::ArbField, x::Irrational)
+function (r::ArbField)(x::Irrational)
   if x == pi
     return const_pi(r)
   elseif x == e
@@ -1757,7 +1757,7 @@ function call(r::ArbField, x::Irrational)
   end
 end
 
-function call(r::ArbField, x::BigFloat)
+function (r::ArbField)(x::BigFloat)
   z = arb(x, r.prec)
   z.parent = r
   return z
