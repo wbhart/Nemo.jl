@@ -1200,13 +1200,19 @@ end
 
 ###############################################################################
 #
-#   Promotions
+#   Promotions and conversion
 #
 ###############################################################################
 
 promote_rule{T <: Integer}(::Type{fmpz_mat}, ::Type{T}) = fmpz_mat
 
 promote_rule(::Type{fmpz_mat}, ::Type{fmpz}) = fmpz_mat
+
+function Base.convert{T<:Integer}(::Type{Matrix{T}}, A::fmpz_mat)
+    m,n = size(A)
+    mat::Matrix{T} = T[A[i,j] for i = 1:m, j = 1:n]
+    return mat
+end
 
 ###############################################################################
 #
