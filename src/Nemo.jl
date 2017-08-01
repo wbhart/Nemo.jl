@@ -3,7 +3,7 @@ VERSION >= v"0.4.0-dev+6521" && __precompile__()
 module Nemo
 
 import Base: Array, abs, asin, asinh, atan, atanh, base, bin, checkbounds,
-             convert, cmp, contains, cos, cosh, dec, deepcopy,
+             conj, convert, cmp, contains, cos, cosh, dec, deepcopy,
              deepcopy_internal, den, deserialize, det, div, divrem, exp, eye,
              gcd, gcdx, getindex, hash, hcat, hex, intersect, inv, invmod,
              isequal, isfinite, isless, isqrt, isreal, lcm, ldexp, length, log,
@@ -52,6 +52,10 @@ end
 
 if VERSION >= v"0.7.0-DEV.264" # julia started exporting sincos
    import Base: sincos
+end
+
+if VERSION >= v"0.7.0-DEV.1144"
+    import Base: isone
 end
 
 include("AbstractTypes.jl")

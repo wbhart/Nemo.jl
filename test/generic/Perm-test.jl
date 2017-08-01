@@ -152,9 +152,70 @@ function test_misc_functions()
    @test order(p^5) == 6
 
    M = Nemo.matrix_repr(a)
-   for (i,j) in enumerate(a.d)
-      @test M[i,j] == 1
+   for (idx, val) in enumerate(a.d)
+      @test M[idx, val] == 1
    end
+
+   println("PASS")
+end
+
+function test_characters()
+   print("perm.characters...")
+
+   N = 8
+   G = PermutationGroup(N)
+   @test all(character(p)(G()) == dim(YoungTableau(p)) for p=Partitions(N))
+
+   @test character(Partition([2,2,2,2]), Partition([8])) == 0
+
+   N = 3
+   G = PermutationGroup(N)
+   ps = Partition.([[1,1,1], [2,1], [3]])
+   l = Partition([1,1,1])
+   @test [character(l, m) for m in ps] == [ 1,-1, 1]
+   l = Partition([2,1])
+   @test [character(l, m) for m in ps] == [ 2, 0,-1]
+   l = Partition([3])
+   @test [character(l, m) for m in ps] == [ 1, 1, 1]
+
+   N = 4
+   G = PermutationGroup(N)
+   ps = Partition.([[1,1,1,1], [2,1,1], [2,2], [3,1], [4]])
+   l = Partition([1,1,1,1])
+   @test [character(l, m) for m in ps] == [ 1,-1, 1, 1,-1]
+   l = Partition([2,1,1])
+   @test [character(l, m) for m in ps] == [ 3,-1,-1, 0, 1]
+   l = Partition([2,2])
+   @test [character(l, m) for m in ps] == [ 2, 0, 2,-1, 0]
+   l = Partition([3,1])
+   @test [character(l, m) for m in ps] == [ 3, 1,-1, 0,-1]
+   l = Partition([4])
+   @test [character(l, m) for m in ps] == [ 1, 1, 1, 1, 1]
+
+   # values taken from GAP; note that we specify the order of partitions to be
+   # compatible with GAP numbering of conjugacy classes. This is NOT the order
+   # of partitions given by Partitions.
+   N = 5
+   G = PermutationGroup(N)
+   ps = Partition.([[1,1,1,1,1], [2,1,1,1], [2,2,1], [3,1,1], [3,2], [4,1], [5]])
+   l = Partition([1,1,1,1,1])
+   @test [character(l, m) for m in ps] == [   1,  -1,   1,   1,  -1,  -1,   1 ]
+   l = Partition([2,1,1,1])
+   @test [character(l, m) for m in ps] == [   4,  -2,   0,   1,   1,   0,  -1 ]
+   l = Partition([2,2,1])
+   @test [character(l, m) for m in ps] == [   5,  -1,   1,  -1,  -1,   1,   0 ]
+   l = Partition([3,1,1])
+   @test [character(l, m) for m in ps] == [   6,   0,  -2,   0,   0,   0,   1 ]
+   l = Partition([3,2])
+   @test [character(l, m) for m in ps] == [   5,   1,   1,  -1,   1,  -1,   0 ]
+   l = Partition([4,1])
+   @test [character(l, m) for m in ps] == [   4,   2,   0,   1,  -1,   0,  -1 ]
+   l = Partition([5])
+   @test [character(l, m) for m in ps] == [   1,   1,   1,   1,   1,   1,   1 ]
+
+   # test for overflow
+   p = Partition(collect(10:-1:1))
+   @test character(p, PermutationGroup(55)()) == 44261486084874072183645699204710400
 
    println("PASS")
 end
@@ -168,5 +229,6 @@ function test_perm()
    test_perm_binary_ops()
    test_perm_inversion()
    test_misc_functions()
+   test_characters()
    println("")
 end
