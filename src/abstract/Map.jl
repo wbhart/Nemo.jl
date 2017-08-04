@@ -154,6 +154,45 @@ function (f::PolyRingToPolyRing)(x)
   return subst(x, f.a)
 end
 
+#=
+julia> Zx, x = PolynomialRing(ZZ,"x");
+
+julia> f = endomorphism(Zx, x^2)
+Map from 
+Univariate Polynomial Ring in x over Integer Ring
+to
+Univariate Polynomial Ring in x over Integer Ring
+mapping x to x^2
+
+julia> domain(f) == Zx
+true
+
+julia> g = endomorphism(Zx, x + 1)
+Map from 
+Univariate Polynomial Ring in x over Integer Ring
+to
+Univariate Polynomial Ring in x over Integer Ring
+mapping x to x+1
+
+julia> h = f * g
+Map from Univariate Polynomial Ring in x over Integer Ring to Univariate Polynomial Ring in x over Integer Ring
+Composition of
+Map from 
+Univariate Polynomial Ring in x over Integer Ring
+to
+Univariate Polynomial Ring in x over Integer Ring
+mapping x to x+1
+Map from 
+Univariate Polynomial Ring in x over Integer Ring
+to
+Univariate Polynomial Ring in x over Integer Ring
+mapping x to x^2
+
+julia> h(x)
+x^2+1
+
+=#
+
 # Example 2
 # Canonical injection of ZZ into any commutative unitary ring
 
