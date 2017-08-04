@@ -193,6 +193,8 @@ include("ambiguities.jl") # remove ambiguity warnings
 
 include("Groups.jl")
 
+include("abstract/Map.jl")
+
 ###########################################################
 #
 #   Package handle creation
