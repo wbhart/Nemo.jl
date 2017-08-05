@@ -1,4 +1,4 @@
-export Map, domain, codomain, endomorphism
+export Map, domain, codomain, endomorphism, GenMap, fun
 
 ################################################################################
 #
@@ -87,6 +87,56 @@ end
 
 ################################################################################
 #
+#  Generic maps
+#
+################################################################################
+
+# This is not optimal with the abstract types.
+# If you parametrize, we cannot have partial intialization without the inverse.
+# Another option would be too use something like FunctionsWrapper.jl
+
+type GenMap{D, C} <: Map{D, C}
+  domain::D
+  codomain::C
+  f::Function
+  inv::Function
+
+  GenMap(R::D, S::C, f::Function, inv::Function) = new(R, S, f, inv)
+
+  function GenMap(R::D, S::C, f::Function)
+    z = new()
+    z.domain = R
+    z.codomain = S
+    z.f = f
+    return z
+  end
+end
+
+GenMap{D, C}(R::D, S::C, f::Function, inv::Function) = GenMap{D, C}(R, S, f, inv)
+
+GenMap{D, C}(R::D, S::C, f::Function) = GenMap{D, C}(R, S, f)
+
+fun{D, C}(R::D, S::C, f::Function) = GenMap(R, S, f)
+
+# implement the map interface
+
+domain(f::GenMap) = f.domain
+
+codomain(f::GenMap) = f.codomain
+
+function (f::GenMap)(x)
+  return f.f(x)::elem_type(domain(f))
+end
+
+# printing
+
+function Base.show(io::IO, f::GenMap)
+  print(io, "Map from $(domain(f)) to $(codomain(f))\n")
+  print(io, "given by julia function")
+end
+
+################################################################################
+#
 #  Composition
 #
 ################################################################################
@@ -103,7 +153,6 @@ function Base.:*{D, C, B}(f::Map{D, C}, g::Map{C, B})
         return Comp(f, g)
       end
     elseif typeof(g) == map_type(f)
-        println("sedas")
       return typeof(f)(vcat(f.maps, g))
     else
       return Comp(f, g)
