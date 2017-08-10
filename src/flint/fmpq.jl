@@ -783,6 +783,8 @@ convert(::Type{fmpq}, a::Integer) = fmpq(a)
 
 convert(::Type{fmpq}, a::fmpz) = fmpq(a)
 
+Base.convert(::Type{fmpq}, x::Rational) = fmpq(x.num, x.den)
+
 Base.promote_rule{T <: Integer}(::Type{fmpq}, ::Type{T}) = fmpq
 
 Base.promote_rule(::Type{fmpq}, ::Type{fmpz}) = fmpq
