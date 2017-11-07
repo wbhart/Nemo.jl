@@ -6,7 +6,7 @@ export Map, domain, codomain, endomorphism, GenMap, fun
 #
 ################################################################################
 
-abstract Map{D, C}
+abstract type Map{D, C} end
 
 ################################################################################
 #
@@ -18,7 +18,7 @@ abstract Map{D, C}
 # Then Comp(g, f) corresponds to the map D -> B, x -> g(f(x))
 # So the first field corresponds to the first map you apply
 
-type Comp{M, N, D, B} <: Map{D, B}
+mutable struct Comp{M, N, D, B} <: Map{D, B}
   second::N
   first::M
 end
@@ -47,7 +47,7 @@ end
 #
 ################################################################################
 
-type HomgComp{M, D} <: Map{D, D}
+mutable struct HomgComp{M, D} <: Map{D, D}
   maps::Array{M, 1}
 end
 
@@ -95,15 +95,15 @@ end
 # If you parametrize, we cannot have partial intialization without the inverse.
 # Another option would be too use something like FunctionsWrapper.jl
 
-type GenMap{D, C} <: Map{D, C}
+mutable struct GenMap{D, C} <: Map{D, C}
   domain::D
   codomain::C
   f::Function
   inv::Function
 
-  GenMap(R::D, S::C, f::Function, inv::Function) = new(R, S, f, inv)
+  GenMap{D, C}(R::D, S::C, f::Function, inv::Function) where {D, C} = new(R, S, f, inv)
 
-  function GenMap(R::D, S::C, f::Function)
+  function GenMap{D, C}(R::D, S::C, f::Function) where {D, C}
     z = new()
     z.domain = R
     z.codomain = S
@@ -179,7 +179,7 @@ end
 # Example 1
 # Endomorphisms of polynomial rings
 
-type PolyRingToPolyRing{D, T} <: Map{D, D}
+mutable struct PolyRingToPolyRing{D, T} <: Map{D, D}
   domain::D
   codomain::D
   a::T # image of the generator of the domain
@@ -245,7 +245,7 @@ x^2+1
 # Example 2
 # Canonical injection of ZZ into any commutative unitary ring
 
-type ZtoRing{D} <: Map{FlintIntegerRing, D}
+mutable struct ZtoRing{D} <: Map{FlintIntegerRing, D}
   codomain::D
 end
 
@@ -262,4 +262,3 @@ codomain(f::ZtoRing) = f.codomain
 function Base.show(io::IO, f::ZtoRing)
   print("Canonical morphism from ZZ to\n$(codomain(f))")
 end
-
