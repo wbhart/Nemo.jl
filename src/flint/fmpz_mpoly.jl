@@ -19,7 +19,7 @@ elem_type{S, N}(::FmpzMPolyRing{S, N}) = fmpz_mpoly{S, N}
 vars(a::FmpzMPolyRing) = a.S
 
 function gens{S, N}(R::FmpzMPolyRing{S, N})
-   A = Array(fmpz_mpoly{S, N}, R.num_vars)
+   A = Array{fmpz_mpoly{S, N}}(R.num_vars)
    for i = 1:R.num_vars
       z = R()
       ccall((:fmpz_mpoly_gen, :libflint), Void,
@@ -98,8 +98,8 @@ function show(io::IO, x::fmpz_mpoly)
    else
       cstr = ccall((:fmpz_mpoly_get_str_pretty, :libflint), Ptr{UInt8}, 
           (Ptr{fmpz_mpoly}, Ptr{Ptr{UInt8}}, Ptr{FmpzMPolyRing}), 
-          &x, [bytestring(string(s)) for s in vars(parent(x))], &x.parent)
-      print(io, bytestring(cstr))
+          &x, [string(s) for s in vars(parent(x))], &x.parent)
+      print(io, unsafe_string(cstr))
 
       ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
    end
@@ -432,32 +432,32 @@ promote_rule(::Type{fmpz_mpoly}, ::Type{fmpz}) = fmpz_mpoly
 #
 ###############################################################################
 
-function Base.call{S, N}(R::FmpzMPolyRing{S, N})
-   z = fmpz_mpoly{S, N}(R)
+function (R::FmpzMPolyRing{S, N}){S, N}()
+   z = fmpz_mpoly(R)
    z.parent = R
    return z
 end
 
-function Base.call{S, N}(R::FmpzMPolyRing{S, N}, b::Int)
-   z = fmpz_mpoly{S, N}(R, b)
+function (R::FmpzMPolyRing{S, N}){S, N}(b::Int)
+   z = fmpz_mpoly(R, b)
    z.parent = R
    return z
 end
 
-function Base.call{S, N}(R::FmpzMPolyRing{S, N}, b::fmpz)
-   z = fmpz_mpoly{S, N}(R, b)
+function (R::FmpzMPolyRing{S, N}){S, N}(b::fmpz)
+   z = fmpz_mpoly(R, b)
    z.parent = R
    return z
 end
 
-function Base.call{S, N}(R::FmpzMPolyRing{S, N}, b::Integer)
-   z = fmpz_mpoly{S, N}(R, fmpz(b))
+function (R::FmpzMPolyRing{S, N}){S, N}(b::Integer)
+   z = fmpz_mpoly(R, fmpz(b))
    z.parent = R
    return z
 end
 
-function Base.call{S, N}(R::FmpzMPolyRing{S, N}, a::Array{fmpz, 1}, b::Array{NTuple{N, Int}, 1})
-   z = fmpz_mpoly{S, N}(R, a, b)
+function (R::FmpzMPolyRing{S, N}){S, N}(a::Array{fmpz, 1}, b::Array{NTuple{N, Int}, 1})
+   z = fmpz_mpoly(R, a, b)
    z.parent = R
    return z
 end

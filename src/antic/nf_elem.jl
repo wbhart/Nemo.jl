@@ -5,7 +5,7 @@
 ###############################################################################
 
 export AnticNumberField, nf_elem, norm, trace, CyclotomicField,
-       MaximalRealSubfield, add!, sub!, mul!, signature
+       MaximalRealSubfield, add!, sub!, mul!, signature, sqr_classical
 
 ###############################################################################
 #
@@ -63,7 +63,7 @@ function hash(a::nf_elem, h::UInt)
    b = hash(d, b)
    for i in 1:degree(parent(a)) + 1
          num_coeff!(d, a, i)
-         b $= hash(d, h) $ h
+         b = xor(b, xor(hash(d, h), h))
          b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
    end
    return b
@@ -174,7 +174,7 @@ function den(a::nf_elem)
 end
 
 function elem_from_mat_row(a::AnticNumberField, b::fmpz_mat, i::Int, d::fmpz)
-   _checkbounds(rows(b), i) || throw(BoundsError())
+   Generic._checkbounds(rows(b), i) || throw(BoundsError())
    cols(b) == degree(a) || error("Wrong number of columns")
    z = a()
    ccall((:nf_elem_set_fmpz_mat_row, :libflint), Void,
@@ -225,10 +225,13 @@ function show(io::IO, x::nf_elem)
    cstr = ccall((:nf_elem_get_str_pretty, :libflint), Ptr{UInt8},
                 (Ptr{nf_elem}, Ptr{UInt8}, Ptr{AnticNumberField}),
                  &x, string(var(parent(x))), &parent(x))
-
-   print(io, unsafe_string(cstr))
-
+   s = unsafe_string(cstr)              
    ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
+
+   s = replace(s, "/", "//")
+
+   print(io, s)
+
 end
 
 needs_parentheses(::Nemo.nf_elem) = true
@@ -752,7 +755,7 @@ mul!(c::nf_elem, a::nf_elem, b::Integer) = mul!(c, a, fmpz(b))
 #
 ###############################################################################
 
-function sqr_classical(a::GenPoly{nf_elem})
+function sqr_classical(a::Generic.Poly{nf_elem})
    lena = length(a)
 
    t = base_ring(a)()
@@ -787,7 +790,7 @@ function sqr_classical(a::GenPoly{nf_elem})
    return z
 end
 
-function mul_classical(a::GenPoly{nf_elem}, b::GenPoly{nf_elem})
+function mul_classical(a::Generic.Poly{nf_elem}, b::Generic.Poly{nf_elem})
    check_parent(a, b)
    lena = length(a)
    lenb = length(b)
@@ -833,7 +836,7 @@ function mul_classical(a::GenPoly{nf_elem}, b::GenPoly{nf_elem})
    return z
 end
 
-function *(a::GenPoly{nf_elem}, b::GenPoly{nf_elem})
+function *(a::Generic.Poly{nf_elem}, b::Generic.Poly{nf_elem})
    check_parent(a, b)
    lena = length(a)
    lenb = length(b)
@@ -849,7 +852,7 @@ function *(a::GenPoly{nf_elem}, b::GenPoly{nf_elem})
    K = base_ring(a)
    R = parent(pol)
    T = elem_type(R)
-   S = GenPolyRing{T}(R, :y)
+   S = Generic.PolyRing{T}(R, :y)
    f = S()
    fit!(f, lena)
    for i = 1:lena
@@ -881,7 +884,7 @@ end
 #
 ###############################################################################
 
-promote_rule{T <: Integer}(::Type{nf_elem}, ::Type{T}) = nf_elem
+promote_rule(::Type{nf_elem}, ::Type{T}) where {T <: Integer} = nf_elem
 
 promote_rule(::Type{nf_elem}, ::Type{fmpz}) = nf_elem
 

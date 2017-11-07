@@ -44,6 +44,8 @@ base_ring(a::arb_mat) = a.base_ring
 parent(x::arb_mat, cached::Bool = true) =
       MatrixSpace(base_ring(x), rows(x), cols(x))
 
+isexact(R::ArbMatSpace) = false
+
 prec(x::ArbMatSpace) = prec(x.base_ring)
 
 function getindex!(z::arb, x::arb_mat, r::Int, c::Int)
@@ -53,9 +55,8 @@ function getindex!(z::arb, x::arb_mat, r::Int, c::Int)
   return z
 end
 
-function getindex(x::arb_mat, r::Int, c::Int)
-  _checkbounds(rows(x), r) || throw(BoundsError())
-  _checkbounds(cols(x), c) || throw(BoundsError())
+@inline function getindex(x::arb_mat, r::Int, c::Int)
+  @boundscheck Generic._checkbounds(x, r, c)
 
   z = base_ring(x)()
   v = ccall((:arb_mat_entry_ptr, :libarb), Ptr{arb},
@@ -66,9 +67,8 @@ end
 
 for T in [Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, AbstractString]
    @eval begin
-      function setindex!(x::arb_mat, y::$T, r::Int, c::Int)
-         _checkbounds(rows(x), r) || throw(BoundsError())
-         _checkbounds(cols(x), c) || throw(BoundsError())
+      @inline function setindex!(x::arb_mat, y::$T, r::Int, c::Int)
+         @boundscheck Generic._checkbounds(x, r, c)
 
          z = ccall((:arb_mat_entry_ptr, :libarb), Ptr{arb},
                    (Ptr{arb_mat}, Int, Int), &x, r - 1, c - 1)
@@ -77,9 +77,12 @@ for T in [Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, AbstractString]
    end
 end
 
-setindex!(x::arb_mat, y::Integer, r::Int, c::Int) = setindex!(x, fmpz(y), r, c)
+Base.@propagate_inbounds setindex!(x::arb_mat, y::Integer,
+                                 r::Int, c::Int) =
+         setindex!(x, fmpz(y), r, c)
 
-setindex!{T <: Rational}(x::arb_mat, y::Rational{T}, r::Int, c::Int) =
+Base.@propagate_inbounds setindex!(x::arb_mat, y::Rational{T},
+                                 r::Int, c::Int) where {T <: Integer} =
          setindex!(x, fmpz(y), r, c)
 
 zero(a::ArbMatSpace) = a()
@@ -264,7 +267,7 @@ for T in [Integer, fmpz, fmpq, arb]
    end
 end
 
-function +{T <: Integer}(x::arb_mat, y::Rational{T})
+function +(x::arb_mat, y::Rational{T}) where T <: Union{Int, BigInt}
    z = deepcopy(x)
    for i = 1:min(rows(x), cols(x))
       z[i, i] += y
@@ -272,9 +275,9 @@ function +{T <: Integer}(x::arb_mat, y::Rational{T})
    return z
 end
 
-+{T <: Integer}(x::Rational{T}, y::arb_mat) = y + x
++(x::Rational{T}, y::arb_mat) where T <: Union{Int, BigInt} = y + x
 
-function -{T <: Integer}(x::arb_mat, y::Rational{T})
+function -(x::arb_mat, y::Rational{T}) where T <: Union{Int, BigInt}
    z = deepcopy(x)
    for i = 1:min(rows(x), cols(x))
       z[i, i] -= y
@@ -282,7 +285,7 @@ function -{T <: Integer}(x::arb_mat, y::Rational{T})
    return z
 end
 
-function -{T <: Integer}(x::Rational{T}, y::arb_mat)
+function -(x::Rational{T}, y::arb_mat) where T <: Union{Int, BigInt}
    z = -y
    for i = 1:min(rows(y), cols(y))
       z[i, i] += x
@@ -512,7 +515,7 @@ end
 #
 ###############################################################################
 
-function lufact!(P::perm, x::arb_mat)
+function lufact!(P::Generic.perm, x::arb_mat)
   cols(x) != rows(x) && error("Matrix must be square")
   parent(P).n != rows(x) && error("Permutation does not match matrix")
   P.d .-= 1
@@ -563,7 +566,7 @@ function solve(x::arb_mat, y::arb_mat)
   return z
 end
 
-function solve_lu_precomp!(z::arb_mat, P::perm, LU::arb_mat, y::arb_mat)
+function solve_lu_precomp!(z::arb_mat, P::Generic.perm, LU::arb_mat, y::arb_mat)
   Q = inv(P)
   ccall((:arb_mat_solve_lu_precomp, :libarb), Void,
               (Ptr{arb_mat}, Ptr{Int}, Ptr{arb_mat}, Ptr{arb_mat}, Int),
@@ -571,7 +574,7 @@ function solve_lu_precomp!(z::arb_mat, P::perm, LU::arb_mat, y::arb_mat)
   nothing
 end
 
-function solve_lu_precomp(P::perm, LU::arb_mat, y::arb_mat)
+function solve_lu_precomp(P::Generic.perm, LU::arb_mat, y::arb_mat)
   cols(LU) != rows(y) && error("Matrix dimensions are wrong")
   z = similar(y)
   solve_lu_precomp!(z, P, LU, y)
@@ -585,8 +588,8 @@ end
 ################################################################################
 
 function swap_rows(x::arb_mat, i::Int, j::Int)
-  _checkbounds(rows(x), i) || throw(BoundsError())
-  _checkbounds(rows(x), j) || throw(BoundsError())
+  Generic._checkbounds(rows(x), i) || throw(BoundsError())
+  Generic._checkbounds(rows(x), j) || throw(BoundsError())
   z = deepcopy(x)
   swap_rows!(z, i, j)
   return z
@@ -660,16 +663,14 @@ function (x::ArbMatSpace)(y::fmpz_mat)
   return z
 end
 
-function (x::ArbMatSpace){T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat,
-                                     arb, AbstractString}}(y::Array{T, 2})
+function (x::ArbMatSpace)(y::Array{T, 2}) where {T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, AbstractString}}
   _check_dim(x.rows, x.cols, y)
   z = arb_mat(x.rows, x.cols, y, prec(x))
   z.base_ring = x.base_ring
   return z
 end
 
-function (x::ArbMatSpace){T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat,
-                                     arb, AbstractString}}(y::Array{T, 1})
+function (x::ArbMatSpace)(y::Array{T, 1}) where {T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, AbstractString}}
   _check_dim(x.rows, x.cols, y)
   z = arb_mat(x.rows, x.cols, y, prec(x))
   z.base_ring = x.base_ring
@@ -695,13 +696,77 @@ end
 
 ###############################################################################
 #
+#   Matrix constructor
+#
+###############################################################################
+
+function matrix(R::ArbField, arr::Array{T, 2}) where {T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, AbstractString}}
+   z = arb_mat(size(arr, 1), size(arr, 2), arr, prec(R))
+   z.base_ring = R
+   return z
+end
+
+function matrix(R::ArbField, r::Int, c::Int, arr::Array{T, 1}) where {T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, AbstractString}}
+   _check_dim(r, c, arr)
+   z = arb_mat(r, c, arr, prec(R))
+   z.base_ring = R
+   return z
+end
+
+function matrix(R::ArbField, arr::Array{<: Integer, 2})
+   arr_fmpz = map(fmpz, arr)
+   return matrix(R, arr_fmpz)
+end
+
+function matrix(R::ArbField, r::Int, c::Int, arr::Array{<: Integer, 1})
+   arr_fmpz = map(fmpz, arr)
+   return matrix(R, r, c, arr_fmpz)
+end
+
+function matrix(R::ArbField, arr::Array{Rational{T}, 2}) where {T <: Integer}
+   arr_fmpz = map(fmpq, arr)
+   return matrix(R, arr_fmpz)
+end
+
+function matrix(R::ArbField, r::Int, c::Int, arr::Array{Rational{T}, 1}) where {T <: Integer}
+   arr_fmpz = map(fmpq, arr)
+   return matrix(R, r, c, arr_fmpz)
+end
+
+###############################################################################
+#
+#  Zero matrix
+#
+###############################################################################
+
+function zero_matrix(R::ArbField, r::Int, c::Int)
+   z = arb_mat(r, c)
+   z.base_ring = R
+   return z
+end
+
+###############################################################################
+#
+#  Identity matrix
+#
+###############################################################################
+
+function identity_matrix(R::ArbField, n::Int)
+   z = arb_mat(n, n)
+   ccall((:arb_mat_one, :libarb), Void, (Ptr{arb_mat}, ), &z)
+   z.base_ring = R
+   return z
+end
+
+###############################################################################
+#
 #   Promotions
 #
 ###############################################################################
 
-promote_rule{T <: Integer}(::Type{arb_mat}, ::Type{T}) = arb_mat
+promote_rule(::Type{arb_mat}, ::Type{T}) where {T <: Integer} = arb_mat
 
-promote_rule{T <: Integer}(::Type{arb_mat}, ::Type{Rational{T}}) = arb_mat
+promote_rule(::Type{arb_mat}, ::Type{Rational{T}}) where T <: Union{Int, BigInt} = arb_mat
 
 promote_rule(::Type{arb_mat}, ::Type{fmpz}) = arb_mat
 

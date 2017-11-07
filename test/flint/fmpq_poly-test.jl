@@ -13,7 +13,7 @@ function test_fmpq_poly_constructors()
 
    T, z = PolynomialRing(S, "z")
 
-   @test typeof(T) <: GenPolyRing
+   @test typeof(T) <: Generic.PolyRing
 
    @test isa(z, PolyElem)
 
@@ -85,7 +85,7 @@ function test_fmpq_poly_printing()
  
    S, y = PolynomialRing(QQ, "y")
 
-   @test string(y + y^2) == "y^2 + 1*y"
+   @test string(y + y^2) == "y^2+y"
 
    println("PASS")
 end

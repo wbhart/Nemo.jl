@@ -26,6 +26,8 @@ parent_type(::Type{fmpz_rel_series}) = FmpzRelSeriesRing
 
 base_ring(R::FmpzRelSeriesRing) = R.base_ring
 
+isexact(R::FmpzRelSeriesRing) = false
+
 var(a::FmpzRelSeriesRing) = a.S
 
 ###############################################################################
@@ -633,7 +635,7 @@ end
 #
 ###############################################################################
 
-promote_rule{T <: Integer}(::Type{fmpz_rel_series}, ::Type{T}) = fmpz_rel_series
+promote_rule(::Type{fmpz_rel_series}, ::Type{T}) where {T <: Integer} = fmpz_rel_series
 
 promote_rule(::Type{fmpz_rel_series}, ::Type{fmpz}) = fmpz_rel_series
 

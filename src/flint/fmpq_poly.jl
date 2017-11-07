@@ -81,6 +81,8 @@ canonical_unit(a::fmpq_poly) = canonical_unit(lead(a))
 #
 ###############################################################################
 
+#=
+#use the generic one to print //
 function show(io::IO, x::fmpq_poly)
    if length(x) == 0
       print(io, "0")
@@ -93,6 +95,7 @@ function show(io::IO, x::fmpq_poly)
       ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
    end
 end
+=#
 
 function show(io::IO, p::FmpqPolyRing)
    print(io, "Univariate Polynomial Ring in ")
@@ -324,9 +327,9 @@ end
 
 ==(x::fmpq, y::fmpq_poly) = y == x
 
-==(x::fmpq_poly, y::Rational) = x == fmpq(y)
+==(x::fmpq_poly, y::Rational{T}) where T <: Union{Int, BigInt} = x == fmpq(y)
 
-==(x::Rational, y::fmpq_poly) = y == x
+==(x::Rational{T}, y::fmpq_poly) where T <: Union{Int, BigInt} = y == x
 
 ###############################################################################
 #
@@ -471,7 +474,7 @@ end
 
 divexact(x::fmpq_poly, y::Integer) = divexact(x, fmpz(y)) 
 
-divexact(x::fmpq_poly, y::Rational) = divexact(x, fmpq(y))
+divexact(x::fmpq_poly, y::Rational{T}) where T <: Union{Int, BigInt} = divexact(x, fmpq(y))
 
 ###############################################################################
 #
@@ -669,7 +672,7 @@ end
 #
 ###############################################################################
 
-function *(a::GenPoly{fmpq_poly}, b::GenPoly{fmpq_poly})
+function *(a::Generic.Poly{fmpq_poly}, b::Generic.Poly{fmpq_poly})
    check_parent(a, b)
    if min(length(a), length(b)) < 40
       return mul_classical(a, b)
@@ -732,13 +735,13 @@ end
 #
 ###############################################################################
 
-promote_rule{T <: Integer}(::Type{fmpq_poly}, ::Type{T}) = fmpq_poly
+promote_rule(::Type{fmpq_poly}, ::Type{T}) where {T <: Integer} = fmpq_poly
 
 promote_rule(::Type{fmpq_poly}, ::Type{fmpz}) = fmpq_poly
 
 promote_rule(::Type{fmpq_poly}, ::Type{fmpq}) = fmpq_poly
 
-promote_rule{T <: Integer}(::Type{fmpq_poly}, ::Type{Rational{T}}) = fmpq_poly
+promote_rule(::Type{fmpq_poly}, ::Type{Rational{T}}) where T <: Union{Int, BigInt} = fmpq_poly
 
 ###############################################################################
 #
@@ -794,11 +797,11 @@ end
 
 (a::FmpqPolyRing)(b::Rational) = a(fmpq(b))
 
-(a::FmpqPolyRing){T <: Integer}(b::Array{T, 1}) = a(map(fmpq, b))
+(a::FmpqPolyRing)(b::Array{T, 1}, copy::Bool=true) where {T <: Integer} = a(map(fmpq, b))
 
-(a::FmpqPolyRing){T <: Integer}(b::Array{Rational{T}, 1}) = a(map(fmpq, b))
+(a::FmpqPolyRing)(b::Array{Rational{T}, 1}, copy::Bool=true) where {T <: Integer} = a(map(fmpq, b))
 
-(a::FmpqPolyRing)(b::Array{fmpz, 1}) = a(map(fmpq, b))
+(a::FmpqPolyRing)(b::Array{fmpz, 1}, copy::Bool=true) = a(map(fmpq, b))
 
 (a::FmpqPolyRing)(b::fmpq_poly) = b
 

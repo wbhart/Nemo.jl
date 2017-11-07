@@ -29,6 +29,8 @@ parent_type(::Type{fq_abs_series}) = FqAbsSeriesRing
 
 base_ring(R::FqAbsSeriesRing) = R.base_ring
 
+isexact(R::FqAbsSeriesRing) = false
+
 var(a::FqAbsSeriesRing) = a.S
 
 ###############################################################################
@@ -221,7 +223,7 @@ function *(x::fq, y::fq_abs_series)
    z.prec = y.prec
    ccall((:fq_poly_scalar_mul_fq, :libflint), Void, 
          (Ptr{fq_abs_series}, Ptr{fq_abs_series}, Ptr{fq}, Ptr{FqFiniteField}), 
-               &z, &y, &x, &base_ring(x))
+               &z, &y, &x, &base_ring(y))
    return z
 end
 
@@ -504,7 +506,7 @@ end
 #
 ###############################################################################
 
-promote_rule{T <: Integer}(::Type{fq_abs_series}, ::Type{T}) = fq_abs_series
+promote_rule(::Type{fq_abs_series}, ::Type{T}) where {T <: Integer} = fq_abs_series
 
 promote_rule(::Type{fq_abs_series}, ::Type{fq}) = fq_abs_series
 

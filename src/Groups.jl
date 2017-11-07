@@ -4,16 +4,12 @@
 #
 ###############################################################################
 
-include("generic/YoungTabs.jl")
-
-include("generic/PermGroups.jl")
-
 include("Rings.jl")
 
 ################################################################################
 #
-#  Element types for instances of rings
+#  Element types for instances of groups
 #
 ################################################################################
 
-elem_type{T <: Group}(::T) = elem_type(T)
+elem_type(::T) where {T <: Group} = elem_type(T)

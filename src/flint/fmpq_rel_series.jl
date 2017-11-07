@@ -26,6 +26,8 @@ parent_type(::Type{fmpq_rel_series}) = FmpqRelSeriesRing
 
 base_ring(R::FmpqRelSeriesRing) = R.base_ring
 
+isexact(R::FmpqRelSeriesRing) = false
+
 var(a::FmpqRelSeriesRing) = a.S
 
 ###############################################################################
@@ -309,6 +311,14 @@ end
 
 +(x::Rational, y::fmpq_rel_series) = fmpq(x) + y
 
+-(x::fmpq_rel_series, y::Integer) = x - fmpz(y)
+
+-(x::Integer, y::fmpq_rel_series) = fmpz(x) - y
+
+-(x::fmpq_rel_series, y::Rational) = x - fmpq(y)
+
+-(x::Rational, y::fmpq_rel_series) = fmpq(x) - y
+
 ###############################################################################
 #
 #   Shifting
@@ -505,9 +515,9 @@ end
 
 ==(x::Integer, y::fmpq_rel_series) = y == x
 
-==(x::fmpq_rel_series, y::Rational) = x == fmpq(y)
+==(x::fmpq_rel_series, y::Rational{T}) where T <: Union{Int, BigInt} = x == fmpq(y)
 
-==(x::Rational, y::fmpq_rel_series) = y == x
+==(x::Rational{T}, y::fmpq_rel_series) where T <: Union{Int, BigInt} = y == x
 
 ###############################################################################
 #
@@ -574,7 +584,7 @@ function divexact(x::fmpq_rel_series, y::fmpq)
    z.prec = x.prec
    z.prec = x.prec
    z.val = x.val
-   ccall((:fmpq_poly_scalar_divexact_fmpq, :libflint), Void, 
+   ccall((:fmpq_poly_scalar_div_fmpq, :libflint), Void, 
                 (Ptr{fmpq_rel_series}, Ptr{fmpq_rel_series}, Ptr{fmpq}), 
                &z, &x, &y)
    return z
@@ -582,7 +592,7 @@ end
 
 divexact(x::fmpq_rel_series, y::Integer) = divexact(x, fmpz(y))
 
-divexact(x::fmpq_rel_series, y::Rational) = divexact(x, fmpq(y))
+divexact(x::fmpq_rel_series, y::Rational{T}) where T <: Union{Int, BigInt} = divexact(x, fmpq(y))
 
 ###############################################################################
 #
@@ -992,9 +1002,9 @@ end
 #
 ###############################################################################
 
-promote_rule{T <: Integer}(::Type{fmpq_rel_series}, ::Type{T}) = fmpq_rel_series
+promote_rule(::Type{fmpq_rel_series}, ::Type{T}) where {T <: Integer} = fmpq_rel_series
 
-promote_rule{T <: Integer}(::Type{fmpq_rel_series}, ::Type{Rational{T}}) = fmpq_rel_series
+promote_rule(::Type{fmpq_rel_series}, ::Type{Rational{T}}) where T <: Union{Int, BigInt} = fmpq_rel_series
 
 promote_rule(::Type{fmpq_rel_series}, ::Type{fmpz}) = fmpq_rel_series
 
@@ -1047,7 +1057,7 @@ function (a::FmpqRelSeriesRing)(b::fmpq)
    return z
 end
 
-(a::FmpqRelSeriesRing)(b::Rational) = a(fmpq(b))
+(a::FmpqRelSeriesRing)(b::Rational{T}) where T <: Union{Int, BigInt} = a(fmpq(b))
 
 function (a::FmpqRelSeriesRing)(b::fmpq_rel_series)
    parent(b) != a && error("Unable to coerce power series")
@@ -1063,8 +1073,8 @@ end
 (a::FmpqRelSeriesRing)(b::Array{fmpz, 1}, len::Int, prec::Int, val::Int) =
     a(map(fmpq, b), len, prec, val)
 
-(a::FmpqRelSeriesRing){T <: Integer}(b::Array{T, 1}, len::Int, prec::Int, val::Int) =
+(a::FmpqRelSeriesRing)(b::Array{T, 1}, len::Int, prec::Int, val::Int) where {T <: Integer} =
     a(map(fmpq, b), len, prec, val)
     
-(a::FmpqRelSeriesRing){T <: Integer}(b::Array{Rational{T}, 1}, len::Int, prec::Int, val::Int) =
+(a::FmpqRelSeriesRing)(b::Array{Rational{T}, 1}, len::Int, prec::Int, val::Int) where {T <: Integer} =
     a(map(fmpq, b), len, prec, val)

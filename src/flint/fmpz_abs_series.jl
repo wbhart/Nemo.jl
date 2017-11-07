@@ -29,6 +29,8 @@ parent_type(::Type{fmpz_abs_series}) = FmpzAbsSeriesRing
 
 base_ring(R::FmpzAbsSeriesRing) = R.base_ring
 
+isexact(R::FmpzAbsSeriesRing) = false
+
 var(a::FmpzAbsSeriesRing) = a.S
 
 ###############################################################################
@@ -509,7 +511,7 @@ end
 #
 ###############################################################################
 
-promote_rule{T <: Integer}(::Type{fmpz_abs_series}, ::Type{T}) = fmpz_abs_series
+promote_rule(::Type{fmpz_abs_series}, ::Type{T}) where {T <: Integer} = fmpz_abs_series
 
 promote_rule(::Type{fmpz_abs_series}, ::Type{fmpz}) = fmpz_abs_series
 

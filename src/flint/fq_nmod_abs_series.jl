@@ -29,6 +29,8 @@ parent_type(::Type{fq_nmod_abs_series}) = FqNmodAbsSeriesRing
 
 base_ring(R::FqNmodAbsSeriesRing) = R.base_ring
 
+isexact(R::FqNmodAbsSeriesRing) = false
+
 var(a::FqNmodAbsSeriesRing) = a.S
 
 ###############################################################################
@@ -504,7 +506,7 @@ end
 #
 ###############################################################################
 
-promote_rule{T <: Integer}(::Type{fq_nmod_abs_series}, ::Type{T}) = fq_nmod_abs_series
+promote_rule(::Type{fq_nmod_abs_series}, ::Type{T}) where {T <: Integer} = fq_nmod_abs_series
 
 promote_rule(::Type{fq_nmod_abs_series}, ::Type{fq_nmod}) = fq_nmod_abs_series
 

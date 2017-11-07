@@ -84,6 +84,8 @@ doc"""
 """
 parent(a::padic) = a.parent
 
+isexact(R::FlintPadicField) = false
+
 function check_parent(a::padic, b::padic)
    parent(a) != parent(b) && 
       error("Incompatible padic rings in padic operation")
@@ -98,7 +100,7 @@ parent_type(::Type{padic}) = FlintPadicField
 ###############################################################################
 
 function Base.hash(a::padic, h::UInt)
-   return hash(lift(FlintQQ, a), h) $ hash(prime(parent(a)), h) $ h
+   return xor(hash(lift(FlintQQ, a), h), xor(hash(prime(parent(a)), h), h))
 end
 
 doc"""
@@ -618,7 +620,7 @@ end
 #
 ###############################################################################
 
-promote_rule{T<:Integer}(::Type{padic}, ::Type{T}) = padic
+promote_rule(::Type{padic}, ::Type{T}) where {T <: Integer} = padic
 
 promote_rule(::Type{padic}, ::Type{fmpz}) = padic
 

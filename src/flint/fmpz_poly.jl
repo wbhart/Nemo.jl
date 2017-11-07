@@ -533,15 +533,18 @@ end
 
 ###############################################################################
 #
-#   GCDX
+#   RESX
 #
 ###############################################################################
 
-function gcdx(a::fmpz_poly, b::fmpz_poly)
+function resx(a::fmpz_poly, b::fmpz_poly)
    check_parent(a, b)
    lena = length(a)
    lenb = length(b)
-   (lena <= 1 || lenb <= 1) && error("Constant polynomial in gcdx")  
+   if lena == 0 || lenb == 0
+      return fmpz(), parent(a)(), parent(a)()
+   end
+   (lena <= 1 && lenb <= 1) && error("Constant polynomials in resx")  
    z = fmpz()
    u = parent(a)()
    v = parent(a)()
@@ -553,8 +556,18 @@ function gcdx(a::fmpz_poly, b::fmpz_poly)
    (Ptr{fmpz}, Ptr{fmpz_poly}, Ptr{fmpz_poly}, Ptr{fmpz_poly}, Ptr{fmpz_poly}), 
             &z, &u, &v, &x, &y)
    r = z*c1^(lenb - 1)*c2^(lena - 1)
-   u *= c1^(lenb - 2)*c2^(lena - 1)
-   v *= c1^(lenb - 1)*c2^(lena - 2)   
+   if lenb > 1
+      u *= c1^(lenb - 2)*c2^(lena - 1)
+   else
+      u *= c2^(lena - 1)
+      u = divexact(u, c1)
+   end
+   if lena > 1
+      v *= c1^(lenb - 1)*c2^(lena - 2)
+   else
+      v *= c1^(lenb - 1)
+      v = divexact(v, c2)
+   end   
    return (r, u, v)
 end
 
@@ -741,7 +754,7 @@ end
 #
 ###############################################################################
 
-function *(a::GenPoly{fmpz_poly}, b::GenPoly{fmpz_poly})
+function *(a::Generic.Poly{fmpz_poly}, b::Generic.Poly{fmpz_poly})
    check_parent(a, b)
    if min(length(a), length(b)) < 40
       return mul_classical(a, b)
@@ -798,7 +811,7 @@ end
 #
 ###############################################################################
 
-promote_rule{T <: Integer}(::Type{fmpz_poly}, ::Type{T}) = fmpz_poly
+promote_rule(::Type{fmpz_poly}, ::Type{T}) where {T <: Integer} = fmpz_poly
 
 promote_rule(::Type{fmpz_poly}, ::Type{fmpz}) = fmpz_poly
 
@@ -838,7 +851,7 @@ function (a::FmpzPolyRing)(b::Array{fmpz, 1})
    return z
 end
 
-(a::FmpzPolyRing){T <: Integer}(b::Array{T, 1}) = a(map(fmpz, b))
+(a::FmpzPolyRing)(b::Array{T, 1}) where {T <: Integer} = a(map(fmpz, b))
 
 (a::FmpzPolyRing)(b::fmpz_poly) = b
 
