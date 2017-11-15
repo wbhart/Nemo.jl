@@ -7,6 +7,7 @@ include("julia/gfelem-test.jl")
 include("flint/fmpq-test.jl")
 include("flint/fq-test.jl")
 include("flint/fq_nmod-test.jl")
+include("flint/fq_nmod_embed-test.jl")
 include("flint/padic-test.jl")
 
 include("antic/nf_elem-test.jl")

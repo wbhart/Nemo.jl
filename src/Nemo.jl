@@ -410,13 +410,15 @@ include("antic/AnticTypes.jl")
 
 include("arb/ArbTypes.jl")
 
+include("abstract/Map.jl")
+
 #include("ambiguities.jl") # remove ambiguity warnings
 
 include("Groups.jl")
 
 include("flint/adhoc.jl")
 
-include("abstract/Map.jl")
+include("FinFieldsLattices.jl")
 
 ###########################################################
 #

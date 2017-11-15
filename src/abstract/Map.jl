@@ -262,3 +262,44 @@ codomain(f::ZtoRing) = f.codomain
 function Base.show(io::IO, f::ZtoRing)
   print("Canonical morphism from ZZ to\n$(codomain(f))")
 end
+
+################################################################################
+#
+#  Finite fields morphism
+#
+################################################################################
+
+struct FinFieldMorphism{T} <: Map{T, T}
+    domain::T
+    codomain::T
+    f::Function
+    inv::Function
+end
+
+domain(f::FinFieldMorphism) = f.domain
+
+codomain(f::FinFieldMorphism) = f.codomain
+
+function (f::FinFieldMorphism)(x)
+    return f.f(x)::elem_type(codomain(f))
+end
+
+function Base.show(io::IO, f::FinFieldMorphism)
+    print("Morphism from $(domain(f))\nto $(codomain(f))")
+end
+
+inv(f::FinFieldMorphism) = FinFieldMorphism(f.codomain, f.domain, f.inv, f.f)
+
+function embed{T <: FinField}(k::T, K::T)
+    M, N = embed_matrices(k, K)
+    f(x) = embed_pre_mat(x, K, M)
+    inv(y) = embed_pre_mat(y, k, N)
+    return FinFieldMorphism(k, K, f, inv)
+end
+
+function project{T <: FinField}(K::T, k::T)
+    M, N = embed_matrices(k, K)
+    f(x) = embed_pre_mat(x, k, N)
+    inv(y) = embed_pre_mat(y, K, M)
+    return FinFieldMorphism(K, k, f, inv)
+end
