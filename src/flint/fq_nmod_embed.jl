@@ -104,29 +104,7 @@ function embed_pre_mat(x::fq_nmod, K::FqNmodFiniteField, M::nmod_mat)
     return res
 end
 
-function project(x::fq_nmod, k::FqNmodFiniteField)
-
-    K = parent(x)
-    d = degree(K)
-    g = gen(k)
-    M = embed_matrices(k, K)[2]
-    S = MatrixSpace(base_ring(M), d, 1)
-    col = S()
-
-    for j in 0:(d-1)
-        col[j+1, 1] = coeff(x, j)
-    end
-
-    product = M*col
-    res = k()
-
-    for j in degree(k):-1:1
-        coeff!(res, j-1, Int(data(product[j, 1])))
-    end
-    return res
-end
-
 function embedPoly(P::fq_nmod_poly, f::FinFieldMorphism)
-    S = PolynomialRing(f.codomain, "T")[1]
+    S = PolynomialRing(field(codomain(f)), "T")[1]
     return S([f(coeff(P, j)) for j in 0:degree(P)])
 end
