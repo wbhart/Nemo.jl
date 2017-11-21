@@ -68,8 +68,8 @@ function addSubfield!{T <: FinField}(F::FieldNode{T},
 end
 
 function Base.show(io::IO, k::FieldNode)  
-    print(io, "Node composed of Finite Field of degree ", field(k))
-    print(io, " over F_", characteristic(field(k)))
+    print(io, "Node composed of Finite Field of degree ", degree(k))
+    print(io, " over F_", characteristic(k))
 end
 
 ################################################################################
@@ -199,9 +199,16 @@ function defining_poly(f::FinFieldMorphism)
 end
 
 function is_embedded(k::FieldNode, K::FieldNode)
-    d = degree(k)
+    d = degree(K)
+    ov = overfields(k)
+    if haskey(ov, d)
+        for f in ov[d]
+            if domain(f) == k && codomain(f) == K
+                return f
+            end
+        end
+    end
 end
-
 
 function embed_no_cond{T <: FinField}(k::FieldNode{T}, K::FieldNode{T})
     M, N = embed_matrices(k, K)
@@ -210,7 +217,7 @@ function embed_no_cond{T <: FinField}(k::FieldNode{T}, K::FieldNode{T})
     return FinFieldMorphism(k, K, f, inv)
 end
 
-function embed(k::FieldNode, K::FieldNode)
+function find_morph(k::FieldNode, K::FieldNode)
 
     E, F = field(k), field(K)
     S = PolynomialRing(F, "T")[1]
@@ -239,12 +246,125 @@ function embed(k::FieldNode, K::FieldNode)
         f(x) = embed_pre_mat(x, F, M)
         g(y) = embed_pre_mat(y, E, N)
         morph = FinFieldMorphism(k, K, f, g)
-        addOverfield!(k, morph)
-        addSubfield!(K, inv(morph))
     else
         morph = embed_no_cond(k, K)
+    end
+
+    return morph
+end
+
+function transitive_closure(f::FinFieldMorphism)
+
+    k = domain(f)
+    K = codomain(f)
+
+    # Subfields
+
+    subk = subfields(k)
+    subK = subfields(K)
+
+    for d in keys(subk)
+        if !haskey(subK, d)
+            for g in subk[d]
+                t(y) = g(inf(f)(y))
+                tinv(x) = f(inv(g)(x))
+                phi = FinFieldMorphism(K, codomain(g), t, tinv)
+
+                addSubfield!(K, phi)
+                addOverfield!(codomain(g), inv(phi))
+            end
+        else
+            val = FieldNode[codomain(v) for v in subK[d]]
+            
+            for g in subk[d]
+                if !(codomain(g) in val)
+                    t(y) = g(inf(f)(y))
+                    tinv(x) = f(inv(g)(x))
+                    phi = FinFieldMorphism(K, codomain(g), t, tinv)
+
+                    addSubfield!(K, phi)
+                    addOverfield!(codomain(g), inv(phi))
+                end
+            end
+        end
+    end
+
+    # Overfields
+
+    ov = overfields(K)
+
+    for d in keys(ov)
+        for g in ov[d]
+            transitive_closure(g)
+        end
+    end
+end
+
+function intersections(k::FieldNode, K::FieldNode)
+    d = degree(k)
+    subk = subfields(k)
+    subK = subfields(K)
+    needmore = true
+    for l in keys(subK)
+        c = gcd(d, l)
+        if c == 1
+
+        elseif c == d
+            for g in subK[l]
+                embed(k, codomain(g))
+            end
+            needmore = false
+        elseif c == l
+            for g in subK[l]
+                embed(codomain(g), k)
+            end
+        elseif haskey(subK, c)
+            for g in subK[c]
+                embed(codomain(g), k)
+            end
+        elseif haskey(subk, c)
+            for g in subk[c]
+                embed(codomain(g), k)
+            end
+        else
+            p::Int = characteristic(k)
+            kc, xc = FiniteField(p, c, string("x", c))
+            Kc = fieldNode(kc)
+            embed(Kc, k)
+            for g in subK[l]
+                embed(Kc, codomain(g))
+            end
+        end
+    end
+
+    return needmore
+end
+
+function embed(k::FieldNode, K::FieldNode)
+
+    if k == K
+        identity(x) = x
+        morph = FinFieldMorphism(k, k, identity, identity)
+        return morph
+    end
+
+    tr = is_embedded(k, K)
+    if tr != nothing
+        return tr
+    end
+
+    needmore = intersections(k, K)
+
+    if needmore 
+        morph = find_morph(k, K)
+
         addOverfield!(k, morph)
         addSubfield!(K, inv(morph))
+
+        transitive_closure(morph)
+        return morph
+    else
+        return is_embedded(k, K)
     end
-    return morph
+
 end

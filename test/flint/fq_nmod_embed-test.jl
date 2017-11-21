@@ -1,15 +1,19 @@
 function test_fq_nmod_embed()
 
-    k2, x2 = FiniteField(5, 2, "x2")
-    k4, x4 = FiniteField(5, 4, "x4")
-    k8, x8 = FiniteField(5, 8, "x8")
-    k16, x16 = FiniteField(5, 16, "x16")
-    k3, x3 = FiniteField(5, 3, "x3")
-    k6, x6 = FiniteField(5, 6, "x6")
-    k12, x12 = FiniteField(5, 12, "x12")
-    k24, x24 = FiniteField(5, 24, "x24")
-    k18, x18 = FiniteField(5, 18, "x18")
-    k9, x9 = FiniteField(5, 9, "x9")
+    # Prelude : Creation of the finite fields and the nodes
+
+    p = 11
+
+    k2, x2 = FiniteField(p, 2, "x2")
+    k4, x4 = FiniteField(p, 4, "x4")
+    k8, x8 = FiniteField(p, 8, "x8")
+    k16, x16 = FiniteField(p, 16, "x16")
+    k3, x3 = FiniteField(p, 3, "x3")
+    k6, x6 = FiniteField(p, 6, "x6")
+    k12, x12 = FiniteField(p, 12, "x12")
+    k24, x24 = FiniteField(p, 24, "x24")
+    k18, x18 = FiniteField(p, 18, "x18")
+    k9, x9 = FiniteField(p, 9, "x9")
 
 
     K2 = fieldNode(k2)
@@ -22,6 +26,10 @@ function test_fq_nmod_embed()
     K24 = fieldNode(k24)
     K9 = fieldNode(k9)
     K18 = fieldNode(k18)
+
+    #=
+    # A first test where the user ask for the embedding in the "right"
+    # order
 
     f2_8 = embed(K2, K8)
     f2_4 = embed(K2, K4)
@@ -40,7 +48,6 @@ function test_fq_nmod_embed()
     @test f4_16(x4) == f8_16(f4_8(x4))
 
     f2_6 = embed(K2, K6)
-    f2_4 = embed(K2, K4)
     f3_6 = embed(K3, K6)
     f2_12 = embed(K2, K12)
     f3_12 = embed(K3, K12)
@@ -85,6 +92,32 @@ function test_fq_nmod_embed()
     @test f2_18(x2) == f6_18(f2_6(x2))
     @test f3_18(x3) == f9_18(f3_9(x3))
     @test f3_18(x3) == f6_18(f3_6(x3))
+
+    =#
+    # Simple square
+
+    f4_12 = embed(K4, K12)
+    f6_12 = embed(K6, K12)
+    f2_4 = embed(K2, K4)
+    f2_6 = embed(K2, K6)
+
+    @test f6_12(f2_6(x2)) == f4_12(f2_4(x2))
+    
+    #=
+    # A simple transitive test
+
+    f2_4 = embed(K2, K4)
+    f4_8 = embed(K4, K8)
+    f8_16 = embed(K8, K16)
+    f2_8 = embed(K2, K8)
+    f2_16 = embed(K2, K16)
+    f4_16 = embed(K4, K16)
+
+    @test f4_8(f2_4(x2)) == f2_8(x2)
+    @test f4_16(f2_4(x2)) == f2_16(x2)
+    @test f8_16(f2_8(x2)) == f2_16(x2)
+    @test f8_16(f4_8(x4)) == f4_16(x4)
+    =#
 
     println("PASS")
 end
