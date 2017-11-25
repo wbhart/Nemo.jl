@@ -2,7 +2,7 @@ function test_fq_nmod_embed()
 
     # Prelude : Creation of the finite fields and the nodes
 
-    p = 7
+    p = 5
 
     k2, x2 = FiniteField(p, 2, "x2")
     k4, x4 = FiniteField(p, 4, "x4")
@@ -137,7 +137,7 @@ function test_fq_nmod_embed()
 
     =#
 
-    #= A pretty random lattice
+    # A pretty random lattice
 
     f4_12 = embed(K4, K12)
     f6_24 = embed(K6, K24)
@@ -145,7 +145,7 @@ function test_fq_nmod_embed()
     f2_16 = embed(K2, K16)
     f3_6 = embed(K3, K6)
     f9_18 = embed(K9, K18)
-    f6_12 = embed(K6, K12) # 2 -> 4 is broken here
+    f6_12 = embed(K6, K12)
     f2_6 = embed(K2, K6)
     f3_18 = embed(K3, K18)
     f4_16 = embed(K4, K16)
@@ -180,27 +180,29 @@ function test_fq_nmod_embed()
     @test f4_8(f2_4(x2)) == f2_8(x2)
     @test f4_16(f2_4(x2)) == f2_16(x2)
 
-    =#
 
-    # Produced an error
+    #= Produced an error
 
     f4_12 = embed(K4, K12)
     f8_16 = embed(K8, K16)
     f2_16 = embed(K2, K16)
     f6_12 = embed(K6, K12) 
-    f2_4 = embed(K2, K4)
+    f2_6 = embed(K2, K6)
     f4_16 = embed(K4, K16)
     f2_8 = embed(K2, K8)
     f4_8 = embed(K4, K8)
-    f2_6 = embed(K2, K6)
     f2_12 = embed(K2, K12)
+    f2_4 = embed(K2, K4)
 
     @test f8_16(f2_8(x2)) == f2_16(x2)
     @test f8_16(f4_8(x4)) == f4_16(x4)
-    @test f4_12(f2_4(x2)) == f6_12(f2_6(x2)) == f2_12(x2)
-
+    @test f6_12(f2_6(x2)) == f2_12(x2)
+    @test f4_12(f2_4(x2)) == f2_12(x2)
     @test f4_8(f2_4(x2)) == f2_8(x2)
     @test f4_16(f2_4(x2)) == f2_16(x2)
+
+    =#
+
 
     println("PASS")
 end

@@ -318,13 +318,16 @@ function intersections(k::FieldNode, K::FieldNode)
             for g in subK[l]
                 embed(codomain(g), k)
             end
-        elseif haskey(subK, c)
-            for g in subK[c]
-                embed(codomain(g), k)
-            end
         elseif haskey(subk, c)
-            for g in subk[c]
-                embed(codomain(g), k)
+            L = codomain(subk[c][1])
+            for h in subK[l]
+                embed(L, codomain(h))
+            end
+        elseif haskey(subK, c)
+            L = codomain(subK[c][1])
+            embed(L, k)
+            for h in subK[l]
+                embed(L, codomain(h))
             end
         else
             p::Int = characteristic(k)

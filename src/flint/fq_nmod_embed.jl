@@ -28,8 +28,18 @@ function embed_gens(k::FqNmodFiniteField, K::FqNmodFiniteField)
 end
 
 function embed_matrices(k::FqNmodFiniteField, K::FqNmodFiniteField)
-    a, b, P = embed_gens(k, K)
+
     m, n = degree(k), degree(K)
+    if m == n
+        T1, T2 = modulus(k), modulus(K)
+        if T1 == T2
+            s1 = identity_matrix(base_ring(T1), n)
+            s2 = s1
+            return s1, s2
+        end
+    end
+
+    a, b, P = embed_gens(k, K)
     R = base_ring(P)
     S1 = MatrixSpace(R, n, m)
     S2 = MatrixSpace(R, m, n)
