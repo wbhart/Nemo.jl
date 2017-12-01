@@ -369,5 +369,4 @@ function embed(k::FieldNode, K::FieldNode)
     else
         return is_embedded(k, K)
     end
-
 end
