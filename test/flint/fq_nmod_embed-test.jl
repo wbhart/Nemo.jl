@@ -2,7 +2,7 @@ function test_fq_nmod_embed()
 
     # Prelude : Creation of the finite fields and the nodes
 
-    p = 5
+    p = 11
 
     k2, x2 = FiniteField(p, 2, "x2")
     k3, x3 = FiniteField(p, 3, "x3")
@@ -150,7 +150,7 @@ function test_fq_nmod_embed()
 
     =#
 
-    #= A pretty random lattice with small numbers
+    # A pretty random lattice with small numbers
 
     f4_12 = embed(K4, K12)
     f6_24 = embed(K6, K24)
@@ -159,13 +159,13 @@ function test_fq_nmod_embed()
     f3_6 = embed(K3, K6)
     f9_18 = embed(K9, K18)
     f6_12 = embed(K6, K12)
-    f2_6 = embed(K2, K6)
     f3_18 = embed(K3, K18)
     f4_16 = embed(K4, K16)
     f6_18 = embed(K6, K18)
     f2_8 = embed(K2, K8)
     f12_24 = embed(K12, K24)
     f3_9 = embed(K3, K9)
+    f2_6 = embed(K2, K6)
     f8_24 = embed(K8, K24)
     f3_24 = embed(K3, K24)
     f2_12 = embed(K2, K12)
@@ -193,9 +193,6 @@ function test_fq_nmod_embed()
     @test f4_8(f2_4(x2)) == f2_8(x2)
     @test f4_16(f2_4(x2)) == f2_16(x2)
 
-    =#
-
-
     #= Produced an error
 
     f4_12 = embed(K4, K12)
@@ -218,6 +215,7 @@ function test_fq_nmod_embed()
 
     =#
 
+    #=
     @time f35_70 = embed(K35, K70)
     @time f10_70 = embed(K10, K70)
     @time f5_10 = embed(K5, K10)
@@ -230,6 +228,7 @@ function test_fq_nmod_embed()
     @test f10_70(f5_10(x5^3)) == f35_70(f5_35(x5^3))
     @test f70_210(f10_70(x10)) == f10_210(x10)
     @test f10_50(f5_10(x5^2+1)) == f5_50(x5^2+1)
+    =#
 
     println("PASS")
 end

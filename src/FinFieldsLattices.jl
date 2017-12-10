@@ -56,7 +56,7 @@ end
 function addSubfield!{T <: FinField}(F::FieldNode{T},
                                      f::FinFieldMorphism{FieldNode{T}})
 
-    d = degree(codomain(f))
+    d = degree(domain(f))
     sub = subfields(F)
 
     if haskey(sub, d)
@@ -227,8 +227,8 @@ function find_morph(k::FieldNode, K::FieldNode)
 
     for l in keys(subfields(k))
         if haskey(subfields(K), l)
-            f = inv(subfields(k)[l][1])
-            g = inv(subfields(K)[l][1])
+            f = subfields(k)[l][1]
+            g = subfields(K)[l][1]
             P = embedPoly(defining_poly(f), g)
             if needy
                 Q = gcd(Q, P)
@@ -266,24 +266,24 @@ function transitive_closure(f::FinFieldMorphism)
     for d in keys(subk)
         if !haskey(subK, d)
             for g in subk[d]
-                t(y) = g(inf(f)(y))
-                tinv(x) = f(inv(g)(x))
-                phi = FinFieldMorphism(K, codomain(g), t, tinv)
+                t(y) = f(g(y))
+                tinv(x) = inv(g)(inf(f)(x))
+                phi = FinFieldMorphism(domain(g), K, t, tinv)
 
                 addSubfield!(K, phi)
-                addOverfield!(codomain(g), inv(phi))
+                addOverfield!(domain(g), phi)
             end
         else
             val = FieldNode[codomain(v) for v in subK[d]]
             
             for g in subk[d]
-                if !(codomain(g) in val)
-                    t(y) = g(inf(f)(y))
-                    tinv(x) = f(inv(g)(x))
-                    phi = FinFieldMorphism(K, codomain(g), t, tinv)
+                if !(domain(g) in val)
+                    t(y) = f(g(y))
+                    tinv(x) = inv(g)(inf(f)(x))
+                    phi = FinFieldMorphism(domain(g), K, t, tinv)
 
                     addSubfield!(K, phi)
-                    addOverfield!(codomain(g), inv(phi))
+                    addOverfield!(domain(g), phi)
                 end
             end
         end
@@ -311,23 +311,23 @@ function intersections(k::FieldNode, K::FieldNode)
 
         elseif c == d
             for g in subK[l]
-                embed(k, codomain(g))
+                embed(k, domain(g))
             end
             needmore = false
         elseif c == l
             for g in subK[l]
-                embed(codomain(g), k)
+                embed(domain(g), k)
             end
         elseif haskey(subk, c)
-            L = codomain(subk[c][1])
+            L = domain(subk[c][1])
             for h in subK[l]
-                embed(L, codomain(h))
+                embed(L, domain(h))
             end
         elseif haskey(subK, c)
-            L = codomain(subK[c][1])
+            L = domain(subK[c][1])
             embed(L, k)
             for h in subK[l]
-                embed(L, codomain(h))
+                embed(L, domain(h))
             end
         else
             p::Int = characteristic(k)
@@ -335,7 +335,7 @@ function intersections(k::FieldNode, K::FieldNode)
             Kc = fieldNode(kc)
             embed(Kc, k)
             for g in subK[l]
-                embed(Kc, codomain(g))
+                embed(Kc, domain(g))
             end
         end
     end
@@ -362,7 +362,7 @@ function embed(k::FieldNode, K::FieldNode)
         morph = find_morph(k, K)
 
         addOverfield!(k, morph)
-        addSubfield!(K, inv(morph))
+        addSubfield!(K, morph)
 
         transitive_closure(morph)
         return morph
