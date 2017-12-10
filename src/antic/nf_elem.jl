@@ -35,6 +35,8 @@ doc"""
 """
 base_ring(a::nf_elem) = Union{}
 
+isdomain_type(::Type{nf_elem}) = true
+
 doc"""
     var(a::AnticNumberField)
 > Returns the identifier (as a symbol, not a string), that is used for printing
@@ -59,7 +61,7 @@ const hash_seed = UInt==UInt64 ? 0xc2a44fbe466a1827 : 0xc2a44fb
 function hash(a::nf_elem, h::UInt)
    global hash_seed
    b = hash_seed
-   d = den(a)
+   d = denominator(a)
    b = hash(d, b)
    for i in 1:degree(parent(a)) + 1
          num_coeff!(d, a, i)
@@ -161,11 +163,11 @@ doc"""
 isunit(a::nf_elem) = a != 0
 
 doc"""
-    den(a::nf_elem)
+    denominator(a::nf_elem)
 > Return the denominator of the polynomial representation of the given number
 > field element.
 """
-function den(a::nf_elem)
+function denominator(a::nf_elem)
    z = fmpz()
    ccall((:nf_elem_get_den, :libflint), Void,
          (Ptr{fmpz}, Ptr{nf_elem}, Ptr{AnticNumberField}),
@@ -201,7 +203,7 @@ doc"""
     signature(a::AnticNumberField)
 > Return the signature of the given number field, i.e. a tuple $r, s$
 > consisting of $r$, the number of real embeddings and $s$, half the number of
-> complex embeddings. 
+> complex embeddings.
 """
 signature(a::AnticNumberField) = signature(a.pol)
 
@@ -225,7 +227,7 @@ function show(io::IO, x::nf_elem)
    cstr = ccall((:nf_elem_get_str_pretty, :libflint), Ptr{UInt8},
                 (Ptr{nf_elem}, Ptr{UInt8}, Ptr{AnticNumberField}),
                  &x, string(var(parent(x))), &parent(x))
-   s = unsafe_string(cstr)              
+   s = unsafe_string(cstr)
    ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
 
    s = replace(s, "/", "//")

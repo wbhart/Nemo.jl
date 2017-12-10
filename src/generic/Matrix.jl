@@ -103,11 +103,9 @@ parent(a::Nemo.MatElem{T}, cached::Bool = true) where T <: RingElement =
     MatSpace{T}(a.base_ring, size(a.entries)..., cached)
 
 function check_parent(a::Nemo.MatElem, b::Nemo.MatElem)
-  (base_ring(a) != base_ring(b) || rows(a) != rows(b) || cols(a) != cols(b)) && 
+  (base_ring(a) != base_ring(b) || rows(a) != rows(b) || cols(a) != cols(b)) &&
                 error("Incompatible matrix spaces in matrix operation")
 end
-
-isexact(R::Nemo.MatSpace) = isexact(base_ring(R))
 
 function _check_dim(r::Int, c::Int, arr::Array{T, 2}, transpose::Bool = false) where {T}
   if !transpose
@@ -136,7 +134,7 @@ end
 #
 #   Basic manipulation
 #
-###############################################################################    
+###############################################################################
 
 function Base.hash(a::Nemo.MatElem, h::UInt)
    b = 0x3e4ea81eb31d94f4%UInt
@@ -454,7 +452,7 @@ function -(x::Union{Integer, Rational, AbstractFloat}, y::Nemo.MatElem)
          if i != j
             z[i, j] = -y[i, j]
          else
-            z[i, j] = R(x) - y[i, j] 
+            z[i, j] = R(x) - y[i, j]
          end
       end
    end
@@ -465,7 +463,7 @@ doc"""
     -(x::Nemo.MatElem, y::Union{Integer, Rational, AbstractFloat})
 > Return $x - S(y)$, where $S$ is the parent of $x$.
 """
-function -(x::Nemo.MatElem, y::Union{Integer, Rational, AbstractFloat}) 
+function -(x::Nemo.MatElem, y::Union{Integer, Rational, AbstractFloat})
    z = similar(x)
    R = base_ring(x)
    for i = 1:rows(x)
@@ -492,7 +490,7 @@ function -(x::T, y::Nemo.MatElem{T}) where {T <: RingElem}
          if i != j
             z[i, j] = -y[i, j]
          else
-            z[i, j] = x - y[i, j] 
+            z[i, j] = x - y[i, j]
          end
       end
    end
@@ -628,7 +626,7 @@ doc"""
 > Return `true` if $x == S(y)$ arithmetically, where $S$ is the parent of $x$,
 > otherwise return `false`.
 """
-function ==(x::Nemo.MatElem, y::Union{Integer, Rational, AbstractFloat}) 
+function ==(x::Nemo.MatElem, y::Union{Integer, Rational, AbstractFloat})
    for i = 1:min(rows(x), cols(x))
       if x[i, i] != y
          return false
@@ -951,6 +949,7 @@ function fflu!(P::Generic.perm, A::Nemo.MatElem{T}) where {T <: RingElement}
       r += 1
       c += 1
    end
+   inv!(P)
    return rank, d2
 end
 
@@ -1004,6 +1003,7 @@ function fflu!(P::Generic.perm, A::Nemo.MatElem{T}) where {T <: FieldElement}
       r += 1
       c += 1
    end
+   inv!(P)
    return rank, d2
 end
 
@@ -1216,7 +1216,7 @@ function isrref(M::Nemo.MatElem{T}) where {T <: RingElement}
                return false
             end
          end
-      end   
+      end
    end
    return true
 end
@@ -1248,7 +1248,7 @@ function isrref(M::Nemo.MatElem{T}) where {T <: FieldElement}
                return false
             end
          end
-      end   
+      end
    end
    return true
 end
@@ -1277,7 +1277,7 @@ function reduce_row!(A::Nemo.MatElem{T}, P::Array{Int}, L::Array{Int}, m::Int) w
             for j = i + 1:L[r]
                t = mul!(t, A[r, j], h)
                A[m, j] = addeq!(A[m, j], t)
-            end 
+            end
          else
             h = inv(A[m, i])
             A[m, i] = R(1)
@@ -1309,7 +1309,7 @@ function reduce_row!(A::Nemo.MatElem{T}, P::Array{Int}, L::Array{Int}, m::Int) w
                t = mul!(t, A[r, j], h)
                A[m, j] = mul!(A[m, j], A[m, j], d)
                A[m, j] = addeq!(A[m, j], t)
-            end 
+            end
             for j = L[r] + 1:L[m]
                A[m, j] = mul!(A[m, j], A[m, j], d)
             end
@@ -1345,6 +1345,9 @@ end
 function det_clow(M::Nemo.MatElem{T}) where {T <: RingElement}
    R = base_ring(M)
    n = rows(M)
+   if n == 0
+      return one(R)
+   end
    A = Array{T}(n, n)
    B = Array{T}(n, n)
    C = R()
@@ -1417,6 +1420,9 @@ doc"""
 """
 function det(M::Nemo.MatElem{T}) where {T <: FieldElement}
    rows(M) != cols(M) && error("Not a square matrix in det")
+   if rows(M) == 0
+      return one(base_ring(M))
+   end
    return det_fflu(M)
 end
 
@@ -1425,6 +1431,10 @@ doc"""
 > Return the determinant of the matrix $M$. We assume $M$ is square.
 """
 function det(M::Nemo.MatElem{T}) where {T <: RingElement}
+   rows(M) != cols(M) && error("Not a square matrix in det")
+   if rows(M) == 0
+      return one(base_ring(M))
+   end
    try
       return det_fflu(M)
    catch
@@ -1434,10 +1444,12 @@ end
 
 function det_interpolation(M::Nemo.MatElem{T}) where {T <: PolyElem}
    n = rows(M)
+   !isdomain_type(elem_type(typeof(base_ring(base_ring(M))))) &&
+          error("Generic interpolation requires a domain type")
    R = base_ring(M)
    if n == 0
       return R()
-   end  
+   end
    maxlen = 0
    for i = 1:n
       for j = 1:n
@@ -1468,11 +1480,17 @@ end
 
 function det(M::Nemo.MatElem{T}) where {S <: FinFieldElem, T <: PolyElem{S}}
    rows(M) != cols(M) && error("Not a square matrix in det")
+   if rows(M) == 0
+      return one(base_ring(M))
+   end
    return det_popov(M)
 end
 
 function det(M::Nemo.MatElem{T}) where {T <: PolyElem}
    rows(M) != cols(M) && error("Not a square matrix in det")
+   if rows(M) == 0
+      return one(base_ring(M))
+   end
    try
       return det_interpolation(M)
    catch
@@ -1514,7 +1532,7 @@ function rank(M::Nemo.MatElem{T}) where {T <: FieldElement}
    end
    A = deepcopy(M)
    P = PermGroup(n)()
-   return lufact!(P, A)   
+   return lufact!(P, A)
 end
 
 ###############################################################################
@@ -1522,6 +1540,121 @@ end
 #   Linear solving
 #
 ###############################################################################
+
+function solve_fflu(A::MatElem{T}, b::MatElem{T}) where {T <: RingElement}
+   base_ring(A) != base_ring(b) && error("Base rings don't match in solve_fflu")
+   rows(A) != cols(A) && error("Non-square matrix in solve_fflu")
+   rows(A) != rows(b) && error("Dimensions don't match in solve_fflu")
+   FFLU = deepcopy(A)
+   p = PermGroup(rows(A))()
+   r, d = fflu!(p, FFLU)
+   r < rows(A) && error("Singular matrix in solve_fflu")
+   return solve_fflu_precomp(p, FFLU, b), d
+end
+
+function solve_fflu_precomp(p::Generic.perm, FFLU::MatElem{T}, b::MatElem{T}) where {T <: RingElement}
+   x = p * b
+   n = rows(x)
+   m = cols(x)
+   R = base_ring(FFLU)
+
+   t = base_ring(b)()
+   s = base_ring(b)()
+   minus_one = R(-1)
+
+   for k in 1:m
+      for i in 1:(n - 1)
+         t = mul!(t, x[i, k], minus_one)
+         for j in (i + 1):n
+            if i == 1
+              x[j, k] = x[j, k] * FFLU[i, i]
+            else
+              x[j, k] = mul!(x[j, k], x[j, k], FFLU[i, i])
+            end
+            s = mul!(s, FFLU[j, i], t)
+            x[j, k] = addeq!(x[j, k], s)
+            if i > 1
+                x[j, k] = divexact(x[j, k], FFLU[i - 1, i - 1])
+            end
+         end
+      end
+
+      for i in (n - 1):-1:1
+         if i > 1
+            x[i, k] = mul!(x[i, k], x[i, k], FFLU[n, n])
+         else
+            x[i, k] = x[i, k] * FFLU[n, n]
+         end
+         for j in (i + 1):n
+            t = mul!(t, x[j, k], FFLU[i, j])
+            t = mul!(t, t, minus_one)
+            x[i, k] = addeq!(x[i, k], t)
+         end
+         x[i, k] = divexact(x[i, k], FFLU[i, i])
+      end
+   end
+   return x
+end
+
+function solve_lu(A::MatElem{T}, b::MatElem{T}) where {T <: FieldElement}
+   base_ring(A) != base_ring(b) && error("Base rings don't match in solve_lu")
+   rows(A) != cols(A) && error("Non-square matrix in solve_lu")
+   rows(A) != rows(b) && error("Dimensions don't match in solve_lu")
+
+   if rows(A) == 0 || cols(A) == 0
+      return b
+   end
+
+   LU = deepcopy(A)
+   p = PermGroup(rows(A))()
+   r = lufact!(p, LU)
+   r < rows(A) && error("Singular matrix in solve_lu")
+   return solve_lu_precomp(p, LU, b)
+end
+
+function solve_lu_precomp(p::Generic.perm, LU::MatElem{T}, b::MatElem{T}) where {T <: FieldElement}
+   x = p * b
+   n = rows(x)
+   m = cols(x)
+   R = base_ring(LU)
+
+   t = base_ring(b)()
+   s = base_ring(b)()
+   minus_one = R(-1)
+
+   for k in 1:m
+      x[1, k] = deepcopy(x[1, k])
+      for i in 2:n
+         for j in 1:(i - 1)
+            # x[i, k] = x[i, k] - LU[i, j] * x[j, k]
+            t = mul!(t, LU[i, j], x[j, k])
+            t = mul!(t, t, minus_one)
+            if j == 1
+               x[i, k] = x[i, k] + t #LU[i, j] * x[j, k]
+            else
+               x[i, k] = addeq!(x[i, k], t)
+            end
+         end
+      end
+
+      # Now every entry of x is a proper copy, so we can change the entries
+      # as much as we want.
+
+      x[n, k] = divexact(x[n, k], LU[n, n])
+
+      for i in (n - 1):-1:1
+         for j in (i + 1):n
+            #x[i, k] = x[i, k] - x[j, k] * LU[i, j]
+            t = mul!(t, x[j, k], LU[i, j])
+            t = mul!(t, t, minus_one)
+            x[i, k] = addeq!(x[i, k], t)
+         end
+         x[i, k] = divexact(x[i, k], LU[i, i])
+      end
+   end
+   return x
+end
+
 
 function backsolve!(A::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: FieldElement}
    m = rows(A)
@@ -1537,67 +1670,8 @@ function backsolve!(A::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: FieldEle
             b[i, k] = addeq!(b[i, k], t)
          end
          b[i, k] = mul!(b[i, k], b[i, k], d)
-      end 
-   end
-end
-
-function solve!(A::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: FieldElement}
-   m = rows(A)
-   n = cols(A)
-   h = cols(b)
-   r = 1
-   c = 1
-   R = base_ring(A)
-   d = R(1)
-   if m == 0 || n == 0
-      return
-   end
-   t = R()
-   while r <= m && c <= n
-      if A[r, c] == 0
-         i = r + 1
-         while i <= m
-            if !iszero(A[i, c])
-               for j = 1:n
-                  A[i, j], A[r, j] = A[r, j], A[i, j]
-               end
-               for j = 1:h
-                  b[i, j], b[r, j] = b[r, j], b[i, j]
-               end
-               break
-            end
-            i += 1
-         end
-         i > m && error("Matrix is singular in solve")
       end
-      q = -A[r, c]
-      for i = r + 1:m
-         for j = 1:h
-            t = mul!(t, A[i, c], b[r, j])
-            b[i, j] = mul!(b[i, j], b[i, j], A[r, c])
-            b[i, j] = addeq!(b[i, j], -t)
-         end
-         for j = c + 1:n
-            A[i, j] = mul!(A[i, j], A[i, j], q)
-            t = mul!(t, A[i, c], A[r, j])
-            A[i, j] = addeq!(A[i, j], t)
-            if r > 1
-               A[i, j] = mul!(A[i, j], A[i, j], d)
-            else
-               A[i, j] = -A[i, j]
-            end
-         end
-         if r > 1
-            for j = 1:h
-               b[i, j] = mul!(b[i, j], b[i, j], -d)
-            end
-         end
-      end
-      d = -inv(A[r, c])
-      r += 1
-      c += 1
    end
-   backsolve!(A, b)
 end
 
 function solve_ff(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: FieldElement}
@@ -1605,116 +1679,44 @@ function solve_ff(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: FieldEleme
    rows(M) != cols(M) && error("Non-square matrix in solve")
    rows(M) != rows(b) && error("Dimensions don't match in solve")
    m = rows(M)
-   A = deepcopy(M)
-   x = deepcopy(b)
-   solve!(A, x)
+   x, d = solve_fflu(M, b)
+   for i in 1:rows(x)
+      for j in 1:cols(x)
+         x[i, j] = divexact(x[i, j], d)
+      end
+   end
    return x
 end
 
-function solve_with_det(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: FieldElement}
-   m = rows(M)
-   h = cols(b)
-   A = deepcopy(M)
-   x = deepcopy(b)
-   solve!(A, x)
-   d = A[m, m]
-   for i = 1:m
-      for j = 1:h
-         x[i, j] = mul!(x[i, j], x[i, j], d)
+function solve_with_det(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: RingElement}
+   # We cannot use solve_fflu directly, since it forgot about the (parity of
+   # the) permutation.
+   rows(M) != cols(M) && error("Non-square matrix")
+   R = base_ring(M)
+   FFLU = deepcopy(M)
+   p = PermGroup(rows(M))()
+   r, d = fflu!(p, FFLU)
+   if r < rows(M)
+      error("Non-singular matrix in solve_with_det")
+   end
+   x = solve_fflu_precomp(p, FFLU, b)
+   # Now M*x = d*b, but d is only sign(P) * det(M)
+   if parity(p) != 0
+      minus_one = R(-1)
+      for k in 1:cols(x)
+         for i in 1:rows(x)
+            # We are allowed to modify x in-place.
+            x[i, k] = mul!(x[i, k], x[i, k], minus_one)
+         end
       end
-   end   
+      d = mul!(d, d, minus_one)
+   end
    return x, d
 end
 
-function solve_with_det(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: RingElement}
-   return solve_rational(M, b)
-end
-
-function backsolve!(A::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: RingElement}
-   m = rows(A)
-   h = cols(b)
-   R = base_ring(A)
-   t = R()
-   d = A[m, m]
-   for k = 1:h
-      b[m, k] = -b[m, k]
-   end
-   for i = m - 1:-1:1
-      q = -A[i, i]
-      for k = 1:h
-         b[i, k] = mul!(b[i, k], b[i, k], d)
-         for j = i + 1:m
-            t = mul!(t, A[i, j], b[j, k])
-            b[i, k] = addeq!(b[i, k], t)
-         end
-         b[i, k] = divexact(b[i, k], q)
-      end 
-   end
-   for i = 1:m
-      for k = 1:h
-         b[i, k] = -b[i, k]
-      end
-   end
-   return d
-end
-
-function solve!(A::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: RingElement}
-   m = rows(A)
-   n = cols(A)
-   h = cols(b)
-   r = 1
-   c = 1
-   R = base_ring(A)
-   d = R(1)
-   if m == 0 || n == 0
-      return
-   end
-   t = R()
-   while r <= m && c <= n
-      if A[r, c] == 0
-         i = r + 1
-         while i <= m
-            if !iszero(A[i, c])
-               for j = 1:n
-                  A[i, j], A[r, j] = A[r, j], A[i, j]
-               end
-               for j = 1:h
-                  b[i, j], b[r, j] = b[r, j], b[i, j]
-               end
-               break
-            end
-            i += 1
-         end
-         i > m && error("Matrix is singular in solve")
-      end
-      q = -A[r, c]
-      for i = r + 1:m
-         for j = 1:h
-            t = mul!(t, A[i, c], b[r, j])
-            b[i, j] = mul!(b[i, j], b[i, j], A[r, c])
-            b[i, j] = addeq!(b[i, j], -t)
-         end 
-         for j = c + 1:n
-            A[i, j] = mul!(A[i, j], A[i, j], q)
-            t = mul!(t, A[i, c], A[r, j])
-            A[i, j] = addeq!(A[i, j], t)
-            if r > 1
-               A[i, j] = divexact(A[i, j], d)
-            else
-               A[i, j] = -A[i, j]
-            end
-         end
-         if r > 1
-            for j = 1:h
-               b[i, j] = divexact(b[i, j], -d)
-            end
-         end
-      end
-      d = -A[r, c]
-      r += 1
-      c += 1
-   end
-   return backsolve!(A, b)
+function solve_with_det(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: PolyElem}
+   x, d = solve_interpolation(M, b)
+   return x, d
 end
 
 function solve_ff(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: RingElement}
@@ -1723,10 +1725,7 @@ function solve_ff(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: RingElemen
    if m == 0 || n == 0
       return b, base_ring(M)()
    end
-   A = deepcopy(M)
-   x = deepcopy(b)
-   d = solve!(A, x)
-   return x, d
+   return solve_fflu(M, b)
 end
 
 function solve_interpolation(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: PolyElem}
@@ -1734,7 +1733,7 @@ function solve_interpolation(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <:
    h = cols(b)
    if m == 0
       return b, base_ring(M)()
-   end  
+   end
    R = base_ring(M)
    maxlen = 0
    for i = 1:m
@@ -1761,18 +1760,28 @@ function solve_interpolation(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <:
    x = similar(b)
    b2 = div(bound, 2)
    pt1 = base_ring(R)(1 - b2)
-   for i = 1:bound
-      y[i] = base_ring(R)(i - b2)
-      (y[i] == pt1 && i != 1) && error("Not enough interpolation points in ring")
+   l = 1
+   i = 1
+   while l <= bound
+      y[l] = base_ring(R)(i - b2)
+      (y[l] == pt1 && i != 1) && error("Not enough interpolation points in ring")
       for j = 1:m
          for k = 1:m
-            X[j, k] = evaluate(M[j, k], y[i])
+            X[j, k] = evaluate(M[j, k], y[l])
          end
          for k = 1:h
-            Y[j, k] = evaluate(b[j, k], y[i])
+            Y[j, k] = evaluate(b[j, k], y[l])
          end
       end
-      V[i], d[i] = solve_with_det(X, Y)
+      try
+         V[l], d[l] = solve_with_det(X, Y)
+         l = l + 1
+      catch e
+         if !(e isa ErrorException)
+            rethrow(e)
+         end
+      end
+      i = i + 1
    end
    for k = 1:h
       for i = 1:m
@@ -1789,7 +1798,7 @@ doc"""
     solve{T <: FieldElement}(M::Nemo.MatElem{T}, b::Nemo.MatElem{T})
 > Given a non-singular $n\times n$ matrix over a field and an $n\times m$
 > matrix over the same field, return $x$ an
-> $n\times m$ matrix $x$ such that $Ax = b$. 
+> $n\times m$ matrix $x$ such that $Ax = b$.
 > If $A$ is singular an exception is raised.
 """
 function solve(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: FieldElement}
@@ -1822,7 +1831,7 @@ function solve_rational(M::Nemo.MatElem{T}, b::Nemo.MatElem{T}) where {T <: Poly
    try
       return solve_interpolation(M, b)
    catch e
-      if !isa(e, ErrorException) 
+      if !isa(e, ErrorException)
          rethrow(e)
       end
       return solve_ff(M, b)
@@ -1870,7 +1879,7 @@ function solve_triu(U::Nemo.MatElem{T}, b::Nemo.MatElem{T}, unit::Bool = false) 
          if unit == false
             s = mul!(s, s, Tinv[j])
          end
-         tmp[j] = s 
+         tmp[j] = s
       end
       for j = 1:n
          X[j, i] = tmp[j]
@@ -1890,7 +1899,7 @@ doc"""
 > Given a non-singular $n\times n$ matrix over a ring the tuple $X, d$
 > consisting of an $n\times n$ matrix $X$ and a denominator $d$ such that
 > $AX = dI_n$, where $I_n$ is the $n\times n$ identity matrix. The denominator
-> will be the determinant of $A$ up to sign. If $A$ is singular an exception 
+> will be the determinant of $A$ up to sign. If $A$ is singular an exception
 > is raised.
 """
 function inv(M::Nemo.MatElem{T}) where {T <: RingElement}
@@ -1898,7 +1907,7 @@ function inv(M::Nemo.MatElem{T}) where {T <: RingElement}
    n = cols(M)
    X = eye(M)
    A = deepcopy(M)
-   d = solve!(A, X)
+   X, d = solve_fflu(A, X)
    return X, d
 end
 
@@ -1912,9 +1921,8 @@ function inv(M::Nemo.MatElem{T}) where {T <: FieldElement}
    cols(M) != rows(M) && error("Matrix not square in invert")
    n = cols(M)
    X = eye(M)
-   A = deepcopy(M)
-   solve!(A, X)
-   return X
+   A = solve_lu(M, X)
+   return A
 end
 
 ###############################################################################
@@ -2380,7 +2388,7 @@ function charpoly(V::Ring, Y::Nemo.MatElem{T}) where {T <: RingElement}
             M[j, k] = s
          end
          A[j] = M[j, i]
-      end 
+      end
       s = R()
       for j = 1:i
          p = mul!(p, Y[i, j], M[i - 1, j])
@@ -2491,7 +2499,7 @@ function minpoly(S::Ring, M::Nemo.MatElem{T}, charpoly_only::Bool = false) where
          end
          r2 = r1
       end
-      c = 0 
+      c = 0
       for j = c2 + 1:n
          if P2[j] == 0
             c = j
@@ -2591,7 +2599,7 @@ function minpoly(S::Ring, M::Nemo.MatElem{T}, charpoly_only::Bool = false) where
          end
          r2 = r1
       end
-      c = 0 
+      c = 0
       for j = c2 + 1:n
          if P2[j] == 0
             c = j
@@ -3156,7 +3164,7 @@ function hnf_kb!(H, U, with_trafo::Bool = false, start_element::Int = 1)
       if !new_pivot
          for c = pivot_max+1:n
             if !iszero(H[i+1,c])
-               pivot[c] = i+1 
+               pivot[c] = i+1
                kb_canonical_row!(H, U, pivot[c], c, with_trafo)
                kb_reduce_column!(H, U, pivot, c, with_trafo, start_element)
                pivot_max = max(pivot_max, c)
@@ -3888,11 +3896,11 @@ end
 
 doc"""
     swap_rows(a::Nemo.MatElem, i::Int, j::Int)
-> Return a matrix $b$ with the entries of $a$, where the $i$th and $j$th 
+> Return a matrix $b$ with the entries of $a$, where the $i$th and $j$th
 > row are swapped.
 """
 function swap_rows(a::Nemo.MatElem, i::Int, j::Int)
-   (1<=i<=rows(a) && 1<=j<=rows(a)) || throw(BoundsError())  
+   (1<=i<=rows(a) && 1<=j<=rows(a)) || throw(BoundsError())
    b = deepcopy(a)
    swap_rows!(b, i, j)
    return b
@@ -3933,7 +3941,7 @@ function hcat(a::Nemo.MatElem, b::Nemo.MatElem)
       for j = 1:cols(b)
          c[i, n + j] = b[i, j]
       end
-   end 
+   end
    return c
 end
 
@@ -4157,4 +4165,3 @@ function MatrixSpace(R::Nemo.Ring, r::Int, c::Int, cached::Bool = true)
    T = elem_type(R)
    return MatSpace{T}(R, r, c, cached)
 end
-
