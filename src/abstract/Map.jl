@@ -178,7 +178,7 @@ end
 
 # Example 1
 # Endomorphisms of polynomial rings
-
+#=
 mutable struct PolyRingToPolyRing{D, T} <: Map{D, D}
   domain::D
   codomain::D
@@ -262,6 +262,7 @@ codomain(f::ZtoRing) = f.codomain
 function Base.show(io::IO, f::ZtoRing)
   print("Canonical morphism from ZZ to\n$(codomain(f))")
 end
+=#
 
 ################################################################################
 #
@@ -281,7 +282,7 @@ domain(f::FinFieldMorphism) = f.domain
 codomain(f::FinFieldMorphism) = f.codomain
 
 function (f::FinFieldMorphism)(x)
-    return f.f(x)::elem_type(field(codomain(f)))
+    return f.f(x)::elem_type(codomain(f))
 end
 
 function Base.show(io::IO, f::FinFieldMorphism)

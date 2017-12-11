@@ -442,8 +442,14 @@ function (a::FqNmodFiniteField)(b::fmpz)
 end
 
 function (a::FqNmodFiniteField)(b::fq_nmod)
-   parent(b) != a && error("Coercion between finite fields not implemented")
-   return b
+    k = parent(b)
+    if k == a
+        return b
+    else
+        degree(a)%degree(k) != 0 && error("Coercion impossible")
+        f = embed(k, a)
+        return f(b)
+    end
 end
 
 ###############################################################################

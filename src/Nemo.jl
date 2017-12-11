@@ -421,13 +421,13 @@ include("error.jl")
 #
 ###############################################################################
 
+include("abstract/Map.jl")
+
 include("flint/FlintTypes.jl")
 
 include("antic/AnticTypes.jl")
 
 include("arb/ArbTypes.jl")
-
-include("abstract/Map.jl")
 
 #include("ambiguities.jl") # remove ambiguity warnings
 

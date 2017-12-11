@@ -115,6 +115,6 @@ function embed_pre_mat(x::fq_nmod, K::FqNmodFiniteField, M::nmod_mat)
 end
 
 function embedPoly(P::fq_nmod_poly, f::FinFieldMorphism)
-    S = PolynomialRing(field(codomain(f)), "T")[1]
+    S = PolynomialRing(codomain(f), "T")[1]
     return S([f(coeff(P, j)) for j in 0:degree(P)])
 end

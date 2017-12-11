@@ -4,43 +4,11 @@
 #
 ################################################################################
 
-export FieldNode, fieldNode
+overfields(k::FqNmodFiniteField) = k.overfields
+subfields(k::FqNmodFiniteField) = k.subfields
 
-################################################################################
-#
-#   Base type : nodes
-#
-################################################################################
-
-mutable struct FieldNode{T <: FinField}
-    field::T
-    overfields::Dict{Int, Array{FinFieldMorphism{FieldNode{T}}, 1}}
-    subfields::Dict{Int, Array{FinFieldMorphism{FieldNode{T}}, 1}}
-end
-
-function fieldNode{T <: FinField}(k::T)
-    overfields = Dict{Int, Array{FinFieldMorphism{FieldNode{T}}, 1}}()
-    subfields = Dict{Int, Array{FinFieldMorphism{FieldNode{T}}, 1}}()
-
-    return FieldNode(k, overfields, subfields)
-end
-
-field(f::FieldNode) = f.field
-overfields(f::FieldNode) = f.overfields
-subfields(f::FieldNode) = f.subfields
-degree(f::FieldNode) = degree(field(f))
-characteristic(f::FieldNode) = characteristic(field(f))
-gen(f::FieldNode) = gen(field(f))
-modulus(f::FieldNode) = modulus(field(f))
-(f::FieldNode)() = field(f)()
-embed_gens(k::FieldNode, K::FieldNode) = embed_gens(field(k), field(K))
-embed_matrices(k::FieldNode, K::FieldNode) = embed_matrices(field(k), field(K))
-embed(x::fq_nmod, K::FieldNode) = embed(x, field(K))
-embed_pre_mat(x::fq_nmod, K::FieldNode, M::nmod_mat) = embed_pre_mat(x, field(K), M)
-
-
-function addOverfield!{T <: FinField}(F::FieldNode{T},
-                                      f::FinFieldMorphism{FieldNode{T}})
+function addOverfield!{T <: FinField}(F::T,
+                                      f::FinFieldMorphism{T})
 
     d = degree(codomain(f))
     over = overfields(F)
@@ -48,13 +16,13 @@ function addOverfield!{T <: FinField}(F::FieldNode{T},
     if haskey(over, d)
         push!(over[d], f)
     else
-        a = FinFieldMorphism{FieldNode{T}}[f]
+        a = FinFieldMorphism{T}[f]
         over[d] = a
     end
 end
 
-function addSubfield!{T <: FinField}(F::FieldNode{T},
-                                     f::FinFieldMorphism{FieldNode{T}})
+function addSubfield!{T <: FinField}(F::T,
+                                     f::FinFieldMorphism{T})
 
     d = degree(domain(f))
     sub = subfields(F)
@@ -62,14 +30,9 @@ function addSubfield!{T <: FinField}(F::FieldNode{T},
     if haskey(sub, d)
         push!(sub[d], f)
     else
-        a = FinFieldMorphism{FieldNode{T}}[f]
+        a = FinFieldMorphism{T}[f]
         sub[d] = a
     end
-end
-
-function Base.show(io::IO, k::FieldNode)  
-    print(io, "Node composed of Finite Field of degree ", degree(k))
-    print(io, " over F_", characteristic(k))
 end
 
 ################################################################################
@@ -191,14 +154,14 @@ function defining_poly(f::FinFieldMorphism)
 
     tmp = coordinates(gen(F)^d, f)
 
-    R, T = PolynomialRing(field(E), "T")
+    R, T = PolynomialRing(E, "T")
 
     res = R(tmp)
 
     return T^d-res
 end
 
-function is_embedded(k::FieldNode, K::FieldNode)
+function is_embedded{T <: FinField}(k::T, K::T)
     d = degree(K)
     ov = overfields(k)
     if haskey(ov, d)
@@ -210,20 +173,19 @@ function is_embedded(k::FieldNode, K::FieldNode)
     end
 end
 
-function embed_no_cond{T <: FinField}(k::FieldNode{T}, K::FieldNode{T})
+function embed_no_cond{T <: FinField}(k::T, K::T)
     M, N = embed_matrices(k, K)
     f(x) = embed_pre_mat(x, K, M)
     inv(y) = embed_pre_mat(y, k, N)
     return FinFieldMorphism(k, K, f, inv)
 end
 
-function find_morph(k::FieldNode, K::FieldNode)
+function find_morph{T <: FinField}(k::T, K::T)
 
-    E, F = field(k), field(K)
-    S = PolynomialRing(F, "T")[1]
+    S = PolynomialRing(K, "T")[1]
     Q = S()
     needy = false
-    m, n = degree(E), degree(F)
+    m, n = degree(k), degree(K)
 
     for l in keys(subfields(k))
         if haskey(subfields(K), l)
@@ -240,11 +202,11 @@ function find_morph(k::FieldNode, K::FieldNode)
     end
 
     if needy
-        defPol = modulus(E)
+        defPol = modulus(k)
         t = anyRoot(Q)
-        M, N = embed_matrices_pre(gen(E), t, defPol)
-        f(x) = embed_pre_mat(x, F, M)
-        g(y) = embed_pre_mat(y, E, N)
+        M, N = embed_matrices_pre(gen(k), t, defPol)
+        f(x) = embed_pre_mat(x, K, M)
+        g(y) = embed_pre_mat(y, k, N)
         morph = FinFieldMorphism(k, K, f, g)
     else
         morph = embed_no_cond(k, K)
@@ -274,7 +236,7 @@ function transitive_closure(f::FinFieldMorphism)
                 addOverfield!(domain(g), phi)
             end
         else
-            val = FieldNode[codomain(v) for v in subK[d]]
+            val = FqNmodFiniteField[codomain(v) for v in subK[d]]
             
             for g in subk[d]
                 if !(domain(g) in val)
@@ -300,7 +262,7 @@ function transitive_closure(f::FinFieldMorphism)
     end
 end
 
-function intersections(k::FieldNode, K::FieldNode)
+function intersections{T <: FinField}(k::T, K::T)
     d = degree(k)
     subk = subfields(k)
     subK = subfields(K)
@@ -332,10 +294,9 @@ function intersections(k::FieldNode, K::FieldNode)
         else
             p::Int = characteristic(k)
             kc, xc = FiniteField(p, c, string("x", c))
-            Kc = fieldNode(kc)
-            embed(Kc, k)
+            embed(kc, k)
             for g in subK[l]
-                embed(Kc, domain(g))
+                embed(kc, domain(g))
             end
         end
     end
@@ -343,7 +304,7 @@ function intersections(k::FieldNode, K::FieldNode)
     return needmore
 end
 
-function embed(k::FieldNode, K::FieldNode)
+function embed{T <: FinField}(k::T, K::T)
 
     if k == K
         identity(x) = x
