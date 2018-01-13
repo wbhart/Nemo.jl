@@ -559,6 +559,13 @@ function test_fq_nmod_mat_lu()
 
   @test l*u == P*b
 
+  c = matrix(F17, 6, 3, [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1])
+
+  r, P, l, u = lufact(c)
+
+  @test r == 3
+  @test l*u == P*c
+
   println("PASS")
 end
 
