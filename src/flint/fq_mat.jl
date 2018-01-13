@@ -421,6 +421,9 @@ function lufact!(P::Generic.perm, x::fq_mat)
     P.d[i] += 1
   end
 
+  # flint does x == PLU instead of Px == LU (docs are wrong)
+  inv!(P)
+
   return rank
 end
 
