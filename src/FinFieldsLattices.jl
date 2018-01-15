@@ -229,7 +229,7 @@ function transitive_closure(f::FinFieldMorphism)
         if !haskey(subK, d)
             for g in subk[d]
                 t(y) = f(g(y))
-                tinv(x) = inv(g)(inf(f)(x))
+                tinv(x) = g.inv(f.inv(x))
                 phi = FinFieldMorphism(domain(g), K, t, tinv)
 
                 addSubfield!(K, phi)
@@ -241,7 +241,7 @@ function transitive_closure(f::FinFieldMorphism)
             for g in subk[d]
                 if !(domain(g) in val)
                     t(y) = f(g(y))
-                    tinv(x) = inv(g)(inf(f)(x))
+                    tinv(x) = g.inv(f.inv(x))
                     phi = FinFieldMorphism(domain(g), K, t, tinv)
 
                     addSubfield!(K, phi)
@@ -330,4 +330,15 @@ function embed{T <: FinField}(k::T, K::T)
     else
         return is_embedded(k, K)
     end
+end
+
+################################################################################
+#
+#   Sections
+#
+################################################################################
+
+function section{T <: FinField}(K::T, k::T)
+    f = embed(k, K)
+    return section(f)
 end

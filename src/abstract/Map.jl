@@ -289,4 +289,29 @@ function Base.show(io::IO, f::FinFieldMorphism)
     print("Morphism from $(domain(f))\nto $(codomain(f))")
 end
 
-inv(f::FinFieldMorphism) = FinFieldMorphism(f.codomain, f.domain, f.inv, f.f)
+struct FinFieldSection{T} <: Map{T, T}
+    domain::T
+    codomain::T
+    f::Function
+    inv::Function
+end
+
+domain(f::FinFieldSection) = f.domain
+
+codomain(f::FinFieldSection) = f.codomain
+
+function (f::FinFieldSection)(x)
+    a = f.f(x)::elem_type(codomain(f))
+    b = f.inv(a)
+    if x == b
+        return a
+    else
+        error("Element not in the domain")
+    end
+end
+
+function Base.show(io::IO, f::FinFieldSection)
+    print("Section from $(domain(f))\nto $(codomain(f))")
+end
+
+section(f::FinFieldMorphism) = FinFieldSection(f.codomain, f.domain, f.inv, f.f)

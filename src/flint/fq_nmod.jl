@@ -443,11 +443,17 @@ end
 
 function (a::FqNmodFiniteField)(b::fq_nmod)
     k = parent(b)
+    da = degree(a)
+    dk = degree(k)
     if k == a
         return b
-    else
-        degree(a)%degree(k) != 0 && error("Coercion impossible")
+    elseif dk < da
+        da % dk != 0 && error("Coercion impossible")
         f = embed(k, a)
+        return f(b)
+    else
+        dk % da != 0 && error("Coercion impossible")
+        f = section(k, a)
         return f(b)
     end
 end
