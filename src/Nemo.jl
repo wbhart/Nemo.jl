@@ -272,35 +272,35 @@ function sqrt(a::T) where T
   return Base.sqrt(a)
 end
 
-function PermGroup(n::Int, cached=true)
+function PermGroup(n::T, cached=true) where T
    Generic.PermGroup(n, cached)
 end
 
-function AllPerms(n::Int)
+function AllPerms(n::T) where T
    Generic.AllPerms(n)
 end
 
-function perm(n::Int)
+function perm(n::T) where T
    Generic.perm(n)
 end
 
-function perm(a::Array{Int, 1})
+function perm(a::Array{T, 1}) where T
    Generic.perm(a)
 end
 
-function Partition(part::Vector{Int}, check::Bool=true)
+function Partition(part::Vector{T}, check::Bool=true) where T
    Generic.Partition(part, check)
 end
 
-function Partitions(n::Int)
-   Generic.Partitions(n)
+function AllParts(n::T) where T
+   Generic.AllParts(n)
 end
 
 function SkewDiagram(lambda::Generic.Partition, mu::Generic.Partition)
    Generic.SkewDiagram(lambda, mu)
 end
 
-function SkewDiagram(lambda::Vector{Int}, mu::Vector{Int})
+function SkewDiagram(lambda::Vector{T}, mu::Vector{T}) where T
    Generic.SkewDiagram(lambda, mu)
 end
 
@@ -366,7 +366,7 @@ end
 
 export PowerSeriesRing, PolynomialRing, SparsePolynomialRing, MatrixSpace,
        FractionField, ResidueRing, Partition, PermGroup, YoungTableau,
-       Partitions, SkewDiagram, AllPerms, perm, LaurentSeriesRing,
+       AllParts, SkewDiagram, AllPerms, perm, LaurentSeriesRing,
        LaurentSeriesField, ResidueField
 
 export Generic
