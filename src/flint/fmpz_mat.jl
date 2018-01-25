@@ -88,16 +88,6 @@ end
 
 getindex(x::fmpz_mat, r::UnitRange{Int}, c::UnitRange{Int}) = sub(x, r, c)
 
-################################################################################
-#
-#   Size
-#
-################################################################################
-
-size(x::fmpz_mat) = tuple(rows(x), cols(x))
-
-size(t::fmpz_mat, d) = d <= 2 ? size(t)[d] : 1
-
 ###############################################################################
 #
 #   Basic manipulation
@@ -488,6 +478,20 @@ function divexact(x::fmpz_mat, y::fmpz)
 end
 
 divexact(x::fmpz_mat, y::Integer) = divexact(x, fmpz(y))
+
+###############################################################################
+#
+#   Kronecker product
+#
+###############################################################################
+
+function kronecker_product(x::fmpz_mat, y::fmpz_mat)
+   base_ring(x) == base_ring(y) || error("Incompatible matrices")
+   z = similar(x, rows(x)*rows(y), cols(x)*cols(y))
+   ccall((:fmpz_mat_kronecker_product, :libflint), Void,
+                (Ref{fmpz_mat}, Ref{fmpz_mat}, Ref{fmpz_mat}), z, x, y)
+   return z
+end
 
 ###############################################################################
 #

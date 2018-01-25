@@ -114,7 +114,7 @@ function __init__()
       (Ptr{Void},), cfunction(flint_abort, Void, ()))
 
    println("")
-   println("Welcome to Nemo version 0.7.4")
+   println("Welcome to Nemo version 0.7.5")
    println("")
    println("Nemo comes with absolutely no warranty whatsoever")
    println("")
@@ -135,7 +135,7 @@ end
 ################################################################################
 
 function versioninfo()
-  print("Nemo version 0.7.4 \n")
+  print("Nemo version 0.7.5 \n")
   nemorepo = dirname(dirname(@__FILE__))
 
   print("Nemo: ")
@@ -205,7 +205,7 @@ import .Generic: add!, addeq!, addmul!, base_ring, canonical_unit, character,
                  hooklength, identity_matrix, inskewdiag, integral,
                  interpolate, inv, inv!, invmod, isconstant, isdegree,
                  isdomain_type, isexact_type, isgen, ishessenberg, ismonomial,
-                 isnegative, isone, isreverse, isrimhook, isrref, isterm,
+                 isnegative, isone, isreverse, isrimhook, isrref, issquare, isterm,
                  isunit, lcm, lead, length, leglength, main_variable,
                  main_variable_extract, main_variable_insert, matrix,
                  matrix_repr, max_degrees, max_precision, minpoly, mod,
@@ -219,12 +219,12 @@ import .Generic: add!, addeq!, addmul!, base_ring, canonical_unit, character,
                  renormalize!, resultant, resultant_ducos, resultant_euclidean,
                  resultant_subresultant, resultant_sylvester, resx, reverse,
                  rows, rref, rref!, setcoeff!, set_length!, setpermstyle,
-                 set_prec!, set_val!, shift_left, shift_right, show_minus_one,
+                 set_prec!, set_val!, size, shift_left, shift_right, show_minus_one,
                  similarity!, snf, snf_kb, snf_kb_with_trafo, snf_with_trafo,
                  solve, solve_rational, solve_triu, sub, subst, swap_rows,
                  swap_rows!, trail, truncate, typed_hcat, typed_hvcat,
                  valuation, var, vars, weak_popov, weak_popov_with_trafo, zero,
-                 zero!, zero_matrix
+                 zero!, zero_matrix, kronecker_product
 
 export add!, addeq!, addmul!, base_ring, canonical_unit, character,
                  characteristic, charpoly, charpoly_danilevsky!,
@@ -242,7 +242,7 @@ export add!, addeq!, addmul!, base_ring, canonical_unit, character,
                  hooklength, identity_matrix, inskewdiag, integral,
                  interpolate, inv, inv!, invmod, isconstant, isdegree,
                  isdomain_type, isexact, isexact_type, isgen, ishessenberg,
-                 ismonomial, isnegative, isone, isreverse, isrimhook, isrref,
+                 ismonomial, isnegative, isone, isreverse, isrimhook, isrref, issquare, 
                  isterm, isunit, iszero, lcm, lead, leglength, length,
                  main_variable, main_variable_extract, main_variable_insert,
                  matrix, matrix_repr, max_degrees, max_precision, minpoly, mod,
@@ -257,12 +257,12 @@ export add!, addeq!, addmul!, base_ring, canonical_unit, character,
                  resultant_ducos, resultant_euclidean, resultant_subresultant,
                  resultant_sylvester, resx, reverse, rows, rref, rref!,
                  setcoeff!, set_length!, setpermstyle, set_prec!, set_val!,
-                 shift_left, shift_right, show_minus_one, similarity!, snf,
+                 shift_left, shift_right, show_minus_one, similarity!, size, snf,
                  snf_kb, snf_kb_with_trafo, snf_with_trafo, solve,
                  solve_rational, solve_triu, sub, subst, swap_rows, swap_rows!,
                  trail, truncate, typed_hcat, typed_hvcat, valuation, var,
                  vars, weak_popov, weak_popov_with_trafo, zero, zero!,
-                 zero_matrix
+                 zero_matrix, kronecker_product
 
 function exp(a::T) where T
    return Base.exp(a)
@@ -272,35 +272,35 @@ function sqrt(a::T) where T
   return Base.sqrt(a)
 end
 
-function PermGroup(n::Int, cached=true)
+function PermGroup(n::T, cached=true) where T
    Generic.PermGroup(n, cached)
 end
 
-function AllPerms(n::Int)
+function AllPerms(n::T) where T
    Generic.AllPerms(n)
 end
 
-function perm(n::Int)
+function perm(n::T) where T
    Generic.perm(n)
 end
 
-function perm(a::Array{Int, 1})
+function perm(a::Array{T, 1}) where T
    Generic.perm(a)
 end
 
-function Partition(part::Vector{Int}, check::Bool=true)
+function Partition(part::Vector{T}, check::Bool=true) where T
    Generic.Partition(part, check)
 end
 
-function Partitions(n::Int)
-   Generic.Partitions(n)
+function AllParts(n::T) where T
+   Generic.AllParts(n)
 end
 
 function SkewDiagram(lambda::Generic.Partition, mu::Generic.Partition)
    Generic.SkewDiagram(lambda, mu)
 end
 
-function SkewDiagram(lambda::Vector{Int}, mu::Vector{Int})
+function SkewDiagram(lambda::Vector{T}, mu::Vector{T}) where T
    Generic.SkewDiagram(lambda, mu)
 end
 
@@ -366,7 +366,7 @@ end
 
 export PowerSeriesRing, PolynomialRing, SparsePolynomialRing, MatrixSpace,
        FractionField, ResidueRing, Partition, PermGroup, YoungTableau,
-       Partitions, SkewDiagram, AllPerms, perm, LaurentSeriesRing,
+       AllParts, SkewDiagram, AllPerms, perm, LaurentSeriesRing,
        LaurentSeriesField, ResidueField
 
 export Generic

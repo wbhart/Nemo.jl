@@ -12,14 +12,14 @@
 
 const PermID = ObjectIdDict()
 
-mutable struct PermGroup <: Nemo.Group
-   n::Int
+mutable struct PermGroup{T<:Integer} <: Nemo.Group
+   n::T
 
-   function PermGroup(n::Int, cached=true)
+   function PermGroup(n::T, cached=true) where T<:Integer
       if haskey(PermID, n)
-         return PermID[n]::PermGroup
+         return PermID[n]::PermGroup{T}
       else
-         z = new(n)
+         z = new{T}(n)
          if cached
             PermID[n] = z
          end
@@ -28,17 +28,17 @@ mutable struct PermGroup <: Nemo.Group
    end
 end
 
-mutable struct perm <: Nemo.GroupElem
-   d::Array{Int, 1}
-   cycles::Vector{Vector{Int}}
-   parent::PermGroup
+mutable struct perm{T<:Integer} <: Nemo.GroupElem
+   d::Array{T, 1}
+   cycles::Vector{Vector{T}}
+   parent::PermGroup{T}
 
-   function perm(n::Int)
-      return new(collect(1:n))
+   function perm(n::T) where T<:Integer
+      return new{T}(collect(1:n))
    end
 
-   function perm(a::Array{Int, 1})
-      return new(a)
+   function perm(a::Array{T, 1}) where T<:Integer
+      return new{T}(a)
    end
 end
 
@@ -47,10 +47,13 @@ doc"""
 > Returns an iterator over arrays representing all permutations of `1:n`.
 > Similar to `Combinatorics.permutations(1:n)`
 """
-struct AllPerms
-   n::Int
-   all::Int
-   AllPerms(n::Int) = new(n, factorial(n))
+struct AllPerms{T}
+   n::T
+   all::T
+
+   function AllPerms(n::T) where {T<:Integer}
+      return new{T}(n, factorial(n))
+   end
 end
 
 ###############################################################################
@@ -64,28 +67,28 @@ doc"""
 > Partition represents integer partition into numbers in non-increasing order.
 > It is a thin wrapper over `Vector{Int}`
 """
-mutable struct Partition <: AbstractVector{Int}
-   n::Int
-   part::Vector{Int}
+mutable struct Partition{T} <: AbstractVector{Integer}
+   n::T
+   part::Vector{T}
 
-   function Partition(part::Vector{Int}, check::Bool=true)
+   function Partition(part::Vector{T}, check::Bool=true) where T
       if check
-         all(diff(part) .<= 0) || throw("Partition must be decreasing!")
-         if length(part) > 0
-            part[end] >=1 || throw("Found non-positive entry in partition!")
+         all(diff(part) .<= zero(T)) || throw("Partition must be decreasing!")
+         if length(part) > zero(T)
+            part[end] >= one(T) || throw("Found non-positive entry in partition!")
          end
       end
-      return new(sum(part), part)
+      return new{T}(sum(part), part)
    end
 end
 
 doc"""
-   Partitions(n::Int)
+    AllParts(n::Int)
 > Returns an iterator over all integer `Partition`s of `n`. They come in
 > ascending order. See also `Combinatorics.partitions(n)`.
 """
-struct Partitions
-    n::Int
+struct AllParts{T}
+    n::T
 end
 
 ###############################################################################
