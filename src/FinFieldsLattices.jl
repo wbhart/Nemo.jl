@@ -4,6 +4,8 @@
 #
 ################################################################################
 
+export embed, section
+
 overfields(k::FqNmodFiniteField) = k.overfields
 subfields(k::FqNmodFiniteField) = k.subfields
 
