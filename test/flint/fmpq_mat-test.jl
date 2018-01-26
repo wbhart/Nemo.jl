@@ -282,6 +282,8 @@ function test_fmpq_mat_kronecker_product()
 
    @test size(kronecker_product(A, A)) == (4,9)
    @test kronecker_product(B*A,A*C) == kronecker_product(B,A) * kronecker_product(A,C)
+
+   println("PASS")
 end
 
 function test_fmpq_mat_comparison()
@@ -588,6 +590,7 @@ function test_fmpq_mat()
    test_fmpq_mat_unary_ops()
    test_fmpq_mat_binary_ops()
    test_fmpq_mat_adhoc_binary()
+   test_fmpq_mat_kronecker_product()
    test_fmpq_mat_comparison()
    test_fmpq_mat_adhoc_comparison()
    test_fmpq_mat_powering()
