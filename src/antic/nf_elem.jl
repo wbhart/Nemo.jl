@@ -61,13 +61,25 @@ const hash_seed = UInt==UInt64 ? 0xc2a44fbe466a1827 : 0xc2a44fb
 function hash(a::nf_elem, h::UInt)
    global hash_seed
    b = hash_seed
-   d = denominator(a)
-   b = hash(d, b)
-   for i in 1:degree(parent(a)) + 1
-         num_coeff!(d, a, i)
-         b = xor(b, xor(hash(d, h), h))
-         b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
+   b = _hash_integer(a.elem_den, b)
+   d = degree(parent(a))
+   if d < 3
+       x = fmpz()
+       for i in 1:d
+             b = xor(b, xor(hash(num_coeff!(x, a, i-1), h), h))
+             b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
+       end
+   else
+       for i in 1:a.elem_length
+             b = xor(b, xor(_hash_integer(unsafe_load(Ptr{Int}(a.elem_coeffs), i), h), h))
+             b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
+       end
+       for i in a.elem_length+1:d
+             b = xor(b, xor(_hash_integer(0, h), h))
+             b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
+       end
    end
+      
    return b
 end
 
