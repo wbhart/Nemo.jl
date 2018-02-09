@@ -103,14 +103,14 @@ end
 
 function __fmpz_limbs(a::Int)
    if __fmpz_is_small(a)
-      return 0
+      return Cint(0)
    end
    b = unsafe_load(convert(Ptr{Cint}, unsigned(a)<<2), 2)
    return b
 end
 
 function _hash_integer(a::Int, h::UInt)
-   s = __fmpz_limbs(a)
+   s::Cint = __fmpz_limbs(a)
    s == 0 && return Base.hash_integer(a, h)
    # get the pointer after the first two Cint
    d = convert(Ptr{Ptr{UInt}}, unsigned(a) << 2) + 2*sizeof(Cint)
