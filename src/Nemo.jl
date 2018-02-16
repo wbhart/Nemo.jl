@@ -81,6 +81,106 @@ function flint_abort()
   error("Problem in the Flint-Subsystem")
 end
 
+active_mem=Dict{UInt, Tuple{Symbol, UInt, Any}}()
+
+function trace_malloc(n::UInt)
+  u = ccall(:jl_malloc, UInt, (UInt, ), n)
+  global active_mem
+  active_mem[u] = (:malloc, n, backtrace())
+  return u
+end
+
+function trace_calloc(n::UInt, s::UInt)
+  u = ccall(:jl_calloc, UInt, (UInt, UInt), n, s)
+  global active_mem
+  active_mem[u] = (:calloc, n*s, backtrace())
+  return u
+end
+
+
+function trace_free(n::UInt)
+  global active_mem
+#  @assert haskey(active_mem, n)
+  delete!(active_mem, n)
+  ccall(:jl_free, Void, (UInt, ), n)
+end
+
+function trace_realloc(n::UInt, s::UInt)
+  global active_mem
+  p = ccall(:jl_realloc, UInt, (UInt, UInt), n, s)
+#  @assert haskey(active_mem, n)
+  delete!(active_mem, n)
+  active_mem[p] = (:realloc, s, backtrace())
+  return p
+end
+
+function trace_counted_malloc(n::UInt)
+  global active_mem
+  p = ccall(:jl_gc_counted_malloc, UInt, (UInt, ), n)
+  active_mem[p] = (:counted_malloc, n, backtrace())
+  return p
+end
+
+function trace_counted_realloc(n::UInt, m::UInt, o::UInt)
+  global active_mem
+  p = ccall(:jl_gc_counted_realloc_with_old_size, UInt, (UInt, UInt, UInt), n, m, o)
+#  @assert n==0 || haskey(active_mem, n)
+  delete!(active_mem, n)
+  active_mem[p] = (:counted_realloc, o, backtrace())
+  return p
+end
+
+function trace_counted_free(n::UInt, s::UInt)
+  global active_mem
+#  @assert haskey(active_mem, n)
+  delete!(active_mem, n)
+  ccall(:jl_gc_counted_free, Void, (UInt, UInt), n, s)
+end
+
+function show_active(l::UInt = UInt(0), frames::Int = 2)
+  global active_mem
+  for i = keys(active_mem)
+    v = active_mem[i]
+    if v[2] >= l
+      n = min(frames, length(v[3]))
+      Base.show_backtrace(STDOUT, v[3][1:n])
+    end
+  end
+end
+
+function trace_memory(b::Bool)
+  if is_windows()
+    return
+  end
+  if b
+    ccall((:__gmp_set_memory_functions, libgmp), Void,
+       (Ptr{Void},Ptr{Void},Ptr{Void}),
+       cfunction(trace_counted_malloc, UInt, (UInt, )),
+       cfunction(trace_counted_realloc, UInt, (UInt, UInt, UInt)),
+       cfunction(trace_counted_free, Void, (UInt, UInt)))
+
+    ccall((:__flint_set_memory_functions, libflint), Void,
+       (Ptr{Void},Ptr{Void},Ptr{Void},Ptr{Void}),
+       cfunction(trace_malloc, UInt, (UInt, )),
+       cfunction(trace_calloc, UInt, (UInt, UInt)),
+       cfunction(trace_realloc, UInt, (UInt, UInt)),
+       cfunction(trace_free, Void, (UInt, )))
+  else    
+    ccall((:__gmp_set_memory_functions, libgmp), Void,
+       (Ptr{Void},Ptr{Void},Ptr{Void}),
+       cglobal(:jl_gc_counted_malloc),
+       cglobal(:jl_gc_counted_realloc_with_old_size),
+       cglobal(:jl_gc_counted_free))
+
+    ccall((:__flint_set_memory_functions, libflint), Void,
+       (Ptr{Void},Ptr{Void},Ptr{Void},Ptr{Void}),
+       cglobal(:jl_malloc),
+       cglobal(:jl_calloc),
+       cglobal(:jl_realloc),
+       cglobal(:jl_free))
+  end
+end
+
 function __init__()
 
    if "HOSTNAME" in keys(ENV) && ENV["HOSTNAME"] == "juliabox"
