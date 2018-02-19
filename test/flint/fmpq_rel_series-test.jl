@@ -472,6 +472,7 @@ function test_fmpq_rel_series()
    test_fmpq_rel_series_shift()
    test_fmpq_rel_series_truncation()
    test_fmpq_rel_series_exact_division()
+   test_fmpq_rel_series_adhoc_exact_division()
    test_fmpq_rel_series_inversion()
    test_fmpq_rel_series_special()
 
