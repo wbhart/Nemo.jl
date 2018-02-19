@@ -4,73 +4,6 @@
 #
 ###############################################################################
 
-function isequal(a::RingElem, b::RingElem)
-   return parent(a) == parent(b) && a == b
-end
-
-################################################################################
-#
-#   Promotion system
-#
-# The promote_rule functions are not extending Base.promote_rule. The Nemo
-# promotion system is orthogonal to the built-in julia promotion system. The
-# julia system assumes that whenever you have a method signature of the form
-# Base.promote_rule(::Type{T}, ::Type{S}) = R, then there is also a
-# corresponding Base.convert(::Type{R}, ::T) and similar for S. Since we
-# cannot use the julia convert system (we need an instance of the type and not
-# the type), we cannot use the julia promotion system.
-#
-# The Nemo promotion system is used to define catch all functions for
-# arithmetic between arbitrary ring elements.
-#
-################################################################################
-
-promote_rule(::Type{T}, ::Type{T}) where T <: RingElement = T
-
-Base.literal_pow(::typeof(^), x::T, ::Val{p}) where {p, T <: RingElem} = x^p
-
-###############################################################################
-#
-#   Baby-steps giant-steps powering
-#
-###############################################################################
-
-function powers(a::T, d::Int) where {T <: RingElement}
-   d <= 0 && throw(DomainError())
-   S = parent(a)
-   A = Array{T}(d + 1)
-   A[1] = one(S)
-   if d > 1
-      c = a
-      A[2] = a
-      for i = 2:d
-         c *= a
-         A[i + 1] = c
-      end
-   end
-   return A
-end
-
-###############################################################################
-#
-#   Type traits
-#
-###############################################################################
-
-# Type can only represent elements of an exact ring
-# true unless explicitly specified
-isexact_type(R::Type{T}) where T <: RingElem = true
-
-# Type can only represent elements of domains
-# false unless explicitly specified
-isdomain_type(R::Type{T}) where T <: RingElem = false
-
-###############################################################################
-#
-#   Exponential function for generic rings
-#
-###############################################################################
-
 function exp(a::T) where {T <: RingElem}
    a != 0 && error("Exponential of nonzero element")
    return one(parent(a))
@@ -78,26 +11,9 @@ end
 
 ###############################################################################
 #
-#   Coprime bases
+#   Exponential function for generic rings
 #
 ###############################################################################
-
-# Bernstein, "Factoring into coprimes in essentially linear time"
-# ppio(a,b) = (c,n) where v_p(c) = v_p(a) if v_p(b) != 0, 0 otherwise
-# c*n = a or c = gcd(a, b^infty), n = div(a, c).
-# This is used in various Euclidean domains for Chinese remaindering.
-
-function ppio(a::E, b::E) where E <: RingElem
-   c = gcd(a, b)
-   n = div(a, c)
-   g = gcd(c, n)
-   while !isone(g)
-      c *= g
-      n = div(n, g)
-      g = gcd(c, n)
-   end
-   return c, n
-end
 
 ###############################################################################
 #
@@ -169,10 +85,5 @@ include("arb/acb_mat.jl")
 
 include("Factor.jl")
 
-###############################################################################
-#
-#   Generic functions to be defined after all rings
-#
-###############################################################################
-
 include("polysubst.jl")
+
