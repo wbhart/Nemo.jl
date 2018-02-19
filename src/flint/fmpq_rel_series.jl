@@ -558,7 +558,7 @@ function divexact(x::fmpq_rel_series, y::Int)
    z = parent(x)()
    z.prec = x.prec
    z.val = x.val
-   ccall((:fmpq_poly_scalar_divexact_si, :libflint), Void,
+   ccall((:fmpq_poly_scalar_div_si, :libflint), Void,
                 (Ref{fmpq_rel_series}, Ref{fmpq_rel_series}, Int),
                z, x, y)
    return z
@@ -570,7 +570,7 @@ function divexact(x::fmpq_rel_series, y::fmpz)
    z.prec = x.prec
    z.prec = x.prec
    z.val = x.val
-   ccall((:fmpq_poly_scalar_divexact_fmpz, :libflint), Void,
+   ccall((:fmpq_poly_scalar_div_fmpz, :libflint), Void,
                 (Ref{fmpq_rel_series}, Ref{fmpq_rel_series}, Ref{fmpz}),
                z, x, y)
    return z
