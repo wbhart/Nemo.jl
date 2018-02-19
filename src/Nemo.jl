@@ -551,8 +551,6 @@ include("Rings.jl")
 #
 ###############################################################################
 
-Array(R::Ring, r::Int...) = Array{elem_type(R)}(r)
-
 function zeros(R::Ring, r::Int...)
    T = elem_type(R)
    A = Array{T}(r)

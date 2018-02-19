@@ -27,83 +27,6 @@ end
 
 promote_rule(::Type{T}, ::Type{T}) where T <: RingElement = T
 
-###############################################################################
-#
-#   Generic catchall functions
-#
-###############################################################################
-
-function +(x::S, y::T) where {S <: RingElem, T <: RingElem}
-   if S == promote_rule(S, T)
-      +(x, parent(x)(y))
-   else
-      +(parent(y)(x), y)
-   end
-end
-
-+(x::RingElem, y::RingElement) = x + parent(x)(y)
-
-+(x::RingElement, y::RingElem) = parent(y)(x) + y
-
-function -(x::S, y::T) where {S <: RingElem, T <: RingElem}
-   if S == promote_rule(S, T)
-      -(x, parent(x)(y))
-   else
-      -(parent(y)(x), y)
-   end
-end
-
--(x::RingElem, y::RingElement) = x - parent(x)(y)
-
--(x::RingElement, y::RingElem) = parent(y)(x) - y
-
-function *(x::S, y::T) where {S <: RingElem, T <: RingElem}
-   if S == promote_rule(S, T)
-      *(x, parent(x)(y))
-   else
-      *(parent(y)(x), y)
-   end
-end
-
-*(x::RingElem, y::RingElement) = x*parent(x)(y)
-
-*(x::RingElement, y::RingElem) = parent(y)(x)*y
-
-function divexact(x::S, y::T) where {S <: RingElem, T <: RingElem}
-   if S == promote_rule(S, T)
-      divexact(x, parent(x)(y))
-   else
-      divexact(parent(y)(x), y)
-   end
-end
-
-divexact(x::RingElem, y::RingElement) = divexact(x, parent(x)(y))
-
-divexact(x::RingElement, y::RingElem) = divexact(parent(y)(x), y)
-
-function divides(x::T, y::T) where {T <: RingElem}
-   q, r = divrem(x, y)
-   return iszero(r), q
-end
-
-function ==(x::S, y::T) where {S <: RingElem, T <: RingElem}
-   if S == promote_rule(S, T)
-      ==(x, parent(x)(y))
-   else
-      ==(parent(y)(x), y)
-   end
-end
-
-==(x::RingElem, y::RingElement) = x == parent(x)(y)
-
-==(x::RingElement, y::RingElem) = parent(y)(x) == y
-
-function addmul!(z::T, x::T, y::T, c::T) where {T <: RingElem}
-   c = mul!(c, x, y)
-   z = addeq!(z, c)
-   return z
-end
-
 Base.literal_pow(::typeof(^), x::T, ::Val{p}) where {p, T <: RingElem} = x^p
 
 ###############################################################################
@@ -152,24 +75,6 @@ function exp(a::T) where {T <: RingElem}
    a != 0 && error("Exponential of nonzero element")
    return one(parent(a))
 end
-
-################################################################################
-#
-#   Transpose for ring elements
-#
-################################################################################
-
-transpose(x::T) where {T <: RingElem} = deepcopy(x)
-
-###############################################################################
-#
-#   One and zero
-#
-###############################################################################
-
-one(x::T) where {T <: RingElem} = one(parent(x))
-
-zero(x::T) where {T <: RingElem} = zero(parent(x))
 
 ###############################################################################
 #
