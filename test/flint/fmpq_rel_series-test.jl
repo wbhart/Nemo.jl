@@ -265,6 +265,8 @@ function test_fmpq_rel_series_adhoc_binary_ops()
 
    @test fmpq(2, 3)*c == 2*x^2 + fmpz(2)//3*x + fmpz(2)//3+O(x^5)
 
+   @test c//fmpq(2,1) == 3*x^2//2 + x//fmpz(2) + 1//2
+
    println("PASS")
 end
 
@@ -400,7 +402,7 @@ end
 function test_fmpq_rel_series_adhoc_exact_division()
    print("fmpq_rel_series.adhoc_exact_division...")
 
-   R, x = PolynomialRing(QQ, "x")
+   R, x = PowerSeriesRing(QQ, 30, "x")
    
    a = x + x^3
    b = O(x^4)
