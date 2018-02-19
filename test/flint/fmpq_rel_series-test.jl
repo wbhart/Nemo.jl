@@ -265,8 +265,6 @@ function test_fmpq_rel_series_adhoc_binary_ops()
 
    @test fmpq(2, 3)*c == 2*x^2 + fmpz(2)//3*x + fmpz(2)//3+O(x^5)
 
-   @test c//fmpq(2,1) == 3*x^2//2 + x//fmpz(2) + 1//2
-
    println("PASS")
 end
 

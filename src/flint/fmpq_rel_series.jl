@@ -289,41 +289,6 @@ function *(x::fmpq, y::fmpq_rel_series)
    return z
 end
 
-function //(x::fmpq_rel_series, y::Int)
-   y == 0 && throw(DivideError())
-   z = parent(x)()
-   z.prec = x.prec
-   z.val = x.val
-   ccall((:fmpq_poly_scalar_div_si, :libflint), Void,
-                (Ref{fmpq_rel_series}, Ref{fmpq_rel_series}, Int),
-               z, x, y)
-   return z
-end
-
-function //(x::fmpq_rel_series, y::fmpz)
-   iszero(y) && throw(DivideError())
-   z = parent(x)()
-   z.prec = x.prec
-   z.prec = x.prec
-   z.val = x.val
-   ccall((:fmpq_poly_scalar_div_fmpz, :libflint), Void,
-                (Ref{fmpq_rel_series}, Ref{fmpq_rel_series}, Ref{fmpz}),
-               z, x, y)
-   return z
-end
-
-function //(x::fmpq_rel_series, y::fmpq)
-   iszero(y) && throw(DivideError())
-   z = parent(x)()
-   z.prec = x.prec
-   z.prec = x.prec
-   z.val = x.val
-   ccall((:fmpq_poly_scalar_div_fmpq, :libflint), Void,
-                (Ref{fmpq_rel_series}, Ref{fmpq_rel_series}, Ref{fmpq}),
-               z, x, y)
-   return z
-end
-
 *(x::fmpq_rel_series, y::fmpz) = y * x
 
 *(x::fmpq_rel_series, y::fmpq) = y * x
@@ -588,11 +553,40 @@ end
 #
 ###############################################################################
 
-divexact(x::fmpq_rel_series, y::Int) = x // y
+function divexact(x::fmpq_rel_series, y::Int)
+   y == 0 && throw(DivideError())
+   z = parent(x)()
+   z.prec = x.prec
+   z.val = x.val
+   ccall((:fmpq_poly_scalar_div_si, :libflint), Void,
+                (Ref{fmpq_rel_series}, Ref{fmpq_rel_series}, Int),
+               z, x, y)
+   return z
+end
 
-divexact(x::fmpq_rel_series, y::fmpz) = x // y
+function divexact(x::fmpq_rel_series, y::fmpz)
+   iszero(y) && throw(DivideError())
+   z = parent(x)()
+   z.prec = x.prec
+   z.prec = x.prec
+   z.val = x.val
+   ccall((:fmpq_poly_scalar_div_fmpz, :libflint), Void,
+                (Ref{fmpq_rel_series}, Ref{fmpq_rel_series}, Ref{fmpz}),
+               z, x, y)
+   return z
+end
 
-divexact(x::fmpq_rel_series, y::fmpq) = x // y
+function divexact(x::fmpq_rel_series, y::fmpq)
+   iszero(y) && throw(DivideError())
+   z = parent(x)()
+   z.prec = x.prec
+   z.prec = x.prec
+   z.val = x.val
+   ccall((:fmpq_poly_scalar_div_fmpq, :libflint), Void,
+                (Ref{fmpq_rel_series}, Ref{fmpq_rel_series}, Ref{fmpq}),
+               z, x, y)
+   return z
+end
 
 divexact(x::fmpq_rel_series, y::Integer) = divexact(x, fmpz(y))
 
