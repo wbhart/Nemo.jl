@@ -4,8 +4,6 @@
 #
 ################################################################################
 
-include("julia/GF.jl")
-
 include("flint/fmpq.jl")
 
 include("flint/fq.jl")

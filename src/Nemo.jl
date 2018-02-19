@@ -16,6 +16,11 @@ import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
              typed_hvcat, typed_hcat, var, vcat, zero, zeros, +, -, *, ==, ^,
              &, |, $, <<, >>, ~, <=, >=, <, >, //, /, !=
 
+import AbstractAlgebra: Ring, Field, RingElem, FieldElem, RingElement, FieldElement,
+       FracField, FracElem, ResRing, ResField, PolyRing, PolyElem, ResElem, FinField,
+       FinFieldElem, SeriesRing, RelSeriesElem, AbsSeriesElem, MatSpace, MatElem, 
+       SeriesElem
+
 export elem_type, parent_type
 
 export SetElem, GroupElem, RingElem, FieldElem, AccessorNotSetError
@@ -25,8 +30,6 @@ export PolyElem, SeriesElem, AbsSeriesElem, RelSeriesElem, ResElem, FracElem,
 
 export PolyRing, SeriesRing, AbsSeriesRing, ResRing, FracField, MatSpace,
        FinField, MPolyRing
-
-export JuliaZZ, JuliaQQ, zz, qq, JuliaRealField, RDF
 
 export PermutationGroup, ZZ, QQ, PadicField, FiniteField, RealField, ComplexField,
        CyclotomicField, MaximalRealSubfield, NumberField
@@ -55,8 +58,6 @@ end
 if VERSION >= v"0.7.0-DEV.1144"
     import Base: isone
 end
-
-include("AbstractTypes.jl")
 
 ###############################################################################
 #
@@ -275,56 +276,47 @@ end
 
 ###############################################################################
 #
-#   Julia types
-#
-###############################################################################
-
-include("julia/JuliaTypes.jl")
-
-###############################################################################
-#
 #   Generic submodule
 #
 ###############################################################################
 
-include("Generic.jl")
+import AbstractAlgebra: Generic
 
-import .Generic: add!, addeq!, addmul!, base_ring, canonical_unit, character,
-                 characteristic, charpoly, charpoly_danilevsky!,
-                 charpoly_danilevsky_ff!, charpoly_hessenberg!, chebyshev_t,
-                 chebyshev_u, _check_dim, check_parent, coeff, cols, compose,
-                 content, cycles, data, degree, denominator, derivative, det, det_clow,
-                 det_df, det_fflu, det_popov, dim, discriminant, divexact,
-                 divides, divrem, elem_type, elements, evaluate,
-                 extended_weak_popov, extended_weak_popov_with_trafo, fflu!,
-                 fflu, find_pivot_popov, fit!, gcd, gen, gens, gcdinv, gcdx,
-                 gram, has_left_neighbor, has_bottom_neighbor, hash,
-                 hessenberg!, hessenberg, hnf, hnf_cohen, hnf_cohen_with_trafo,
-                 hnf_kb, hnf_kb_with_trafo, hnf_minors, hnf_minors_with_trafo,
-                 hnf_with_trafo, hnf_via_popov, hnf_via_popov_with_trafo,
-                 hooklength, identity_matrix, inskewdiag, integral,
-                 interpolate, inv, inv!, invmod, isconstant, isdegree,
-                 isdomain_type, isexact_type, isgen, ishessenberg, ismonomial,
-                 isnegative, isone, isreverse, isrimhook, isrref, issquare, isterm,
-                 isunit, lcm, lead, length, leglength, main_variable,
-                 main_variable_extract, main_variable_insert, matrix,
-                 matrix_repr, max_degrees, max_precision, minpoly, mod,
-                 modulus, monomial_iszero, monomial_set!, monomial_to_newton!,
-                 mul!, mul_classical, mul_karatsuba, mul_ks, mullow, mulmod,
-                 needs_parentheses, newton_to_monomial!, normalise, nvars, numerator,
-                 O, one, order, ordering, parent_type, parity, partitionseq,
-                 polcoeff, pol_length, powmod, pow_multinomial, popov, powers,
-                 precision, primpart, pseudodivrem, pseudorem, randmat_triu,
-                 randmat_with_rank, rand_ordering, rank_profile_popov, remove,
-                 renormalize!, resultant, resultant_ducos, resultant_euclidean,
-                 resultant_subresultant, resultant_sylvester, resx, reverse,
-                 rows, rref, rref!, setcoeff!, set_length!, setpermstyle,
-                 set_prec!, set_val!, size, shift_left, shift_right, show_minus_one,
-                 similarity!, snf, snf_kb, snf_kb_with_trafo, snf_with_trafo,
-                 solve, solve_rational, solve_triu, sub, subst, swap_rows,
-                 swap_rows!, trail, truncate, typed_hcat, typed_hvcat,
-                 valuation, var, vars, weak_popov, weak_popov_with_trafo, zero,
-                 zero!, zero_matrix, kronecker_product
+import AbstractAlgebra.Generic: add!, addeq!, addmul!, base_ring,
+           canonical_unit, character, characteristic, charpoly,
+           charpoly_danilevsky!, charpoly_danilevsky_ff!, charpoly_hessenberg!,
+           chebyshev_t, chebyshev_u, _check_dim, check_parent, coeff, cols,
+           compose, content, cycles, data, degree, denominator, derivative, det,
+           det_clow, det_df, det_fflu, det_popov, dim, discriminant, divexact,
+           divides, divrem, elem_type, elements, evaluate, extended_weak_popov,
+           extended_weak_popov_with_trafo, fflu!, fflu, find_pivot_popov, fit!,
+           gcd, gen, gens, gcdinv, gcdx, gram, has_left_neighbor,
+           has_bottom_neighbor, hash, hessenberg!, hessenberg, hnf, hnf_cohen,
+           hnf_cohen_with_trafo, hnf_kb, hnf_kb_with_trafo, hnf_minors,
+           hnf_minors_with_trafo, hnf_with_trafo, hnf_via_popov,
+           hnf_via_popov_with_trafo, hooklength, identity_matrix, inskewdiag,
+           integral, interpolate, inv, inv!, invmod, isconstant, isdegree,
+           isdomain_type, isexact_type, isgen, ishessenberg, ismonomial,
+           isnegative, isone, isreverse, isrimhook, isrref, issquare, isterm,
+           isunit, lcm, lead, length, leglength, main_variable,
+           main_variable_extract, main_variable_insert, matrix, matrix_repr,
+           max_degrees, max_precision, minpoly, mod, modulus, monomial_iszero,
+           monomial_set!, monomial_to_newton!, mul!, mul_classical,
+           mul_karatsuba, mul_ks, mullow, mulmod, needs_parentheses,
+           newton_to_monomial!, normalise, nvars, numerator, O, one, order,
+           ordering, parent_type, parity, partitionseq, polcoeff, pol_length,
+           powmod, pow_multinomial, popov, powers, ppio, precision, primpart,
+           promote_rule, pseudodivrem, pseudorem, randmat_triu, randmat_with_rank,
+           rand_ordering, rank_profile_popov, remove, renormalize!, resultant,
+           resultant_ducos, resultant_euclidean, resultant_subresultant,
+           resultant_sylvester, resx, reverse, rows, rref, rref!, setcoeff!,
+           set_length!, setpermstyle, set_prec!, set_val!, size, shift_left,
+           shift_right, show_minus_one, similarity!, snf, snf_kb,
+           snf_kb_with_trafo, snf_with_trafo, solve, solve_rational, solve_triu,
+           sub, subst, swap_rows, swap_rows!, trail, truncate, typed_hcat,
+           typed_hvcat, valuation, var, vars, weak_popov, weak_popov_with_trafo,
+           zero, zero!, zero_matrix, kronecker_product, ErrorConstrDimMismatch,
+           error_dim_negative
 
 export add!, addeq!, addmul!, base_ring, canonical_unit, character,
                  characteristic, charpoly, charpoly_danilevsky!,
@@ -351,7 +343,7 @@ export add!, addeq!, addmul!, base_ring, canonical_unit, character,
                  needs_parentheses, newton_to_monomial!, normalise, nvars,
                  numerator, O, one, order, ordering, parent_type, parity,
                  partitionseq, polcoeff, pol_length, powmod, pow_multinomial,
-                 popov, powers, ppio, precision, primpart, pseudodivrem,
+                 popov, powers, ppio, precision, primpart, promote_rule, pseudodivrem,
                  pseudorem, randmat_triu, randmat_with_rank, rand_ordering,
                  rank_profile_popov, remove, renormalize!, resultant,
                  resultant_ducos, resultant_euclidean, resultant_subresultant,
@@ -473,56 +465,6 @@ export Generic
 
 ###############################################################################
 #
-#   Polynomial Ring S, x = R["x"] syntax
-#
-###############################################################################
-
-getindex(R::Ring, s::String) = PolynomialRing(R, s)
-
-getindex(R::Tuple{Ring, T}, s::String) where {T} = PolynomialRing(R[1], s)
-
-###############################################################################
-#
-#   Matrix M = R[...] syntax
-#
-################################################################################
-
-function typed_hvcat(R::Ring, dims, d...)
-   T = elem_type(R)
-   r = length(dims)
-   c = dims[1]
-   A = Array{T}(r, c)
-   for i = 1:r
-      dims[i] != c && throw(ArgumentError("row $i has mismatched number of columns (expected $c, got $(dims[i]))"))
-      for j = 1:c
-         A[i, j] = R(d[(i - 1)*c + j])
-      end
-   end
-   S = matrix(R, A)
-   return S
-end
-
-function typed_hcat(R::Ring, d...)
-   T = elem_type(R)
-   r = length(d)
-   A = Array{T}(1, r)
-   for i = 1:r
-      A[1, i] = R(d[i])
-   end
-   S = matrix(R, A)
-   return S
-end
-
-###############################################################################
-#
-#   Load error objects
-#
-###############################################################################
-
-include("error.jl")
-
-###############################################################################
-#
 #   Load Nemo Rings/Fields/etc
 #
 ###############################################################################
@@ -534,8 +476,6 @@ include("antic/AnticTypes.jl")
 include("arb/ArbTypes.jl")
 
 #include("ambiguities.jl") # remove ambiguity warnings
-
-include("Groups.jl")
 
 include("flint/adhoc.jl")
 
@@ -602,6 +542,8 @@ function sig_exists(T::Type{Tuple{U, V, W}}, sig_table::Array{X, 1}) where {U, V
 end
 
 end # if VERSION
+
+include("Rings.jl")
 
 ###############################################################################
 #

@@ -1,9 +1,3 @@
-include("generic/Fraction-test.jl")
-
-include("julia/Rationals-test.jl")
-include("julia/Floats-test.jl")
-include("julia/gfelem-test.jl")
-
 include("flint/fmpq-test.jl")
 include("flint/fq-test.jl")
 include("flint/fq_nmod-test.jl")
@@ -15,15 +9,8 @@ include("arb/arb-test.jl")
 include("arb/acb-test.jl")
 
 function test_fields()
-   test_gfelem()
-
-   test_Rationals()
-   test_Floats()
-
    test_arb()
    test_acb()
-
-   test_gen_frac()
 
    test_fmpq()
    test_fq()
