@@ -588,7 +588,11 @@ end
 #
 ###############################################################################
 
-divexact(x::fmpq_rel_series, y::Union{Int,fmpz,fmpq}) = x // y
+divexact(x::fmpq_rel_series, y::Int) = x // y
+
+divexact(x::fmpq_rel_series, y::fmpz) = x // y
+
+divexact(x::fmpq_rel_series, y::fmpq) = x // y
 
 divexact(x::fmpq_rel_series, y::Integer) = divexact(x, fmpz(y))
 
