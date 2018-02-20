@@ -2,7 +2,7 @@
 CurrentModule = Nemo
 ```
 
-## Introduction
+# Integers
 
 The default integer type in Nemo is provided by Flint. The associated ring of
 integers is represented by the constant parent object called `FlintZZ`.
@@ -16,7 +16,7 @@ ZZ = FlintZZ
 so that integers can be constructed using `ZZ` instead of `FlintZZ`. Note that
 this is the name of a specific parent object, not the name of its type.
 
-The types of the integer ring parent objects and elements of the asociated
+The types of the integer ring parent objects and elements of the associated
 rings of integers are given in the following table according to the library
 provding them.
 
@@ -27,119 +27,32 @@ Flint           | `fmpz`        | `FlintIntegerRing`
 All integer element types belong directly to the abstract type `RingElem` and
 all the integer ring parent object types belong to the abstract type `Ring`.
 
-## Integer element constructors
+## Integer functionality
 
-There are various ways to construct integers given an integer ring parent
-object such as `ZZ`. As usual, one can coerce various elements into the
-ring of integers using the parent object. Here are some examples.
+Nemo integers implement the whole of the ring and Euclidean ring interfaces of
+AbstractAlgebra.jl.
 
-```
-ZZ(123)
-ZZ("123")
-ZZ(123.0)
-```
+[https://nemocas.github.io/AbstractAlgebra.jl/rings.html](https://nemocas.github.io/AbstractAlgebra.jl/rings.html)
 
-Note that when coercing from floating point numbers of various kinds, the
-input must be exactly an integer without fractional part.
+[https://nemocas.github.io/AbstractAlgebra.jl/euclidean.html](https://nemocas.github.io/AbstractAlgebra.jl/euclidean.html)
 
-Apart from coercing elements into the ring of integers, we offer the
-following functions.
+Below, we describe the functionality that is specific to the Nemo/Flint integer ring.
 
-```@docs
-zero(::FlintIntegerRing)
-```
+### Constructors
 
-```@docs
-one(::FlintIntegerRing)
-```
-
-Here are some examples of constructing integers.
-
-```
-a = ZZ(123)
-b = one(ZZ)
-c = zero(ZZ)
-```
-
-## Basic functionality
-
-The following basic functionality is provided by the default integer
-implementation in Nemo, to support construction of generic rings over the
-integers. Any custom integer implementation in Nemo should provide these 
-functions along with the usual arithmetic operations and greatest common
-divisor.
-
-```
-parent_type(::Type{fmpz})
-```
-
-Gives the type of the parent object of a Flint integer.
-
-```
-elem_type(R::FlintIntegerRing)
-```
-
-Given the parent object for the integer ring, return the type of elements
-of the integer ring.
-
-```
-Base.hash(a::fmpz, h::UInt)
-```
-
-Return a `UInt` hexadecimal hash of the integer $a$. This should be xor'd
-with a fixed random hexadecimal specific to the integer type. The hash of
-the machine words used to store the integer should be xor'd with the supplied
-parameter `h` as part of computing the hash.
-
-```
-deepcopy(a::fmpz)
-```
-
-Construct a copy of the given integer and return it. This function must
-recursively construct copies of all of the internal data in the given
-integer. Nemo integers are mutable and so returning shallow copies is not
-sufficient.
-
-```
-mul!(c::fmpz, a::fmpz, b::fmpz)
-```
-
-Multiply $a$ by $b$ and set the existing integer $c$ to the result. This
-function is provided for performance reasons as it saves allocating a new
-object for the result and eliminates associated garbage collection.
-
-```
-addeq!(c::fmpz, a::fmpz)
-```
-
-In-place addition. Adds $a$ to $c$ and sets $c$ to the result. This function
-is provided for performance reasons as it saves allocating a new object for
-the result and eliminates associated garbage collection.
-
-Given the parent object `ZZ` for the integer ring, the following coercion
-functions are provided to coerce various elements into the integer
-ring. Developers provide these by overloading the `call` operator for the
-integer ring parent objects.
-
-```
-ZZ()
-```
-
-Coerce zero into the integer ring.
-
-```
+```julia
 ZZ(n::Integer)
 ```
 
-Coerce an integer value into the integer ring.
+Coerce a Julia integer value into the integer ring.
 
-```
+```julia
 ZZ(n::String)
 ```
 
 Parse the given string as an integer.
 
-```
+```julia
 ZZ(n::Float64)
 ZZ(n::Float32)
 ZZ(n::Float16)
@@ -149,44 +62,7 @@ ZZ(n::BigFloat)
 Coerce the given floating point number into the integer ring, assuming that it
 can be exactly represented as an integer.
 
-```
-ZZ(f::fmpz)
-```
-
-Take an integer that is already in the Flint integer ring and simply return it.
-A copy of the original is not made.
-
-In addition to the above, developers of custom integer types must ensure that
-they provide the equivalent of the function `base_ring(R::FlintIntegerRing)`
-which should return `Union{}`. In addition to this they should ensure that
-each integer element contains a field `parent` specifying the parent object of
-the integer, or at least supply the equivalent of the function 
-`parent(a::fmpz)` to return the parent object of an integer.
-
-## Basic manipulation
-
-Numerous functions are provided to manipulate integers. Also see the section on
-basic functionality above.
-
-```@docs
-base_ring(::FlintIntegerRing)
-```
-
-```@docs
-base_ring(::fmpz)
-```
-
-```@docs
-parent(::fmpz)
-```
-
-```@docs
-iszero(::fmpz)
-```
-
-```@docs
-isone(::fmpz)
-```
+### Basic manipulation
 
 ```@docs
 isunit(::fmpz)
@@ -206,73 +82,27 @@ fits(::Type{Int}, ::fmpz)
 ```
 
 ```@docs
-den(::fmpz)
+denominator(::fmpz)
 ```
 
 ```@docs
 numerator(::fmpz)
 ```
 
-Here are some examples of basic manipulation of integers.
+**Examples**
 
 ```
 a = ZZ(12)
 
-R = base_ring(ZZ)
-S = base_ring(a)
-T = parent(a)
-iszero(a)
-isone(a)
 isunit(a)
 sign(a)
 s = size(a)
 fits(Int, a)
 n = numerator(a)
-d = den(a)
+d = denominator(a)
 ```
 
-## Arithmetic operations
-
-Nemo provides all the standard ring operations for integers, as follows.
-
-Function                   | Operation
----------------------------|----------------
--(a::fmpz)                 | unary minus
-+(a::fmpz, b::fmpz)        | addition
--(a::fmpz, b::fmpz)        | subtraction
-*(a::fmpz, b::fmpz)        | multiplication
-divexact(a::fmpz, b::fmpz) | exact division
-
-In addition, the following ad hoc ring operations are defined.
-
-Function                      | Operation
-------------------------------|----------------
-+(a::fmpz, b::Integer)        | addition
-+(a::Integer, b::fmpz)        | addition
--(a::fmpz, b::Integer)        | subtraction
--(a::Integer, b::fmpz)        | subtraction
-*(a::fmpz, b::Integer)        | multiplication
-*(a::Integer, b::fmpz)        | multiplication
-divexact(a::fmpz, b::Integer) | exact division
-divexact(a::Integer, b::fmpz) | exact division
-^(a::fmpz, b::Int)            | powering
-
-Here are some examples of arithmetic operations on integers.
-
-```
-a = fmpz(12)
-b = fmpz(3)
-
-c = a + b
-d = divexact(a, b)
-f = 3a
-g = a*ZZ(7)
-h = 3 - a
-k = divexact(a, 4)
-m = a^7
-```
-
-## Euclidean division
+### Euclidean division
 
 Nemo also provides a large number of Euclidean division operations. Recall that
 for a dividend $a$ and divisor $b$, we can write $a = bq + r$ with
@@ -315,9 +145,9 @@ fdivpow2(a::fmpz, d::Int) | q      | towards minus infinity
 fmodpow2(a::fmpz, d::Int) | r      | towards minus infinity
 cdivpow2(a::fmpz, d::Int) | q      | towards plus infinity
 
-Here are some examples of Euclidean division.
+**Examples**
 
-```
+```julia
 a = fmpz(12)
 b = fmpz(5)
 
@@ -328,13 +158,7 @@ f = tdivpow2(a, 2)
 g = fmodpow2(a, 3)
 ```
 
-## Comparison
-
-Nemo provides a full complement of comparison operators for integers. This
-includes the usual $<, >, \leq, \geq, ==, !=$ operators. These are usually
-provided via Julia once Nemo provides the `isless` function and the `==`
-function. However, to avoid two calls to Flint for such comparisons we
-implement them differently.
+### Comparison
 
 Instead of `isless` we implement a function `cmp(a, b)` which returns a
 positive value if $a > b$, zero if $a == b$ and a negative value if $a < b$.
@@ -363,9 +187,9 @@ cmp(a::Int, b::fmpz)
 cmp(a::fmpz, b::UInt)
 cmp(a::UInt, b::fmpz)
 
-Here are some examples of comparisons.
+**Examples**
 
-```
+```julia
 a = ZZ(12)
 b = ZZ(3)
 
@@ -376,7 +200,7 @@ a > 4
 cmpabs(a, b)
 ```
 
-## Shifting
+### Shifting
 
 ```@docs
 <<(::fmpz, ::Int)
@@ -386,30 +210,16 @@ cmpabs(a, b)
 >>(::fmpz, ::Int)
 ```
 
-Here are some examples of shifting.
+**Examples**
 
-```
+```julia
 a = fmpz(12)
 
 a << 3
 a >> 5
 ```
 
-## Modular arithmetic
-
-```@docs
-mod(::fmpz, ::fmpz)
-mod(::fmpz, ::Int)
-```
-
-```@docs
-powmod(::fmpz, ::fmpz, ::fmpz)
-powmod(::fmpz, ::Int, ::fmpz)
-```
-
-```@docs
-invmod(::fmpz, ::fmpz)
-```
+### Modular arithmetic
 
 ```@docs
 sqrtmod(::fmpz, ::fmpz)
@@ -420,17 +230,14 @@ crt(::fmpz, ::fmpz, ::fmpz, m::fmpz, ::Bool)
 crt(::fmpz, ::fmpz, ::Int, ::Int, ::Bool)
 ```
 
-Here are some examples of modular arithmetic.
+**Examples**
 
-```
-a = powmod(ZZ(12), ZZ(110), ZZ(13))
-a = powmod(ZZ(12), 110, ZZ(13))
-b = invmod(ZZ(12), ZZ(13))
+```julia
 c = sqrtmod(ZZ(12), ZZ(13))
 d = crt(ZZ(5), ZZ(13), ZZ(7), ZZ(37), true)
 ```
 
-## Integer logarithm
+### Integer logarithm
 
 ```@docs
 flog(::fmpz, ::fmpz)
@@ -442,9 +249,9 @@ clog(::fmpz, ::fmpz)
 clog(::fmpz, ::Int)
 ```
 
-Here are some examples of computing integer logarithms.
+**Examples**
 
-```
+```julia
 a = fmpz(12)
 b = fmpz(2)
 
@@ -452,39 +259,7 @@ c = flog(a, b)
 d = clog(a, 3)
 ```
 
-## GCD and LCM
-
-```@docs
-gcd(::fmpz, ::fmpz)
-gcd(::Array{fmpz, 1})
-```
-
-```@docs
-lcm(::fmpz, ::fmpz)
-lcm(::Array{fmpz, 1})
-```
-
-```@docs
-gcdx(::fmpz, ::fmpz)
-```
-
-```@docs
-gcdinv(::fmpz, ::fmpz)
-```
-
-Here are some examples of GCD and LCM.
-
-```
-a = ZZ(3)
-b = ZZ(12)
-
-c = gcd(a, b)
-d = lcm(a, b)
-g, s, t = gcdx(a, b)
-g, s = gcdinv(a, b)
-```
-
-## Integer roots
+### Integer roots
 
 ```@docs
 isqrt(::fmpz)
@@ -498,9 +273,9 @@ isqrtrem(::fmpz)
 root(::fmpz, ::Int)
 ```
 
-Here are some examples of integer roots.
+**Examples**
 
-```
+```julia
 a = ZZ(13)
 
 b = sqrt(a)
@@ -508,7 +283,7 @@ s, r = sqrtrem(a)
 c = root(a, 3)
 ```
 
-## Number theoretic functionality
+### Number theoretic functionality
 
 ```@docs
 divisible(::fmpz, ::Int)
@@ -530,10 +305,6 @@ isprobabprime(::fmpz)
 
 ```@docs
 factor(::fmpz)
-```
-
-```@docs
-remove(::fmpz, y:fmpz)
 ```
 
 ```@docs
@@ -586,9 +357,9 @@ numpart(::Int)
 numpart(::fmpz) 
 ```
 
-Here are some examples of number theoretic functionality.
+**Examples**
 
-```
+```julia
 isprime(ZZ(13))
 n = fac(100)
 s = sigma(ZZ(128), 10)
@@ -597,7 +368,7 @@ p = numpart(1000)
 f = factor(ZZ(12))
 ```
 
-## Number digits and bases
+### Digits and bases
 
 ```@docs
 bin(::fmpz)
@@ -627,9 +398,9 @@ ndigits(::fmpz, ::Integer)
 nbits(::fmpz)
 ```
 
-Here are some examples of writing numbers in various bases.
+**Examples**
 
-```
+```julia
 a = fmpz(12)
 
 s1 = bin(a)
@@ -668,9 +439,9 @@ setbit!(::fmpz, ::Int)
 combit!(::fmpz, ::Int)
 ```
 
-Here are some examples of bit twiddling.
+**Example**
 
-```
+```julia
 a = fmpz(12)
 
 p = popcount(a)
