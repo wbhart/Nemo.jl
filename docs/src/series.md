@@ -2,7 +2,7 @@
 CurrentModule = Nemo
 ```
 
-## Introduction
+# Power series and Laurent series
 
 Nemo allows the creation of capped relative and absolute power series over any computable
 ring $R$. Capped relative power series are power series of the form
@@ -29,8 +29,8 @@ $\mathbb{Z}$                          | Flint              | `fmpz_rel_series`  
 $\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint              |  nmod_rel_series      |  NmodRelSeriesRing
 $\mathbb{Z}/n\mathbb{Z}$              | Flint              | `fmpz_mod_rel_series` | `FmpzModRelSeriesRing`
 $\mathbb{Q}$                          | Flint              | `fmpq_rel_series`     | `FmpqRelSerieRing`
-$\mathbb{F}_{p^n}$ (small $n$)        | Flint              | `fq_nmod_rel_series`  | `FqNmodRelSeriesRing`
-$\mathbb{F}_{p^n}$ (large $n$)        | Flint              | `fq_rel_series`       | `FqRelSeriesRing`
+$\mathbb{F}_{p^n}$ (small $p$)        | Flint              | `fq_nmod_rel_series`  | `FqNmodRelSeriesRing`
+$\mathbb{F}_{p^n}$ (large $p$)        | Flint              | `fq_rel_series`       | `FqRelSeriesRing`
 
 All relative power series elements belong to the abstract type `RelSeriesElem` and all
 of the relative power series ring types belong to the abstract type `RelSeriesRing`.

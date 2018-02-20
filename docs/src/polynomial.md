@@ -23,8 +23,8 @@ $\mathbb{Z}$                          | Flint               | `fmpz_poly`       
 $\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint               | `nmod_poly`         | `NmodPolyRing`
 $\mathbb{Z}/n\mathbb{Z}$ (large $n$)  | Flint               | `fmpz_mod_poly`     | `FmpzModPolyRing`
 $\mathbb{Q}$                          | Flint               | `fmpq_poly`         | `FmpqPolyRing`
-$\mathbb{F}_{p^n}$ (small $n$)        | Flint               | `fq_nmod_poly`      | `FqNmodPolyRing`
-$\mathbb{F}_{p^n}$ (large $n$)        | Flint               | `fq_poly`           | `FqPolyRing`
+$\mathbb{F}_{p^n}$ (small $p$)        | Flint               | `fq_nmod_poly`      | `FqNmodPolyRing`
+$\mathbb{F}_{p^n}$ (large $p$)        | Flint               | `fq_poly`           | `FqPolyRing`
 $\mathbb{R}$                          | Arb                 | `arb_poly`          | `ArbPolyRing`
 $\mathbb{C}$                          | Arb                 | `acb_poly`          | `AcbPolyRing`
 

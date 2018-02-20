@@ -2,7 +2,7 @@
 CurrentModule = Nemo
 ```
 
-## Introduction
+# Residue rings
 
 Nemo allows the creation of residue rings of the form $R/(a)$ for an element
 $a$ of a ring $R$.

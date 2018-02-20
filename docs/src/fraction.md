@@ -2,7 +2,7 @@
 CurrentModule = Nemo
 ```
 
-## Introduction
+# Fraction fields
 
 Nemo allows the creation of fraction fields over any ring $R$. We don't require
 $R$ to be an integral domain, however no attempt is made to deal with the
