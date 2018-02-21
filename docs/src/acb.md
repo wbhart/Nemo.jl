@@ -2,7 +2,7 @@
 CurrentModule = Nemo
 ```
 
-## Introduction
+# Complex balls
 
 Arbitrary precision complex ball arithmetic is supplied by Arb which provides a
 ball representation which tracks error bounds rigorously. Complex numbers are 
@@ -31,7 +31,15 @@ All the complex field types belong to the `Field` abstract type and the types of
 elements in this field, i.e. complex boxes in this case, belong to the
 `FieldElem` abstract type.
 
-## Complex field constructors
+## Complex ball functionality
+
+The complex balls in Nemo implement the AbstractAlgebra.jl field interface.
+
+[https://nemocas.github.io/AbstractAlgebra.jl/fields.html](https://nemocas.github.io/AbstractAlgebra.jl/fields.html)
+
+Below, we document the additional functionality provided for complex balls.
+
+### Complex field constructors
 
 In order to construct complex boxes in Nemo, one must first construct the Arb
 complex field itself. This is accomplished with the following constructor.
@@ -44,18 +52,12 @@ Return the Arb complex field with precision in bits `prec` used for operations
 on interval midpoints. The precision used for interval radii is a fixed
 implementation-defined constant (30 bits).
 
-We define
-
-```
-ComplexField = AcbField
-```
-
-so that one can use `ComplexField` instead of `AcbField`.
-
 Here is an example of creating an Arb complex field and using the resulting
 parent object to coerce values into the resulting field.
 
-```
+**Examples**
+
+```julia
 CC = ComplexField(64)
 
 a = CC("0.25")
@@ -66,7 +68,7 @@ d = CC(12)
 
 Note that whilst one can coerce double precision floating point values into an
 Arb complex field, unless those values can be represented exactly in double
-precision, the resulting ball can't be any more precise than the double
+precision the resulting ball can't be any more precise than the double
 precision supplied.
 
 If instead, values can be represented precisely using decimal arithmetic then
@@ -77,33 +79,17 @@ If the values can be stored precisely as a binary floating point number, Arb
 will store the values exactly. See the function `isexact` below for more
 information.
 
-## Complex ball constructors
-
-Once an Arb complex field is constructed, there are various ways to construct
-boxes in that field.
-
-Apart from coercing elements into the Arb complex field as above, we offer the
-following functions.
-
-```@docs
-zero(::AcbField)
-```
-
-```@docs
-one(::AcbField)
-```
+### Constructors
 
 ```@docs
 onei(::AcbField)
 ```
 
-Here are some examples of constructing complex boxes.
+**Examples**
 
-```
+```julia
 CC = ComplexField(64)
 
-a = zero(CC)
-b = one(CC)
 c = onei(CC)
 ```
 
@@ -221,30 +207,7 @@ object of the complex field element, or at least supply the equivalent of the
 function `parent(a::acb)` to return the parent object of a complex field
 element.
 
-## Basic manipulation
-
-Numerous functions are provided to manipulate Arb complex field elements. Also
-see the section on basic functionality above.
-
-```@docs
-base_ring(::AcbField)
-```
-
-```@docs
-base_ring(::acb)
-```
-
-```@docs
-parent(::acb)
-```
-
-```@docs
-iszero(::acb)
-```
-
-```@docs
-isone(::acb)
-```
+### Basic manipulation
 
 ```@docs
 isfinite(::acb)
@@ -274,99 +237,23 @@ imag(::acb)
 accuracy_bits(::acb)
 ```
 
-Here are some examples of basic manipulation of Arb complex boxes.
+**Examples**
 
-```
+```julia
 CC = ComplexField(64)
 
 a = CC("1.2 +/- 0.001")
 b = CC(3)
 
-iszero(a)
-isone(b)
 isreal(a)
 isfinite(b)
 isint(b)
 c = real(a)
 d = imag(b)
 f = accuracy_bits(a)
-S = parent(a)
-T = base_ring(CC)
 ```
 
-## Arithmetic operations
-
-Nemo provides all the standard field operations for Arb complex field elements,
-as follows. Note that division is represented by `//` since a field is its own
-fraction field and since exact division is not generally possible in an
-inexact field.
-
-Function                 | Operation
--------------------------|----------------
--(a::acb)                | unary minus
-+(a::acb, b::acb)        | addition
--(a::acb, b::acb)        | subtraction
-*(a::acb, b::acb)        | multiplication
-//(a::acb, b::acb)       | division
-^(a::acb, b::acb)        | powering
-
-In addition, the following ad hoc field operations are defined.
-
-Function               | Operation
------------------------|----------------
-+(a::acb, b::Integer)  | addition
-+(a::Integer, b::acb)  | addition
-+(a::acb, b::fmpz)     | addition
-+(a::fmpz, b::acb)     | addition
-+(a::acb, b::fmpq)     | addition
-+(a::fmpq, b::acb)     | addition
-+(a::acb, b::arb)      | addition
-+(a::arb, b::acb)      | addition
--(a::acb, b::Integer)  | subtraction
--(a::Integer, b::acb)  | subtraction
--(a::acb, b::fmpz)     | subtraction
--(a::fmpz, b::acb)     | subtraction
--(a::acb, b::fmpq)     | subtraction
--(a::fmpq, b::acb)     | subtraction
--(a::acb, b::arb)      | subtraction
--(a::arb, b::acb)      | subtraction
-*(a::acb, b::Integer)  | multiplication
-*(a::Integer, b::acb)  | multiplication
-*(a::acb, b::fmpz)     | multiplication
-*(a::fmpz, b::acb)     | multiplication
-*(a::acb, b::fmpq)     | multiplication
-*(a::fmpq, b::acb)     | multiplication
-*(a::acb, b::arb)      | multiplication
-*(a::arb, b::acb)      | multiplication
-//(a::acb, b::Integer) | division
-//(a::acb, b::fmpz)    | division
-//(a::acb, b::fmpq)    | division
-//(a::Integer, b::acb) | division
-//(a::fmpz, b::acb)    | division
-//(a::fmpq, b::acb)    | division
-//(a::arb, b::acb)     | division
-^(a::acb, b::fmpq)     | powering
-^(a::Integer, b::acb)  | powering
-^(a::fmpz, b::acb)     | powering
-^(a::fmpq, b::acb)     | powering
-^(a::arb, b::acb)      | powering
-
-Here are some examples of arithmetic operations on Arb complex boxes.
-
-```
-CC = ComplexField(64)
-
-x = CC(3)
-y = CC(QQ(2,3))
-
-a = x + y
-b = x*y
-d = 1//y - x
-d = 3x + ZZ(100)//y
-f = (x^2 + y^2) ^ QQ(1,2)
-```
-
-## Containment
+### Containment
 
 It is often necessary to determine whether a given exact value or box is
 contained in a given complex box or whether two boxes overlap. The following
@@ -393,9 +280,9 @@ a certain part of the complex number plane.
 contains_zero(::acb)
 ```
 
-Here are some examples of testing containment.
+**Examples**
 
-```
+```julia
 CC = ComplexField(64)
 x = CC("1 +/- 0.001")
 y = CC("3")
@@ -407,29 +294,20 @@ contains(x, ZZ(1)//2)
 contains_zero(x)
 ```
 
-## Comparison
+### Comparison
 
 Nemo provides a full range of comparison operations for Arb complex boxes. 
 
-Firstly, we introduce an exact equality which is distinct from arithmetic
-equality. This is distinct from arithmetic equality implemented by `==`, which
-merely compares up to the minimum of the precisions of its operands.
+In addition to the standard comparisons, we introduce an exact equality. This is
+distinct from arithmetic equality implemented by `==`, which merely compares up to the
+minimum of the precisions of its operands.
 
 ```@docs
 isequal(::acb, ::acb)
 ```
 
-A full range of functions is available for comparing boxes, i.e. `==` and `!=`.
-In fact, these are implemented directly in C. In the table below we document
-these as though only `==` had been provided to Julia.
-
-Function                
--------------------------
-`==(x::acb, y::acb)`
-
-As well as these, we provide a full range of ad hoc comparison operators.
-Again, these are implemented directly in Julia, but we document them as though
-only `==` were provided.
+A full range of ad hoc comparison operators is provided. These are implemented directly
+in Julia, but we document them as though only `==` were provided.
 
 Function
 -----------------------------
@@ -442,61 +320,45 @@ Function
 `==(x::acb, y::Float64)`
 `==(x::Float64, y::acb)`
 
-Here are some examples of comparison.
+**Examples**
 
-```
+```julia
 CC = ComplexField(64)
 x = CC("1 +/- 0.001")
 y = CC("3")
 z = CC("4")
 
-isequal(y, z)
-x != z
+isequal(x, deepcopy(x))
 x == 3
 ZZ(3) == z
 x != 1.23
 ```
 
-## Absolute value
+### Absolute value
 
 ```@docs
 abs(::acb)
 ```
 
-Here are some examples of taking the absolute value.
+**Examples**
 
-```
+```julia
 CC = ComplexField(64)
 x = CC("-1 +/- 0.001")
 
 a = abs(x)
 ```
 
-## Inverse
-
-```@docs
-inv(::acb)
-```
-
-Here are some examples of taking the inverse.
-
-```
-CC = ComplexField(64)
-x = CC("-3 +/- 0.001")
-
-a = inv(x)
-```
-
-## Shifting
+### Shifting
 
 ```@docs
 ldexp(x::acb, y::Int)
 ldexp(x::acb, y::fmpz)
 ```
 
-Here are some examples of shifting.
+**Examples**
 
-```
+```julia
 CC = ComplexField(64)
 x = CC("-3 +/- 0.001")
 
@@ -504,7 +366,7 @@ a = ldexp(x, 23)
 b = ldexp(x, -ZZ(15))
 ```
 
-## Miscellaneous operations
+### Miscellaneous operations
 
 ```@docs
 trim(::acb)
@@ -522,9 +384,9 @@ conj(::acb)
 angle(::acb)
 ```
 
-Here are some examples of miscellaneous operations.
+**Examples**
 
-```
+```julia
 CC = ComplexField(64)
 x = CC("-3 +/- 0.001", "0.1")
 
@@ -534,22 +396,22 @@ d = conj(x)
 f = angle(x)
 ```
 
-## Constants
+### Constants
 
 ```@docs
 const_pi(::AcbField)
 ```
 
 
-Here are some examples of computing complex constants.
+**Examples**
 
-```
+```julia
 CC = ComplexField(200)
 
 a = const_pi(CC)
 ```
 
-## Mathematical functions
+### Mathematical and special functions
 
 ```@docs
 sqrt(::acb)
@@ -808,9 +670,9 @@ jtheta(::acb, ::acb)
 ellipwp(::acb, ::acb)
 ```
 
-Here are some examples of complex valued mathematical functions.
+**Examples**
 
-```
+```julia
 CC = ComplexField(64)
 
 s = CC(1, 2)

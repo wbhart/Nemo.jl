@@ -2,7 +2,7 @@
 CurrentModule = Nemo
 ```
 
-# Reals
+# Real balls
 
 Arbitrary precision real ball arithmetic is supplied by Arb which provides a
 ball representation which tracks error bounds rigorously. Real numbers are 
@@ -236,9 +236,16 @@ Nemo provides a full range of comparison operations for Arb balls. Note that a
 ball is considered less than another ball if every value in the first ball is
 less than every value in the second ball, etc.
 
-As well as these, we provide a full range of ad hoc comparison operators.
-Again, these are implemented directly in Julia, but we document them as though
-`isless` and `==` were provided.
+In addition to the standard comparison operators, we introduce an exact equality. This
+is distinct from arithmetic equality implemented by `==`, which merely compares up to
+the minimum of the precisions of its operands.
+
+```@docs
+isequal(::arb, ::arb)
+```
+
+We also provide a full range of ad hoc comparison operators. These are implemented
+directly in Julia, but we document them as though `isless` and `==` were provided.
 
 Function
 -----------------------------
@@ -267,6 +274,7 @@ x = RR("1 +/- 0.001")
 y = RR("3")
 z = RR("4")
 
+isequal(x, deepcopy(x))
 x == 3
 ZZ(3) < z
 x != 1.23
