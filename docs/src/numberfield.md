@@ -50,17 +50,32 @@ In order to construct number field elements in Nemo, one must first construct
 the number field itself. This is accomplished with one of the following
 constructors.
 
-```@docs
-AnticNumberField(::fmpq_poly, ::AbstractString)
+```julia
+AnticNumberField(::fmpq_poly, ::AbstractString; cached = true)
 ```
 
-```@docs
-AnticCyclotomicField(::Int, ::AbstractString, AbstractString)
+Return a tuple `K, a` consisting of the number field parent object $K$ and generator
+`a`. The generator will be printed as per the supplied string. By default number field
+parents are cached based on generator string and generating polynomial. If this is
+not desired, the optional argument `cached` can be set to false.
+
+```julia
+AnticCyclotomicField(::Int, ::AbstractString, AbstractString; cached = true)
 ```
 
-```@docs
-AnticMaximalRealSubfield(::Int, ::AbstractString, ::AbstractString)
+Return a tuple `K, a` consisting of a parent object $K$ for the $n$-th cyclotomic
+field, and a generator $a$. By default number field parents are cached based on
+generator string and generating polynomial. If this is not desired, the optional
+argument `cached` can be set to false.
+
+```julia
+AnticMaximalRealSubfield(::Int, ::AbstractString, ::AbstractString; cached = true)
 ```
+
+Return a tuple `K, a` consisting of a parent object $K$ for the real subfield of the
+$n$-th cyclotomic field, and a generator $a$. By default number field parents are
+cached based on generator string and generating polynomial. If this is not desired, the
+optional argument `cached` can be set to false.
 
 For convenience we define
 
@@ -165,7 +180,7 @@ coeff(::nf_elem, ::Int)
 ```
 
 ```@docs
-den(::nf_elem)
+denominator(::nf_elem)
 ```
 
 ```@docs

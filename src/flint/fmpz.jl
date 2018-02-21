@@ -1028,6 +1028,11 @@ function _factor(a::fmpz)
    return res, canonical_unit(a)
 end
 
+doc"""
+    factor(a::fmpz)
+> Return a factorisation of $a$ using a `Fac` struct (see the documentation on
+> factorisation in Nemo.
+"""
 function factor(a::fmpz)
    fac, z = _factor(a)
    return Fac(z, fac)

@@ -142,7 +142,7 @@ q = lift(FlintQQ, divexact(a, b))
 ### Square root
 
 ```@docs
-sqrt(::padic)
+Base.sqrt(::padic)
 ```
 
 **Examples**
@@ -163,7 +163,7 @@ g = sqrt(R(121))
 ### Special functions
 
 ```@docs
-exp(::padic)
+Base.exp(::padic)
 ```
 
 ```@docs

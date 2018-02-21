@@ -396,11 +396,11 @@ B = gso(A)
 ### Exponential
 
 ```@docs
-exp(::arb_mat)
+Base.exp(::arb_mat)
 ```
 
 ```@docs
-exp(::acb_mat)
+Base.exp(::acb_mat)
 ```
 
 **Examples**

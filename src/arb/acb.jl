@@ -693,6 +693,10 @@ end
 #
 ################################################################################
 
+doc"""
+    const_pi(r::AcbField)
+> Return $\pi = 3.14159\ldots$ as an element of $r$.
+"""
 function const_pi(r::AcbField)
   z = r()
   ccall((:acb_const_pi, :libarb), Void, (Ref{acb}, Int), z, prec(r))
@@ -708,7 +712,7 @@ end
 # complex - complex functions
 
 doc"""
-    sqrt(x::acb)
+    Base.sqrt(x::acb)
 > Return the square root of $x$.
 """
 function Base.sqrt(x::acb)

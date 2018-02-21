@@ -64,8 +64,7 @@ AbstractAlgebra.jl also provides Nemo with a generic implementation of Laurent s
 over a given ring $R$. For completeness, we list it here.
 
 Base ring                             | Library            | Element type              | Parent type
---------------------------------------|--------------------|---------------------------|-----
------------------
+--------------------------------------|--------------------|---------------------------|----------------------
 Generic ring $R$                      | AbstractAlgebra.jl | `Generic.LaurentSeriesRingElem{T}`| `Generic.LaurenSeriesRing{T}`
 Generic field $K$                     | AbstractAlgebra.jl | `Generic.LaurentSeriesFieldElem{T}`|
 `Generic.LaurenSeriesField{T}`
@@ -134,6 +133,11 @@ Simply increasing the precision will not necessarily give a "more correct"
 answer and some computations may not even terminate due to the presence of
 arithmetic zeroes!
 
+## Capped absolute power series
+
+An absolute power series ring over a ring $R$ with precision $p$ behaves 
+very much like the quotient $R[x]/(x^p)$ of the polynomial ring over $R$.
+
 ## Power series functionality
 
 Power series rings in Nemo implement the AbstractAlgebra.jl series interface:
@@ -155,7 +159,7 @@ log(a::fmpq_rel_series)
 ```
 
 ```@docs
-sqrt(a::fmpq_rel_series)
+Base.sqrt(a::fmpq_rel_series)
 ```
 
 ```@docs

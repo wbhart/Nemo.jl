@@ -117,33 +117,33 @@ In the following table we list the division functions and their rounding
 behaviour. We also give the return value of the function, with $q$ representing
 return of the quotient and $r$ representing return of the remainder.
 
-Function                  | Return | Rounding
---------------------------|--------|------------------------
-divrem(a::fmpz, b::fmpz)  | q, r   | towards zero 
-tdivrem(a::fmpz, b::fmpz) | q, r   | towards zero
-fdivrem(a::fmpz, b::fmpz) | q, r   | towards minus infinity 
+Function                    | Return | Rounding
+----------------------------|--------|------------------------
+`divrem(a::fmpz, b::fmpz)`  | q, r   | towards zero 
+`tdivrem(a::fmpz, b::fmpz)` | q, r   | towards zero
+`fdivrem(a::fmpz, b::fmpz)` | q, r   | towards minus infinity 
 
 Nemo also offers the following ad hoc division operators. The notation and
 description is as for the other Euclidean division functions.
 
-Function                  | Return | Rounding
---------------------------|--------|------------------------
-rem(a::fmpz, b::Int)      | r      | towards zero
-div(a::fmpz, b::Int)      | q      | towards zero
-tdiv(a::fmpz, b::Int)     | q      | towards zero
-fdiv(a::fmpz, b::Int)     | q      | towards minus infinity
-cdiv(a::fmpz, b::Int)     | q      | towards plus infinity
+Function                    | Return | Rounding
+----------------------------|--------|------------------------
+`rem(a::fmpz, b::Int)`      | r      | towards zero
+`div(a::fmpz, b::Int)`      | q      | towards zero
+`tdiv(a::fmpz, b::Int)`     | q      | towards zero
+`fdiv(a::fmpz, b::Int)`     | q      | towards minus infinity
+`cdiv(a::fmpz, b::Int)`     | q      | towards plus infinity
 
 The following functions are also available, for the case where one is dividing
 by a power of $2$. In other words, for Euclidean division of the form
 $a = b2^{d} + r$. These are useful for bit twiddling.
 
-Function                  | Return | Rounding
---------------------------|--------|------------------------
-tdivpow2(a::fmpz, d::Int) | q      | towards zero
-fdivpow2(a::fmpz, d::Int) | q      | towards minus infinity
-fmodpow2(a::fmpz, d::Int) | r      | towards minus infinity
-cdivpow2(a::fmpz, d::Int) | q      | towards plus infinity
+Function                    | Return | Rounding
+----------------------------|--------|------------------------
+`tdivpow2(a::fmpz, d::Int)` | q      | towards zero
+`fdivpow2(a::fmpz, d::Int)` | q      | towards minus infinity
+`fmodpow2(a::fmpz, d::Int)` | r      | towards minus infinity
+`cdivpow2(a::fmpz, d::Int)` | q      | towards plus infinity
 
 **Examples**
 
@@ -172,20 +172,20 @@ comparison operators when comparing nonnegative values for example.
 Here is a list of the comparison functions implemented, with the understanding
 that `cmp` provides all of the comparison operators listed above.
 
-Function
--------------------------
-cmp(a::fmpz, b::fmpz)
-cmpabs(a::fmpz, b::fmpz)
+Function                   |
+---------------------------|
+`cmp(a::fmpz, b::fmpz)`    |
+`cmpabs(a::fmpz, b::fmpz)` |
 
 We also provide the following ad hoc comparisons which again provide all of the
 comparison operators mentioned above.
 
-Function
--------------------------
-cmp(a::fmpz, b::Int)
-cmp(a::Int, b::fmpz)
-cmp(a::fmpz, b::UInt)
-cmp(a::UInt, b::fmpz)
+Function                   |
+---------------------------|
+`cmp(a::fmpz, b::Int)`     |
+`cmp(a::Int, b::fmpz)`     |
+`cmp(a::fmpz, b::UInt)`    |
+`cmp(a::UInt, b::fmpz)`    |
 
 **Examples**
 
@@ -295,7 +295,6 @@ issquare(::fmpz)
 ```
 
 ```@docs
-isprime(::UInt)
 isprime(::fmpz)
 ```
 
@@ -439,7 +438,7 @@ setbit!(::fmpz, ::Int)
 combit!(::fmpz, ::Int)
 ```
 
-**Example**
+**Examples**
 
 ```julia
 a = fmpz(12)

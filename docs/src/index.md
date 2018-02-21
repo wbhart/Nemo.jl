@@ -1,5 +1,3 @@
-# Nemo
-
 # Getting Started
 
 Nemo is a computer algebra package for the Julia programming language, maintained by William Hart, 

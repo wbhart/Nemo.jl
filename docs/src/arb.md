@@ -247,24 +247,24 @@ isequal(::arb, ::arb)
 We also provide a full range of ad hoc comparison operators. These are implemented
 directly in Julia, but we document them as though `isless` and `==` were provided.
 
-Function
------------------------------
-`==(x::arb, y::Integer)`
-`==(x::Integer, y::arb)`
-`==(x::arb, y::fmpz)`
-`==(x::fmpz, y::arb)`
-`==(x::arb, y::Float64)`
-`==(x::Float64, y::arb)`
-`isless(x::arb, y::Integer)`
-`isless(x::Integer, y::arb)`
-`isless(x::arb, y::fmpz)`
-`isless(x::fmpz, y::arb)`
-`isless(x::arb, y::Float64)`
-`isless(x::Float64, y::arb)`
-`isless(x::arb, y::BigFloat)`
-`isless(x::BigFloat, y::arb)`
-`isless(x::arb, y::fmpq)`
-`isless(x::fmpq, y::arb)`
+Function                      |
+------------------------------|
+`==(x::arb, y::Integer)`      |
+`==(x::Integer, y::arb)`      |
+`==(x::arb, y::fmpz)`         |
+`==(x::fmpz, y::arb)`         |
+`==(x::arb, y::Float64)`      |
+`==(x::Float64, y::arb)`      |
+`isless(x::arb, y::Integer)`  |
+`isless(x::Integer, y::arb)`  |
+`isless(x::arb, y::fmpz)`     |
+`isless(x::fmpz, y::arb)`     |
+`isless(x::arb, y::Float64)`  |
+`isless(x::Float64, y::arb)`  |
+`isless(x::arb, y::BigFloat)` |
+`isless(x::BigFloat, y::arb)` |
+`isless(x::arb, y::fmpq)`     |
+`isless(x::fmpq, y::arb)`     |
 
 **Examples**
 
@@ -394,7 +394,7 @@ ceil(::arb)
 ```
 
 ```@docs
-sqrt(::arb)
+Base.sqrt(::arb)
 ```
 
 ```@docs
@@ -414,7 +414,7 @@ log1p(::arb)
 ```
 
 ```@docs
-exp(::arb)
+Base.exp(::arb)
 ```
 
 ```@docs

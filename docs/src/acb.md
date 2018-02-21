@@ -309,16 +309,16 @@ isequal(::acb, ::acb)
 A full range of ad hoc comparison operators is provided. These are implemented directly
 in Julia, but we document them as though only `==` were provided.
 
-Function
------------------------------
-`==(x::acb, y::Integer)`
-`==(x::Integer, y::acb)`
-`==(x::acb, y::fmpz)`
-`==(x::fmpz, y::acb)`
-`==(x::arb, y::fmpz)`
-`==(x::fmpz, y::arb)`
-`==(x::acb, y::Float64)`
-`==(x::Float64, y::acb)`
+Function                     |
+-----------------------------|
+`==(x::acb, y::Integer)`     |
+`==(x::Integer, y::acb)`     |
+`==(x::acb, y::fmpz)`        |
+`==(x::fmpz, y::acb)`        |
+`==(x::arb, y::fmpz)`        |
+`==(x::fmpz, y::arb)`        |
+`==(x::acb, y::Float64)`     |
+`==(x::Float64, y::acb)`     |
 
 **Examples**
 
@@ -414,7 +414,7 @@ a = const_pi(CC)
 ### Mathematical and special functions
 
 ```@docs
-sqrt(::acb)
+Base.sqrt(::acb)
 ```
 
 ```@docs
@@ -430,7 +430,7 @@ log1p(::acb)
 ```
 
 ```@docs
-exp(::acb)
+Base.exp(::acb)
 ```
 
 ```@docs
@@ -623,7 +623,7 @@ lioffset(::acb)
 ```
 
 ```@docs
-expint(::acb)
+expint(::acb, ::acb)
 ```
 
 ```@docs

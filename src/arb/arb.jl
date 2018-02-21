@@ -1023,7 +1023,7 @@ function ceil(x::arb)
 end
 
 doc"""
-    sqrt(x::arb)
+    Base.sqrt(x::arb)
 > Return the square root of $x$.
 """
 function Base.sqrt(x::arb)

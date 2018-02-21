@@ -22,7 +22,7 @@ Nemo are given in the following table.
 Base ring                   | Library            | Element type    | Parent type
 ----------------------------|--------------------|-----------------|--------------------
 Generic ring $R$            | AbstractAlgebra.jl | `Generic.Res{T}`| `Generic.ResRing{T}`
-$\mathbb{Z}                 | Flint              | `nmod`          | `NmodRing`
+$\mathbb{Z}$                | Flint              | `nmod`          | `NmodRing`
 
 The modulus $a$ of a residue ring is stored in its parent object.
 
