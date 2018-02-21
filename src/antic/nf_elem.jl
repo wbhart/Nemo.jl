@@ -638,6 +638,14 @@ function mul!(z::nf_elem, x::nf_elem, y::nf_elem)
    return z
 end
 
+doc"""
+    mul_red!(z::nf_elem, x::nf_elem, y::nf_elem, red::Bool)
+> Multiply $a$ by $b$ and set the existing number field element $c$ to the
+> result. Reduction modulo the defining polynomial is only performed if `red` is
+> set to `true`. Note that $a$ and $b$ must be reduced. This function is provided
+> for performance reasons as it saves allocating a new object for the result and
+> eliminates associated garbage collection.
+"""
 function mul_red!(z::nf_elem, x::nf_elem, y::nf_elem, red::Bool)
    ccall((:nf_elem_mul_red, :libflint), Void,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}, Cint),
@@ -659,6 +667,13 @@ function add!(a::nf_elem, b::nf_elem, c::nf_elem)
   return a
 end
 
+doc"""
+    reduce!(x::nf_elem)
+> Reduce the given number field element by the defining polynomial, in-place.
+> This only needs to be done after accumulating values computed by `mul_red!`
+> where reduction has not been performed. All standard Nemo number field
+> functions automatically reduce their outputs.
+"""
 function reduce!(x::nf_elem)
    ccall((:nf_elem_reduce, :libflint), Void,
          (Ref{nf_elem}, Ref{AnticNumberField}), x, parent(x))
