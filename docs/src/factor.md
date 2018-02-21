@@ -5,9 +5,9 @@ DocTestSetup = quote
 end
 ```
 
-## Introduction
+# Factorisation
 
-Nemo provides a unified interface to handle factorizations using the
+Nemo provides a unified interface to handle factorisations using the
 `Fact` objects. These can only be constructed using the factor function for
 the respective ring elements. This is best illustrated by an example.
 
@@ -34,7 +34,7 @@ julia> fac[229]
 3
 ```
 
-## Basic functionality
+### Basic functionality
 
 Objects of type `Fac` are iterable, that is, if `a` is an object of type `Fac`,
 then `for (p, e) in a` will iterate through all pairs `(p, e)`, where `p` is a

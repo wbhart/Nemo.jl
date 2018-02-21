@@ -1,6 +1,4 @@
-# Nemo
-
-## What is Nemo?
+# About Nemo
 
 Nemo is a library for fast basic arithmetic in various commonly used rings, for the
 Julia programming language. Our aim is to provide a highly performant package covering

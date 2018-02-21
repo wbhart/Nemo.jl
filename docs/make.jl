@@ -1,10 +1,33 @@
 using Documenter, Nemo
 
-makedocs()
+makedocs(
+         format   = :html,
+         sitename = "Nemo.jl",
+         pages    = [
+             "index.md",
+             "about.md",
+             "types.md",
+             "constructors.md",
+             "Rings" => [ "integer.md",
+                          "polynomial.md",
+                          "series.md",
+                          "residue.md"],
+             "Fields" => [ "fraction.md",
+                           "rational.md",
+                           "arb.md",
+                           "acb.md",
+                           "finitefield.md",
+                           "numberfield.md",
+                           "padic.md"],
+             "matrix.md",
+             "factor.md"
+         ]
+)
 
 deploydocs(
-   deps   = Deps.pip("mkdocs", "python-markdown-math"),
-   repo = "github.com/Nemocas/Nemo.jl.git",
-   julia = "0.5"
+   repo   = "github.com/Nemocas/Nemo.jl.git",
+   target = "build",
+   deps = Deps.pip("pygments", "mkdocs", "python-markdown-math"),
+   make   = nothing
 )
 

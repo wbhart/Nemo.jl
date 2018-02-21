@@ -11,7 +11,7 @@ pages:
 - Types in Nemo:                types.md
 - Parent object constructors:   constructors.md
 - Univariate polynomials:       polynomial.md
-- Capped relative power series: series.md
+- Series:                       series.md
 - Residue rings:                residue.md             
 - Fraction fields:              fraction.md
 - Matrices:                     matrix.md
@@ -22,9 +22,6 @@ pages:
 - Real balls:                   arb.md
 - Complex boxes:                acb.md
 - Number fields:                numberfield.md
-- Maximal orders:               maximalorder.md
-- Class groups:                 classgroup.md
-- Permutation groups:           perm.md
 - Factorization:                factor.md
 
 markdown_extensions:
