@@ -19,7 +19,8 @@ import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
 import AbstractAlgebra: Generic, Ring, Field, RingElem, FieldElem, RingElement,
        FieldElement, FracField, FracElem, ResRing, ResField, PolyRing, PolyElem,
        ResElem, FinField, FinFieldElem, SeriesRing, RelSeriesElem, AbsSeriesElem,
-       MatSpace, MatElem, SeriesElem
+       MatSpace, MatElem, SeriesElem, Set, SetElem, Module, ModuleElem, Group,
+       GroupElem
 
 import AbstractAlgebra.Generic: add!, addeq!, addmul!, base_ring,
            canonical_unit, character, characteristic, charpoly,
@@ -104,7 +105,7 @@ export add!, addeq!, addmul!, base_ring, canonical_unit, character,
                  needs_parentheses, newton_to_monomial!, normalise, nvars,
                  numerator, O, one, order, ordering, parent_type, parity,
                  partitionseq, polcoeff, pol_length, powmod, pow_multinomial,
-                 popov, powers, ppio, precision, primpart, promote_rule, pseudodivrem,
+                 popov, powers, ppio, precision, primpart, pseudodivrem,
                  pseudorem, randmat_triu, randmat_with_rank, rand_ordering,
                  rank_profile_popov, remove, renormalize!, resultant,
                  resultant_ducos, resultant_euclidean, resultant_subresultant,
