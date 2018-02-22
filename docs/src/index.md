@@ -113,7 +113,7 @@ Matrix Space of 40 rows and 40 columns over Univariate Polynomial Ring in x over
 julia> M = rand(S, 2:2, -20:20)
 
 julia> @time det(M);
-  1.108739 seconds (28.36 M allocations: 440.651 MiB, 17.18% gc time)
+  0.131212 seconds (1.12 M allocations: 39.331 MiB, 4.77% gc time)
 ```
 
 And here is an example with power series.
