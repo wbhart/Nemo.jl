@@ -22,6 +22,12 @@ import AbstractAlgebra: Generic, Ring, Field, RingElem, FieldElem, RingElement,
        MatSpace, MatElem, SeriesElem, Set, SetElem, Module, ModuleElem, Group,
        GroupElem
 
+import AbstractAlgebra: PermGroup, AllPerms, perm, Partition, AllParts, SkewDiagram,
+       YoungTableau, PolynomialRing, PowerSeriesRing, LaurentSeriesRing,
+       LaurentSeriesField, SparsePolynomialRing, ResidueRing, ResidueField, MatrixSpace
+
+import AbstractAlgebra: zero_matrix, identity_matrix, matrix
+
 import AbstractAlgebra.Generic: add!, addeq!, addmul!, base_ring,
            canonical_unit, character, characteristic, charpoly,
            charpoly_danilevsky!, charpoly_danilevsky_ff!, charpoly_hessenberg!,
@@ -34,12 +40,12 @@ import AbstractAlgebra.Generic: add!, addeq!, addmul!, base_ring,
            has_bottom_neighbor, hash, hessenberg!, hessenberg, hnf, hnf_cohen,
            hnf_cohen_with_trafo, hnf_kb, hnf_kb_with_trafo, hnf_minors,
            hnf_minors_with_trafo, hnf_with_trafo, hnf_via_popov,
-           hnf_via_popov_with_trafo, hooklength, identity_matrix, inskewdiag,
+           hnf_via_popov_with_trafo, hooklength, inskewdiag,
            integral, interpolate, inv, inv!, invmod, isconstant, isdegree,
            isdomain_type, isexact_type, isgen, ishessenberg, ismonomial,
            isnegative, isone, isreverse, isrimhook, isrref, issquare, isterm,
            isunit, lcm, lead, length, leglength, main_variable,
-           main_variable_extract, main_variable_insert, matrix, matrix_repr,
+           main_variable_extract, main_variable_insert, matrix_repr,
            max_degrees, max_precision, minpoly, mod, modulus, monomial_iszero,
            monomial_set!, monomial_to_newton!, mul!, mul_classical,
            mul_karatsuba, mul_ks, mullow, mulmod, needs_parentheses,
@@ -55,8 +61,7 @@ import AbstractAlgebra.Generic: add!, addeq!, addmul!, base_ring,
            snf_kb_with_trafo, snf_with_trafo, solve, solve_rational, solve_triu,
            sub, subst, swap_rows, swap_rows!, trail, truncate, typed_hcat,
            typed_hvcat, valuation, var, vars, weak_popov, weak_popov_with_trafo,
-           zero, zero!, zero_matrix, kronecker_product, ErrorConstrDimMismatch,
-           error_dim_negative
+           zero, zero!, kronecker_product, ErrorConstrDimMismatch, error_dim_negative
 
 export elem_type, parent_type
 
@@ -361,98 +366,6 @@ end
 
 function sqrt(a::T) where T
   return Base.sqrt(a)
-end
-
-function PermGroup(n::T, cached=true) where T
-   Generic.PermGroup(n, cached)
-end
-
-function AllPerms(n::T) where T
-   Generic.AllPerms(n)
-end
-
-function perm(n::T) where T
-   Generic.perm(n)
-end
-
-function perm(a::Array{T, 1}) where T
-   Generic.perm(a)
-end
-
-function Partition(part::Vector{T}, check::Bool=true) where T
-   Generic.Partition(part, check)
-end
-
-function AllParts(n::T) where T
-   Generic.AllParts(n)
-end
-
-function SkewDiagram(lambda::Generic.Partition, mu::Generic.Partition)
-   Generic.SkewDiagram(lambda, mu)
-end
-
-function SkewDiagram(lambda::Vector{T}, mu::Vector{T}) where T
-   Generic.SkewDiagram(lambda, mu)
-end
-
-function YoungTableau(part::Generic.Partition, tab::Array{Int, 2})
-   Generic.YoungTableau(part, tab)
-end
-
-function YoungTableau(part::Generic.Partition, fill::Vector{Int}=collect(1:part.n))
-   Generic.YoungTableau(part, fill)
-end
-
-function YoungTableau(p::Vector{Int})
-   Generic.YoungTableau(p)
-end
-
-function PowerSeriesRing(R::Ring, prec::Int, s::AbstractString; cached=true, model=:capped_relative)
-   Generic.PowerSeriesRing(R, prec, s; cached=cached, model=model)
-end
-
-function LaurentSeriesRing(R::Ring, prec::Int, s::AbstractString; cached=true)
-   Generic.LaurentSeriesRing(R, prec, s; cached=cached)
-end
-
-function LaurentSeriesRing(R::Field, prec::Int, s::AbstractString; cached=true)
-   Generic.LaurentSeriesField(R, prec, s; cached=cached)
-end
-
-function LaurentSeriesField(R::Field, prec::Int, s::AbstractString; cached=true)
-   Generic.LaurentSeriesField(R, prec, s; cached=cached)
-end
-
-function PolynomialRing(R::Ring, s::AbstractString; cached::Bool = true)
-   Generic.PolynomialRing(R, s; cached=cached)
-end
-
-function PolynomialRing(R::Ring, s::Array{String, 1}; cached::Bool = true, ordering::Symbol = :lex)
-   Generic.PolynomialRing(R, s; cached=cached, ordering=ordering)
-end
-
-function SparsePolynomialRing(R::Ring, s::String; cached::Bool = true)
-   Generic.SparsePolynomialRing(R, s; cached=cached)
-end
-
-function MatrixSpace(R::Ring, r::Int, c::Int, cached::Bool = true)
-   Generic.MatrixSpace(R, r, c, cached)
-end
-
-function FractionField(R::Ring; cached=true)
-   Generic.FractionField(R; cached=cached)
-end
-
-function ResidueRing(R::Ring, a::Union{RingElement, Integer}; cached::Bool = true)
-   Generic.ResidueRing(R, a; cached=cached)
-end
-
-function ResidueField(R::Ring, a::Union{RingElement, Integer}; cached::Bool = true)
-   Generic.ResidueField(R, a; cached=cached)
-end
-
-function NumberField(a::Nemo.Generic.Poly{Rational{BigInt}}, s::AbstractString, t = "\$"; cached = true)
-   Generic.NumberField(a, s, t; cached=cached)
 end
 
 export PowerSeriesRing, PolynomialRing, SparsePolynomialRing, MatrixSpace,
