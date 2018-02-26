@@ -554,6 +554,18 @@ modeta(::acb)
 ```
 
 ```@docs
+modweber_f(::acb)
+```
+
+```@docs
+modweber_f1(::acb)
+```
+
+```@docs
+modweber_f2(::acb)
+```
+
+```@docs
 modj(::acb)
 ```
 

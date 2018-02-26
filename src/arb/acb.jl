@@ -19,8 +19,8 @@ export rsqrt, log, log1p, exppii, sin, cos, tan, cot,
        risingfac2, polygamma, polylog, zeta, barnesg, logbarnesg, agm,
        erf, erfi, erfc, ei, si, ci, shi, chi, li, lioffset, expint, gamma,
        besselj, bessely, besseli, besselk, hyp1f1, hyp1f1r, hyperu, hyp2f1,
-       jtheta, modeta, modj, modlambda, moddelta, ellipwp, ellipk, ellipe
-
+       jtheta, modeta, modj, modlambda, moddelta, ellipwp, ellipk, ellipe,
+       modweber_f, modweber_f1, modweber_f2
 
 ###############################################################################
 #
@@ -1081,6 +1081,40 @@ function modeta(x::acb)
    z = parent(x)()
    ccall((:acb_modular_eta, :libarb), Void, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
+end
+
+doc"""
+   modweber_f(x::acb)
+> Return the modular Weber function
+> $\mathfrak{f}(\tau) = \frac{\eta^2(\tau)}{\eta(\tau/2)\eta(2\tau)},$
+> at $x$ in the complex upper half plane.
+"""
+function modweber_f(x::acb)
+   x_on_2 = divexact(x, 2)
+   x_times_2 = 2*x
+   return divexact(modeta(x)^2, modeta(x_on_2)*modeta(x_times_2))
+end
+
+doc"""
+   modweber_f1(x::acb)
+> Return the modular Weber function
+> $\mathfrak{f}_1(\tau) = \frac{\eta(\tau/2)}{\eta(\tau)},$
+> at $x$ in the complex upper half plane.
+"""
+function modweber_f1(x::acb)
+   x_on_2 = divexact(x, 2)
+   return divexact(modeta(x_on_2), modeta(x))
+end
+
+doc"""
+   modweber_f2(x::acb)
+> Return the modular Weber function
+> $$\mathfrak{f}_2(\tau) = \frac{\sqrt{2}\eta(2\tau)}{\eta(\tau)}$
+> at $x$ in the complex upper half plane.
+"""
+function modweber_f2(x::acb)
+   x_times_2 = x*2
+   return divexact(modeta(x_times_2), modeta(x))*sqrt(parent(x)(2))
 end
 
 doc"""

@@ -660,3 +660,21 @@ c = gamma(QQ(1,3), RealField(256))
 d = bernoulli(1000, RealField(53))
 f = polylog(3, RR(-10))
 ```
+
+### Linear dependence
+
+```@docs
+lindep(::arb, n::Int)
+```
+
+**Examples**
+
+```julia
+RR = RealField(128)
+
+a = RR(-0.33198902958450931620250069492231652319)
+
+V = [RR(1), a, a^2, a^3, a^4, a^5]
+W = lindep(V, 20)
+```
+
