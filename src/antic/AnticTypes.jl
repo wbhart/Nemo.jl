@@ -77,12 +77,7 @@ mutable struct nf_elem <: FieldElem
       ccall((:nf_elem_init, :libflint), Void, 
             (Ref{nf_elem}, Ref{AnticNumberField}), r, p)
       r.parent = p
-      if p.pol_length > 3
-        #the other "proper" finalizer needs the ring as well...
-        finalizer(r, cglobal((:fmpq_poly_clear, :libflint)))
-      else
-        finalizer(r, _nf_elem_clear_fn)
-      end
+      finalizer(r, _nf_elem_clear_fn)
       return r
    end
 
@@ -93,11 +88,7 @@ mutable struct nf_elem <: FieldElem
       ccall((:nf_elem_set, :libflint), Void,
             (Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}), r, a, p)
       r.parent = p
-      if p.pol_length > 3
-        finalizer(r, cglobal((:fmpq_poly_clear, :libflint)))
-      else
-        finalizer(r, _nf_elem_clear_fn)
-      end
+      finalizer(r, _nf_elem_clear_fn)
       return r
    end
 end
