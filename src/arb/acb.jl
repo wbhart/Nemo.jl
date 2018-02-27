@@ -1449,6 +1449,29 @@ function agm(x::acb, y::acb)
   end
 end
 
+doc"""
+    lindep(A::Array{arb}, bits::Int)
+> Find a small linear combination of the entries of the array $A$ that is small
+> using LLL). The entries are first scaled by the given number of bits before
+> truncating the real and imaginary parts to integers for use in LLL. This function can
+> be used to find linear dependence between a list of complex numbers. The algorithm is
+> heuristic only and returns an array of Nemo integers representing the linear
+> combination.
+"""
+function lindep(A::Array{acb}, bits::Int)
+  bits < 0 && throw(DomainError())
+  n = length(A)
+  V = [ldexp(s, bits) for s in A]
+  M = zero_matrix(ZZ, n, n + 2)
+  for i = 1:n
+    M[i, i] = ZZ(1)
+    flag, M[i, n + 1] = unique_integer(floor(real(V[i]) + 0.5))
+    flag, M[i, n + 2] = unique_integer(floor(imag(V[i]) + 0.5))
+  end
+  L = lll(M)
+  return [L[1, i] for i = 1:n]
+end
+
 ################################################################################
 #
 #  Unsafe arithmetic
