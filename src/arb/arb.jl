@@ -1740,6 +1740,7 @@ function lindep(A::Array{arb}, bits::Int)
   for i = 1:n
     M[i, i] = ZZ(1)
     flag, M[i, n + 1] = unique_integer(V[i])
+    !flag && error("Insufficient precision in lindep")
   end
   L = lll(M)
   return [L[1, i] for i = 1:n]

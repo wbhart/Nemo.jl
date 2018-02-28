@@ -695,3 +695,21 @@ b = zeta(z)
 c = besselj(s, z)
 d = hyp1f1(s, s+1, z)
 ```
+
+### Linear dependence
+
+```@docs
+lindep(::arb, n::Int)
+```
+
+**Examples**
+
+```julia
+CC = ComplexField(128)
+
+a = CC(1.0050669478588622428791051888364775253, - 0.93725915669289182697903585868761513585)
+
+V = [CC(1), a, a^2, a^3, a^4, a^5];
+W = lindep(V, 20)
+```
+
