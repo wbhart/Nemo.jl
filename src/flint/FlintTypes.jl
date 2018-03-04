@@ -1227,6 +1227,76 @@ end
 
 ###############################################################################
 #
+#   FlintPuiseuxSeriesRing / FlintPuiseuxSeriesRingElem
+#
+###############################################################################
+
+mutable struct FlintPuiseuxSeriesRing{T <: RingElem} <: Ring where T
+   laurent_ring::Ring
+
+   function FlintPuiseuxSeriesRing{T}(R::Ring, cached::Bool = true) where T
+      if haskey(FlintPuiseuxSeriesID, R)
+         return FlintPuiseuxSeriesID[R]::FlintPuiseuxSeriesRing{T}
+      else
+         z = new{T}(R)
+         if cached
+            FlintPuiseuxSeriesID[R] = z
+         end
+         return z
+      end
+   end
+end
+
+const FlintPuiseuxSeriesID = Dict{Ring, Ring}()
+
+mutable struct FlintPuiseuxSeriesRingElem{T <: RingElem} <: RingElem
+   data::T
+   scale::Int
+   parent::FlintPuiseuxSeriesRing{T}
+
+   function FlintPuiseuxSeriesRingElem{T}(d::T, scale::Int) where T <:
+RingElem
+      new{T}(d, scale)
+   end
+end
+
+###############################################################################
+#
+#   FlintPuiseuxSeriesField / FlintPuiseuxSeriesFieldElem
+#
+###############################################################################
+
+mutable struct FlintPuiseuxSeriesField{T <: RingElem} <: Field
+   laurent_ring::Ring
+
+   function FlintPuiseuxSeriesField{T}(R::Field, cached::Bool = true) where T
+      if haskey(FlintPuiseuxSeriesID, R)
+         return FlintPuiseuxSeriesID[R]::FlintPuiseuxSeriesField{T}
+      else
+         z = new{T}(R)
+         if cached
+            FlintPuiseuxSeriesID[R] = z
+         end
+         return z
+      end
+   end
+end
+
+mutable struct FlintPuiseuxSeriesFieldElem{T <: RingElem} <: FieldElem
+   data::T
+   scale::Int
+   parent::FlintPuiseuxSeriesField{T}
+
+   function FlintPuiseuxSeriesFieldElem{T}(d::T, scale::Int) where T <:
+RingElem
+      new{T}(d, scale)
+   end
+end
+
+const FlintPuiseuxSeriesElem{T} = Union{FlintPuiseuxSeriesRingElem{T}, FlintPuiseuxSeriesFieldElem{T}} where T <: RingElem
+
+###############################################################################
+#
 #   FmpzLaurentSeriesRing / fmpz_laurent_series
 #
 ###############################################################################

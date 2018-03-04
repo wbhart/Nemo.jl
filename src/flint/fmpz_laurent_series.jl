@@ -720,6 +720,7 @@ function inflate(a::fmpz_laurent_series, b::Int)
     set_prec!(d, b*precision(a))
     set_val!(d, b*valuation(a))
     set_scale!(d, b*scale(a))
+    d.parent = parent(a)
     return d
 end
 
@@ -1126,8 +1127,10 @@ end
 
 function zero!(a::fmpz_laurent_series)
   ccall((:fmpz_poly_zero, :libflint), Void,
-                   (Ref{fmpz_laurent_series},), x)
+                   (Ref{fmpz_laurent_series},), a)
    set_prec!(a, parent(a).prec_max)
+   set_val!(a, parent(a).prec_max)
+   set_scale!(a, 1)
    return a
 end
 
@@ -1282,6 +1285,30 @@ function add!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_se
    end
    renormalize!(c)
    return c
+end
+
+###############################################################################
+#
+#   Special functions
+#
+###############################################################################
+
+doc"""
+    eta_qexp(x::fmpz_laurent_series)
+> Return the $q$-series for the eta function, without the leading $q^{1/24}$. It is
+> currently assumed that $x$ is a power of the generator of the Laurent series ring.
+"""
+function eta_qexp(x::fmpz_laurent_series)
+   pol_length(x) != 1 || polcoeff(x, 0) != 1 && error("Series composition not implemented")
+   z = parent(x)()
+   zscale = valuation(x)
+   prec = max_precision(parent(x))
+   ccall((:fmpz_poly_eta_qexp, :libflint), Void, 
+                                          (Ref{fmpz_laurent_series}, Int, Int), z, 1, div(prec + zscale - 1, zscale))
+   set_scale!(z, zscale)
+   set_val!(z, 0)
+   set_prec!(z, prec)
+   return z
 end
 
 ###############################################################################

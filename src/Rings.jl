@@ -39,6 +39,8 @@ include("flint/fmpz_abs_series.jl")
 
 include("flint/fmpz_laurent_series.jl")
 
+include("flint/flint_puiseux_series.jl")
+
 include("flint/nmod_rel_series.jl")
 
 include("flint/fmpz_mod_rel_series.jl")
