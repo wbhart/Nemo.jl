@@ -1227,6 +1227,78 @@ end
 
 ###############################################################################
 #
+#   FmpzLaurentSeriesRing / fmpz_laurent_series
+#
+###############################################################################
+
+mutable struct FmpzLaurentSeriesRing <: Ring
+   base_ring::FlintIntegerRing
+   prec_max::Int
+   S::Symbol
+
+   function FmpzLaurentSeriesRing(prec::Int, s::Symbol, cached::Bool = true)
+      if haskey(FmpzLaurentSeriesID, (prec, s))
+         FmpzLaurentSeriesID[prec, s]
+      else
+         z = new(FlintZZ, prec, s)
+         if cached
+            FmpzLaurentSeriesID[prec, s] = z
+         end
+         return z
+      end
+   end
+end
+
+const FmpzLaurentSeriesID = Dict{Tuple{Int, Symbol}, FmpzLaurentSeriesRing}()
+
+mutable struct fmpz_laurent_series <: RingElem
+   coeffs::Ptr{Void}
+   alloc::Int
+   length::Int
+   prec::Int
+   val::Int
+   scale::Int
+   parent::FmpzLaurentSeriesRing
+
+   function fmpz_laurent_series()
+      z = new()
+      ccall((:fmpz_poly_init, :libflint), Void,
+            (Ref{fmpz_laurent_series},), z)
+      finalizer(z, _fmpz_laurent_series_clear_fn)
+      return z
+   end
+
+   function fmpz_laurent_series(a::Array{fmpz, 1}, len::Int, prec::Int, val::Int, scale::Int)
+      z = new()
+      ccall((:fmpz_poly_init2, :libflint), Void,
+            (Ref{fmpz_laurent_series}, Int), z, len)
+      for i = 1:len
+         ccall((:fmpz_poly_set_coeff_fmpz, :libflint), Void,
+                     (Ref{fmpz_laurent_series}, Int, Ref{fmpz}), z, i - 1, a[i])
+      end
+      z.prec = prec
+      z.val = val
+      z.scale = scale
+      finalizer(z, _fmpz_laurent_series_clear_fn)
+      return z
+   end
+
+   function fmpz_laurent_series(a::fmpz_laurent_series)
+      z = new()
+      ccall((:fmpz_poly_init, :libflint), Void, (Ref{fmpz_laurent_series},), z)
+      ccall((:fmpz_poly_set, :libflint), Void,
+            (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}), z, a)
+      finalizer(z, _fmpz_laurent_series_clear_fn)
+      return z
+   end
+end
+
+function _fmpz_laurent_series_clear_fn(a::fmpz_laurent_series)
+   ccall((:fmpz_poly_clear, :libflint), Void, (Ref{fmpz_laurent_series},), a)
+end
+
+###############################################################################
+#
 #   FmpqRelSeriesRing / fmpq_rel_series
 #
 ###############################################################################
