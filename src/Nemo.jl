@@ -65,8 +65,6 @@ import AbstractAlgebra.Generic: add!, addeq!, addmul!, base_ring,
            typed_hvcat, valuation, var, vars, weak_popov, weak_popov_with_trafo,
            zero, zero!, kronecker_product, ErrorConstrDimMismatch, error_dim_negative
 
-export AbstractAlgebra
-
 export elem_type, parent_type
 
 export SetElem, GroupElem, RingElem, FieldElem, AccessorNotSetError
