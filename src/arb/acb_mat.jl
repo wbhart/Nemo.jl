@@ -856,6 +856,9 @@ end
 ###############################################################################
 
 function zero_matrix(R::AcbField, r::Int, c::Int)
+   if r < 0 || c < 0
+     error("dimensions must not be negative")
+   end
    z = acb_mat(r, c)
    z.base_ring = R
    return z
@@ -868,6 +871,9 @@ end
 ###############################################################################
 
 function identity_matrix(R::AcbField, n::Int)
+   if n < 0
+     error("dimension must not be negative")
+   end
    z = acb_mat(n, n)
    ccall((:acb_mat_one, :libarb), Void, (Ref{acb_mat}, ), z)
    z.base_ring = R

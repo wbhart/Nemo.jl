@@ -794,6 +794,9 @@ end
 ###############################################################################
 
 function zero_matrix(R::NmodRing, r::Int, c::Int)
+   if r < 0 || c < 0
+     error("dimensions must not be negative")
+   end
    z = nmod_mat(r, c, R.n)
    z.base_ring = R
    return z
