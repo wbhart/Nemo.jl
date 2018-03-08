@@ -1050,35 +1050,21 @@ function Base.sqrt(a::fmpz_laurent_series)
       asqrt = parent(a)()
       set_prec!(asqrt, aval2)
       set_val!(asqrt, aval2)
+      set_scale!(asqrt, 1)
       return asqrt
    end
    asqrt = parent(a)()
+   s = scale(a)
+   zlen = div(prec + s - 1, s)
    set_prec!(asqrt, prec + aval2)
    set_val!(asqrt, aval2)
-   if prec > 0
-      g = AbstractAlgebra.sqrt(polcoeff(a, 0))
-      asqrt = setcoeff!(asqrt, 0, g)
-      g2 = g + g
-   end
-   p = R()
-   for n = 1:prec - 1
-      c = R()
-      for i = 1:div(n - 1, 2)
-         j = n - i
-         p = mul!(p, polcoeff(asqrt, i), polcoeff(asqrt, j))
-         c = addeq!(c, p)
-      end
-      c *= 2
-      if (n % 2) == 0
-         i = div(n, 2)
-         p = mul!(p, polcoeff(asqrt, i), polcoeff(asqrt, i))
-         c = addeq!(c, p)
-      end
-      c = polcoeff(a, n) - c
-      c = divexact(c, g2)
-      asqrt = setcoeff!(asqrt, n, c)
-    end
-    return asqrt
+   flag = Bool(ccall((:fmpz_poly_sqrt_series, :libflint), Cint,
+          (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
+                asqrt, a, zlen))
+   flag == false && error("Not a square in sqrt")
+   set_scale!(asqrt, s)
+   asqrt = rescale!(asqrt)
+   return asqrt
 end
 
 ###############################################################################
