@@ -16,6 +16,8 @@ import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
              typed_hvcat, typed_hcat, var, vcat, zero, zeros, +, -, *, ==, ^,
              &, |, $, <<, >>, ~, <=, >=, <, >, //, /, !=
 
+import AbstractAlgebra
+
 import AbstractAlgebra: Generic, Ring, Field, RingElem, FieldElem, RingElement,
        FieldElement, FracField, FracElem, ResRing, ResField, PolyRing, PolyElem,
        ResElem, FinField, FinFieldElem, SeriesRing, RelSeriesElem, AbsSeriesElem,
@@ -62,6 +64,8 @@ import AbstractAlgebra.Generic: add!, addeq!, addmul!, base_ring,
            sub, subst, swap_rows, swap_rows!, trail, truncate, typed_hcat,
            typed_hvcat, valuation, var, vars, weak_popov, weak_popov_with_trafo,
            zero, zero!, kronecker_product, ErrorConstrDimMismatch, error_dim_negative
+
+export AbstractAlgebra
 
 export elem_type, parent_type
 
