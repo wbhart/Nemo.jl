@@ -689,6 +689,9 @@ end
 ###############################################################################
 
 function zero_matrix(R::FqFiniteField, r::Int, c::Int)
+   if r < 0 || c < 0
+     error("dimensions must not be negative")
+   end
    z = fq_mat(r, c, R)
    return z
 end

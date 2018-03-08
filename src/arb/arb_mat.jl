@@ -738,6 +738,9 @@ end
 ###############################################################################
 
 function zero_matrix(R::ArbField, r::Int, c::Int)
+   if r < 0 || c < 0
+     error("dimensions must not be negative")
+   end
    z = arb_mat(r, c)
    z.base_ring = R
    return z
@@ -750,6 +753,9 @@ end
 ###############################################################################
 
 function identity_matrix(R::ArbField, n::Int)
+   if n < 0
+     error("dimension must not be negative")
+   end
    z = arb_mat(n, n)
    ccall((:arb_mat_one, :libarb), Void, (Ref{arb_mat}, ), z)
    z.base_ring = R
