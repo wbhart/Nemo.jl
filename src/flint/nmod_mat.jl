@@ -154,6 +154,9 @@ end
 function show(io::IO, a::nmod_mat)
    rows = a.r
    cols = a.c
+   if rows * cols == 0
+      print(io, "$rows by $cols matrix")
+   end
    for i = 1:rows
       print(io, "[")
       for j = 1:cols
