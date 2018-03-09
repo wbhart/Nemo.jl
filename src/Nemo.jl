@@ -16,7 +16,9 @@ import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
              typed_hvcat, typed_hcat, var, vcat, zero, zeros, +, -, *, ==, ^,
              &, |, $, <<, >>, ~, <=, >=, <, >, //, /, !=
 
-import AbstractAlgebra: Generic, Ring, Field, Fac, RingElem, FieldElem, RingElement,
+import AbstractAlgebra
+
+import AbstractAlgebra: Generic, Ring, Field, RingElem, FieldElem, RingElement,
        FieldElement, FracField, FracElem, ResRing, ResField, PolyRing, PolyElem,
        ResElem, FinField, FinFieldElem, SeriesRing, RelSeriesElem, AbsSeriesElem,
        MatSpace, MatElem, SeriesElem, Set, SetElem, Module, ModuleElem, Group,
