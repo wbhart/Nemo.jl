@@ -16,31 +16,32 @@ import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
              typed_hvcat, typed_hcat, var, vcat, zero, zeros, +, -, *, ==, ^,
              &, |, $, <<, >>, ~, <=, >=, <, >, //, /, !=
 
-import AbstractAlgebra: Generic, Ring, Field, RingElem, FieldElem, RingElement,
+import AbstractAlgebra: Generic, Ring, Field, Fac, RingElem, FieldElem, RingElement,
        FieldElement, FracField, FracElem, ResRing, ResField, PolyRing, PolyElem,
        ResElem, FinField, FinFieldElem, SeriesRing, RelSeriesElem, AbsSeriesElem,
        MatSpace, MatElem, SeriesElem, Set, SetElem, Module, ModuleElem, Group,
-       GroupElem
+       GroupElem, FractionField, PermutationGroup
 
 import AbstractAlgebra: PermGroup, AllPerms, perm, Partition, AllParts, SkewDiagram,
        YoungTableau, PolynomialRing, PowerSeriesRing, LaurentSeriesRing,
        LaurentSeriesField, SparsePolynomialRing, ResidueRing, ResidueField, MatrixSpace
 
-import AbstractAlgebra: zero_matrix, identity_matrix, matrix
+import AbstractAlgebra: zero_matrix, identity_matrix, matrix, unit, get_handle, create_accessors
 
 import AbstractAlgebra.Generic: add!, addeq!, addmul!, base_ring,
            canonical_unit, character, characteristic, charpoly,
            charpoly_danilevsky!, charpoly_danilevsky_ff!, charpoly_hessenberg!,
            chebyshev_t, chebyshev_u, _check_dim, check_parent, coeff, cols,
-           compose, content, cycles, data, degree, denominator, derivative, det,
-           det_clow, det_df, det_fflu, det_popov, dim, discriminant, divexact,
-           divides, divrem, elem_type, elements, evaluate, extended_weak_popov,
-           extended_weak_popov_with_trafo, fflu!, fflu, find_pivot_popov, fit!,
-           gcd, gen, gens, gcdinv, gcdx, gram, has_left_neighbor,
-           has_bottom_neighbor, hash, hessenberg!, hessenberg, hnf, hnf_cohen,
-           hnf_cohen_with_trafo, hnf_kb, hnf_kb_with_trafo, hnf_minors,
-           hnf_minors_with_trafo, hnf_with_trafo, hnf_via_popov,
-           hnf_via_popov_with_trafo, hooklength, inskewdiag,
+           compose, content, crt, cycles, data, degree,
+           denominator, derivative, det, det_clow, det_df, det_fflu, det_popov,
+           dim, discriminant, divexact, divides, divrem, elem_type, elements,
+           evaluate, extended_weak_popov, extended_weak_popov_with_trafo,
+           fflu!, fflu, find_pivot_popov, fit!, gcd, gen, gens, 
+           gcdinv, gcdx, gram, has_left_neighbor, has_bottom_neighbor, hash,
+           hessenberg!, hessenberg, hnf, hnf_cohen, hnf_cohen_with_trafo,
+           hnf_kb, hnf_kb_with_trafo, hnf_minors, hnf_minors_with_trafo,
+           hnf_with_trafo, hnf_via_popov, hnf_via_popov_with_trafo, hooklength,
+           inskewdiag,
            integral, interpolate, inv, inv!, invmod, isconstant, isdegree,
            isdomain_type, isexact_type, isgen, ishessenberg, ismonomial,
            isnegative, isone, isreverse, isrimhook, isrref, issquare, isterm,
@@ -60,7 +61,7 @@ import AbstractAlgebra.Generic: add!, addeq!, addmul!, base_ring,
            shift_right, show_minus_one, similarity!, snf, snf_kb,
            snf_kb_with_trafo, snf_with_trafo, solve, solve_rational, solve_triu,
            sub, subst, swap_rows, swap_rows!, trail, truncate, typed_hcat,
-           typed_hvcat, valuation, var, vars, weak_popov, weak_popov_with_trafo,
+           typed_hvcat, unit, valuation, var, vars, weak_popov, weak_popov_with_trafo,
            zero, zero!, kronecker_product, ErrorConstrDimMismatch, error_dim_negative
 
 export elem_type, parent_type
@@ -76,8 +77,7 @@ export PolyRing, SeriesRing, AbsSeriesRing, ResRing, FracField, MatSpace,
 export PermutationGroup, ZZ, QQ, PadicField, FiniteField, RealField, ComplexField,
        CyclotomicField, MaximalRealSubfield, NumberField
 
-export create_accessors, get_handle, package_handle, zeros,
-       Array, sig_exists
+export zeros, Array
 
 export flint_cleanup, flint_set_num_threads
 
@@ -89,11 +89,12 @@ export add!, addeq!, addmul!, base_ring, canonical_unit, character,
                  characteristic, charpoly, charpoly_danilevsky!,
                  charpoly_danilevsky_ff!, charpoly_hessenberg!, chebyshev_t,
                  chebyshev_u, _check_dim, check_parent, coeff, cols, compose,
-                 content, cycles, data, degree, denominator, derivative, det, det_clow,
-                 det_df, det_fflu, det_popov, dim, discriminant, divexact,
+                 content, create_accessors, cycles, data, degree, denominator,
+                 derivative, det, det_clow, det_df, det_fflu, det_popov, dim,
+                 discriminant, divexact,
                  divides, divrem, elem_type, elements, evaluate,
                  extended_weak_popov, extended_weak_popov_with_trafo, fflu!,
-                 fflu, find_pivot_popov, fit!, gcd, gen, gens, gcdinv, gcdx,
+                 fflu, find_pivot_popov, fit!, gcd, gen, gens, get_handle, gcdinv, gcdx,
                  gram, has_left_neighbor, has_bottom_neighbor, hash,
                  hessenberg!, hessenberg, hnf, hnf_cohen, hnf_cohen_with_trafo,
                  hnf_kb, hnf_kb_with_trafo, hnf_minors, hnf_minors_with_trafo,
@@ -390,70 +391,6 @@ include("arb/ArbTypes.jl")
 #include("ambiguities.jl") # remove ambiguity warnings
 
 include("flint/adhoc.jl")
-
-###########################################################
-#
-#   Package handle creation
-#
-###########################################################
-
-const package_handle = [1]
-
-function get_handle()
-   package_handle[1] += 1
-   return package_handle[1] - 1
-end
-
-###############################################################################
-#
-#   Auxilliary data accessors
-#
-###############################################################################
-
-mutable struct AccessorNotSetError <: Exception
-end
-
-function create_accessors(T, S, handle)
-   get = function(a)
-      if handle > length(a.auxilliary_data) ||
-         !isassigned(a.auxilliary_data, handle)
-        throw(AccessorNotSetError())
-      end
-      return a.auxilliary_data[handle]
-   end
-   set = function(a, b)
-      if handle > length(a.auxilliary_data)
-         resize!(a.auxilliary_data, handle)
-      end
-      a.auxilliary_data[handle] = b
-   end
-   return get, set
-end
-
-###############################################################################
-#
-#   Promote rule helpers
-#
-###############################################################################
-
-if VERSION >= v"0.5.0-dev+3171"
-
-function sig_exists(T::Type{Tuple{U, V, W}}, sig_table::Array{X, 1}) where {U, V, W, X}
-   for s in sig_table
-      if s === T
-         return true
-      end
-   end
-   return false
-end
-
-else
-
-function sig_exists(T::Type{Tuple{U, V, W}}, sig_table::Array{X, 1}) where {U, V, W, X}
-   return false
-end
-
-end # if VERSION
 
 include("Rings.jl")
 

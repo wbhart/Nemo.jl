@@ -209,7 +209,7 @@ doc"""
 > Return the degree of the given number field, i.e. the degree of its
 > defining polynomial.
 """
-degree(a::AnticNumberField) = degree(a.pol)
+degree(a::AnticNumberField) = a.pol_length-1
 
 doc"""
     signature(a::AnticNumberField)
