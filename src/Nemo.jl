@@ -22,7 +22,7 @@ import AbstractAlgebra: Generic, Ring, Field, RingElem, FieldElem, RingElement,
        FieldElement, FracField, FracElem, ResRing, ResField, PolyRing, PolyElem,
        ResElem, FinField, FinFieldElem, SeriesRing, RelSeriesElem, AbsSeriesElem,
        MatSpace, MatElem, SeriesElem, Set, SetElem, Module, ModuleElem, Group,
-       GroupElem, FractionField, PermutationGroup
+       GroupElem, FractionField, PermutationGroup, Fac, unit
 
 import AbstractAlgebra: PermGroup, AllPerms, perm, Partition, AllParts, SkewDiagram,
        YoungTableau, PolynomialRing, PowerSeriesRing, LaurentSeriesRing,
