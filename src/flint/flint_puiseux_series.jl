@@ -383,11 +383,27 @@ function ^(a::FlintPuiseuxSeriesElem{T}, b::Int) where T <: RingElem
    return z
 end
 
-function ^(a::FlintPuiseuxSeriesElem{T}, b::Rational{Int}) where T <: RingElement
+function ^(a::FlintPuiseuxSeriesElem{T}, b::Rational{Int}) where T <: RingElem
    (pol_length(a.data) != 1 || polcoeff(a.data, 0) != 1) && error("Rational power not implemented")
    z = parent(a)(a.data^numerator(b), a.scale*denominator(b))
    z = rescale!(z)
    return z
+end
+
+###############################################################################
+#
+#   Square root
+#
+###############################################################################
+
+function Base.sqrt(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
+   val = valuation(a.data)
+   S = parent(a)
+   if mod(val, 2) != 0
+      return S(sqrt(inflate(a.data, 2)), a.scale*2)
+   else
+      return S(sqrt(a.data), a.scale)
+   end
 end
 
 ###############################################################################
