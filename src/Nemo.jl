@@ -39,7 +39,7 @@ end
 #why is this seprate? Ie. why is this not exported?
 import AbstractAlgebra: Ring, Group, Field, RingElement, ModuleElem, promote_rule
 
-export PermutationGroup, ZZ, QQ, PadicField, RealField, ComplexField,
+export PermutationGroup, ZZ, QQ, PadicField, RealField, ComplexField, FiniteField, 
        CyclotomicField, MaximalRealSubfield, NumberField
 
 export flint_cleanup, flint_set_num_threads
@@ -379,7 +379,6 @@ QQ = FlintQQ
 PadicField = FlintPadicField
 FiniteField = FlintFiniteField
 
-export ZZ, QQ, PadicField, FiniteField
 ###############################################################################
 #
 #   Set domain for RR, CC to Arb
