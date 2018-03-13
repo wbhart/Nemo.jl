@@ -35,7 +35,7 @@ mutable struct AnticNumberField <: Field
       if !cached
          nf = new()
          nf.pol = pol
-         ccall((:nf_init, :libflint), Void, 
+         ccall((:nf_init, :libantic), Void, 
             (Ref{AnticNumberField}, Ref{fmpq_poly}), nf, pol)
          finalizer(nf, _AnticNumberField_clear_fn)
          nf.S = s
@@ -47,7 +47,7 @@ mutable struct AnticNumberField <: Field
          else
             nf = new()
             nf.pol = pol
-            ccall((:nf_init, :libflint), Void, 
+            ccall((:nf_init, :libantic), Void, 
                (Ref{AnticNumberField}, Ref{fmpq_poly}), nf, pol)
             finalizer(nf, _AnticNumberField_clear_fn)
             nf.S = s
@@ -62,7 +62,7 @@ mutable struct AnticNumberField <: Field
 end
 
 function _AnticNumberField_clear_fn(a::AnticNumberField)
-   ccall((:nf_clear, :libflint), Void, (Ref{AnticNumberField},), a)
+   ccall((:nf_clear, :libantic), Void, (Ref{AnticNumberField},), a)
 end
 
 mutable struct nf_elem <: FieldElem
@@ -74,7 +74,7 @@ mutable struct nf_elem <: FieldElem
 
    function nf_elem(p::AnticNumberField)
       r = new()
-      ccall((:nf_elem_init, :libflint), Void, 
+      ccall((:nf_elem_init, :libantic), Void, 
             (Ref{nf_elem}, Ref{AnticNumberField}), r, p)
       r.parent = p
       finalizer(r, _nf_elem_clear_fn)
@@ -83,9 +83,9 @@ mutable struct nf_elem <: FieldElem
 
    function nf_elem(p::AnticNumberField, a::nf_elem)
       r = new()
-      ccall((:nf_elem_init, :libflint), Void, 
+      ccall((:nf_elem_init, :libantic), Void, 
             (Ref{nf_elem}, Ref{AnticNumberField}), r, p)
-      ccall((:nf_elem_set, :libflint), Void,
+      ccall((:nf_elem_set, :libantic), Void,
             (Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}), r, a, p)
       r.parent = p
       finalizer(r, _nf_elem_clear_fn)
@@ -94,6 +94,6 @@ mutable struct nf_elem <: FieldElem
 end
 
 function _nf_elem_clear_fn(a::nf_elem)
-   ccall((:nf_elem_clear, :libflint), Void, 
+   ccall((:nf_elem_clear, :libantic), Void, 
          (Ref{nf_elem}, Ref{AnticNumberField}), a, a.parent)
 end
