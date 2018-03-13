@@ -330,6 +330,25 @@ function test_nf_elem_norm_trace()
    println("PASS")
 end
 
+function test_nf_elem_representation_matrix()
+  print("nf_elem.representation_matrix...")
+
+  R, x = PolynomialRing(QQ, "x")
+  K, a = NumberField(x^3 + 3x + 1, "a")
+
+  for i in 1:1000
+    b = sum(rand(-10:10) * a^i for i in 0:2)//rand(1:10)
+    Mb = representation_matrix(b)
+    Mbb, d = representation_matrix_q(b)
+    for j in 1:3
+      @test b * a^(j - 1) == sum(Mb[j, l] * a^(l - 1) for l in 1:3)
+    end
+    @test all(Mb[k, l] == Mbb[k, l]//d for k in 1:3 for l in 1:3)
+  end
+
+  println("PASS")
+end
+
 function test_nf_elem_Polynomials()
    print("nf_elem.Polynomials...")
 
@@ -366,6 +385,7 @@ function test_nf_elem()
    test_nf_elem_adhoc_exact_division()
    test_nf_elem_divides()
    test_nf_elem_norm_trace()
+   test_nf_elem_representation_matrix()
    test_nf_elem_Polynomials()
 
    println("")

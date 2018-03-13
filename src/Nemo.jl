@@ -2,6 +2,10 @@ VERSION >= v"0.4.0-dev+6521" && __precompile__()
 
 module Nemo
 
+if VERSION >= v"0.7.0-"
+   using Libdl
+end
+
 import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
              bin, ceil, checkbounds, conj, convert, cmp, contains, cos, cosh,
              cospi, cot, coth, dec, deepcopy, deepcopy_internal, deserialize,
@@ -118,6 +122,7 @@ end
 const libmpfr = joinpath(pkgdir, "local", "lib", "libmpfr")
 const libflint = joinpath(pkgdir, "local", "lib", "libflint")
 const libarb = joinpath(pkgdir, "local", "lib", "libarb")
+const libantic = joinpath(pkgdir, "local", "lib", "libantic")
 
 function flint_abort()
   error("Problem in the Flint-Subsystem")
@@ -233,6 +238,7 @@ function __init__()
        Libdl.dlopen(libmpfr)
        Libdl.dlopen(libflint)
        Libdl.dlopen(libarb)
+       Libdl.dlopen(libantic)
    else
       push!(Libdl.DL_LOAD_PATH, libdir)
    end
@@ -256,7 +262,7 @@ function __init__()
       (Ptr{Void},), cfunction(flint_abort, Void, ()))
 
    println("")
-   println("Welcome to Nemo version 0.8.0")
+   println("Welcome to Nemo version 0.8.2")
    println("")
    println("Nemo comes with absolutely no warranty whatsoever")
    println("")
@@ -277,7 +283,7 @@ end
 ################################################################################
 
 function versioninfo()
-  print("Nemo version 0.8.0\n")
+  print("Nemo version 0.8.2\n")
   nemorepo = dirname(dirname(@__FILE__))
 
   print("Nemo: ")

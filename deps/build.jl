@@ -4,7 +4,7 @@ oldwdir = pwd()
 @show YASM_VERSION = "1.3.0"
 @show MPIR_VERSION = "3.0.0"
 @show MPFR_VERSION = "4.0.0"
-@show ANTIC_VERSION = "9fb5b8d5ccfad13d1ec5b59d4fd13a9fde94c78e"
+@show ANTIC_VERSION = "e837cdac411f84a72749561bab5f716e80ed73bb"
 @show FLINT_VERSION = "84ee095d0cdb66ca228cf3ff67f0f3a206184971"
 @show ARB_VERSION = "b0d5ccdb59eeb424ad5e7d8f1911490dd4668a40"
 
@@ -175,28 +175,6 @@ end
 
 cd(wdir)
 
-# install ANTIC
-
-if !is_windows()
-  println("Cloning antic ... ")
-  try
-    run(`git clone https://github.com/wbhart/antic.git`)
-    cd(joinpath("$wdir", "antic"))
-    run(`git checkout $ANTIC_VERSION`)
-    cd(wdir)
-  catch
-    if ispath(joinpath("$wdir", "antic"))
-      cd(joinpath("$wdir", "antic"))
-      run(`git fetch origin`)
-      run(`git checkout $ANTIC_VERSION`)
-      cd(wdir)
-    end
-  end          
-  println("DONE")
-end
-
-cd(wdir)
-
 # install FLINT
 if !is_windows()
   try
@@ -235,7 +213,7 @@ else
    println("Building flint ... ")
    cd(joinpath("$wdir", "flint2"))
    withenv("LD_LIBRARY_PATH"=>"$vdir/lib", "LDFLAGS"=>LDFLAGS) do
-      run(`./configure --prefix=$vdir --extensions="$wdir/antic" --disable-static --enable-shared --with-mpir=$vdir --with-mpfr=$vdir`) 
+      run(`./configure --prefix=$vdir --disable-static --enable-shared --with-mpir=$vdir --with-mpfr=$vdir`) 
       run(`make -j4`)
       run(`make install`)
    end
@@ -265,7 +243,31 @@ if !is_windows()
   open(`patch --forward -d arb -r -`, "r", open("../deps-PIE-ftbfs.patch"))
   println("DONE")
 end
- 
+
+ # install ANTIC
+
+if !is_windows()
+  println("Cloning antic ... ")
+  try
+    run(`git clone https://github.com/wbhart/antic.git`)
+    cd(joinpath("$wdir", "antic"))
+    run(`git checkout $ANTIC_VERSION`)
+    cd(wdir)
+  catch
+    if ispath(joinpath("$wdir", "antic"))
+      open(`patch -R --forward -d antic -r -`, "r", open("../deps-PIE-ftbfs.patch"))
+      cd(joinpath("$wdir", "antic"))
+      run(`git fetch`)
+      run(`git checkout $ANTIC_VERSION`)
+      cd(wdir)
+    end
+  end
+  open(`patch --forward -d antic -r -`, "r", open("../deps-PIE-ftbfs.patch"))
+  println("DONE")
+end
+
+cd(wdir)
+
 if is_windows()
    println("Downloading arb ... ")
    if Int == Int32
@@ -277,6 +279,25 @@ if is_windows()
 else
    println("Building arb ... ")
    cd(joinpath("$wdir", "arb"))
+   withenv("LD_LIBRARY_PATH"=>"$vdir/lib", "LDFLAGS"=>LDFLAGS) do
+      run(`./configure --prefix=$vdir --disable-static --enable-shared --with-mpir=$vdir --with-mpfr=$vdir --with-flint=$vdir`)
+      run(`make -j4`)
+      run(`make install`)
+   end
+   println("DONE")
+end
+
+if is_windows()
+   println("Downloading antic ... ")
+   if Int == Int32
+      download_dll("http://nemocas.org/binaries/w32-libantic.dll", joinpath(vdir, "lib", "libantic.dll"))
+   else
+      download_dll("http://nemocas.org/binaries/w64-libantic.dll", joinpath(vdir, "lib", "libantic.dll"))
+   end
+   println("DONE")
+else
+   println("Building antic ... ")
+   cd(joinpath("$wdir", "antic"))
    withenv("LD_LIBRARY_PATH"=>"$vdir/lib", "LDFLAGS"=>LDFLAGS) do
       run(`./configure --prefix=$vdir --disable-static --enable-shared --with-mpir=$vdir --with-mpfr=$vdir --with-flint=$vdir`)
       run(`make -j4`)
