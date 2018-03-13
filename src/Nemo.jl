@@ -18,68 +18,25 @@ import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
 
 import AbstractAlgebra
 
-import AbstractAlgebra: Generic, Ring, Field, RingElem, FieldElem, RingElement,
-       FieldElement, FracField, FracElem, ResRing, ResField, PolyRing, PolyElem,
-       ResElem, FinField, FinFieldElem, SeriesRing, RelSeriesElem, AbsSeriesElem,
-       MatSpace, MatElem, SeriesElem, Set, SetElem, Module, ModuleElem, Group,
-       GroupElem, FractionField, PermutationGroup, Fac, unit
+# we don't wont the QQ, ZZ, FiniteField, PermutationGroup - they refer to Julia types here.
+# experimentally, we cannot do AbstractAlgebra
+# the last 3 do not exist, but are exported.
 
-import AbstractAlgebra: PermGroup, AllPerms, perm, Partition, AllParts, SkewDiagram,
-       YoungTableau, PolynomialRing, PowerSeriesRing, LaurentSeriesRing,
-       LaurentSeriesField, SparsePolynomialRing, ResidueRing, ResidueField, MatrixSpace
+exclude = [:QQ, :ZZ, :PermutationGroup, :RR, :RealField,
+           :AbstractAlgebra, 
+           :AbsSeriesRing, :is_windows64, :isexact]
 
-import AbstractAlgebra: zero_matrix, identity_matrix, matrix, unit, get_handle, create_accessors
+for i in names(AbstractAlgebra)
+  i in exclude && continue
+  eval(Expr(:import, :AbstractAlgebra, i))
+  eval(Expr(:export, i))
+end
 
-import AbstractAlgebra.Generic: add!, addeq!, addmul!, base_ring,
-           canonical_unit, character, characteristic, charpoly,
-           charpoly_danilevsky!, charpoly_danilevsky_ff!, charpoly_hessenberg!,
-           chebyshev_t, chebyshev_u, _check_dim, check_parent, coeff, cols,
-           compose, content, crt, cycles, data, degree,
-           denominator, derivative, det, det_clow, det_df, det_fflu, det_popov,
-           dim, discriminant, divexact, divides, divrem, elem_type, elements,
-           evaluate, extended_weak_popov, extended_weak_popov_with_trafo,
-           fflu!, fflu, find_pivot_popov, fit!, gcd, gen, gens, 
-           gcdinv, gcdx, gram, has_left_neighbor, has_bottom_neighbor, hash,
-           hessenberg!, hessenberg, hnf, hnf_cohen, hnf_cohen_with_trafo,
-           hnf_kb, hnf_kb_with_trafo, hnf_minors, hnf_minors_with_trafo,
-           hnf_with_trafo, hnf_via_popov, hnf_via_popov_with_trafo, hooklength,
-           inskewdiag,
-           integral, interpolate, inv, inv!, invmod, isconstant, isdegree,
-           isdomain_type, isexact_type, isgen, ishessenberg, ismonomial,
-           isnegative, isone, isreverse, isrimhook, isrref, issquare, isterm,
-           isunit, lcm, lead, length, leglength, main_variable,
-           main_variable_extract, main_variable_insert, matrix_repr,
-           max_degrees, max_precision, minpoly, mod, modulus, monomial_iszero,
-           monomial_set!, monomial_to_newton!, mul!, mul_classical,
-           mul_karatsuba, mul_ks, mullow, mulmod, needs_parentheses,
-           newton_to_monomial!, normalise, nvars, numerator, O, one, order,
-           ordering, parent_type, parity, partitionseq, polcoeff, pol_length,
-           powmod, pow_multinomial, popov, powers, ppio, precision, primpart,
-           promote_rule, pseudodivrem, pseudorem, randmat_triu, randmat_with_rank,
-           rand_ordering, rank_profile_popov, remove, renormalize!, resultant,
-           resultant_ducos, resultant_euclidean, resultant_subresultant,
-           resultant_sylvester, resx, reverse, rows, rref, rref!, setcoeff!,
-           set_length!, setpermstyle, set_prec!, set_val!, size, shift_left,
-           shift_right, show_minus_one, similarity!, snf, snf_kb,
-           snf_kb_with_trafo, snf_with_trafo, solve, solve_rational, solve_triu,
-           sub, subst, swap_rows, swap_rows!, trail, truncate, typed_hcat,
-           typed_hvcat, unit, valuation, var, vars, weak_popov, weak_popov_with_trafo,
-           zero, zero!, kronecker_product, ErrorConstrDimMismatch, error_dim_negative
+#why is this seprate? Ie. why is this not exported?
+import AbstractAlgebra: Ring, Group, Field, RingElement, ModuleElem, promote_rule
 
-export elem_type, parent_type
-
-export SetElem, GroupElem, RingElem, FieldElem, AccessorNotSetError
-
-export PolyElem, SeriesElem, AbsSeriesElem, RelSeriesElem, ResElem, FracElem,
-       MatElem, FinFieldElem, MPolyElem
-
-export PolyRing, SeriesRing, AbsSeriesRing, ResRing, FracField, MatSpace,
-       FinField, MPolyRing
-
-export PermutationGroup, ZZ, QQ, PadicField, FiniteField, RealField, ComplexField,
+export PermutationGroup, ZZ, QQ, PadicField, RealField, ComplexField,
        CyclotomicField, MaximalRealSubfield, NumberField
-
-export zeros, Array
 
 export flint_cleanup, flint_set_num_threads
 
@@ -87,6 +44,7 @@ export error_dim_negative, ErrorConstrDimMismatch
 
 export is_windows64
 
+#probably pointless  - or mostly pointless...
 export add!, addeq!, addmul!, base_ring, canonical_unit, character,
                  characteristic, charpoly, charpoly_danilevsky!,
                  charpoly_danilevsky_ff!, charpoly_hessenberg!, chebyshev_t,
@@ -415,6 +373,7 @@ QQ = FlintQQ
 PadicField = FlintPadicField
 FiniteField = FlintFiniteField
 
+export ZZ, QQ, PadicField, FiniteField
 ###############################################################################
 #
 #   Set domain for RR, CC to Arb
