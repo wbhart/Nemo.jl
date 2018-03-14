@@ -25,13 +25,13 @@ import AbstractAlgebra
 # We don't want the QQ, ZZ, FiniteField, NumberField from AbstractAlgebra
 # as they are for parents of Julia types or naive implementations
 # We only import AbstractAlgebra, not export
-# We do not want the AbstractAlgebra version of exp, inv and sqrt, but the Base version
-# which is the only place user friendly exp, inv and sqrt are defined
+# We do not want the AbstractAlgebra version of exp and sqrt, but the Base version
+# which is the only place user friendly exp and sqrt are defined
 # AbstractAlgebra/Nemo has its own promote_rule, distinct from Base
 # Set, Module, Ring, Group and Field are too generic to pollute the users namespace with
 exclude = [:QQ, :ZZ, :RR, :RealField, :FiniteField, :NumberField,
            :AbstractAlgebra, 
-           :exp, :inv, :sqrt,
+           :exp, :sqrt,
            :promote_rule,
            :Set, :Module, :Ring, :Group, :Field]
 
