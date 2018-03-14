@@ -1086,6 +1086,22 @@ function Base.exp(a::fmpz_laurent_series)
    vala = valuation(a)
    preca = precision(a)
    vala < 0 && error("Valuation must be non-negative in exp")
+   sc = scale(a)
+   gs = gcd(sc, gcd(vala, preca))
+   if sc != gs
+      a = downscale(a, div(sc, gs))
+      sc = gs
+   end
+   S = parent(a)
+   if sc != 1
+      vala = div(vala, sc)
+      preca = div(preca, sc)
+      a = fmpz_laurent_series(a)
+      set_val!(a, vala)
+      set_prec!(a, preca)
+      set_scale!(a, 1)
+      a.parent = S
+   end
    z = parent(a)()
    R = base_ring(a)
    set_prec!(z, preca)
@@ -1102,6 +1118,8 @@ function Base.exp(a::fmpz_laurent_series)
       !isunit(R(k)) && error("Unable to divide in exp")
       z = setcoeff!(z, k, divexact(s, k))
    end
+   z = inflate(z, sc)
+   z = rescale!(z)
    return z
 end
 
