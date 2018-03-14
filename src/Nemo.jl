@@ -28,7 +28,7 @@ import AbstractAlgebra
 
 exclude = [:QQ, :ZZ, :PermutationGroup, :RR, :RealField,
            :AbstractAlgebra, 
-           :AbsSeriesRing, :is_windows64, :isexact]
+           :AbsSeriesRing, :FiniteField, :is_windows64, :isexact]
 
 for i in names(AbstractAlgebra)
   i in exclude && continue
@@ -39,14 +39,16 @@ end
 #why is this seprate? Ie. why is this not exported?
 import AbstractAlgebra: Ring, Group, Field, RingElement, ModuleElem, promote_rule
 
-export PermutationGroup, ZZ, QQ, PadicField, RealField, ComplexField, FiniteField, 
-       CyclotomicField, MaximalRealSubfield, NumberField
-
 export flint_cleanup, flint_set_num_threads
 
 export error_dim_negative, ErrorConstrDimMismatch
 
 export is_windows64
+
+export CyclotomicField, MaximalRealSubfield, NumberField, ComplexField, PadicField
+
+# Things/constants which are also defined in AbstractAlgebra:
+export PermutationGroup, ZZ, QQ, RealField, FiniteField
 
 #probably pointless  - or mostly pointless...
 export add!, addeq!, addmul!, base_ring, canonical_unit, character,
