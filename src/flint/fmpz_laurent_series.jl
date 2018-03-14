@@ -217,6 +217,34 @@ function downscale(a::fmpz_laurent_series, n::Int)
 end
 
 doc"""
+    upscale(a::fmpz_laurent_series, n::Int)
+> Deflate the underlying polynomial by a factor of $n$. This removes zero coefficients
+> that were inserted for padding. It is assumed that the spacing between nonzero coefficients
+> of $a$ is divisible by $n$.
+"""
+function upscale(a::fmpz_laurent_series, n::Int)
+   n <= 0 && throw(DomainError())
+   lena = pol_length(a)
+   if n == 1 || lena == 0
+      return a
+   end
+   R = base_ring(a)
+   lenz = div(lena - 1, n) + 1
+   d = fmpz_laurent_series()
+   j = 0
+   for i = 0:lenz - 1
+      setcoeff!(d, i, polcoeff(a, j))
+      j += n
+   end
+   S = typeof(a)
+   set_prec!(d, precision(a))
+   set_val!(d, valuation(a))
+   set_scale!(d, scale(a)*n)
+   d.parent = parent(a)
+   return d
+end
+
+doc"""
     zero(R::FmpzLaurentSeriesRing)
 > Return $0 + O(x^n)$ where $n$ is the maximum precision of the power series
 > ring $R$.
