@@ -290,12 +290,13 @@ function renormalize!(z::fmpz_laurent_series)
    while i < zlen && iszero(polcoeff(z, i))
       i += 1
    end
-   set_prec!(z, zprec)
    if i == zlen
       zero!(z)
+      set_prec!(z, zprec)
       set_val!(z, zprec)
       set_scale!(z, 1)
    elseif i != 0
+      set_prec!(z, zprec)
       R = base_ring(z)
       set_val!(z, zval + i*scale(z))
       for j = 1:zlen - i
