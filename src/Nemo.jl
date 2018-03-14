@@ -22,13 +22,18 @@ import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
 
 import AbstractAlgebra
 
-# We don't want the QQ, ZZ, FiniteField, PermutationGroup - they refer to Julia types
-# here. Experimentally, we cannot do AbstractAlgebra
-# the last 3 do not exist, but are exported.
-
-exclude = [:QQ, :ZZ, :PermutationGroup, :RR, :RealField,
+# We don't want the QQ, ZZ, FiniteField, NumberField from AbstractAlgebra
+# as they are for parents of Julia types or naive implementations
+# We only import AbstractAlgebra, not export
+# We do not want the AbstractAlgebra version of exp, inv and sqrt, but the Base version
+# which is the only place user friendly exp, inv and sqrt are defined
+# AbstractAlgebra/Nemo has its own promote_rule, distinct from Base
+# Set, Module, Ring, Group and Field are too generic to pollute the users namespace with
+exclude = [:QQ, :ZZ, :RR, :RealField, :FiniteField, :NumberField,
            :AbstractAlgebra, 
-           :AbsSeriesRing, :FiniteField, :is_windows64, :isexact, :exp, :sqrt]
+           :exp, :inv, :sqrt,
+           :promote_rule,
+           :Set, :Module, :Ring, :Group, :Field]
 
 for i in names(AbstractAlgebra)
   i in exclude && continue
@@ -36,8 +41,7 @@ for i in names(AbstractAlgebra)
   eval(Expr(:export, i))
 end
 
-# These names are too generic to export to the user
-import AbstractAlgebra: Ring, Group, Field, RingElement, ModuleElem, promote_rule
+import AbstractAlgebra: Set, Module, Ring, Group, Field, promote_rule
 
 export flint_cleanup, flint_set_num_threads
 
@@ -48,7 +52,7 @@ export is_windows64
 export CyclotomicField, MaximalRealSubfield, NumberField, ComplexField, PadicField
 
 # Things/constants which are also defined in AbstractAlgebra:
-export PermutationGroup, ZZ, QQ, RealField, FiniteField
+export ZZ, QQ, RealField, FiniteField, NumberField
 
 if VERSION >= v"0.6.0-dev.2024" # julia started exporting iszero (again?)
    import Base: iszero
@@ -313,14 +317,6 @@ include("arb/ArbTypes.jl")
 include("flint/adhoc.jl")
 
 include("Rings.jl")
-
-###############################################################################
-#
-#   Set domain for PermutationGroup to Flint
-#
-###############################################################################
-
-PermutationGroup = PermGroup
 
 ###############################################################################
 #
