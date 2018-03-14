@@ -4,8 +4,6 @@
 #
 ###############################################################################
 
-export PuiseuxSeriesRing, laurent_ring, rescale!
-
 ###############################################################################
 #
 #   Data type and parent object methods
@@ -396,7 +394,7 @@ end
 #
 ###############################################################################
 
-function Base.sqrt(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
+function sqrt(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
    val = valuation(a.data)
    S = parent(a)
    if mod(val, 2) != 0
@@ -404,6 +402,18 @@ function Base.sqrt(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
    else
       return S(sqrt(a.data), a.scale)
    end
+end
+
+###############################################################################
+#
+#   Exponential
+#
+###############################################################################
+
+function exp(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
+   z = parent(a)(exp(a.data), a.scale)
+   z = rescale!(z)
+   return z
 end
 
 ###############################################################################

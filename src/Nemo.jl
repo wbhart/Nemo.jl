@@ -9,26 +9,26 @@ end
 import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
              bin, ceil, checkbounds, conj, convert, cmp, contains, cos, cosh,
              cospi, cot, coth, dec, deepcopy, deepcopy_internal, deserialize,
-             det, div, divrem, expm1, eye, floor, gamma, gcd, gcdx, getindex,
+             det, div, divrem, expm1, exp, eye, floor, gamma, gcd, gcdx, getindex,
              hash, hcat, hex, hypot, intersect, inv, invmod, isequal,
              isfinite, isless, isqrt, isreal, iszero, lcm, ldexp, length,
              lgamma, log, log1p, lufact, lufact!, mod, ndigits, nextpow2, norm,
              nullspace, numerator, oct, one, parent, parse, precision,
              prevpow2, rand, rank, Rational, rem, reverse, serialize,
-             setindex!, show, similar, sign, sin, sinh, sinpi, size, string,
+             setindex!, show, similar, sign, sin, sinh, sinpi, size, sqrt, string,
              tan, tanh, trace, trailing_zeros, transpose, transpose!, truncate,
              typed_hvcat, typed_hcat, var, vcat, zero, zeros, +, -, *, ==, ^,
              &, |, $, <<, >>, ~, <=, >=, <, >, //, /, !=
 
 import AbstractAlgebra
 
-# we don't wont the QQ, ZZ, FiniteField, PermutationGroup - they refer to Julia types here.
-# experimentally, we cannot do AbstractAlgebra
+# We don't want the QQ, ZZ, FiniteField, PermutationGroup - they refer to Julia types
+# here. Experimentally, we cannot do AbstractAlgebra
 # the last 3 do not exist, but are exported.
 
 exclude = [:QQ, :ZZ, :PermutationGroup, :RR, :RealField,
            :AbstractAlgebra, 
-           :AbsSeriesRing, :FiniteField, :is_windows64, :isexact]
+           :AbsSeriesRing, :FiniteField, :is_windows64, :isexact, :exp, :sqrt]
 
 for i in names(AbstractAlgebra)
   i in exclude && continue
@@ -36,7 +36,7 @@ for i in names(AbstractAlgebra)
   eval(Expr(:export, i))
 end
 
-#why is this seprate? Ie. why is this not exported?
+# These names are too generic to export to the user
 import AbstractAlgebra: Ring, Group, Field, RingElement, ModuleElem, promote_rule
 
 export flint_cleanup, flint_set_num_threads
@@ -49,46 +49,6 @@ export CyclotomicField, MaximalRealSubfield, NumberField, ComplexField, PadicFie
 
 # Things/constants which are also defined in AbstractAlgebra:
 export PermutationGroup, ZZ, QQ, RealField, FiniteField
-
-#probably pointless  - or mostly pointless...
-export add!, addeq!, addmul!, base_ring, canonical_unit, character,
-                 characteristic, charpoly, charpoly_danilevsky!,
-                 charpoly_danilevsky_ff!, charpoly_hessenberg!, chebyshev_t,
-                 chebyshev_u, _check_dim, check_parent, coeff, cols, compose,
-                 content, create_accessors, cycles, data, degree, denominator,
-                 derivative, det, det_clow, det_df, det_fflu, det_popov, dim,
-                 discriminant, divexact,
-                 divides, divrem, elem_type, elements, evaluate,
-                 extended_weak_popov, extended_weak_popov_with_trafo, fflu!,
-                 fflu, find_pivot_popov, fit!, gcd, gen, gens, get_handle, gcdinv, gcdx,
-                 gram, has_left_neighbor, has_bottom_neighbor, hash,
-                 hessenberg!, hessenberg, hnf, hnf_cohen, hnf_cohen_with_trafo,
-                 hnf_kb, hnf_kb_with_trafo, hnf_minors, hnf_minors_with_trafo,
-                 hnf_with_trafo, hnf_via_popov, hnf_via_popov_with_trafo,
-                 hooklength, identity_matrix, inskewdiag, integral,
-                 interpolate, inv, inv!, invmod, isconstant, isdegree,
-                 isdomain_type, isexact, isexact_type, isgen, ishessenberg,
-                 ismonomial, isnegative, isone, isreverse, isrimhook, isrref, issquare,
-                 isterm, isunit, iszero, lcm, lead, leglength, length,
-                 main_variable, main_variable_extract, main_variable_insert,
-                 matrix, matrix_repr, max_degrees, max_precision, minpoly, mod,
-                 modulus, monomial_iszero, monomial_set!, monomial_to_newton!,
-                 mul!, mul_classical, mul_karatsuba, mul_ks, mullow, mulmod,
-                 needs_parentheses, newton_to_monomial!, normalise, nvars,
-                 numerator, O, one, order, ordering, parent_type, parity,
-                 partitionseq, polcoeff, pol_length, powmod, pow_multinomial,
-                 popov, powers, ppio, precision, primpart, pseudodivrem,
-                 pseudorem, randmat_triu, randmat_with_rank, rand_ordering,
-                 rank_profile_popov, remove, renormalize!, resultant,
-                 resultant_ducos, resultant_euclidean, resultant_subresultant,
-                 resultant_sylvester, resx, reverse, rows, rref, rref!,
-                 setcoeff!, set_length!, setpermstyle, set_prec!, set_val!,
-                 shift_left, shift_right, show_minus_one, similarity!, size, snf,
-                 snf_kb, snf_kb_with_trafo, snf_with_trafo, solve,
-                 solve_rational, solve_triu, sub, subst, swap_rows, swap_rows!,
-                 trail, truncate, typed_hcat, typed_hvcat, valuation, var,
-                 vars, weak_popov, weak_popov_with_trafo, zero, zero!,
-                 zero_matrix, kronecker_product
 
 if VERSION >= v"0.6.0-dev.2024" # julia started exporting iszero (again?)
    import Base: iszero
@@ -329,18 +289,10 @@ end
 #
 ###############################################################################
 
-function exp(a::T) where T
-   return Base.exp(a)
-end
-
-function sqrt(a::T) where T
-  return Base.sqrt(a)
-end
-
 export PowerSeriesRing, PolynomialRing, SparsePolynomialRing, MatrixSpace,
        FractionField, ResidueRing, Partition, PermGroup, YoungTableau,
        AllParts, SkewDiagram, AllPerms, perm, LaurentSeriesRing,
-       LaurentSeriesField, ResidueField
+       LaurentSeriesField, PuiseuxSeriesRing, ResidueField
 
 export Generic
 

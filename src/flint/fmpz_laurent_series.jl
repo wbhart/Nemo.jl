@@ -4,8 +4,6 @@
 #
 ###############################################################################
 
-export exp_gcd
-
 ###############################################################################
 #
 #   Data type and parent object methods
@@ -1039,7 +1037,7 @@ doc"""
    sqrt(a::fmpz_laurent_series)
 > Return the square root of the power series $a$.
 """
-function Base.sqrt(a::fmpz_laurent_series)
+function sqrt(a::fmpz_laurent_series)
    aval = valuation(a)
    !iseven(aval) && error("Not a square in sqrt")
    R = base_ring(a)
@@ -1077,7 +1075,7 @@ doc"""
     exp(a::fmpz_laurent_series)
 > Return the exponential of the power series $a$.
 """
-function Base.exp(a::fmpz_laurent_series)
+function exp(a::fmpz_laurent_series)
    if iszero(a)
       z = one(parent(a))
       set_prec!(z, precision(a))
@@ -1107,7 +1105,7 @@ function Base.exp(a::fmpz_laurent_series)
    set_prec!(z, preca)
    set_val!(z, 0)
    c = vala == 0 ? polcoeff(a, 0) : R()
-   z = setcoeff!(z, 0, AbstractAlgebra.exp(c))
+   z = setcoeff!(z, 0, exp(c))
    len = pol_length(a) + vala
    for k = 1 : preca - 1
       s = R()
