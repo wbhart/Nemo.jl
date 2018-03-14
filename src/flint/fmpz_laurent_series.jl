@@ -723,6 +723,15 @@ function inflate(a::fmpz_laurent_series, b::Int)
     return d
 end
 
+function deflate(a::fmpz_laurent_series, b::Int)
+    d = fmpz_laurent_series(a)
+    set_prec!(d, div(precision(a), b))
+    set_val!(d, div(valuation(a), b))
+    set_scale!(d, div(scale(a), b))
+    d.parent = parent(a)
+    return d
+end
+
 ###############################################################################
 #
 #   Powering
