@@ -738,7 +738,7 @@ function mullow(a::fmpz_laurent_series, b::fmpz_laurent_series, n::Int)
          end
       end
    end
-   z = parent(a)(d, lenz, prec, 0, s)
+   z = parent(a)(d, lenz, prec, 0, s, false, false, false, false, false, false, false, false)
    return z
 end
 
