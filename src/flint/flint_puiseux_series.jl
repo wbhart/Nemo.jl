@@ -336,6 +336,28 @@ end
 
 ###############################################################################
 #
+#   Ad hoc binary operations
+#
+###############################################################################
+
+function *(x::FlintPuiseuxSeriesElem{fmpz_laurent_series}, y::fmpz)
+   z = parent(x)(x.data*y, x.scale)
+   z = rescale!(z)
+   return z
+end
+
+*(x::fmpz, y::FlintPuiseuxSeriesElem{fmpz_laurent_series}) = y*x
+
+function *(x::FlintPuiseuxSeriesElem, y::Integer)
+   z = parent(x)(x.data*y, x.scale)
+   z = rescale!(z)
+   return z
+end
+
+*(x::Integer, y::FlintPuiseuxSeriesElem) = y*x
+
+###############################################################################
+#
 #   Exact division
 #
 ###############################################################################
