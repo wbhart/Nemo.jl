@@ -402,6 +402,38 @@ end
 
 ###############################################################################
 #
+#   Comparison
+#
+###############################################################################
+
+function ==(a::FlintPuiseuxSeriesElem{T}, b::FlintPuiseuxSeriesElem{T}) where T <: RingElement
+    s = gcd(a.scale, b.scale)
+    zscale = div(a.scale*b.scale, s)
+    ainf = div(a.scale, s)
+    binf = div(b.scale, s)
+    return inflate(a.data, binf) == inflate(b.data, ainf)
+end
+
+function isequal(a::FlintPuiseuxSeriesElem{T}, b::FlintPuiseuxSeriesElem{T}) where T <: RingElement
+   return a.scale == b.scale && isequal(a.data, b.data)
+end
+
+###############################################################################
+#
+#   Ad hoc comparison
+#
+###############################################################################
+
+==(x::FlintPuiseuxSeriesElem{fmpz_laurent_series}, y::fmpz) = x.data == y
+
+==(x::fmpz, y::FlintPuiseuxSeriesElem{fmpz_laurent_series}) = y == x
+
+==(x::FlintPuiseuxSeriesElem, y::Integer) = x.data == y
+
+==(x::Integer, y::FlintPuiseuxSeriesElem) = y == x
+
+###############################################################################
+#
 #   Square root
 #
 ###############################################################################
