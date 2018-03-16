@@ -1193,89 +1193,52 @@ end
 function mul!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_series) 
    lena = pol_length(a)
    lenb = pol_length(b)
+   if lena > lenb
+      return mul!(c, b, a)
+   end
    aval = valuation(a)
    bval = valuation(b)
    prec = min(precision(a) - aval, precision(b) - bval)
-   lena = min(lena, prec)
-   lenb = min(lenb, prec)
-   if lena <= 0 || lenb <= 0
-      c.length = 0
+   sa = scale(a)
+   sb = scale(b)
+   if lena == 1
+      sa = sb
+   elseif lenb == 1
+      sb = sa
+   end
+   sz = gcd(sa, sb)
+   lena = min(lena*sa, prec)
+   lenb = min(lenb*sb, prec)
+   if lena == 0 || lenb == 0
+      ccall((:fmpz_poly_zero, :libflint), Void,
+                (Ref{fmpz_laurent_series},), c)
+      set_prec!(c, prec + aval + bval)
+      set_val!(c, aval + bval)
+      set_scale!(c, 1)
+      return c
    else
       t = base_ring(a)()
-      lenc = min(lena + lenb - 1, prec)
-      fit!(c, lenc)
-      for i = 1:min(lena, lenc)
-         c.coeffs[i] = mul!(c.coeffs[i], polcoeff(a, i - 1), polcoeff(b, 0))
-      end
-      if lenc > lena
-         for i = 2:min(lenb, lenc - lena + 1)
-            c.coeffs[lena + i - 1] = mul!(c.coeffs[lena + i - 1], polcoeff(a, lena - 1), polcoeff(b, i - 1))
-         end
-      end
-      for i = 1:lena - 1
-         if lenc > i
-            for j = 2:min(lenb, lenc - i + 1)
-               t = mul!(t, polcoeff(a, i - 1), polcoeff(b, j - 1))
-               c.coeffs[i + j - 1] = addeq!(c.coeffs[i + j - 1], t)
-            end
-         end
-      end
-      c.length = normalise(c, lenc)
+      da = div(sa, sz)
+      db = div(sb, sz)
+      a = downscale(a, da)
+      b = downscale(b, db)
+      lena = pol_length(a)
+      lenb = pol_length(b)
+      lenc = min(lena + lenb - 1, div(prec + sz - 1, sz))
+      ccall((:fmpz_poly_mullow, :libflint), Void,
+         (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int), c, a, b, lenc)
    end
-   c.val = a.val + b.val
-   c.prec = prec + c.val
+   set_val!(c, aval + bval)
+   set_prec!(c, prec + c.val)
+   set_scale!(c, sz)
    renormalize!(c)
+   c = rescale!(c)
    return c
 end
 
 function addeq!(c::fmpz_laurent_series, a::fmpz_laurent_series) 
-   lenc = pol_length(c)
-   lena = pol_length(a)
-   valc = valuation(c)
-   vala = valuation(a)
-   valr = min(vala, valc)
-   precc = precision(c)
-   preca = precision(a)
-   prec = min(precc, preca)
-   mina = min(vala + lena, prec)
-   minc = min(valc + lenc, prec)
-   lenr = max(mina, minc) - valr
-   R = base_ring(c)
-   fit!(c, lenr)
-   if valc >= vala
-      for i = lenc + valc - vala:-1:max(lena, valc - vala) + 1
-         t = c.coeffs[i]
-         c.coeffs[i] = c.coeffs[i - valc + vala]
-         c.coeffs[i - valc + vala] = t
-      end
-      for i = lena:-1:valc - vala + 1
-         c.coeffs[i] = add!(c.coeffs[i], c.coeffs[i - valc + vala], a.coeffs[i])
-      end
-      for i = 1:min(lena, valc - vala)
-         c.coeffs[i] = deepcopy(a.coeffs[i])
-      end
-      for i = lena + 1:min(valc - vala, lenr)
-         c.coeffs[i] = R()
-      end
-      for i = lenc + valc - vala + 1:lena
-         c.coeffs[i] = deepcopy(a.coeffs[i])
-      end
-   else
-      for i = lenc + 1:min(vala - valc, lenr)
-         c.coeffs[i] = R()
-      end
-      for i = vala - valc + 1:lenc
-         c.coeffs[i] = addeq!(c.coeffs[i], a.coeffs[i - vala + valc])
-      end
-      for i = max(lenc, vala - valc) + 1:lena + vala - valc
-         c.coeffs[i] = deepcopy(a.coeffs[i - vala + valc])
-      end
-   end
-   c.length = normalise(c, lenr)
-   c.prec = prec
-   c.val = valr
-   renormalize!(c)
-   return c
+   b = deepcopy(c)
+   return add!(c, b, a)
 end
 
 function add!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_series) 
@@ -1292,47 +1255,50 @@ function add!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_se
    precb = precision(b)
    preca = precision(a)
    prec = min(precb, preca)
-   mina = min(vala + lena, prec)
-   minb = min(valb + lenb, prec)
+   sa = scale(a)
+   sb = scale(b)
+   if lena == 1
+      sa = sb
+   elseif lenb == 1
+      sb = sa
+   end
+   sz = gcd(gcd(sa, sb), abs(vala - valb))
+   mina = min(vala + lena*sa, prec)
+   minb = min(valb + lenb*sb, prec)
    lenr = max(mina, minb) - valr
    R = base_ring(c)
-   fit!(c, lenr)
-   c.prec = prec
-   c.val = valr
-   if vala > valb
-      for i = 1:min(lenb, vala - valb)
-         c.coeffs[i] = deepcopy(b.coeffs[i])
-      end
-      for i = lenb + 1:vala - valb
-         c.coeffs[i] = R()
-      end
-      for i = vala - valb + 1:lenb
-         c.coeffs[i] = add!(c.coeffs[i], a.coeffs[i - vala + valb], b.coeffs[i])
-      end
-      for i = max(lenb, vala - valb) + 1:lena + vala - valb
-         c.coeffs[i] = deepcopy(a.coeffs[i - vala + valb])
-      end
-      for i = lena + vala - valb + 1:lenb
-         c.coeffs[i] = deepcopy(b.coeffs[i])
-      end
-   else
-      for i = 1:min(lena, valb - vala)
-         c.coeffs[i] = deepcopy(a.coeffs[i])
-      end
-      for i = lena + 1:valb - vala
-         c.coeffs[i] = R()
-      end
-      for i = valb - vala + 1:lena
-         c.coeffs[i] = add!(c.coeffs[i], a.coeffs[i], b.coeffs[i - valb + vala])
-      end
-      for i = max(lena, valb - vala) + 1:lenb + valb - vala
-         c.coeffs[i] = deepcopy(b.coeffs[i - valb + vala])
-      end
-      for i = lenb + valb - vala + 1:lena
-         c.coeffs[i] = deepcopy(a.coeffs[i])
+   set_prec!(c, prec)
+   set_val!(c, valr)
+   set_scale!(c, sz)
+      pa = vala
+   pb = valb
+   j = 0
+   k = 0
+   t = base_ring(a)()
+   zc = base_ring(a)()
+   for i = 0: lenr - 1
+      pi = valr + sc*i
+      if pi == pa && pi < mina
+         if pi == pb && pi < minb
+            add!(t, polcoeff(a, j), polcoeff(b, k))
+            setcoeff!(c, i, t)
+            pb += sb
+            k += 1
+         else
+            setcoeff!(c, i, polcoeff(a, j))
+         end
+         j += 1
+         pa += sa
+      elseif pi == pb && pi < minb
+         setcoeff(c, i, polcoeff(b, k))
+         k += 1
+         pb += sb
+      else
+         setcoeff!(c, i, zc)
       end
    end
    renormalize!(c)
+   c = rescale!(c)
    return c
 end
 
