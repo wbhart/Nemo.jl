@@ -520,6 +520,52 @@ end
 
 ###############################################################################
 #
+#   Unsafe operations
+#
+###############################################################################
+
+function zero!(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
+   zero!(a.data)
+   set_scale(a, 1)
+   return a
+end
+
+function mul!(c::FlintPuiseuxSeriesElem{T}, a::FlintPuiseuxSeriesElem{T}, b::FlintPuiseuxSeriesElem{T}) where T <: RingElem
+    s = gcd(a.scale, b.scale)
+    zscale = div(a.scale*b.scale, s)
+    ainf = div(a.scale, s)
+    binf = div(b.scale, s)
+    c.data = mul!(c.data, inflate(a.data, binf), inflate(b.data, ainf))
+    c.scale = zscale
+    c = rescale!(c)
+    return c
+end
+
+function add!(c::FlintPuiseuxSeriesElem{T}, a::FlintPuiseuxSeriesElem{T}, b::FlintPuiseuxSeriesElem{T}) where T <: RingElem
+    s = gcd(a.scale, b.scale)
+    zscale = div(a.scale*b.scale, s)
+    ainf = div(a.scale, s)
+    binf = div(b.scale, s)
+    c.data = add!(c.data, inflate(a.data, binf), inflate(b.data, ainf))
+    c.scale = zscale
+    c = rescale!(c)
+    return c
+end
+
+function addeq!(c::FlintPuiseuxSeriesElem{T}, a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
+    s = gcd(c.scale, a.scale)
+    zscale = div(c.scale*a.scale, s)
+    ainf = div(a.scale, s)
+    cinf = div(c.scale, s)
+    cnew = inflate(c.data, ainf)
+    c.data = addeq!(cnew, inflate(a.data, cinf))
+    c.scale = zscale
+    c = rescale!(c)
+    return c
+end
+
+###############################################################################
+#
 #   Promotion rules
 #
 ###############################################################################
