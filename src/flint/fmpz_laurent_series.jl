@@ -4,6 +4,8 @@
 #
 ###############################################################################
 
+export fmpz_laurent_series, FmpzLaurentSeriesRing
+
 ###############################################################################
 #
 #   Data type and parent object methods
@@ -331,7 +333,7 @@ function renormalize!(z::fmpz_laurent_series)
          z = setcoeff!(z, j - 1, polcoeff(z, j + i - 1))
       end
       for j = zlen - i + 1:zlen
-         z = setcoeff!(z, j, R())
+         z = setcoeff!(z, j - 1, R())
       end
    end
    return nothing
@@ -738,7 +740,7 @@ function mullow(a::fmpz_laurent_series, b::fmpz_laurent_series, n::Int)
          end
       end
    end
-   z = parent(a)(d, lenz, prec, 0, s, false, false, false, false, false, false, false, false)
+   z = parent(a)(d, lenz, prec, 0, s, false)
    return z
 end
 
@@ -1160,8 +1162,9 @@ function exp(a::fmpz_laurent_series)
          c = j >= vala ? polcoeff(a, j - vala) : R()
          s += j * c * polcoeff(z, k - j)
       end
-      !isunit(R(k)) && error("Unable to divide in exp")
-      z = setcoeff!(z, k, divexact(s, k))
+      flag, q = divides(s, fmpz(k))
+      !flag && error("Unable to divide in exp")
+      z = setcoeff!(z, k, q)
    end
    z = inflate(z, sc)
    z = rescale!(z)
@@ -1388,10 +1391,12 @@ function (R::FmpzLaurentSeriesRing)(b::fmpz_laurent_series)
    return b
 end
 
-function (R::FmpzLaurentSeriesRing)(b::Array{fmpz, 1}, len::Int, prec::Int, val::Int, scale::Int) 
+function (R::FmpzLaurentSeriesRing)(b::Array{fmpz, 1}, len::Int, prec::Int, val::Int, scale::Int, rescale::Bool = true) 
    z = fmpz_laurent_series(b, len, prec, val, scale)
    z.parent = R
-   z = rescale!(z)
+   if rescale
+      z = rescale!(z)
+   end
    return z
 end
 

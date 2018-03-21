@@ -424,7 +424,7 @@ end
 function test_lindep()
    print("acb.lindep...")
 
-   CC = ComplexField(128)
+   CC = ComplexField(200)
    tau = CC(rand(), abs(rand()) + eps())
    A = modweber_f1(tau)^8; B = modweber_f1(2*tau)^8
 
