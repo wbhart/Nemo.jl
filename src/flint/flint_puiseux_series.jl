@@ -388,14 +388,6 @@ end
 #
 ###############################################################################
 
-function *(x::FlintPuiseuxSeriesElem{fmpz_laurent_series}, y::fmpz)
-   z = parent(x)(x.data*y, x.scale)
-   z = rescale!(z)
-   return z
-end
-
-*(x::fmpz, y::FlintPuiseuxSeriesElem{fmpz_laurent_series}) = y*x
-
 function *(x::FlintPuiseuxSeriesElem, y::Integer)
    z = parent(x)(x.data*y, x.scale)
    z = rescale!(z)
@@ -418,16 +410,6 @@ function divexact(a::FlintPuiseuxSeriesElem{T}, b::FlintPuiseuxSeriesElem{T}) wh
     z = parent(a)(divexact(inflate(a.data, binf), inflate(b.data, ainf)), zscale)
     z = rescale!(z)
     return z
-end
-
-###############################################################################
-#
-#   Ad hoc exact division
-#
-###############################################################################
-
-function divexact(x::FlintPuiseuxSeriesElem{fmpz_laurent_series}, y::fmpz)
-   return parent(x)(divexact(x.data, y), x.scale)
 end
 
 ###############################################################################
@@ -504,10 +486,6 @@ end
 #
 ###############################################################################
 
-==(x::FlintPuiseuxSeriesElem{fmpz_laurent_series}, y::fmpz) = x.data == y
-
-==(x::fmpz, y::FlintPuiseuxSeriesElem{fmpz_laurent_series}) = y == x
-
 ==(x::FlintPuiseuxSeriesElem, y::Integer) = x.data == y
 
 ==(x::Integer, y::FlintPuiseuxSeriesElem) = y == x
@@ -538,24 +516,6 @@ function exp(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
    z = parent(a)(exp(a.data), a.scale)
    z = rescale!(z)
    return z
-end
-
-###############################################################################
-#
-#   Special functions
-#
-###############################################################################
-
-doc"""
-    eta_qexp(x::FlintPuiseuxSeriesElem{fmpz_laurent_series})
-> Return the $q$-series for eta evaluated at $x$, which must currently be a rational
-> power of the generator of the Puiseux series ring.
-"""
-function eta_qexp(x::FlintPuiseuxSeriesElem{fmpz_laurent_series})
-   v = valuation(x)
-   d = eta_qexp(x.data)
-   z = parent(x)(d, x.scale)
-   return z*x^(1//24)
 end
 
 ###############################################################################
@@ -704,12 +664,6 @@ function (R::FlintPuiseuxSeriesField{T})(b::T) where T <: FieldElem
    return z
 end
 
-function (R::FlintPuiseuxSeriesRing{fmpz_laurent_series})(b::fmpz)
-   z = FlintPuiseuxSeriesRingElem{fmpz_laurent_series}(laurent_ring(R)(b), 1)
-   z.parent = R
-   return z
-end
-
 function (R::FlintPuiseuxSeriesRing{T})(b::FlintPuiseuxSeriesRingElem{T}) where T <: RingElem
    parent(b) != R && error("Unable to coerce Puiseux series")
    return b
@@ -718,31 +672,5 @@ end
 function (R::FlintPuiseuxSeriesField{T})(b::FlintPuiseuxSeriesRingElem{T}) where T <: RingElem
    parent(b) != R && error("Unable to coerce Puiseux series")
    return b
-end
-
-###############################################################################
-#
-#   PuiseuxSeriesRing constructor
-#
-###############################################################################
-
-doc"""
-   PuiseuxSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; cached=true)
-> Return a tuple $(S, x)$ consisting of the parent object `S` of a Puiseux series
-> ring over the given base ring and a generator `x` for the Puiseux series ring.
-> The maximum precision of the series in the ring is set to `prec`. This is taken as a
-> maximum relative precision of the underlying Laurent series that are used to implement
-> the Puiseux series in the ring. The supplied string `s` specifies the way the
-> generator of the Puiseux series ring will be printed. By default, the parent
-> object `S` will be cached so that supplying the same base ring, string and
-> precision in future will return the same parent object and generator. If
-> caching of the parent object is not required, `cached` can be set to `false`.
-"""
-function PuiseuxSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; cached=true)
-   S, x = LaurentSeriesRing(R, prec, s; cached=cached)
-
-   parent_obj = FlintPuiseuxSeriesRing{fmpz_laurent_series}(S, cached)
-
-   return parent_obj, gen(parent_obj)
 end
 
