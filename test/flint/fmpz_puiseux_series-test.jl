@@ -31,8 +31,7 @@ end
 function test_fmpz_puiseux_series_manipulation()
    print("fmpz_puiseux_series.manipulation...")
 
-   R, t = PolynomialRing(ZZ, "t")
-   S, x = PuiseuxSeriesRing(R, 30, "x")
+   S, x = PuiseuxSeriesRing(ZZ, 30, "x")
 
    @test max_precision(S) == 30
 
