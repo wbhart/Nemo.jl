@@ -4,6 +4,10 @@
 #
 ###############################################################################
 
+export FlintPuiseuxSeriesRing, FlintPuiseuxSeriesField,
+       FlintPuiseuxSeriesRingElem, FlintPuiseuxSeriesFieldElem,
+       FlintPuiseuxSeriesElem
+
 ###############################################################################
 #
 #   Data type and parent object methods
@@ -422,11 +426,7 @@ end
 #
 ###############################################################################
 
-doc"""
-    divexact{T <: RingElement, S <: RingElement}(a::LaurentSeriesElem{T}, b::S)
-> Return $a/b$ where the quotient is expected to be exact.
-"""
-function divexact(x::FlintPuiseuxSeriesElem{T}, y::S) where {S <: RingElement, T <: RingElement}
+function divexact(x::FlintPuiseuxSeriesElem{fmpz_laurent_series}, y::fmpz)
    return parent(x)(divexact(x.data, y), x.scale)
 end
 
@@ -692,14 +692,20 @@ end
 
 function (R::FlintPuiseuxSeriesRing{T})(b::T) where T <: RingElem
    parent(b) != base_ring(R) && error("Unable to coerce to Puiseux series")
-   z = FlintPuiseuxSeriesRingElem{T}(laurent_ring(R)(b), 1)
+   z = FlintPuiseuxSeriesRingElem{T}(b, 1)
    z.parent = R
    return z
 end
 
 function (R::FlintPuiseuxSeriesField{T})(b::T) where T <: FieldElem
    parent(b) != base_ring(R) && error("Unable to coerce to Puiseux series")
-   z = FlintPuiseuxSeriesFieldElem{T}(laurent_ring(R)(b), 1)
+   z = FlintPuiseuxSeriesFieldElem{T}(b, 1)
+   z.parent = R
+   return z
+end
+
+function (R::FlintPuiseuxSeriesRing{fmpz_laurent_series})(b::fmpz)
+   z = FlintPuiseuxSeriesRingElem{fmpz_laurent_series}(laurent_ring(R)(b), 1)
    z.parent = R
    return z
 end
