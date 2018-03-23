@@ -629,12 +629,14 @@ end
 function (R::FlintPuiseuxSeriesRing{T})(b::T, scale::Int) where T <: RingElem
    z = FlintPuiseuxSeriesRingElem{T}(b, scale)
    z.parent = R
+   z = rescale!(z)
    return z
 end
 
 function (R::FlintPuiseuxSeriesField{T})(b::T, scale::Int) where T <: RingElem
    z = FlintPuiseuxSeriesFieldElem{T}(b, scale)
    z.parent = R
+   z = rescale!(z)
    return z
 end
 
