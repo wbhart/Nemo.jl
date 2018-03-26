@@ -11,6 +11,7 @@ makedocs(
              "Rings" => [ "integer.md",
                           "polynomial.md",
                           "series.md",
+                          "puiseux.md",
                           "residue.md"],
              "Fields" => [ "fraction.md",
                            "rational.md",

@@ -699,7 +699,7 @@ d = hyp1f1(s, s+1, z)
 ### Linear dependence
 
 ```@docs
-lindep(::arb, n::Int)
+lindep(::Array{acb, 1}, n::Int)
 ```
 
 **Examples**

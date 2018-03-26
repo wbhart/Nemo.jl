@@ -664,7 +664,7 @@ f = polylog(3, RR(-10))
 ### Linear dependence
 
 ```@docs
-lindep(::arb, n::Int)
+lindep(::Array{arb, 1}, n::Int)
 ```
 
 **Examples**

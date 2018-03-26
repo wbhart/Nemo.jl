@@ -496,6 +496,10 @@ end
 #
 ###############################################################################
 
+doc"""
+   sqrt{T <: RingElem}(a::FlintPuiseuxSeriesElem{T})
+> Return the square root of the given Puiseux series.
+"""
 function sqrt(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
    val = valuation(a.data)
    S = parent(a)
@@ -512,6 +516,10 @@ end
 #
 ###############################################################################
 
+doc"""
+   exp{T <: RingElem}(a::FlintPuiseuxSeriesElem{T})
+> Return the exponential of the given Puiseux series.
+"""
 function exp(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
    z = parent(a)(exp(a.data), a.scale)
    z = rescale!(z)

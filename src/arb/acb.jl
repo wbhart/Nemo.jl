@@ -1450,7 +1450,7 @@ function agm(x::acb, y::acb)
 end
 
 doc"""
-    lindep(A::Array{acb}, bits::Int)
+    lindep(A::Array{acb, 1}, bits::Int)
 > Find a small linear combination of the entries of the array $A$ that is small
 > using LLL). The entries are first scaled by the given number of bits before
 > truncating the real and imaginary parts to integers for use in LLL. This function can
@@ -1458,7 +1458,7 @@ doc"""
 > heuristic only and returns an array of Nemo integers representing the linear
 > combination.
 """
-function lindep(A::Array{acb}, bits::Int)
+function lindep(A::Array{acb, 1}, bits::Int)
   bits < 0 && throw(DomainError())
   n = length(A)
   V = [ldexp(s, bits) for s in A]
