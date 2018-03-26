@@ -346,6 +346,12 @@ function test_nf_elem_representation_matrix()
     @test all(Mb[k, l] == Mbb[k, l]//d for k in 1:3 for l in 1:3)
   end
 
+  K, a = NumberField(x^2 + 28, "a")
+  b = -1//4 * a + 1//2
+  Mbb, d = representation_matrix_q(b)
+  @test Mbb == QQ[2 -1; 28 2]
+  @test d == 4
+
   println("PASS")
 end
 
