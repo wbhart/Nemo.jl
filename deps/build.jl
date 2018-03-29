@@ -233,14 +233,14 @@ if !is_windows()
     cd(wdir)
   catch
     if ispath(joinpath("$wdir", "arb"))
-      open(`patch -R --forward -d arb -r -`, "r", open("../deps-PIE-ftbfs.patch"))
+      #open(`patch -R --forward -d arb -r -`, "r", open("../deps-PIE-ftbfs.patch"))
       cd(joinpath("$wdir", "arb"))
       run(`git fetch`)
       run(`git checkout $ARB_VERSION`)
       cd(wdir)
     end
   end
-  open(`patch --forward -d arb -r -`, "r", open("../deps-PIE-ftbfs.patch"))
+  #open(`patch --forward -d arb -r -`, "r", open("../deps-PIE-ftbfs.patch"))
   println("DONE")
 end
 
@@ -255,14 +255,14 @@ if !is_windows()
     cd(wdir)
   catch
     if ispath(joinpath("$wdir", "antic"))
-      open(`patch -R --forward -d antic -r -`, "r", open("../deps-PIE-ftbfs.patch"))
+      #open(`patch -R --forward -d antic -r -`, "r", open("../deps-PIE-ftbfs.patch"))
       cd(joinpath("$wdir", "antic"))
       run(`git fetch`)
       run(`git checkout $ANTIC_VERSION`)
       cd(wdir)
     end
   end
-  open(`patch --forward -d antic -r -`, "r", open("../deps-PIE-ftbfs.patch"))
+  #open(`patch --forward -d antic -r -`, "r", open("../deps-PIE-ftbfs.patch"))
   println("DONE")
 end
 
