@@ -721,26 +721,14 @@ function mullow(a::fmpz_laurent_series, b::fmpz_laurent_series, n::Int)
    end
    s = scale(a)
    prec = min(precision(a), precision(b))
-   t = base_ring(a)()
+   z = parent(a)()
    lenz = min(lena + lenb - 1, div(n + s - 1, s))
-   d = Array{fmpz}(lenz)
-   for i = 1:min(lena, lenz)
-      d[i] = polcoeff(a, i - 1)*polcoeff(b, 0)
-   end
-   if lenz > lena
-      for j = 2:min(lenb, lenz - lena + 1)
-          d[lena + j - 1] = polcoeff(a, lena - 1)*polcoeff(b, j - 1)
-      end
-   end
-   for i = 1:lena - 1
-      if lenz > i
-         for j = 2:min(lenb, lenz - i + 1)
-            t = mul!(t, polcoeff(a, i - 1), polcoeff(b, j - 1))
-            d[i + j - 1] = addeq!(d[i + j - 1], t)
-         end
-      end
-   end
-   z = parent(a)(d, lenz, prec, 0, s, false)
+   ccall((:fmpz_poly_mullow, :libflint), Void,
+                (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
+               z, a, b, lenz)
+   set_prec!(z, prec)
+   set_val!(z, valuation(a) + valuation(b))
+   set_scale!(z, s)
    return z
 end
 
