@@ -575,7 +575,7 @@ function mul!(z::fmpz_rel_series, a::fmpz_rel_series, b::fmpz_rel_series)
    lena = min(lena, prec)
    lenb = min(lenb, prec)
    z.val = a.val + b.val
-   z.prec = prec + c.val
+   z.prec = prec + z.val
    lenz = min(lena + lenb - 1, prec)
    if lena <= 0 || lenb <= 0
       lenz = 0
@@ -629,8 +629,8 @@ function addeq!(a::fmpz_rel_series, b::fmpz_rel_series)
 end
 
 function add!(c::fmpz_rel_series, a::fmpz_rel_series, b::fmpz_rel_series)
-   lena = length(a)
-   lenb = length(b)
+   lena = pol_length(a)
+   lenb = pol_length(b)
 
    prec = min(a.prec, b.prec)
 
