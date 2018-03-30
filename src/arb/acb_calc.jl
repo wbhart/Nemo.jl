@@ -54,19 +54,17 @@ function integrate(C::AcbField, F, a, b;
 
    res = C()
 
-   ptrF = pointer_from_objref(F)
-
    status = ccall((:acb_calc_integrate, :libarb), UInt,
                   (Ref{acb},                       #res
                    Ptr{Void},                      #func
-                   Ptr{Void},                      #params
+                   Any,                            #params
                    Ref{acb},                       #a
                    Ref{acb},                       #b
                    Int,                            #rel_goal
                    Ref{mag_struct},                #abs_tol
                    Ref{acb_calc_integrate_opts},   #opts
                    Int),
-      res, acb_calc_func_wrap_c(), ptrF, lower, upper, cgoal, ctol, opts, prec(C))
+      res, acb_calc_func_wrap_c(), F, lower, upper, cgoal, ctol, opts, prec(C))
 
    ccall((:mag_clear, :libarb), Void, (Ref{mag_struct},), ctol)
 

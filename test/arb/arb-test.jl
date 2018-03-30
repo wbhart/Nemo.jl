@@ -462,7 +462,7 @@ function test_fmpq_arb_special_functions()
    println("PASS")
 end
 
-function test_lindep()
+function test_arb_lindep()
    print("arb.lindep...")
 
    CC = ComplexField(64)
@@ -491,7 +491,7 @@ function test_arb()
    test_arb_constants()
    test_arb_functions()
    test_fmpq_arb_special_functions()
-   test_lindep()
+   test_arb_lindep()
 
    println("")
 end
