@@ -348,9 +348,13 @@ function test_nf_elem_representation_matrix()
 
   K, a = NumberField(x^2 + 28, "a")
   b = -1//4 * a + 1//2
+  Mb = representation_matrix(b)
+  @test base_ring(Mb) == FlintQQ
+  @test Mb == FlintQQ[1//2 -1//4; 7 1//2]
   Mbb, d = representation_matrix_q(b)
-  @test Mbb == QQ[2 -1; 28 2]
+  @test Mbb == FlintZZ[2 -1; 28 2]
   @test d == 4
+  @test base_ring(Mbb) == FlintZZ
 
   println("PASS")
 end
