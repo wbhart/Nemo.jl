@@ -117,7 +117,7 @@ function test_fmpz_binary_ops()
 
    @test b|a == 30
 
-   @test b$a == 22
+   @test xor(b, a) == 22
 
    println("PASS")
 end

@@ -421,7 +421,7 @@ function test_acb_functions()
    println("PASS")
 end
 
-function test_lindep()
+function test_acb_lindep()
    print("acb.lindep...")
 
    CC = ComplexField(200)
@@ -474,7 +474,7 @@ function test_acb()
    test_acb_unsafe_ops()
    test_acb_constants()
    test_acb_functions()
-   test_lindep()
+   test_acb_lindep()
    test_acb_integration()
 
    println("")

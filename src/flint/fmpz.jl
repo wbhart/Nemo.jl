@@ -268,10 +268,10 @@ end
 ###############################################################################
 
 # Metaprogram to define functions +, -, *, gcd, lcm,
-#                                 &, |, $
+#                                 &, |, $ (xor)
 
 for (fJ, fC) in ((:+, :add), (:-,:sub), (:*, :mul),
-                 (:&, :and), (:|, :or), (:$, :xor))
+                 (:&, :and), (:|, :or), (:xor, :xor))
     @eval begin
         function ($fJ)(x::fmpz, y::fmpz)
             z = fmpz()
