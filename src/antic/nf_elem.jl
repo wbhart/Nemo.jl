@@ -629,6 +629,7 @@ doc"""
 function representation_matrix(a::nf_elem)
   K = parent(a)
   z = fmpq_mat(degree(K), degree(K))
+  z.base_ring = FlintQQ
   ccall((:nf_elem_rep_mat, :libantic), Void,
         (Ref{fmpq_mat}, Ref{nf_elem}, Ref{AnticNumberField}), z, a, K)
   return z
@@ -644,6 +645,7 @@ doc"""
 function representation_matrix_q(a::nf_elem)
   K = parent(a)
   z = fmpz_mat(degree(K), degree(K))
+  z.base_ring = FlintZZ
   d = fmpz()
   ccall((:nf_elem_rep_mat_fmpz_mat_den, :libantic), Void,
         (Ref{fmpz_mat}, Ref{fmpz}, Ref{nf_elem}, Ref{AnticNumberField}),
