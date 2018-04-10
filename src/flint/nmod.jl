@@ -317,6 +317,19 @@ function gcd(x::nmod, y::nmod)
    end
 end
 
+doc"""
+    gcdx(a::nmod, b::nmod)
+> Compute the extended gcd with the Euclidean structure inherited from
+> $\mathbb{Z}$.
+"""
+function gcdx(a::nmod, b::nmod)
+   m = modulus(a)
+   R = parent(a)
+   g, u, v = gcdx(fmpz(a.data), fmpz(b.data))
+   G, U, V = gcdx(g, fmpz(m))
+   return R(G), R(U)*R(u), R(U)*R(v)
+end
+
 ###############################################################################
 #
 #   Unsafe functions
