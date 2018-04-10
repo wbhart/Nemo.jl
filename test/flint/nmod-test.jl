@@ -418,6 +418,25 @@ function test_nmod_gcd()
    println("PASS")
 end
 
+function test_nmod_gcdx()
+   print("nmod.gcdx...")
+
+   for i = 1:100
+      R = ResidueRing(ZZ, rand(1:24))
+
+      for iter = 1:100
+         a = rand(R)
+         b = rand(R)
+
+         g, s, t = gcdx(a, b)
+
+         @test g == s*a + t*b
+      end
+   end
+
+   println("PASS")
+end
+
 function test_nmod()
    test_nmod_constructors()
    test_nmod_printing()
@@ -431,6 +450,7 @@ function test_nmod()
    test_nmod_inversion()
    test_nmod_exact_division()
    test_nmod_gcd()
+   test_nmod_gcdx()
    
    println("")
 end
