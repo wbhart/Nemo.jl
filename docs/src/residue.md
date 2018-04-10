@@ -41,3 +41,18 @@ In addition, functionality for generic residue rings is available:
 [https://nemocas.github.io/AbstractAlgebra.jl/residue.html](https://nemocas.github.io/AbstractAlgebra.jl/residue.html)
 
 The other residue types in Nemo also implement this functionality.
+
+### GCD
+
+```@docs
+gcdx(::nmod, ::nmod)
+gcdx(::ResElem{fmpz}, ::ResElem{fmpz})
+```
+
+**Examples**
+
+```julia
+R = ResidueRing(ZZ, 123456789012345678949)
+
+g, s, t = gcdx(R(123), R(456))
+```
