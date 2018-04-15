@@ -59,6 +59,8 @@ include("Fields.jl")
 
 include("flint/fmpq_poly.jl")
 
+include("flint/fmpq_mpoly.jl")
+
 include("flint/padic.jl")
 
 include("flint/fmpq_rel_series.jl")

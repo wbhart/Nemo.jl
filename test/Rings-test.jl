@@ -31,6 +31,8 @@ include("arb/acb_poly-test.jl")
 include("arb/arb_mat-test.jl")
 include("arb/acb_mat-test.jl")
 
+include("flint/fmpq_mpoly-test.jl")
+
 function test_rings()
    test_fmpz()
    test_fmpz_poly()
@@ -65,4 +67,6 @@ function test_rings()
    test_fmpq_mat()
    test_arb_mat()
    test_acb_mat()
+
+   test_fmpq_mpoly()
 end
