@@ -253,6 +253,8 @@ needs_parentheses(::Nemo.nf_elem) = true
 
 isnegative(::nf_elem) = false
 
+canonical_unit(x::nf_elem) = x
+
 ###############################################################################
 #
 #   Unary operators
@@ -1013,6 +1015,18 @@ function (a::FmpqPolyRing)(b::nf_elem)
    ccall((:nf_elem_get_fmpq_poly, :libantic), Void,
          (Ref{fmpq_poly}, Ref{nf_elem}, Ref{AnticNumberField}), r, b, parent(b))
    return r
+end
+
+###############################################################################
+#
+#   Random generation
+#
+###############################################################################
+
+function rand(K::AnticNumberField, r::UnitRange{Int64})
+   R = parent(K.pol)
+   n = degree(K.pol)
+   return K(rand(R, n:n, r)) 
 end
 
 ###############################################################################
