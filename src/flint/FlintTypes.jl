@@ -796,6 +796,174 @@ end
 
 ###############################################################################
 #
+#   FmpqMPolyRing / fmpq_mpoly
+#
+###############################################################################
+
+const flint_orderings = [:lex, :deglex, :degrevlex]
+
+# S is a Symbol which can take the values:
+# :lex
+# :deglex
+# :degrevlex
+
+mutable struct FmpqMPolyRing <: MPolyRing{fmpq}
+   nvars::Int
+   nfields::Cint
+   ord::Int
+   deg::Cint
+   rev::Cint
+   base_ring::FlintRationalField
+   S::Array{Symbol, 1}
+
+   function FmpqMPolyRing(s::Array{Symbol, 1}, S::Symbol, cached::Bool = true)
+      if cached && haskey(FmpqMPolyID, (s, S))
+         return FmpqMPolyID[s, S]
+      else
+         if S == :lex
+            ord = 0
+         elseif S == :deglex
+            ord = 1
+         elseif S == :degrevlex
+            ord = 2
+         else
+            error("$S is not a valid ordering")
+         end
+
+         z = new()
+         ccall((:fmpq_mpoly_ctx_init, :libflint), Void,
+               (Ref{FmpqMPolyRing}, Int, Int),
+               z, length(s), ord)
+         z.base_ring = FlintQQ
+         z.S = s
+         finalizer(z, _fmpq_mpoly_ctx_clear_fn)
+         if cached
+            FmpqMPolyID[s, S] = z
+         end
+         return z
+      end
+   end
+end
+
+function _fmpq_mpoly_ctx_clear_fn(a::FmpqMPolyRing)
+  ccall((:fmpq_mpoly_ctx_clear, :libflint), Void,
+          (Ref{FmpqMPolyRing},), a)
+end
+
+const FmpqMPolyID = Dict{Tuple{Array{Symbol, 1}, Symbol}, FmpqMPolyRing}()
+
+mutable struct fmpq_mpoly <: MPolyElem{fmpq}
+   content_num::Ptr{Void}
+   content_den::Ptr{Void}
+   coeffs::Ptr{Void}
+   exps::Ptr{Void}
+   alloc::Int
+   length::Int
+   bits::Int
+
+   parent::FmpqMPolyRing
+
+   function fmpq_mpoly(ctx::FmpqMPolyRing)
+      z = new()
+      ccall((:fmpq_mpoly_init, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      z.parent = ctx
+      finalizer(z, _fmpq_mpoly_clear_fn)
+      return z
+   end
+
+   function fmpq_mpoly(ctx::FmpqMPolyRing, a::Vector{fmpq}, b::Vector{Vector{UInt}})
+      z = new()
+      ccall((:fmpq_mpoly_init, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      z.parent = ctx
+      finalizer(z, _fmpq_mpoly_clear_fn)
+
+      for i in 1:length(a)
+        ccall((:fmpq_mpoly_pushterm_fmpq_ui, :libflint), Void,
+              (Ref{fmpq_mpoly}, Ref{fmpq}, Ptr{UInt}, Ref{FmpqMPolyRing}),
+              z, a[i], b[i], ctx)
+      end
+
+      ccall((:fmpq_mpoly_sort, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, ctx)
+      ccall((:fmpq_mpoly_combine_like_terms, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, ctx)
+      return z
+   end
+
+   function fmpq_mpoly(ctx::FmpqMPolyRing, a::Vector{fmpq}, b::Vector{Vector{fmpz}})
+      z = new()
+      ccall((:fmpq_mpoly_init, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      z.parent = ctx
+      finalizer(z, _fmpq_mpoly_clear_fn)
+
+      for i in 1:length(a)
+        ccall((:fmpq_mpoly_pushterm_fmpq_fmpz, :libflint), Void,
+              (Ref{fmpq_mpoly}, Ref{fmpq}, Ptr{Ref{fmpz}}, Ref{FmpqMPolyRing}),
+              z, a[i], b[i], ctx)
+      end
+
+      ccall((:fmpq_mpoly_sort, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, ctx)
+      ccall((:fmpq_mpoly_combine_like_terms, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, ctx)
+      return z
+   end
+
+   function fmpq_mpoly(ctx::FmpqMPolyRing, a::fmpz)
+      z = new()
+      ccall((:fmpq_mpoly_init, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      ccall((:fmpq_mpoly_set_fmpz, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{fmpz}, Ref{FmpqMPolyRing}), z, a, ctx)
+      z.parent = ctx
+      finalizer(z, _fmpq_mpoly_clear_fn)
+      return z
+   end
+
+   function fmpq_mpoly(ctx::FmpqMPolyRing, a::fmpq)
+      z = new()
+      ccall((:fmpq_mpoly_init, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      ccall((:fmpq_mpoly_set_fmpq, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{fmpq}, Ref{FmpqMPolyRing}), z, a, ctx)
+      z.parent = ctx
+      finalizer(z, _fmpq_mpoly_clear_fn)
+      return z
+   end
+   
+   function fmpq_mpoly(ctx::FmpqMPolyRing, a::Int)
+      z = new()
+      ccall((:fmpq_mpoly_init, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      ccall((:fmpq_mpoly_set_si, :libflint), Void,
+            (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}), z, a, ctx)
+      z.parent = ctx
+      finalizer(z, _fmpq_mpoly_clear_fn)
+      return z
+   end
+
+   function fmpq_mpoly(ctx::FmpqMPolyRing, a::UInt)
+      z = new()
+      ccall((:fmpq_mpoly_init, :libflint), Void,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      ccall((:fmpq_mpoly_set_ui, :libflint), Void,
+            (Ref{fmpq_mpoly}, UInt, Ref{FmpqMPolyRing}), z, a, ctx)
+      z.parent = ctx
+      finalizer(z, _fmpq_mpoly_clear_fn)
+      return z
+   end
+end
+
+function _fmpq_mpoly_clear_fn(a::fmpq_mpoly)
+  ccall((:fmpq_mpoly_clear, :libflint), Void,
+          (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
+end
+
+###############################################################################
+#
 #   FqNmodFiniteField / fq_nmod
 #
 ###############################################################################
