@@ -26,6 +26,7 @@ makedocs(
 )
 
 deploydocs(
+   julia = "nightly",
    repo   = "github.com/Nemocas/Nemo.jl.git",
    target = "build",
    deps = Deps.pip("pygments", "mkdocs", "python-markdown-math"),
