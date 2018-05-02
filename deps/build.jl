@@ -4,7 +4,7 @@ oldwdir = pwd()
 @show YASM_VERSION = "1.3.0"
 @show MPIR_VERSION = "3.0.0"
 @show MPFR_VERSION = "4.0.0"
-@show ANTIC_VERSION = "0063a41b6a75db801fddf562fa4a329c12ce0584"
+@show ANTIC_VERSION = "7905f41b7ae661eef30c301f58dca4cd5dcf92cb"
 @show FLINT_VERSION = "adf1583c6bd92a454f3f92a18adf9063d14637a0"
 @show ARB_VERSION = "232135f35eeebb74afcea5dd7be436142bee9227"
 
