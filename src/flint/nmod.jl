@@ -294,9 +294,11 @@ function divides(a::nmod, b::nmod)
    if r != 0
       return false, b
    end
-   ub = div(B, gb)
-   _, x = ppio(m, ub)
-   r = R(q)*inv(R(ub))
+   ub = divexact(B, gb)
+   # The Julia invmod function does not give the correct result for me
+   b1 = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
+           ub, divexact(m, gb))
+   r = R(q)*b1
    return true, r
 end
 

@@ -381,8 +381,11 @@ function test_nmod_exact_division()
       for iter = 1:100
          a1 = rand(R)
          a2 = rand(R)
+         p = a1*a2
 
-         @test !isunit(a2) || divexact(a1, a2)*a2 == a1
+         q = divexact(p, a2)
+         
+         @test q*a2 == p
       end
    end
 
@@ -392,8 +395,11 @@ function test_nmod_exact_division()
       for iter = 1:100
          a1 = rand(R)
          a2 = rand(R)
+         p = a1*a2
 
-         @test !isunit(a2) || divexact(a1, a2)*a2 == a1
+         q = divexact(p, a2)
+
+         @test q*a2 == p
       end
    end
 
