@@ -378,10 +378,10 @@ function test_nmod_exact_division()
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
-      for iter = 2:100
+      for iter = 1:100
          a1 = rand(R)
          a2 = rand(R)
-         a2 += Int(a2 == 0)
+         a2 += Int(a2 == 0) # still works mod 1
          p = a1*a2
 
          q = divexact(p, a2)
@@ -393,10 +393,10 @@ function test_nmod_exact_division()
    for i = 1:100
       R = ResidueRing(ZZ, rand(UInt(1):typemax(UInt)))
 
-      for iter = 2:100
+      for iter = 1:100
          a1 = rand(R)
          a2 = rand(R)
-         a2 += Int(a2 == 0)
+         a2 += Int(a2 == 0) # still works mod 1
          p = a1*a2
 
          q = divexact(p, a2)
