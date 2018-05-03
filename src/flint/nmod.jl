@@ -275,7 +275,7 @@ function divexact(x::nmod, y::nmod)
    check_parent(x, y)
    fl, q = divides(x, y)
    if !fl
-     error("Impossible inverse in ", R)
+     error("Impossible inverse in ", parent(x))
    end
    return q
 end
