@@ -12,6 +12,24 @@ pkgdir = dirname(dirname(@__FILE__))
 wdir = joinpath(pkgdir, "deps")
 vdir = joinpath(pkgdir, "local")
 
+if "NEMO_MAKE_CLEAN" in keys(ENV) && ENV["NEMO_MAKE_CLEAN"] == "1"
+  print("
+===============================================================================
+=
+=  NEMO_MAKE_CLEAN = 1
+=  Removing old sources and builds
+=
+================================================================================\n")
+
+  rm(joinpath(wdir, "flint2"), force = true, recursive = true)
+  rm(joinpath(wdir, "arb"), force = true, recursive = true)
+  rm(joinpath(wdir, "antic"), force = true, recursive = true)
+  rm(joinpath(wdir, "mpfr-4.0.0"), force = true, recursive = true)
+  rm(joinpath(wdir, "mpir-3.0.0"), force = true, recursive = true)
+  rm(joinpath(wdir, "yasm-1.3.0"), force = true, recursive = true)
+  rm(vdir, force = true, recursive = true)
+end
+
 if is_apple() && !("CC" in keys(ENV))
    ENV["CC"] = "clang"
    ENV["CXX"] = "clang++"
