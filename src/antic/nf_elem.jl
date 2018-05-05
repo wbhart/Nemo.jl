@@ -426,7 +426,9 @@ function *(a::Rational, b::nf_elem)
   return fmpq(a) * b
 end
 
-*(a::nf_elem, b::Rational) = b*a
+*(a::nf_elem, b::Rational) = b * a
+
+*(a::nf_elem, b::Integer) = a * fmpz(b)
 
 *(a::Integer, b::nf_elem) = b * a
 
