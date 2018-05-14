@@ -74,7 +74,7 @@ function isgen(a::fmpq_mpoly)
    return false
 end
 
-function deepcopy(a::fmpq_mpoly)
+function deepcopy_internal(a::fmpq_mpoly, dict::ObjectIdDict)
    z = parent(a)()
    ccall((:fmpq_mpoly_set, :libflint), Void,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
