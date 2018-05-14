@@ -4,7 +4,7 @@ function test_fq_nmod_embed()
     # Creation of the finite fields
 
     p = 11
-
+    
     k2, x2 = FiniteField(p, 2, "x2")
     k3, x3 = FiniteField(p, 3, "x3")
     k4, x4 = FiniteField(p, 4, "x4")
