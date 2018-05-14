@@ -543,7 +543,7 @@ function mul!(z::fq_nmod_rel_series, a::fq_nmod_rel_series, b::fq_nmod_rel_serie
    lena = min(lena, prec)
    lenb = min(lenb, prec)
    z.val = a.val + b.val
-   z.prec = prec + c.val
+   z.prec = prec + z.val
    lenz = min(lena + lenb - 1, prec)
    if lena <= 0 || lenb <= 0
       lenz = 0
@@ -603,8 +603,8 @@ end
 
 function add!(c::fq_nmod_rel_series, a::fq_nmod_rel_series, b::fq_nmod_rel_series)
    ctx = base_ring(a)
-   lena = length(a)
-   lenb = length(b)
+   lena = pol_length(a)
+   lenb = pol_length(b)
 
    prec = min(a.prec, b.prec)
 

@@ -18,9 +18,12 @@ m = BigInt(123)
 
 ## How we construct objects in Nemo
 
-As we explained in the previous section, Julia types don't contain enough information to properly model
-the ring of integers modulo $n$ for a multiprecision modulus $n$. Instead of using types to construct
-objects, we use special objects that we refer to as parent objects. They behave a lot like Julia types.
+Julia types don't contain enough information to properly model groups, rings and fields,
+especially if they are parameterised by values. For example, the ring of integers
+modulo $n$ for a multiprecision modulus $n$ cannot be modeled using types alone.
+
+Instead of using types to construct objects in Nemo, we use special objects that we
+refer to as parent objects. They behave a lot like Julia types.
 
 Consider the following simple example, to create a Flint multiprecision integer:
 
@@ -53,17 +56,21 @@ of the polynomial ring $\mathbb{Z}[x]$.
 For convenience, we provide a list of all the parent object constructors in Nemo and explain what domains
 they represent.
 
-| Mathematics                      | Nemo constructor                    |
-|----------------------------------|-------------------------------------|
-| $R = \mathbb{Z}$                 | `R = ZZ`                            |
-| $R = \mathbb{Q}$                 | `R = QQ`                            |
-| $R = \mathbb{F}_{p^n}$           | `R, a = FiniteField(p, n, "a")`     |
-| $R = \mathbb{Z}/n\mathbb{Z}$     | `R = ResidueRing(ZZ, n)`            |
-| $S = R[x]$                       | `S, x = PolynomialRing(R, "x")`     |
-| $S = R[x]$ (to precision $n$)    | `S, x = PowerSeriesRing(R, n, "x")` |
-| $S = \mbox{Frac}_R$              | `S = FractionField(R)`              |
-| $S = R/(f)$                      | `S = ResidueRing(R, f)`             |
-| $S = \mbox{Mat}_{m\times n}(R)$  | `S = MatrixSpace(R, m, n)`          |
-| $S = \mathbb{Q}[x]/(f)$          | `S, a = NumberField(f, "a")`        |
-| $O = \mathcal{O}_K$              | `S = MaximalOrder(K)`               |
-| ideal $I$ of $O = \mathcal{O}_K$ | `I = Ideal(O, gens, ...)`           |     
+| Mathematics                           | Nemo constructor                              |
+|---------------------------------------|-----------------------------------------------|
+| $R = \mathbb{Z}$                      | `R = ZZ`                                      |
+| $R = \mathbb{Q}$                      | `R = QQ`                                      |
+| $R = \mathbb{F}_{p^n}$                | `R, a = FiniteField(p, n, "a")`               |
+| $R = \mathbb{Z}/n\mathbb{Z}$          | `R = ResidueRing(ZZ, n)`                      |
+| $S = R[x]$                            | `S, x = PolynomialRing(R, "x")`               |
+| $S = R[x, y]$                         | `S, (x, y, z) = PolynomialRing(R, ["x", "y"]) |
+| $S = R[[x]]$ (to precision $n$)       | `S, x = PowerSeriesRing(R, n, "x")`           |
+| $S = R((x))$ (to precision $n$)       | `S, x = LaurentSeriesRing(R, n, "x")`         |
+| $S = \mbox{Frac}_R$                   | `S = FractionField(R)`                        |
+| $S = R/(f)$                           | `S = ResidueRing(R, f)`                       |
+| $S = \mbox{Mat}_{m\times n}(R)$       | `S = MatrixSpace(R, m, n)`                    |
+| $S = \mathbb{Q}[x]/(f)$               | `S, a = NumberField(f, "a")`                  |
+| $S = \mathbb{Q}_p$ (to precision $N$) | `S = PadicField(p, n)`                        |
+| $S = \mathbb{R}$ (to precision $n$)   | `S = RealField(n)`                            |
+| $S = \mathbb{C}$ (to precision $n$)   | `S = ComplexField(n)`                         |
+

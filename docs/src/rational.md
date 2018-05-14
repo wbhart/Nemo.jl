@@ -2,7 +2,7 @@
 CurrentModule = Nemo
 ```
 
-## Introduction
+# Rationals
 
 Nemo provides much functionality for the rational numbers. See the section on
 Fraction Fields where all the basic functionality is documented, along with the

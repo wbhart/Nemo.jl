@@ -179,6 +179,9 @@ end
 function show(io::IO, a::fmpq_mat)
    r = rows(a)
    c = cols(a)
+   if r*c == 0
+      print(io, "$r by $c matrix")
+   end
    for i = 1:r
       print(io, "[")
       for j = 1:c
@@ -831,6 +834,9 @@ end
 ###############################################################################
 
 function zero_matrix(R::FlintRationalField, r::Int, c::Int)
+   if r < 0 || c < 0
+     error("dimensions must not be negative")
+   end
    z = fmpq_mat(r, c)
    z.base_ring = FlintQQ
    return z
@@ -843,6 +849,9 @@ end
 ###############################################################################
 
 function identity_matrix(R::FlintRationalField, n::Int)
+   if n < 0
+     error("dimension must not be negative")
+   end
    z = fmpq_mat(n, n)
    ccall((:fmpq_mat_one, :libflint), Void, (Ref{fmpq_mat}, ), z)
    z.base_ring = FlintQQ

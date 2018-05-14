@@ -2,43 +2,57 @@ VERSION >= v"0.4.0-dev+6521" && __precompile__()
 
 module Nemo
 
+if VERSION >= v"0.7.0-"
+   using Libdl
+end
+
 import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
              bin, ceil, checkbounds, conj, convert, cmp, contains, cos, cosh,
              cospi, cot, coth, dec, deepcopy, deepcopy_internal, deserialize,
-             det, div, divrem, expm1, eye, floor, gamma, gcd, gcdx, getindex,
+             det, div, divrem, expm1, exp, eye, floor, gamma, gcd, gcdx, getindex,
              hash, hcat, hex, hypot, intersect, inv, invmod, isequal,
              isfinite, isless, isqrt, isreal, iszero, lcm, ldexp, length,
              lgamma, log, log1p, lufact, lufact!, mod, ndigits, nextpow2, norm,
              nullspace, numerator, oct, one, parent, parse, precision,
              prevpow2, rand, rank, Rational, rem, reverse, serialize,
-             setindex!, show, similar, sign, sin, sinh, sinpi, size, string,
+             setindex!, show, similar, sign, sin, sinh, sinpi, size, sqrt, string,
              tan, tanh, trace, trailing_zeros, transpose, transpose!, truncate,
-             typed_hvcat, typed_hcat, var, vcat, zero, zeros, +, -, *, ==, ^,
-             &, |, $, <<, >>, ~, <=, >=, <, >, //, /, !=
+             typed_hvcat, typed_hcat, var, vcat, xor, zero, zeros, +, -, *, ==, ^,
+             &, |, <<, >>, ~, <=, >=, <, >, //, /, !=
 
-export elem_type, parent_type
+import AbstractAlgebra
 
-export SetElem, GroupElem, RingElem, FieldElem, AccessorNotSetError
+# We don't want the QQ, ZZ, FiniteField, NumberField from AbstractAlgebra
+# as they are for parents of Julia types or naive implementations
+# We only import AbstractAlgebra, not export
+# We do not want the AbstractAlgebra version of exp and sqrt, but the Base version
+# which is the only place user friendly exp and sqrt are defined
+# AbstractAlgebra/Nemo has its own promote_rule, distinct from Base
+# Set, Module, Ring, Group and Field are too generic to pollute the users namespace with
+exclude = [:QQ, :ZZ, :RR, :RealField, :FiniteField, :NumberField,
+           :AbstractAlgebra, 
+           :exp, :sqrt,
+           :promote_rule,
+           :Set, :Module, :Ring, :Group, :Field]
 
-export PolyElem, SeriesElem, AbsSeriesElem, RelSeriesElem, ResElem, FracElem,
-       MatElem, FinFieldElem, MPolyElem
+for i in names(AbstractAlgebra)
+  i in exclude && continue
+  eval(parse("import AbstractAlgebra." * string(i)))
+  eval(Expr(:export, i))
+end
 
-export PolyRing, SeriesRing, AbsSeriesRing, ResRing, FracField, MatSpace,
-       FinField, MPolyRing
-
-export JuliaZZ, JuliaQQ, zz, qq, JuliaRealField, RDF
-
-export PermutationGroup, ZZ, QQ, PadicField, FiniteField, RealField, ComplexField,
-       CyclotomicField, MaximalRealSubfield, NumberField
-
-export create_accessors, get_handle, package_handle, zeros,
-       Array, sig_exists
+import AbstractAlgebra: Set, Module, Ring, Group, Field, promote_rule
 
 export flint_cleanup, flint_set_num_threads
 
 export error_dim_negative, ErrorConstrDimMismatch
 
 export is_windows64
+
+export CyclotomicField, MaximalRealSubfield, NumberField, ComplexField, PadicField
+
+# Things/constants which are also defined in AbstractAlgebra:
+export ZZ, QQ, RealField, FiniteField, NumberField
 
 if VERSION >= v"0.6.0-dev.2024" # julia started exporting iszero (again?)
    import Base: iszero
@@ -55,8 +69,6 @@ end
 if VERSION >= v"0.7.0-DEV.1144"
     import Base: isone
 end
-
-include("AbstractTypes.jl")
 
 ###############################################################################
 #
@@ -76,9 +88,110 @@ end
 const libmpfr = joinpath(pkgdir, "local", "lib", "libmpfr")
 const libflint = joinpath(pkgdir, "local", "lib", "libflint")
 const libarb = joinpath(pkgdir, "local", "lib", "libarb")
+const libantic = joinpath(pkgdir, "local", "lib", "libantic")
 
 function flint_abort()
   error("Problem in the Flint-Subsystem")
+end
+
+active_mem=Dict{UInt, Tuple{Symbol, UInt, Any}}()
+
+function trace_malloc(n::UInt)
+  u = ccall(:jl_malloc, UInt, (UInt, ), n)
+  global active_mem
+  active_mem[u] = (:malloc, n, backtrace())
+  return u
+end
+
+function trace_calloc(n::UInt, s::UInt)
+  u = ccall(:jl_calloc, UInt, (UInt, UInt), n, s)
+  global active_mem
+  active_mem[u] = (:calloc, n*s, backtrace())
+  return u
+end
+
+
+function trace_free(n::UInt)
+  global active_mem
+#  @assert haskey(active_mem, n)
+  delete!(active_mem, n)
+  ccall(:jl_free, Void, (UInt, ), n)
+end
+
+function trace_realloc(n::UInt, s::UInt)
+  global active_mem
+  p = ccall(:jl_realloc, UInt, (UInt, UInt), n, s)
+#  @assert haskey(active_mem, n)
+  delete!(active_mem, n)
+  active_mem[p] = (:realloc, s, backtrace())
+  return p
+end
+
+function trace_counted_malloc(n::UInt)
+  global active_mem
+  p = ccall(:jl_gc_counted_malloc, UInt, (UInt, ), n)
+  active_mem[p] = (:counted_malloc, n, backtrace())
+  return p
+end
+
+function trace_counted_realloc(n::UInt, m::UInt, o::UInt)
+  global active_mem
+  p = ccall(:jl_gc_counted_realloc_with_old_size, UInt, (UInt, UInt, UInt), n, m, o)
+#  @assert n==0 || haskey(active_mem, n)
+  delete!(active_mem, n)
+  active_mem[p] = (:counted_realloc, o, backtrace())
+  return p
+end
+
+function trace_counted_free(n::UInt, s::UInt)
+  global active_mem
+#  @assert haskey(active_mem, n)
+  delete!(active_mem, n)
+  ccall(:jl_gc_counted_free, Void, (UInt, UInt), n, s)
+end
+
+function show_active(l::UInt = UInt(0), frames::Int = 2)
+  global active_mem
+  for i = keys(active_mem)
+    v = active_mem[i]
+    if v[2] >= l
+      n = min(frames, length(v[3]))
+      Base.show_backtrace(STDOUT, v[3][1:n])
+    end
+  end
+end
+
+function trace_memory(b::Bool)
+  if is_windows()
+    return
+  end
+  if b
+    ccall((:__gmp_set_memory_functions, libgmp), Void,
+       (Ptr{Void},Ptr{Void},Ptr{Void}),
+       cfunction(trace_counted_malloc, UInt, (UInt, )),
+       cfunction(trace_counted_realloc, UInt, (UInt, UInt, UInt)),
+       cfunction(trace_counted_free, Void, (UInt, UInt)))
+
+    ccall((:__flint_set_memory_functions, libflint), Void,
+       (Ptr{Void},Ptr{Void},Ptr{Void},Ptr{Void}),
+       cfunction(trace_malloc, UInt, (UInt, )),
+       cfunction(trace_calloc, UInt, (UInt, UInt)),
+       cfunction(trace_realloc, UInt, (UInt, UInt)),
+       cfunction(trace_free, Void, (UInt, )))
+  else    
+    ccall((:__gmp_set_memory_functions, libgmp), Void,
+       (Ptr{Void},Ptr{Void},Ptr{Void}),
+       cglobal(:jl_gc_counted_malloc),
+       cglobal(:jl_gc_counted_realloc_with_old_size),
+       cglobal(:jl_gc_counted_free))
+
+    ccall((:__flint_set_memory_functions, libflint), Void,
+       (Ptr{Void},Ptr{Void},Ptr{Void},Ptr{Void}),
+       cglobal(:jl_malloc),
+       cglobal(:jl_calloc),
+       cglobal(:jl_realloc),
+       cglobal(:jl_free))
+  end
 end
 
 function __init__()
@@ -91,6 +204,7 @@ function __init__()
        Libdl.dlopen(libmpfr)
        Libdl.dlopen(libflint)
        Libdl.dlopen(libarb)
+       Libdl.dlopen(libantic)
    else
       push!(Libdl.DL_LOAD_PATH, libdir)
    end
@@ -114,7 +228,7 @@ function __init__()
       (Ptr{Void},), cfunction(flint_abort, Void, ()))
 
    println("")
-   println("Welcome to Nemo version 0.7.5")
+   println("Welcome to Nemo version 0.8.4")
    println("")
    println("Nemo comes with absolutely no warranty whatsoever")
    println("")
@@ -135,7 +249,7 @@ end
 ################################################################################
 
 function versioninfo()
-  print("Nemo version 0.7.5 \n")
+  print("Nemo version 0.8.4\n")
   nemorepo = dirname(dirname(@__FILE__))
 
   print("Nemo: ")
@@ -175,251 +289,16 @@ end
 
 ###############################################################################
 #
-#   Julia types
-#
-###############################################################################
-
-include("julia/JuliaTypes.jl")
-
-###############################################################################
-#
 #   Generic submodule
 #
 ###############################################################################
 
-include("Generic.jl")
-
-import .Generic: add!, addeq!, addmul!, base_ring, canonical_unit, character,
-                 characteristic, charpoly, charpoly_danilevsky!,
-                 charpoly_danilevsky_ff!, charpoly_hessenberg!, chebyshev_t,
-                 chebyshev_u, _check_dim, check_parent, coeff, cols, compose,
-                 content, cycles, data, degree, denominator, derivative, det, det_clow,
-                 det_df, det_fflu, det_popov, dim, discriminant, divexact,
-                 divides, divrem, elem_type, elements, evaluate,
-                 extended_weak_popov, extended_weak_popov_with_trafo, fflu!,
-                 fflu, find_pivot_popov, fit!, gcd, gen, gens, gcdinv, gcdx,
-                 gram, has_left_neighbor, has_bottom_neighbor, hash,
-                 hessenberg!, hessenberg, hnf, hnf_cohen, hnf_cohen_with_trafo,
-                 hnf_kb, hnf_kb_with_trafo, hnf_minors, hnf_minors_with_trafo,
-                 hnf_with_trafo, hnf_via_popov, hnf_via_popov_with_trafo,
-                 hooklength, identity_matrix, inskewdiag, integral,
-                 interpolate, inv, inv!, invmod, isconstant, isdegree,
-                 isdomain_type, isexact_type, isgen, ishessenberg, ismonomial,
-                 isnegative, isone, isreverse, isrimhook, isrref, issquare, isterm,
-                 isunit, lcm, lead, length, leglength, main_variable,
-                 main_variable_extract, main_variable_insert, matrix,
-                 matrix_repr, max_degrees, max_precision, minpoly, mod,
-                 modulus, monomial_iszero, monomial_set!, monomial_to_newton!,
-                 mul!, mul_classical, mul_karatsuba, mul_ks, mullow, mulmod,
-                 needs_parentheses, newton_to_monomial!, normalise, nvars, numerator,
-                 O, one, order, ordering, parent_type, parity, partitionseq,
-                 polcoeff, pol_length, powmod, pow_multinomial, popov, powers,
-                 precision, primpart, pseudodivrem, pseudorem, randmat_triu,
-                 randmat_with_rank, rand_ordering, rank_profile_popov, remove,
-                 renormalize!, resultant, resultant_ducos, resultant_euclidean,
-                 resultant_subresultant, resultant_sylvester, resx, reverse,
-                 rows, rref, rref!, setcoeff!, set_length!, setpermstyle,
-                 set_prec!, set_val!, size, shift_left, shift_right, show_minus_one,
-                 similarity!, snf, snf_kb, snf_kb_with_trafo, snf_with_trafo,
-                 solve, solve_rational, solve_triu, sub, subst, swap_rows,
-                 swap_rows!, trail, truncate, typed_hcat, typed_hvcat,
-                 valuation, var, vars, weak_popov, weak_popov_with_trafo, zero,
-                 zero!, zero_matrix, kronecker_product
-
-export add!, addeq!, addmul!, base_ring, canonical_unit, character,
-                 characteristic, charpoly, charpoly_danilevsky!,
-                 charpoly_danilevsky_ff!, charpoly_hessenberg!, chebyshev_t,
-                 chebyshev_u, _check_dim, check_parent, coeff, cols, compose,
-                 content, cycles, data, degree, denominator, derivative, det, det_clow,
-                 det_df, det_fflu, det_popov, dim, discriminant, divexact,
-                 divides, divrem, elem_type, elements, evaluate,
-                 extended_weak_popov, extended_weak_popov_with_trafo, fflu!,
-                 fflu, find_pivot_popov, fit!, gcd, gen, gens, gcdinv, gcdx,
-                 gram, has_left_neighbor, has_bottom_neighbor, hash,
-                 hessenberg!, hessenberg, hnf, hnf_cohen, hnf_cohen_with_trafo,
-                 hnf_kb, hnf_kb_with_trafo, hnf_minors, hnf_minors_with_trafo,
-                 hnf_with_trafo, hnf_via_popov, hnf_via_popov_with_trafo,
-                 hooklength, identity_matrix, inskewdiag, integral,
-                 interpolate, inv, inv!, invmod, isconstant, isdegree,
-                 isdomain_type, isexact, isexact_type, isgen, ishessenberg,
-                 ismonomial, isnegative, isone, isreverse, isrimhook, isrref, issquare, 
-                 isterm, isunit, iszero, lcm, lead, leglength, length,
-                 main_variable, main_variable_extract, main_variable_insert,
-                 matrix, matrix_repr, max_degrees, max_precision, minpoly, mod,
-                 modulus, monomial_iszero, monomial_set!, monomial_to_newton!,
-                 mul!, mul_classical, mul_karatsuba, mul_ks, mullow, mulmod,
-                 needs_parentheses, newton_to_monomial!, normalise, nvars,
-                 numerator, O, one, order, ordering, parent_type, parity,
-                 partitionseq, polcoeff, pol_length, powmod, pow_multinomial,
-                 popov, powers, ppio, precision, primpart, pseudodivrem,
-                 pseudorem, randmat_triu, randmat_with_rank, rand_ordering,
-                 rank_profile_popov, remove, renormalize!, resultant,
-                 resultant_ducos, resultant_euclidean, resultant_subresultant,
-                 resultant_sylvester, resx, reverse, rows, rref, rref!,
-                 setcoeff!, set_length!, setpermstyle, set_prec!, set_val!,
-                 shift_left, shift_right, show_minus_one, similarity!, size, snf,
-                 snf_kb, snf_kb_with_trafo, snf_with_trafo, solve,
-                 solve_rational, solve_triu, sub, subst, swap_rows, swap_rows!,
-                 trail, truncate, typed_hcat, typed_hvcat, valuation, var,
-                 vars, weak_popov, weak_popov_with_trafo, zero, zero!,
-                 zero_matrix, kronecker_product
-
-function exp(a::T) where T
-   return Base.exp(a)
-end
-
-function sqrt(a::T) where T
-  return Base.sqrt(a)
-end
-
-function PermGroup(n::T, cached=true) where T
-   Generic.PermGroup(n, cached)
-end
-
-function AllPerms(n::T) where T
-   Generic.AllPerms(n)
-end
-
-function perm(n::T) where T
-   Generic.perm(n)
-end
-
-function perm(a::Array{T, 1}) where T
-   Generic.perm(a)
-end
-
-function Partition(part::Vector{T}, check::Bool=true) where T
-   Generic.Partition(part, check)
-end
-
-function AllParts(n::T) where T
-   Generic.AllParts(n)
-end
-
-function SkewDiagram(lambda::Generic.Partition, mu::Generic.Partition)
-   Generic.SkewDiagram(lambda, mu)
-end
-
-function SkewDiagram(lambda::Vector{T}, mu::Vector{T}) where T
-   Generic.SkewDiagram(lambda, mu)
-end
-
-function YoungTableau(part::Generic.Partition, tab::Array{Int, 2})
-   Generic.YoungTableau(part, tab)
-end
-
-function YoungTableau(part::Generic.Partition, fill::Vector{Int}=collect(1:part.n))
-   Generic.YoungTableau(part, fill)
-end
-
-function YoungTableau(p::Vector{Int})
-   Generic.YoungTableau(p)
-end
-
-function PowerSeriesRing(R::Ring, prec::Int, s::AbstractString; cached=true, model=:capped_relative)
-   Generic.PowerSeriesRing(R, prec, s; cached=cached, model=model)
-end
-
-function LaurentSeriesRing(R::Ring, prec::Int, s::AbstractString; cached=true)
-   Generic.LaurentSeriesRing(R, prec, s; cached=cached)
-end
-
-function LaurentSeriesRing(R::Field, prec::Int, s::AbstractString; cached=true)
-   Generic.LaurentSeriesField(R, prec, s; cached=cached)
-end
-
-function LaurentSeriesField(R::Field, prec::Int, s::AbstractString; cached=true)
-   Generic.LaurentSeriesField(R, prec, s; cached=cached)
-end
-
-function PolynomialRing(R::Ring, s::AbstractString; cached::Bool = true)
-   Generic.PolynomialRing(R, s; cached=cached)
-end
-
-function PolynomialRing(R::Ring, s::Array{String, 1}; cached::Bool = true, ordering::Symbol = :lex)
-   Generic.PolynomialRing(R, s; cached=cached, ordering=ordering)
-end
-
-function SparsePolynomialRing(R::Ring, s::String; cached::Bool = true)
-   Generic.SparsePolynomialRing(R, s; cached=cached)
-end
-
-function MatrixSpace(R::Ring, r::Int, c::Int, cached::Bool = true)
-   Generic.MatrixSpace(R, r, c, cached)
-end
-
-function FractionField(R::Ring; cached=true)
-   Generic.FractionField(R; cached=cached)
-end
-
-function ResidueRing(R::Ring, a::Union{RingElement, Integer}; cached::Bool = true)
-   Generic.ResidueRing(R, a; cached=cached)
-end
-
-function ResidueField(R::Ring, a::Union{RingElement, Integer}; cached::Bool = true)
-   Generic.ResidueField(R, a; cached=cached)
-end
-
-function NumberField(a::Nemo.Generic.Poly{Rational{BigInt}}, s::AbstractString, t = "\$"; cached = true)
-   Generic.NumberField(a, s, t; cached=cached)
-end
-
 export PowerSeriesRing, PolynomialRing, SparsePolynomialRing, MatrixSpace,
        FractionField, ResidueRing, Partition, PermGroup, YoungTableau,
        AllParts, SkewDiagram, AllPerms, perm, LaurentSeriesRing,
-       LaurentSeriesField, ResidueField
+       LaurentSeriesField, PuiseuxSeriesRing, ResidueField
 
 export Generic
-
-###############################################################################
-#
-#   Polynomial Ring S, x = R["x"] syntax
-#
-###############################################################################
-
-getindex(R::Ring, s::String) = PolynomialRing(R, s)
-
-getindex(R::Tuple{Ring, T}, s::String) where {T} = PolynomialRing(R[1], s)
-
-###############################################################################
-#
-#   Matrix M = R[...] syntax
-#
-################################################################################
-
-function typed_hvcat(R::Ring, dims, d...)
-   T = elem_type(R)
-   r = length(dims)
-   c = dims[1]
-   A = Array{T}(r, c)
-   for i = 1:r
-      dims[i] != c && throw(ArgumentError("row $i has mismatched number of columns (expected $c, got $(dims[i]))"))
-      for j = 1:c
-         A[i, j] = R(d[(i - 1)*c + j])
-      end
-   end
-   S = matrix(R, A)
-   return S
-end
-
-function typed_hcat(R::Ring, d...)
-   T = elem_type(R)
-   r = length(d)
-   A = Array{T}(1, r)
-   for i = 1:r
-      A[1, i] = R(d[i])
-   end
-   S = matrix(R, A)
-   return S
-end
-
-###############################################################################
-#
-#   Load error objects
-#
-###############################################################################
-
-include("error.jl")
 
 ###############################################################################
 #
@@ -437,100 +316,11 @@ include("arb/ArbTypes.jl")
 
 #include("ambiguities.jl") # remove ambiguity warnings
 
-include("Groups.jl")
-
 include("flint/adhoc.jl")
 
 include("FinFieldsLattices.jl")
 
-###########################################################
-#
-#   Package handle creation
-#
-###########################################################
-
-const package_handle = [1]
-
-function get_handle()
-   package_handle[1] += 1
-   return package_handle[1] - 1
-end
-
-###############################################################################
-#
-#   Auxilliary data accessors
-#
-###############################################################################
-
-mutable struct AccessorNotSetError <: Exception
-end
-
-function create_accessors(T, S, handle)
-   get = function(a)
-      if handle > length(a.auxilliary_data) ||
-         !isassigned(a.auxilliary_data, handle)
-        throw(AccessorNotSetError())
-      end
-      return a.auxilliary_data[handle]
-   end
-   set = function(a, b)
-      if handle > length(a.auxilliary_data)
-         resize!(a.auxilliary_data, handle)
-      end
-      a.auxilliary_data[handle] = b
-   end
-   return get, set
-end
-
-###############################################################################
-#
-#   Promote rule helpers
-#
-###############################################################################
-
-if VERSION >= v"0.5.0-dev+3171"
-
-function sig_exists(T::Type{Tuple{U, V, W}}, sig_table::Array{X, 1}) where {U, V, W, X}
-   for s in sig_table
-      if s === T
-         return true
-      end
-   end
-   return false
-end
-
-else
-
-function sig_exists(T::Type{Tuple{U, V, W}}, sig_table::Array{X, 1}) where {U, V, W, X}
-   return false
-end
-
-end # if VERSION
-
-###############################################################################
-#
-#   Array creation functions
-#
-###############################################################################
-
-Array(R::Ring, r::Int...) = Array{elem_type(R)}(r)
-
-function zeros(R::Ring, r::Int...)
-   T = elem_type(R)
-   A = Array{T}(r)
-   for i in eachindex(A)
-      A[i] = R()
-   end
-   return A
-end
-
-###############################################################################
-#
-#   Set domain for PermutationGroup to Flint
-#
-###############################################################################
-
-PermutationGroup = PermGroup
+include("Rings.jl")
 
 ###############################################################################
 #

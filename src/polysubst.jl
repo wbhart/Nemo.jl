@@ -1,4 +1,4 @@
-for T in subtypes(PolyElem)
+for T in [nmod_poly, fmpz_mod_poly, fmpq_poly, fmpz_poly, fq_poly, fq_nmod_poly]
   (f::T)(a) = subst(f, a)
 
   function (f::T)(a::T)
@@ -9,8 +9,6 @@ for T in subtypes(PolyElem)
   end
 
   (f::T)(a::Integer) = evaluate(f, a)
-  (f::T)(a::fmpz) = evaluate(f, a)
-
 
   function (f::T)(a::RingElem)
      if parent(a) != base_ring(f)

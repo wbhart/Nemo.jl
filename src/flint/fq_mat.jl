@@ -120,6 +120,11 @@ end
 function show(io::IO, a::fq_mat)
    rows = a.r
    cols = a.c
+
+   if rows*cols == 0
+      print(io, "$rows by $cols matrix")
+   end
+
    for i = 1:rows
       print(io, "[")
       for j = 1:cols
@@ -689,6 +694,9 @@ end
 ###############################################################################
 
 function zero_matrix(R::FqFiniteField, r::Int, c::Int)
+   if r < 0 || c < 0
+     error("dimensions must not be negative")
+   end
    z = fq_mat(r, c, R)
    return z
 end

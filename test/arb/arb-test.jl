@@ -462,6 +462,20 @@ function test_fmpq_arb_special_functions()
    println("PASS")
 end
 
+function test_arb_lindep()
+   print("arb.lindep...")
+
+   CC = ComplexField(64)
+      
+   tau = (1 + sqrt(CC(-23)))/2
+   a = abs(modweber_f2(tau))^2
+   C = lindep([RR(1), a, a^2, a^3, a^4, a^5], 20)
+
+   @test C == fmpz[-1, 1, 1, 0, 1, 0]
+
+   println("PASS")
+end
+
 function test_arb()
    test_arb_constructors()
    test_arb_printing()
@@ -477,6 +491,7 @@ function test_arb()
    test_arb_constants()
    test_arb_functions()
    test_fmpq_arb_special_functions()
+   test_arb_lindep()
 
    println("")
 end

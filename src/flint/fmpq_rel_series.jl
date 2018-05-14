@@ -558,7 +558,7 @@ function divexact(x::fmpq_rel_series, y::Int)
    z = parent(x)()
    z.prec = x.prec
    z.val = x.val
-   ccall((:fmpq_poly_scalar_divexact_si, :libflint), Void,
+   ccall((:fmpq_poly_scalar_div_si, :libflint), Void,
                 (Ref{fmpq_rel_series}, Ref{fmpq_rel_series}, Int),
                z, x, y)
    return z
@@ -570,7 +570,7 @@ function divexact(x::fmpq_rel_series, y::fmpz)
    z.prec = x.prec
    z.prec = x.prec
    z.val = x.val
-   ccall((:fmpq_poly_scalar_divexact_fmpz, :libflint), Void,
+   ccall((:fmpq_poly_scalar_div_fmpz, :libflint), Void,
                 (Ref{fmpq_rel_series}, Ref{fmpq_rel_series}, Ref{fmpz}),
                z, x, y)
    return z
@@ -924,7 +924,7 @@ function mul!(z::fmpq_rel_series, a::fmpq_rel_series, b::fmpq_rel_series)
    lena = min(lena, prec)
    lenb = min(lenb, prec)
    z.val = a.val + b.val
-   z.prec = prec + c.val
+   z.prec = prec + z.val
    lenz = min(lena + lenb - 1, prec)
    if lena <= 0 || lenb <= 0
       lenz = 0
@@ -978,8 +978,8 @@ function addeq!(a::fmpq_rel_series, b::fmpq_rel_series)
 end
 
 function add!(c::fmpq_rel_series, a::fmpq_rel_series, b::fmpq_rel_series)
-   lena = length(a)
-   lenb = length(b)
+   lena = pol_length(a)
+   lenb = pol_length(b)
 
    prec = min(a.prec, b.prec)
 

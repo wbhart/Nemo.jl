@@ -381,8 +381,12 @@ function test_nmod_exact_division()
       for iter = 1:100
          a1 = rand(R)
          a2 = rand(R)
+         a2 += Int(a2 == 0) # still works mod 1
+         p = a1*a2
 
-         @test !isunit(a2) || divexact(a1, a2)*a2 == a1
+         q = divexact(p, a2)
+         
+         @test q*a2 == p
       end
    end
 
@@ -392,8 +396,12 @@ function test_nmod_exact_division()
       for iter = 1:100
          a1 = rand(R)
          a2 = rand(R)
+         a2 += Int(a2 == 0) # still works mod 1
+         p = a1*a2
 
-         @test !isunit(a2) || divexact(a1, a2)*a2 == a1
+         q = divexact(p, a2)
+
+         @test q*a2 == p
       end
    end
 
@@ -418,6 +426,25 @@ function test_nmod_gcd()
    println("PASS")
 end
 
+function test_nmod_gcdx()
+   print("nmod.gcdx...")
+
+   for i = 1:100
+      R = ResidueRing(ZZ, rand(1:24))
+
+      for iter = 1:100
+         a = rand(R)
+         b = rand(R)
+
+         g, s, t = gcdx(a, b)
+
+         @test g == s*a + t*b
+      end
+   end
+
+   println("PASS")
+end
+
 function test_nmod()
    test_nmod_constructors()
    test_nmod_printing()
@@ -431,6 +458,7 @@ function test_nmod()
    test_nmod_inversion()
    test_nmod_exact_division()
    test_nmod_gcd()
+   test_nmod_gcdx()
    
    println("")
 end

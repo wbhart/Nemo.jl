@@ -19,8 +19,8 @@ export rsqrt, log, log1p, exppii, sin, cos, tan, cot,
        risingfac2, polygamma, polylog, zeta, barnesg, logbarnesg, agm,
        erf, erfi, erfc, ei, si, ci, shi, chi, li, lioffset, expint, gamma,
        besselj, bessely, besseli, besselk, hyp1f1, hyp1f1r, hyperu, hyp2f1,
-       jtheta, modeta, modj, modlambda, moddelta, ellipwp, ellipk, ellipe
-
+       jtheta, modeta, modj, modlambda, moddelta, ellipwp, ellipk, ellipe,
+       modweber_f, modweber_f1, modweber_f2
 
 ###############################################################################
 #
@@ -693,6 +693,10 @@ end
 #
 ################################################################################
 
+doc"""
+    const_pi(r::AcbField)
+> Return $\pi = 3.14159\ldots$ as an element of $r$.
+"""
 function const_pi(r::AcbField)
   z = r()
   ccall((:acb_const_pi, :libarb), Void, (Ref{acb}, Int), z, prec(r))
@@ -708,7 +712,7 @@ end
 # complex - complex functions
 
 doc"""
-    sqrt(x::acb)
+    Base.sqrt(x::acb)
 > Return the square root of $x$.
 """
 function Base.sqrt(x::acb)
@@ -1080,6 +1084,40 @@ function modeta(x::acb)
 end
 
 doc"""
+   modweber_f(x::acb)
+> Return the modular Weber function
+> $\mathfrak{f}(\tau) = \frac{\eta^2(\tau)}{\eta(\tau/2)\eta(2\tau)},$
+> at $x$ in the complex upper half plane.
+"""
+function modweber_f(x::acb)
+   x_on_2 = divexact(x, 2)
+   x_times_2 = 2*x
+   return divexact(modeta(x)^2, modeta(x_on_2)*modeta(x_times_2))
+end
+
+doc"""
+   modweber_f1(x::acb)
+> Return the modular Weber function
+> $\mathfrak{f}_1(\tau) = \frac{\eta(\tau/2)}{\eta(\tau)},$
+> at $x$ in the complex upper half plane.
+"""
+function modweber_f1(x::acb)
+   x_on_2 = divexact(x, 2)
+   return divexact(modeta(x_on_2), modeta(x))
+end
+
+doc"""
+   modweber_f2(x::acb)
+> Return the modular Weber function
+> $$\mathfrak{f}_2(\tau) = \frac{\sqrt{2}\eta(2\tau)}{\eta(\tau)}$
+> at $x$ in the complex upper half plane.
+"""
+function modweber_f2(x::acb)
+   x_times_2 = x*2
+   return divexact(modeta(x_times_2), modeta(x))*sqrt(parent(x)(2))
+end
+
+doc"""
     modj(x::acb)
 > Return the $j$-invariant $j(\tau)$ at $\tau = x$.
 """
@@ -1409,6 +1447,31 @@ function agm(x::acb, y::acb)
     v = inv(x)
     return agm(y * v) * x
   end
+end
+
+doc"""
+    lindep(A::Array{acb, 1}, bits::Int)
+> Find a small linear combination of the entries of the array $A$ that is small
+> using LLL). The entries are first scaled by the given number of bits before
+> truncating the real and imaginary parts to integers for use in LLL. This function can
+> be used to find linear dependence between a list of complex numbers. The algorithm is
+> heuristic only and returns an array of Nemo integers representing the linear
+> combination.
+"""
+function lindep(A::Array{acb, 1}, bits::Int)
+  bits < 0 && throw(DomainError())
+  n = length(A)
+  V = [ldexp(s, bits) for s in A]
+  M = zero_matrix(ZZ, n, n + 2)
+  for i = 1:n
+    M[i, i] = ZZ(1)
+    flag, M[i, n + 1] = unique_integer(floor(real(V[i]) + 0.5))
+    !flag && error("Insufficient precision in lindep")
+    flag, M[i, n + 2] = unique_integer(floor(imag(V[i]) + 0.5))
+    !flag && error("Insufficient precision in lindep")
+  end
+  L = lll(M)
+  return [L[1, i] for i = 1:n]
 end
 
 ################################################################################

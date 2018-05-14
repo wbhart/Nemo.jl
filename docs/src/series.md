@@ -2,7 +2,7 @@
 CurrentModule = Nemo
 ```
 
-## Introduction
+# Power series and Laurent series
 
 Nemo allows the creation of capped relative and absolute power series over any computable
 ring $R$. Capped relative power series are power series of the form
@@ -14,22 +14,23 @@ $a_jx^j + a_{j+1}x^{j+1} + \cdots + a_{n-1}x^{n-1} + O(x^n)$
 where $j \geq 0$, $a_j \in R$ and the precision $n$ is fixed.
 
 There are two different kinds of implementation: a generic one for
-the case where no specific implementation exists, and efficient implementations
-of power series over numerous specific rings, usually provided by C/C++
-libraries.
+the case where no specific implementation exists (provided by AbstractAlgebra.jl), and
+efficient implementations of power series over numerous specific rings, usually
+provided by C/C++ libraries.
 
 The following table shows each of the relative power series types available in
 Nemo, the base ring $R$, and the Julia/Nemo types for that kind of series (the
 type information is mainly of concern to developers).
 
-Base ring                             | Library         | Element type          | Parent type
---------------------------------------|-----------------|-----------------------|----------------------
-Generic ring $R$                      | Nemo            | `GenRelSeries{T}`     | `GenRelSeriesRing{T}`
-$\mathbb{Z}$                          | Flint           | `fmpz_rel_series`     | `FmpzRelSeriesRing`
-$\mathbb{Z}/n\mathbb{Z}$              | Flint           | `fmpz_mod_rel_series` | `FmpzModRelSeriesRing`
-$\mathbb{Q}$                          | Flint           | `fmpq_rel_series`     | `FmpqRelSerieRing`
-$\mathbb{F}_{p^n}$ (small $n$)        | Flint           | `fq_nmod_rel_series`  | `FqNmodRelSeriesRing`
-$\mathbb{F}_{p^n}$ (large $n$)        | Flint           | `fq_rel_series`       | `FqRelSeriesRing`
+Base ring                             | Library            | Element type          | Parent type
+--------------------------------------|--------------------|-----------------------|----------------------
+Generic ring $R$                      | AbstractAlgebra.jl | `Generic.RelSeries{T} | `Generic.RelSeriesRing{T}`
+$\mathbb{Z}$                          | Flint              | `fmpz_rel_series`     | `FmpzRelSeriesRing`
+$\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint              |  nmod_rel_series      |  NmodRelSeriesRing
+$\mathbb{Z}/n\mathbb{Z}$              | Flint              | `fmpz_mod_rel_series` | `FmpzModRelSeriesRing`
+$\mathbb{Q}$                          | Flint              | `fmpq_rel_series`     | `FmpqRelSeriesRing`
+$\mathbb{F}_{p^n}$ (small $p$)        | Flint              | `fq_nmod_rel_series`  | `FqNmodRelSeriesRing`
+$\mathbb{F}_{p^n}$ (large $p$)        | Flint              | `fq_rel_series`       | `FqRelSeriesRing`
 
 All relative power series elements belong to the abstract type `RelSeriesElem` and all
 of the relative power series ring types belong to the abstract type `RelSeriesRing`.
@@ -39,14 +40,14 @@ the base ring $R$ of a generic power series are stored in its parent object.
 
 Here is the corresponding table for the absolute power series types.
 
-Base ring                             | Library         | Element type          | Parent type
---------------------------------------|-----------------|-----------------------|----------------------
-Generic ring $R$                      | Nemo            | `GenAbsSeries{T}`     | `GenAbsSeriesRing{T}`
-$\mathbb{Z}$                          | Flint           | `fmpz_abs_series`     | `FmpzAbsSeriesRing`
-$\mathbb{Z}/n\mathbb{Z}$              | Flint           | `fmpz_mod_abs_series` | `FmpzModAbsSeriesRing`
-$\mathbb{Q}$                          | Flint           | `fmpq_abs_series`     | `FmpqAbsSerieRing`
-$\mathbb{F}_{p^n}$ (small $n$)        | Flint           | `fq_nmod_abs_series`  | `FqNmodAbsSeriesRing`
-$\mathbb{F}_{p^n}$ (large $n$)        | Flint           | `fq_abs_series`       | `FqAbsSeriesRing`
+Base ring                             | Library            | Element type          | Parent type
+--------------------------------------|--------------------|-----------------------|----------------------
+Generic ring $R$                      | AbstractAlgebra.jl | `Generic.AbsSeries{T}`| `Generic.AbsSeriesRing{T}`
+$\mathbb{Z}$                          | Flint              | `fmpz_abs_series`     | `FmpzAbsSeriesRing`
+$\mathbb{Z}/n\mathbb{Z}$              | Flint              | `fmpz_mod_abs_series` | `FmpzModAbsSeriesRing`
+$\mathbb{Q}$                          | Flint              | `fmpq_abs_series`     | `FmpqAbsSeriesRing`
+$\mathbb{F}_{p^n}$ (small $n$)        | Flint              | `fq_nmod_abs_series`  | `FqNmodAbsSeriesRing`
+$\mathbb{F}_{p^n}$ (large $n$)        | Flint              | `fq_abs_series`       | `FqAbsSeriesRing`
 
 All absolute power series elements belong to the abstract type `AbsSeriesElem` and all
 of the absolute power series ring types belong to the abstract type `AbsSeriesRing`.
@@ -58,6 +59,15 @@ All power series element types belong to the abstract type `SeriesElem` and all
 of the power series ring types belong to the abstract type `SeriesRing`. This
 enables one to write generic functions that can accept any Nemo power series
 type.
+
+AbstractAlgebra.jl also provides Nemo with a generic implementation of Laurent series
+over a given ring $R$. For completeness, we list it here.
+
+Base ring                             | Library            | Element type              | Parent type
+--------------------------------------|--------------------|---------------------------|----------------------
+Generic ring $R$                      | AbstractAlgebra.jl | `Generic.LaurentSeriesRingElem{T}`| `Generic.LaurenSeriesRing{T}`
+Generic field $K$                     | AbstractAlgebra.jl | `Generic.LaurentSeriesFieldElem{T}`|
+`Generic.LaurenSeriesField{T}`
 
 ## Capped relative power series
 
@@ -128,556 +138,28 @@ arithmetic zeroes!
 An absolute power series ring over a ring $R$ with precision $p$ behaves 
 very much like the quotient $R[x]/(x^p)$ of the polynomial ring over $R$.
 
-## Power series ring constructors
+## Power series functionality
 
-In order to construct power series in Nemo, one must first construct the
-power series ring itself. This is accomplished with the following constructor.
+Power series rings in Nemo implement the AbstractAlgebra.jl series interface:
 
-```@docs
-PowerSeriesRing(::Ring, ::Int, ::AbstractString; ::Bool, ::Symbol)
-```
+[https://nemocas.github.io/AbstractAlgebra.jl/series_rings.html](https://nemocas.github.io/AbstractAlgebra.jl/series_rings.html)
 
-Here are some examples of creating a power series ring using the constructor
-and using the resulting parent object to coerce various elements into the power
-series ring.
+In addition, generic power series and Laurent series are provided by AbstractAlgebra.jl:
 
-```
-R, t = PolynomialRing(QQ, "t")
-S, x = PowerSeriesRing(R, 30, "x")
+[https://nemocas.github.io/AbstractAlgebra.jl/series.html](https://nemocas.github.io/AbstractAlgebra.jl/series.html)
 
-a = S(x)
-b = S(t + 1)
-c = S(1)
-d = S(ZZ(2))
-f = S()
-```
+Power series rings in Nemo also implement this generic functionality. We list below only
+the functionality that differs from this generic functionality, for specific rings
+provided by Nemo.
 
-## Power series element constructors
-
-Once a power series ring is constructed, there are various ways to construct
-power series in that ring.
-
-The easiest way is simply using the generator returned by the `PowerSeriesRing`
-constructor and and build up the power series using basic arithmetic. The
-absolute precision of a power series can be set using the following function.
-
-```@docs
-O{T}(a::SeriesElem{T})
-```
-
-In addition we provide the following functions for constructing certain useful
-polynomials.
-
-```@docs
-zero(::SeriesRing)
-```
-
-```@docs
-one(::SeriesRing)
-```
-
-```@docs
-gen(::SeriesRing)
-```
-
-Here are some examples of constructing power series.
-
-```
-R, t = PolynomialRing(QQ, "t")
-S, x = PowerSeriesRing(R, 30, "x")
-
-a = x^3 + 2x + 1
-b = (t^2 + 1)*x^2 + (t + 3)x + O(x^4)
-c = zero(S)
-d = one(S)
-f = gen(S)
-```
-
-## Basic functionality
-
-All power series modules in Nemo must provide the functionality listed
-in this section. (Note that only some of these functions are useful to a user.)
-
-Developers who are writing their own power series module, whether as an
-interface to a C library, or as some kind of generic module, must provide all
-of these functions for custom power series types in Nemo. 
-
-We write `U` for the type of the power series in the power series ring and `T`
-for the type of elements of the coefficient ring.
-
-All of these functions are provided for all existing power series types in
-Nemo.
-
-```
-parent_type{U <: SeriesElem}(::Type{U})
-```
-
-Given the type of power series elements, should return the type of the
-corresponding parent object.
-
-```
-elem_type(R::SeriesRing)
-```
-
-Given a parent object for the power series ring, return the type of elements
-of the power series ring.
-
-```
-Base.hash(a::SeriesElem, h::UInt)
-```
-
-Return a `UInt` hexadecimal hash of the power series $a$. This should be xor'd
-with a fixed random hexadecimal specific to the power series type. The hash of
-each coefficient should be xor'd with the supplied parameter `h` as part of
-computing the hash.
-
-```
-fit!(a::SeriesElem, n::Int)
-```
-
-By reallocating if necessary, ensure that the polynomial underlying the given
-power series has space for at least $n$ coefficients. This function does not
-change the length of the power series and will only ever increase the number
-of allocated coefficients. Any coefficients added by this function are
-initialised to zero.
- 
-```
-normalise(a::SeriesElem, n::Int)
-```
-
-Return the normalised length of the polynomial underlying the given power
-series, assuming its current length is $n$. Its normalised length is such that
-it either has nonzero leading term or is the zero polynomial. Note that this
-function doesn't normalise the power series. That can be done with a subsequent
-call to `set_length!` using the length returned by `normalise`.
-
-```
-set_length!(a::SeriesElem, n::Int)
-```
-
-Set the length of the polynomial underlying a power series assuming it has
-sufficient space allocated, i.e. a power series for which no reallocation is
-needed. Note that if the Julia type definition for a custom polynomial power
-series type has a field, `length`, which corresponds to the current length of
-the polynomial underlying a power series, then the developer doesn't need to
-supply this function, as the supplied generic implementation will work. Note
-that it can change the length to any value from zero to the number of
-coefficients currently allocated and initialised.
-
-```
-pol_length(a::SeriesElem)
-```
-
-Return the current length (not the number of allocated coefficients), of the
-polynomial underlying the given power series. Note that this function only
-needs to be provided by a developer for a custom power series type if the Julia
-type definition the power series type doesn't contain a field `length`
-corresponding to the current length of the polynomial underlying the power
-series. Otherwise the supplied generic implementation will work.
-
-```
-set_prec!(a::SeriesElem, n::Int)
-```
-
-Set the precision of the given power series to $n$. Note this function only
-needs to be provided by a developer for a custom power series type if the Julia
-type definition of the power series type doesn't contain a field `prec`
-corresponding to the current precision of the power series. Otherwise the
-supplied generic implementation will work.
-
-```
-precision(a::SeriesElem)
-```
-
-Return the current precision of the given power series. This function does not
-have to be provided by a developer of a custom power series type if the Julia
-type definition of the power series type contains a field `prec` corresponding
-to the current precision of the power series. In this case the supplied generic
-implementation will work. Note that for convenience, the precision is stored as
-an absolute precision.
-
-```
-coeff(a::SeriesElem, n::Int)
-```
-
-Return the degree $n$ coefficient of the given power series. Note coefficients
-are numbered from $n = 0$ for the constant coefficient. If $n$ exceeds the
-current precision of the power series, the function returns a zero coefficient.
-We require $n \geq 0$. 
-
-```
-setcoeff!{T <: RingElem}(a::SeriesElem{T}, n::Int, c::T)
-```
-
-Set the coefficient of the degree $n$ term of the given power series to
-the given value $a$. The polynomial underlying the power series is not
-normalised automatically after this operation, however the polynomial is
-automatically resized if there is not sufficient allocated space.
-
-```
-deepcopy(a::SeriesElem)
-```
-
-Construct a copy of the given power series and return it. This function must
-recursively construct copies of all of the internal data in the given
-polynomial. Nemo power series are mutable and so returning shallow copies is
-not sufficient.
-
-```
-mul!(c::SeriesElem, a::SeriesElem, b::SeriesElem)
-```
-
-Multiply $a$ by $b$ and set the existing power series $c$ to the result. This
-function is provided for performance reasons as it saves allocating a new
-object for the result and eliminates associated garbage collection.
-
-```
-addeq!(c::SeriesElem, a::SeriesElem)
-```
-
-In-place addition. Adds $a$ to $c$ and sets $c$ to the result. This function
-is provided for performance reasons as it saves allocating a new object for
-the result and eliminates associated garbage collection.
-
-Given a parent object `S` for a power series ring, the following coercion
-functions are provided to coerce various elements into the power series
-ring. Developers provide these by overloading the `call` operator for the
-polynomial parent objects.
-
-```
-S()
-```
-
-Coerce zero into the ring $S$.
-
-```
-S(n::Integer)
-S(n::fmpz)
-```
-
-Coerce an integer value or Flint integer into the power series ring $S$.
-
-```
-S(n::T)
-```
-
-Coerces an element of the base ring, of type `T` into $S$.
-
-```
-S(A::Array{T, 1}, len::Int, prec::Int)
-```
-
-Take an array of elements in the base ring, of type `T` and construct the
-power series with those coefficients. The length of the underlying polynomial
-and the precision of the power series will be set to the given values.
-
-```
-S(f::SeriesElem)
-```
-
-Take a power series that is already in the ring $S$ and simply return it. A
-copy of the original is not made.
-
-```
-S(c::RingElem)
-```
-
-Try to coerce the given ring element into the power series ring. This only
-succeeds if $c$ can be coerced into the base ring.
-
-In addition to the above, developers of custom power series must ensure the
-parent object of a power series type constains a field `base_ring` specifying
-the base ring, a field `S` containing a symbol (not a string) representing the
-variable name of the power series ring and a field `max_prec` specifying the
-maximum relative precision of the power series. They must also ensure that each
-power series element contains a field `parent` specifying the parent object of
-the power series.
-
-Typically a developer will also overload the `PowerSeriesRing` generic function
-to create power series of the custom type they are implementing.
-
-## Basic manipulation
-
-Numerous functions are provided to manipulate polynomials and to set and
-retrieve coefficients and other basic data associated with the polynomials.
-Also see the section on basic functionality above.
-
-```@docs
-base_ring(::SeriesRing)
-```
-
-```@docs
-base_ring(::SeriesElem)
-```
-
-```@docs
-parent(::SeriesElem)
-```
-
-```@docs
-var(::SeriesRing)
-```
-
-```@docs
-valuation(::SeriesElem)
-```
-
-```@docs
-max_precision(R::SeriesRing)
-```
-
-```@docs
-modulus{T <: ResElem}(::SeriesElem{T})
-```
-
-```@docs
-iszero(::SeriesElem)
-```
-
-```@docs
-isone(::SeriesElem)
-```
-
-```@docs
-isgen(::SeriesElem)
-```
-
-```@docs
-isunit(::SeriesElem)
-```
-
-Here are some examples of basic manipulation of power series.
-
-```
-R, t = PowerSeriesRing(QQ, 10, "t")
-S, x = PowerSeriesRing(R, 30, "x")
-
-a = O(x^4)
-b = (t^2 + 1)*x^2 + (t + 3)x + O(x^4)
-
-c = gen(R)
-d = zero(R)
-f = one(S)
-
-g = iszero(d)
-h = isone(f)
-k = isgen(c)
-m = isunit(-1 + x + 2x^2)
-n = valuation(a)
-p = valuation(b)
-s = var(S)
-U = base_ring(S)
-V = base_ring(t)
-W = parent(t + 1)
-```
-
-## Arithmetic operators
-
-All the usual arithmetic operators are overloaded for Nemo power series. Note
-that Julia uses the single slash for floating point division. Therefore to
-perform exact division in a ring we use `divexact`. To construct an element
-of a fraction field one can use the double slash operator `//`.
-
-The following operators and functions are provided.
-
-Function                                                      | Operation
---------------------------------------------------------------|----------------
-`-(a::SeriesElem)`                                            | unary minus
-`+{T <: RingElem}(a::SeriesElem{T}, b::SeriesElem{T})`        | addition
-`-{T <: RingElem}(a::SeriesElem{T}, b::SeriesElem{T})`        | subtraction
-`*{T <: RingElem}(a::SeriesElem{T}, b::SeriesElem{T})`        | multiplication
-`divexact{T <: RingElem}(a::SeriesElem{T}, b::SeriesElem{T})` | exact division
-
-The following ad hoc operators are also provided.
-
-Function                                          | Operation
---------------------------------------------------|----------------
-`+(a::Integer, b::SeriesElem)`                    | addition
-`+(a::SeriesElem, b::Integer)`                    | addition
-`+(a::fmpz, b::SeriesElem)`                       | addition
-`+(a::SeriesElem, b::fmpz)`                       | addition
-`+{T <: RingElem}(a::T, b::SeriesElem{T})`        | addition
-`+{T <: RingElem}(a::SeriesElem{T}, b::T)`        | addition
-`-(a::Integer, b::SeriesElem)`                    | subtraction
-`-(a::SeriesElem, b::Integer)`                    | subtraction
-`-(a::fmpz, b::SeriesElem)`                       | subtraction
-`-(a::SeriesElem, b::fmpz)`                       | subtraction
-`-{T <: RingElem}(a::T, b::SeriesElem{T})`        | subtraction
-`-{T <: RingElem}(a::SeriesElem{T}, b::T)`        | subtraction
-`*(a::Integer, b::SeriesElem)`                    | multiplication
-`*(a::SeriesElem, b::Integer)`                    | multiplication
-`*(a::fmpz, b::SeriesElem)`                       | multiplication
-`*(a::SeriesElem, b::fmpz)`                       | multiplication
-`*{T <: RingElem}(a::T, b::SeriesElem{T})`        | multiplication
-`*{T <: RingElem}(a::SeriesElem{T}, b::T)`        | multiplication
-`divexact(a::SeriesElem, b::Integer)`             | exact division
-`divexact(a::SeriesElem, b::fmpz)`                | exact division
-`divexact{T <: RingElem}(a::SeriesElem{T}, b::T)` | exact division
-`^(a::SeriesElem, n::Int)`                        | powering         
-
-If the appropriate `promote_rule` and coercion exists, these operators can also
-be used with elements of other rings. Nemo will try to coerce the operands to
-the dominating type and then apply the operator.
-
-Here are some examples of arithmetic operations on power series.
-
-```
-R, t = PolynomialRing(QQ, "t")
-S, x = PowerSeriesRing(R, 30, "x")
-
-a = 2x + x^3
-b = O(x^4)
-c = 1 + x + 2x^2 + O(x^5)
-d = x^2 + 3x^3 - x^4
-
-f = -a
-g = a + b
-h = a - c
-k = b*c
-m = a*c
-n = a*d
-p = 2a
-q = fmpz(3)*b
-r = c*2
-s = d*fmpz(3)
-t = a^12
-u = divexact(b, c)
-v = divexact(a, 7)
-w = divexact(b, fmpz(11))
-```
-
-## Comparison operators
-
-The following comparison operators are implemented for power series in Nemo.
-Julia provides the corresponding `!=` function automatically.
-
-Function
--------------------------------------------------------------
-`isequal{T <: RingElem}(a::SeriesElem{T}, b::SeriesElem{T})`
-`=={T <: RingElem}(a::SeriesElem{T}, b::SeriesElem{T})`
-
-The `isequal` function is a stronger notion of equality. It requires that the
-precision of the power series is identical as well as the power series being
-arithmetically equal. Coefficients are also compared using `isequal`
-recursively. The `==` function notionally truncates both power series to the
-lower of the two (absolute) precisions, and then compares arithmetically.
-
-In addition we have the following ad hoc comparison operators.
-
-Function
---------------------------------------------
-`=={T <: RingElem}(a::SeriesElem{T}, b::T)`
-`=={T <: RingElem}(a::T, b::SeriesElem{T})`
-`==(a::SeriesElem, b::Integer)`
-`==(a::Integer, b::SeriesElem)`
-`==(a::SeriesElem, b::fmpz)`
-`==(a::fmpz, b::SeriesElem)`
-
-Here are some examples of comparisons.
-
-```
-R, t = PolynomialRing(QQ, "t")
-S, x = PowerSeriesRing(R, 30, "x")
-
-a = 2x + x^3
-b = O(x^3)
-c = 1 + x + 3x^2 + O(x^5)
-d = 3x^3 - x^4
-
-a == 2x + x^3
-b == d
-c != d
-isequal(b, d)
-d == 3
-c == fmpz(1)
-fmpz(0) != a
-2 == b
-fmpz(1) == c
-```
-
-## Shifting
-
-```@docs
-shift_left(::SeriesElem, ::Int)
-```
-
-```@docs
-shift_right(::SeriesElem, ::Int)
-```
-
-Here are some examples of shifting.
-
-```
-R, t = PolynomialRing(QQ, "t")
-S, x = PowerSeriesRing(R, 30, "x")
-
-a = 2x + x^3
-b = O(x^4)
-c = 1 + x + 2x^2 + O(x^5)
-d = 2x + x^3 + O(x^4)
-
-f = shift_left(a, 2)
-g = shift_left(b, 2)
-h = shift_right(c, 1)
-k = shift_right(d, 3)
-```
-
-## Truncation
-
-```@docs
-truncate(::SeriesElem, ::Int)
-```
-
-Here are some examples of truncation.
-
-```
-R, t = PolynomialRing(QQ, "t")
-S, x = PowerSeriesRing(R, 30, "x")
-
-a = 2x + x^3
-b = O(x^4)
-c = 1 + x + 2x^2 + O(x^5)
-d = 2x + x^3 + O(x^4)
-
-f = truncate(a, 3)
-g = truncate(b, 2)
-h = truncate(c, 7)
-k = truncate(d, 5)
-```
-
-## Inverse
-
-```@docs
-inv(a::SeriesElem)
-```
-
-Here are some examples of taking the inverse.
-
-```
-R, t = PolynomialRing(QQ, "t")
-S, x = PowerSeriesRing(R, 30, "x")
-
-a = 1 + x + 2x^2 + O(x^5)
-b = S(-1)
-
-c = inv(a)
-d = inv(b)
-```
-
-## Special functions
-
-```@docs
-exp(a::SeriesElem)
-```
-
-The following special functions are only available for certain rings.
+### Special functions
 
 ```@docs
 log(a::fmpq_rel_series)
 ```
 
 ```@docs
-sqrt(a::fmpq_rel_series)
+Base.sqrt(a::fmpq_rel_series)
 ```
 
 ```@docs
@@ -696,17 +178,15 @@ atan(a::fmpq_rel_series)
 atanh(a::fmpq_rel_series)
 ```
 
-Here are some examples of special functions.
+**Examples**
 
-```
-R, t = PolynomialRing(QQ, "t")
+```julia
 S, x = PowerSeriesRing(R, 30, "x")
 T, z = PowerSeriesRing(QQ, 30, "z")
 
 a = 1 + z + 3z^2 + O(z^5)
 b = z + 2z^2 + 5z^3 + O(z^5)
 
-c = exp(x + O(x^40))
 d = divexact(x, exp(x + O(x^40)) - 1)
 f = exp(b)
 g = log(a)

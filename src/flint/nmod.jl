@@ -275,7 +275,7 @@ function divexact(x::nmod, y::nmod)
    check_parent(x, y)
    fl, q = divides(x, y)
    if !fl
-     error("Impossible inverse in ", R)
+     error("Impossible inverse in ", parent(x))
    end
    return q
 end
@@ -294,9 +294,11 @@ function divides(a::nmod, b::nmod)
    if r != 0
       return false, b
    end
-   ub = div(B, gb)
-   _, x = ppio(m, ub)
-   r = R(q)*inv(R(ub))
+   ub = divexact(B, gb)
+   # The Julia invmod function does not give the correct result for me
+   b1 = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
+           ub, divexact(m, gb))
+   r = R(q)*b1
    return true, r
 end
 
@@ -315,6 +317,19 @@ function gcd(x::nmod, y::nmod)
    else
       return nmod(d, R)
    end
+end
+
+doc"""
+    gcdx(a::nmod, b::nmod)
+> Compute the extended gcd with the Euclidean structure inherited from
+> $\mathbb{Z}$.
+"""
+function gcdx(a::nmod, b::nmod)
+   m = modulus(a)
+   R = parent(a)
+   g, u, v = gcdx(fmpz(a.data), fmpz(b.data))
+   G, U, V = gcdx(g, fmpz(m))
+   return R(G), R(U)*R(u), R(U)*R(v)
 end
 
 ###############################################################################

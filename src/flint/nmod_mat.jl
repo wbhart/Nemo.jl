@@ -154,6 +154,9 @@ end
 function show(io::IO, a::nmod_mat)
    rows = a.r
    cols = a.c
+   if rows * cols == 0
+      print(io, "$rows by $cols matrix")
+   end
    for i = 1:rows
       print(io, "[")
       for j = 1:cols
@@ -186,7 +189,7 @@ end
 ################################################################################
 
 function transpose(a::nmod_mat)
-  z = NmodMatSpace(base_ring(a), cols(a), rows(a))()
+  z = similar(a, cols(a), rows(a))
   ccall((:nmod_mat_transpose, :libflint), Void,
           (Ref{nmod_mat}, Ref{nmod_mat}), z, a)
   return z
@@ -794,6 +797,9 @@ end
 ###############################################################################
 
 function zero_matrix(R::NmodRing, r::Int, c::Int)
+   if r < 0 || c < 0
+     error("dimensions must not be negative")
+   end
    z = nmod_mat(r, c, R.n)
    z.base_ring = R
    return z

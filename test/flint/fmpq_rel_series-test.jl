@@ -400,7 +400,7 @@ end
 function test_fmpq_rel_series_adhoc_exact_division()
    print("fmpq_rel_series.adhoc_exact_division...")
 
-   R, x = PolynomialRing(QQ, "x")
+   R, x = PowerSeriesRing(QQ, 30, "x")
    
    a = x + x^3
    b = O(x^4)
@@ -470,6 +470,7 @@ function test_fmpq_rel_series()
    test_fmpq_rel_series_shift()
    test_fmpq_rel_series_truncation()
    test_fmpq_rel_series_exact_division()
+   test_fmpq_rel_series_adhoc_exact_division()
    test_fmpq_rel_series_inversion()
    test_fmpq_rel_series_special()
 

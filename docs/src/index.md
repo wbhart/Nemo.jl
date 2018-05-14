@@ -1,10 +1,7 @@
-# Nemo
-
-## Introduction
+# Getting Started
 
 Nemo is a computer algebra package for the Julia programming language, maintained by William Hart, 
-Tommy Hofmann, Claus Fieker, Fredrik Johansson with additional code by Oleksandr Motsak and other
-contributors.
+Tommy Hofmann, Claus Fieker, Fredrik Johansson with additional code by Oleksandr Motsak, Marek Kaluba and other contributors.
 
 - [http://nemocas.org](http://nemocas.org) (Website)
 - [https://github.com/Nemocas/Nemo.jl](https://github.com/Nemocas/Nemo.jl) (Source code)
@@ -17,17 +14,26 @@ The features of Nemo so far include:
   - p-adic numbers
   - Finite fields (prime and non-prime order)
   - Number field arithmetic
-  - Maximal orders of number fields
-  - Arithmetic of ideals in maximal orders
   - Arbitrary precision real and complex balls
   - Univariate polynomials and matrices over the above
-  - Generic polynomials, power series, fraction fields, residue rings and matrices
+
+Nemo depends on AbstractAlgebra.jl which provides Nemo with generic routines for:
+
+  - Univariate and multivariate polynomials
+  - Absolute and relative power series
+  - Laurent series
+  - Fraction fields
+  - Residue rings
+  - Matrices and linear algebra
+  - Young Tableaux
+  - Permutation groups
+  - Characters
 
 ## Installation
 
-To use Nemo we require Julia 0.4 or higher. Please see
-[http://julialang.org/downloads](http://julialang.org/downloads/) for instructions on how to obtain
-julia for your system.
+To use Nemo we require Julia 0.6 or higher. Please see
+[http://julialang.org/downloads](http://julialang.org/downloads/) for instructions on
+how to obtain julia for your system.
 
 At the Julia prompt simply type
 
@@ -36,16 +42,13 @@ julia> Pkg.add("Nemo")
 julia> Pkg.build("Nemo")
 ```
 
-Alternatively, if you don't want to set Julia up yourself, Julia and Nemo are available on
-[https://cloud.sagemath.com/](https://cloud.sagemath.com/).
-
 ## Quick start
 
 Here are some examples of using Nemo.
 
 This example computes recursive univariate polynomials.
 
-```
+```julia
 julia> using Nemo
 
 julia> R, x = PolynomialRing(ZZ, "x")
@@ -101,21 +104,16 @@ Here is an example using matrices.
 ```
 julia> using Nemo
 
-julia> M = MatrixSpace(R, 40, 40)();
-
 julia> R, x = PolynomialRing(ZZ, "x")
 (Univariate Polynomial Ring in x over Integer Ring,x)
 
-julia> M = MatrixSpace(R, 40, 40)();
+julia> S = MatrixSpace(R, 40, 40)
+Matrix Space of 40 rows and 40 columns over Univariate Polynomial Ring in x over Integer Ring
 
-julia> for i in 1:40
-          for j in 1:40
-             M[i, j] = R(map(fmpz, rand(-20:20, 3)))
-          end
-       end
+julia> M = rand(S, 2:2, -20:20)
 
 julia> @time det(M);
-  0.174888 seconds (268.40 k allocations: 26.537 MB, 4.47% gc time)
+  0.131212 seconds (1.12 M allocations: 39.331 MiB, 4.77% gc time)
 ```
 
 And here is an example with power series.

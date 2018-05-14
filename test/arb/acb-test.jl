@@ -414,6 +414,51 @@ function test_acb_functions()
    @test overlaps(ellipwp(z,a), CC("-1.35871985483098753373 +/- 1.89e-21",
                               "-51.93347883199212591376 +/- 6.19e-21"))
 
+   t = CC(rand(), abs(rand()) + eps())
+   prod_sqr = (modweber_f(t)*modweber_f1(t)*modweber_f2(t))^2
+   @test overlaps(prod_sqr, CC(2))
+
+   println("PASS")
+end
+
+function test_acb_lindep()
+   print("acb.lindep...")
+
+   CC = ComplexField(200)
+   tau = CC(rand(), abs(rand()) + eps())
+   A = modweber_f1(tau)^8; B = modweber_f1(2*tau)^8
+
+   vals = [A^i*B^j for i in 0:2 for j in 0:2];
+   C = lindep(vals, 100)
+
+   R, (x, y) = PolynomialRing(ZZ, ["x", "y"])
+   Phi = sum([C[3*i+j+1]*x^i*y^j for i in 0:2 for j in 0:2])
+
+   @test Phi == x^2*y+16*x-y^2
+
+   CC = ComplexField(64)
+
+   println("PASS")
+end
+
+function test_acb_integration()
+   print("acb.integration...")
+
+   res = Nemo.integrate(CC, x->x,  -1, 1)
+   @test contains(res, CC(0))
+   @test imag(res) == CC(0)
+   @test radius(real(res)) < 3e-19
+
+   res = Nemo.integrate(CC, x->x^2, -1, 1)
+   @test contains(res, CC(2//3))
+   @test imag(res) == CC(0)
+   @test radius(real(res)) < 7e-19
+
+   res = Nemo.integrate(CC, sin, 0, const_pi(CC))
+   @test overlaps(res, CC(2))
+   @test imag(res) == CC(0)
+   @test radius(real(res)) < 4e-18
+
    println("PASS")
 end
 
@@ -429,6 +474,8 @@ function test_acb()
    test_acb_unsafe_ops()
    test_acb_constants()
    test_acb_functions()
+   test_acb_lindep()
+   test_acb_integration()
 
    println("")
 end

@@ -25,7 +25,8 @@ export ball, radius, midpoint, contains, contains_zero,
        atanh, asinh, acosh, gamma, lgamma, rgamma, digamma, zeta,
        sincos, sincospi, sinhcosh, atan2,
        agm, fac, binom, fib, bernoulli, risingfac, risingfac2, polylog,
-       chebyshev_t, chebyshev_t2, chebyshev_u, chebyshev_u2, bell, numpart
+       chebyshev_t, chebyshev_t2, chebyshev_u, chebyshev_u2, bell, numpart,
+       lindep
 
 ###############################################################################
 #
@@ -1023,7 +1024,7 @@ function ceil(x::arb)
 end
 
 doc"""
-    sqrt(x::arb)
+    Base.sqrt(x::arb)
 > Return the square root of $x$.
 """
 function Base.sqrt(x::arb)
@@ -1716,6 +1717,34 @@ doc"""
 > Return the number of partitions $p(n)$ as an element of $r$.
 """
 numpart(n::Int, r::ArbField) = numpart(fmpz(n), r)
+
+################################################################################
+#
+#  Linear dependence
+#
+################################################################################
+
+doc"""
+    lindep(A::Array{arb, 1}, bits::Int)
+> Find a small linear combination of the entries of the array $A$ that is small
+> *using LLL). The entries are first scaled by the given number of bits before
+> truncating to integers for use in LLL. This function can be used to find linear
+> dependence between a list of real numbers. The algorithm is heuristic only and
+> returns an array of Nemo integers representing the linear combination.  
+"""
+function lindep(A::Array{arb, 1}, bits::Int)
+  bits < 0 && throw(DomainError())
+  n = length(A)
+  V = [floor(ldexp(s, bits) + 0.5) for s in A]
+  M = zero_matrix(ZZ, n, n + 1)
+  for i = 1:n
+    M[i, i] = ZZ(1)
+    flag, M[i, n + 1] = unique_integer(V[i])
+    !flag && error("Insufficient precision in lindep")
+  end
+  L = lll(M)
+  return [L[1, i] for i = 1:n]
+end
 
 ################################################################################
 #

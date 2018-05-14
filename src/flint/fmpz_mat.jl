@@ -168,6 +168,9 @@ end
 function show(io::IO, a::fmpz_mat)
    r = rows(a)
    c = cols(a)
+   if r*c == 0
+      print(io, "$r by $c matrix")
+   end
    for i = 1:r
       print(io, "[")
       for j = 1:c
@@ -1287,6 +1290,9 @@ end
 ###############################################################################
 
 function zero_matrix(R::FlintIntegerRing, r::Int, c::Int)
+   if r < 0 || c < 0
+     error("dimensions must not be negative")
+   end
    z = fmpz_mat(r, c)
    z.base_ring = FlintZZ
    return z
@@ -1299,6 +1305,9 @@ end
 ###############################################################################
 
 function identity_matrix(R::FlintIntegerRing, n::Int)
+  if n < 0
+     error("dimension must not be negative")
+   end
    z = fmpz_mat(n, n)
    ccall((:fmpz_mat_one, :libflint), Void, (Ref{fmpz_mat}, ), z)
    z.base_ring = FlintZZ
