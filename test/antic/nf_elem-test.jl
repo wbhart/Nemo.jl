@@ -44,6 +44,10 @@ function test_nf_elem_constructors()
 
    @test isa(f, nf_elem)
 
+   h = K(1//2)
+
+   @test isa(h, nf_elem)
+
    g = K(x^2 + 2x - 7)
 
    @test isa(g, nf_elem)
@@ -153,6 +157,13 @@ function test_nf_elem_manipulation()
 
    @test signature(K) == (1, 1)
 
+   @test !isinteger(d)
+   @test !isrational(d)
+   @test isinteger(K(2))
+   @test isrational(K(2))
+   @test !isinteger(K(1//2))
+   @test isrational(K(1//2))
+
    println("PASS")
 end
 
@@ -245,10 +256,16 @@ function test_nf_elem_adhoc_comparison()
    K, a = NumberField(x^3 + 3x + 1, "a")
 
    c = 3a^2 - a + 1
+   b = K(5)
 
-   @test c != 5
-   @test K(5) == 5
-   @test K(5) == fmpz(5)
+   for T in [Int, UInt, BigInt, fmpz, fmpq,
+             Rational{Int}, Rational{BigInt}]
+      @test c != T(5)
+      @test T(5) != c
+      @test b == T(5)
+      @test T(5) == b
+   end
+
    @test K(fmpq(2, 3)) == fmpq(2, 3)
    @test 5 == K(5)
    @test fmpz(5) == K(5)
