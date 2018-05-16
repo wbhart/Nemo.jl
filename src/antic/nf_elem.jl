@@ -6,7 +6,7 @@
 
 export AnticNumberField, nf_elem, norm, representation_matrix,
        representation_matrix_q, trace, CyclotomicField, MaximalRealSubfield,
-       add!, sub!, mul!, signature, sqr_classical
+       add!, sub!, mul!, signature, sqr_classical, isrational, isinteger
 
 ###############################################################################
 #
@@ -173,7 +173,29 @@ doc"""
 > Return `true` if the given number field element is invertible, i.e. nonzero,
 > otherwise return `false`.
 """
-isunit(a::nf_elem) = a != 0
+isunit(a::nf_elem) = !iszero(a)
+
+doc"""
+    isinteger(a::nf_elem)
+> Return `true` if the given number field element is an integer, otherwise
+> return `false`.
+"""
+function isinteger(a::nf_elem)
+   b = ccall((:nf_elem_is_integer, :libantic), Cint,
+             (Ref{nf_elem}, Ref{AnticNumberField}), a, a.parent)
+   return Bool(b)
+end
+
+doc"""
+    isrational(a::nf_elem)
+> Return `true` if the given number field element is a rational number,
+> otherwise `false`.
+"""
+function isrational(a::nf_elem)
+   b = ccall((:nf_elem_is_rational, :libantic), Cint,
+             (Ref{nf_elem}, Ref{AnticNumberField}), a, a.parent)
+   return Bool(b)
+end
 
 doc"""
     denominator(a::nf_elem)
@@ -489,17 +511,49 @@ end
 #
 ###############################################################################
 
-==(a::nf_elem, b::Integer) = a == parent(a)(b)
+function ==(a::nf_elem, b::fmpz)
+   b = ccall((:nf_elem_equal_fmpz, :libantic), Cint,
+             (Ref{nf_elem}, Ref{fmpz}, Ref{AnticNumberField}),
+              a, b, a.parent)
+   return Bool(b)
+end
 
-==(a::nf_elem, b::fmpz) = a == parent(a)(b)
+function ==(a::nf_elem, b::fmpq)
+   b = ccall((:nf_elem_equal_fmpq, :libantic), Cint,
+             (Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}),
+              a, b, a.parent)
+   return Bool(b)
+end
 
-==(a::nf_elem, b::fmpq) = a == parent(a)(b)
+function ==(a::nf_elem, b::Int)
+   b = ccall((:nf_elem_equal_si, :libantic), Cint,
+             (Ref{nf_elem}, Int, Ref{AnticNumberField}),
+              a, b, a.parent)
+   return Bool(b)
+end
 
-==(a::Integer, b::nf_elem) = parent(b)(a) == b
+function ==(a::nf_elem, b::UInt)
+   b = ccall((:nf_elem_equal_ui, :libantic), Cint,
+             (Ref{nf_elem}, UInt, Ref{AnticNumberField}),
+              a, b, a.parent)
+   return Bool(b)
+end
 
-==(a::fmpz, b::nf_elem) = parent(b)(a) == b
+==(a::nf_elem, b::Integer) = a == fmpz(b)
 
-==(a::fmpq, b::nf_elem) = parent(b)(a) == b
+==(a::nf_elem, b::Rational) = a == fmpq(b)
+
+==(a::fmpz, b::nf_elem) = b == a
+
+==(a::fmpq, b::nf_elem) = b == a
+
+==(a::Int, b::nf_elem) = b == a
+
+==(a::UInt, b::nf_elem) = b == a
+
+==(a::Integer, b::nf_elem) = b == a
+
+==(a::Rational, b::nf_elem) = b == a
 
 ###############################################################################
 #
@@ -994,6 +1048,8 @@ function (a::AnticNumberField)(c::fmpq)
          (Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}), z, c, a)
    return z
 end
+
+(a::AnticNumberField)(c::Rational) = a(fmpq(c))
 
 function (a::AnticNumberField)(b::nf_elem)
    parent(b) != a && error("Cannot coerce number field element")
