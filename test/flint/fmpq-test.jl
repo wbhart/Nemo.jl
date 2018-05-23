@@ -159,7 +159,7 @@ function test_fmpq_adhoc_binary()
 
    @test fmpq(1, 2) - 1//2 == 0
 
-   @test 1//2 - fmpq(1, 2) == 0
+   @test 1//2 - fmpq(1, 4) == fmpq(1, 4)
 
    @test BigInt(1)//BigInt(2) - fmpq(1, 2) == 0
 

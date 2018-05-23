@@ -252,7 +252,7 @@ end
 
 -(a::fmpq, b::Rational{T}) where {T <: Integer} = a - fmpq(b)
 
--(a::Rational{T}, b::fmpq) where {T <: Integer} = fmpq(b) - a
+-(a::Rational{T}, b::fmpq) where {T <: Integer} = fmpq(a) - b
 
 function *(a::fmpq, b::fmpz)
    z = fmpq()
