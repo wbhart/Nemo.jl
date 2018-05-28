@@ -6,6 +6,19 @@
 
 ###############################################################################
 #
+#   Linear factor
+#
+###############################################################################
+
+function linfactor(x::fq_nmod_poly)
+    y = parent(x)()
+    ccall((:fq_nmod_poly_linfactor, :libflint), Void, (Ref{fq_nmod_poly},
+          Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}), y, x, base_ring(x))
+    return y
+end
+
+###############################################################################
+#
 #   Naive functions
 #
 ###############################################################################
@@ -71,27 +84,6 @@ function coeff!(x::fq_nmod, j::Int, c::Int)
           (Ref{fq_nmod}, Int, UInt), x, j, c)
 end
 
-function embed(x::fq_nmod, K::FqNmodFiniteField)
-
-    k = parent(x)
-    d = degree(k)
-    M = embed_matrices(k, K)[1]
-    S = MatrixSpace(base_ring(M), d, 1)
-    col = S()
-
-    for j in 0:(d-1)
-        col[j+1, 1] = coeff(x, j)
-    end
-
-    product = M*col
-    res = K()
-
-    for j in degree(K):-1:1
-        coeff!(res, j-1, Int(data(product[j, 1])))
-    end
-    return res
-end
-
 function embed_pre_mat(x::fq_nmod, K::FqNmodFiniteField, M::nmod_mat)
 
     d = degree(parent(x))
@@ -110,9 +102,4 @@ function embed_pre_mat(x::fq_nmod, K::FqNmodFiniteField, M::nmod_mat)
     end
 
     return res
-end
-
-function embedPoly(P::fq_nmod_poly, f::FinFieldMorphism)
-    S = PolynomialRing(codomain(f), "T")[1]
-    return S([f(coeff(P, j)) for j in 0:degree(P)])
 end

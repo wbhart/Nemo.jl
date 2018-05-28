@@ -306,7 +306,7 @@ export Generic
 #
 ###############################################################################
 
-include("FinFieldsMaps.jl")
+include("FinFieldsTypes.jl")
 
 include("flint/FlintTypes.jl")
 

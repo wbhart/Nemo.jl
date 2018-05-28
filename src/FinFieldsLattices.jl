@@ -6,7 +6,6 @@
 
 export embed, section
 
-
 ################################################################################
 #
 #  Over/Sub fields
@@ -82,23 +81,27 @@ end
 
 ################################################################################
 #
+#  Random monic and splitting polynomials
+#
+################################################################################
+
+function rand(R::PolyRing, d::Int)
+    x = gen(R)
+    k = base_ring(R)
+    r = one(R)
+    for i in 1:d
+        r *= x + rand(k)
+    end
+    return r
+end
+
+################################################################################
+#
 #  Root Finding 
 #
 ################################################################################
-"""
-    anyRoot(Q::PolyElem)
 
-Return a root of `Q`.
-"""
-function anyRoot(Q::PolyElem)
-
-    # We factor Q and take the constant coefficient of a factor
-
-    fact = factor(Q)
-    for f in fact
-        return -coeff(f[1], 0)
-    end
-end
+anyRoot(x::fq_nmod_poly) = -coeff(linfactor(x), 0)
 
 ################################################################################
 #
@@ -226,6 +229,23 @@ function defining_poly(f::FinFieldMorphism)
 
     return T^d-res
 end
+
+################################################################################
+#
+#   Embedding a polynomial
+#
+################################################################################
+
+function embedPoly(P::fq_nmod_poly, f::FinFieldMorphism)
+    S = PolynomialRing(codomain(f), "T")[1]
+    return S([f(coeff(P, j)) for j in 0:degree(P)])
+end
+
+################################################################################
+#
+#  Embedding 
+#
+################################################################################
 
 """
     is_embedded{T <: FinField}(k::T, K::T)
@@ -355,7 +375,7 @@ function transitive_closure(f::FinFieldMorphism)
 
                     addSubfield!(K, phi)
                     addOverfield!(domain(g), phi)
-                end
+               end
             end
         end
     end
