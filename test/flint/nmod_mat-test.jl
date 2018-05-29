@@ -617,7 +617,7 @@ end
 function test_nmod_mat_view()
   print("nmod_mat.view...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = ResidueRing(ZZ, 17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
 
@@ -635,11 +635,11 @@ function test_nmod_mat_view()
 
   t = view(a, 1, 1, 2, 2)
 
-  @test t == MatrixSpace(base_ring(a),2,2)([1 2; 3 2])
+  @test t == Z17[1 2; 3 2]
 
   t = view(a, 2, 2, 3, 2)
 
-  @test t == MatrixSpace(base_ring(a), 2, 1)(reshape([2 ; 0], 2, 1))
+  @test t == Z17[2 0]'
 
   @test view(a, 2, 2, 3, 2) == view(a, 2:3,  2:2)
   @test view(a, 2, 2, 3, 2) == sub(a, 2, 2, 3, 2)
@@ -669,6 +669,10 @@ function test_nmod_mat_view()
   C[1, 1] = 20
   @test B[1, 1] == 20
   @test A[1, 1] == 20
+
+  A = 0
+  gc()
+  @test B[1, 1] == 20
 
   println("PASS")
 end

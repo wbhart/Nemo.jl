@@ -2287,6 +2287,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
    c::Int
    rows::Ptr{Void}
    base_ring::FlintRationalField
+   view_parent
 
    # used by windows, not finalised!!
    function fmpq_mat()
@@ -2461,6 +2462,7 @@ mutable struct fmpz_mat <: MatElem{fmpz}
    c::Int
    rows::Ptr{Void}
    base_ring::FlintIntegerRing
+   view_parent
 
    # Used by view, not finalised!!
    function fmpz_mat()
@@ -2604,6 +2606,7 @@ mutable struct nmod_mat <: MatElem{nmod}
   ninv::UInt             # mp_limb_t / Culong
   norm::UInt             # mp_limb_t / Culong
   base_ring::NmodRing
+  view_parent
 
   # Used by view, not finalised!!
   function nmod_mat()
@@ -3075,6 +3078,7 @@ mutable struct fq_mat <: MatElem{fq}
    c::Int
    rows::Ptr{Void}
    base_ring::FqFiniteField
+   view_parent
    
    # used by windows, not finalised!!
    function fq_mat()
@@ -3262,6 +3266,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
    c::Int
    rows::Ptr{Void}
    base_ring::FqNmodFiniteField
+   view_parent
    
    # used by windows, not finalised!!
    function fq_nmod_mat()

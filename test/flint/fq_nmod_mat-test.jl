@@ -590,11 +590,11 @@ function test_fq_nmod_mat_view()
 
   t = view(a, 1, 1, 2, 2)
 
-  @test t == MatrixSpace(base_ring(a),2,2)([1 2; 3 2])
+  @test t == F17[1 2; 3 2]
 
   t = view(a, 2, 2, 3, 2)
 
-  @test t == MatrixSpace(base_ring(a), 2, 1)(reshape([2 ; 0], 2, 1))
+  @test t == F17[2 0;]'
 
   @test view(a, 2, 2, 3, 2) == view(a, 2:3,  2:2)
   @test view(a, 2, 2, 3, 2) == sub(a, 2, 2, 3, 2)
@@ -604,7 +604,10 @@ function test_fq_nmod_mat_view()
 
   @test_throws ErrorException view(a, 2, 2, 1, 1)
 
-  S = MatrixSpace(F17, 3, 3)
+  a = 0
+  gc()
+  @test t[1, 1] == 2
+
   println("PASS")
 end
 

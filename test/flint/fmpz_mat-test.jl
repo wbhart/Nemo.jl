@@ -140,6 +140,11 @@ function test_fmpz_mat_view()
    @test B[1, 1] == 20
    @test A[1, 1] == 20
 
+   A = 0
+   gc()
+
+   @test B[1, 1] == 20
+
    println("PASS")
 end
 
