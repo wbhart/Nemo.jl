@@ -63,6 +63,7 @@ function Base.view(x::fmpz_mat, r1::Int, c1::Int, r2::Int, c2::Int)
    (r1 > r2 || c1 > c2) && error("Invalid parameters")
    b = fmpz_mat()
    b.base_ring = FlintZZ
+   b.view_parent = x
    ccall((:fmpz_mat_window_init, :libflint), Void,
          (Ref{fmpz_mat}, Ref{fmpz_mat}, Int, Int, Int, Int),
              b, x, r1 - 1, c1 - 1, r2, c2)

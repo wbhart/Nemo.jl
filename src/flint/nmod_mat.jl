@@ -522,6 +522,7 @@ function Base.view(x::nmod_mat, r1::Int, c1::Int, r2::Int, c2::Int)
   (r1 > r2 || c1 > c2) && error("Invalid parameters")
   z = nmod_mat()
   z.base_ring = x.base_ring
+  z.view_parent = x
   ccall((:nmod_mat_window_init, :libflint), Void,
           (Ref{nmod_mat}, Ref{nmod_mat}, Int, Int, Int, Int),
           z, x, r1 - 1, c1 - 1, r2, c2)

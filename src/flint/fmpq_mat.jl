@@ -57,6 +57,7 @@ function Base.view(x::fmpq_mat, r1::Int, c1::Int, r2::Int, c2::Int)
   Generic._checkbounds(x, r2, c2)
   (r1 > r2 || c1 > c2) && error("Invalid parameters")
   b = fmpq_mat()
+  b.view_parent = x
   b.base_ring = x.base_ring
   ccall((:fmpq_mat_window_init, :libflint), Void,
         (Ref{fmpq_mat}, Ref{fmpq_mat}, Int, Int, Int, Int),
