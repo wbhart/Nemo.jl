@@ -515,9 +515,9 @@ function test_fmpz_mat_nullspace()
 
    A = S([fmpz(2) 3 5; 1 4 7; 4 1 1])
 
-   @test nullspace(A) == (T([1; -9; 5]), 1)
+   @test nullspace(A) == (1, T([1; -9; 5]))
 
-   N, r = nullspace(A)
+   r, N = nullspace(A)
 
    @test iszero(A*N)
 
