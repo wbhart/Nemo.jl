@@ -841,11 +841,11 @@ function nullspace(x::fmpz_mat)
             N[k, l] = T[rows(T) - l + 1, k]
           end
         end
-        return N, cols(N)
+        return cols(N), N
       end
     end
   end
-  return similar(x, cols(x), 0), 0
+  return 0, similar(x, cols(x), 0)
 end
 
 doc"""
@@ -859,7 +859,7 @@ function nullspace_right_rational(x::fmpz_mat)
    u = similar(x, cols(x), cols(x))
    rank = ccall((:fmpz_mat_nullspace, :libflint), Cint,
                 (Ref{fmpz_mat}, Ref{fmpz_mat}), u, x)
-   return u, rank
+   return rank, u
 end
 
 ###############################################################################
