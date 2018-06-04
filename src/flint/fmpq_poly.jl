@@ -646,6 +646,15 @@ function _factor(x::fmpq_poly)
    return res, fmpq(z, denominator(x))
 end
 
+doc"""
+    isirreducible(x::fmpq_poly)
+> Checks if $x$ is irreducible.
+"""
+function isirreducible(x::fmpq_poly)
+   res, _ = _factor(x)
+   return length(res) == 1 && first(values(res)) == 1
+end
+
 ###############################################################################
 #
 #   Signature

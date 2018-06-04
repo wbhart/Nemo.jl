@@ -1100,9 +1100,9 @@ doc"""
 > The supplied string `s` specifies how the generator of the number field
 > should be printed.
 """
-function NumberField(f::fmpq_poly, s::AbstractString; cached = true)
+function NumberField(f::fmpq_poly, s::AbstractString; cached::Bool = true, check::Bool = true)
    S = Symbol(s)
-   parent_obj = AnticNumberField(f, S, cached)
+   parent_obj = AnticNumberField(f, S, cached, check)
 
    return parent_obj, gen(parent_obj)
 end
@@ -1120,7 +1120,7 @@ function CyclotomicField(n::Int, s::AbstractString, t = "\$"; cached = true)
    Zx, x = PolynomialRing(FlintZZ, string(gensym()); cached = cached)
    Qx, = PolynomialRing(FlintQQ, t; cached = cached)
    f = cyclotomic(n, x)
-   return NumberField(Qx(f), s; cached = cached)
+   return NumberField(Qx(f), s; cached = cached, check = false)
 end
 
 doc"""
@@ -1137,5 +1137,5 @@ function MaximalRealSubfield(n::Int, s::AbstractString, t = "\$"; cached = true)
    Zx, x = PolynomialRing(FlintZZ, string(gensym()); cached = cached)
    Qx, = PolynomialRing(FlintQQ, t; cached = cached)
    f = cos_minpoly(n, x)
-   return NumberField(Qx(f), s; cached = cached)
+   return NumberField(Qx(f), s; cached = cached, check = false)
 end

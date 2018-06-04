@@ -31,7 +31,8 @@ mutable struct AnticNumberField <: Field
    S::Symbol
    auxilliary_data::Array{Any, 1}
 
-   function AnticNumberField(pol::fmpq_poly, s::Symbol, cached::Bool = false)
+   function AnticNumberField(pol::fmpq_poly, s::Symbol, cached::Bool = false, check::Bool = true)
+     check && !isirreducible(pol) && error("Polynomial must be irreducible")
       if !cached
          nf = new()
          nf.pol = pol
