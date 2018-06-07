@@ -105,129 +105,53 @@ anyRoot(x::fq_nmod_poly) = -coeff(linfactor(x), 0)
 
 ################################################################################
 #
-#   Computing the defining polynomial
+# Minimal polynomial of the generator
 #
 ################################################################################
 
 """
-coordinates_mat(f::FinFieldMorphism)
+    berlekampMassey{T <: RingElem}(a::Array{T,1},n::Int)
 
-Compute a matrix containing column vectors 1, t, t², ..., t^(m-1), u, ut, ut²,
-..., ut^(m-1), u², ..., u^(d-1)t^(m-1). So the coordinates are in Z/pZ. Where
-m is the degree of domain(f), d = [codomain(f):domain(f)], p is the ambiant
-caracteristic.
+Compute the minimal polynomial of a linear recurring sequence.
 """
-function coordinates_mat(f::FinFieldMorphism)
-    E = domain(f)
-    F = codomain(f)
-    m = degree(E)
-    n = degree(F)
-    d::Int = n/m
-    p::Int = characteristic(F)
-    R = ResidueRing(ZZ, p)
-    S = MatrixSpace(R, n, n)
-    t = f(gen(E))
-    u = gen(F)
-    M = S()
+function berlekampMassey{Y <: FieldElem}(a::Array{Y, 1}, n::Int)
 
-    for i in 0:(d-1)
-        for j in 0:(m-1)
-            tmp = u^i*t^j
-            for k in 0:(n-1)
-                M[k+1, i*m+j+1] = coeff(tmp, k)
-            end
-        end
-    end
-    return M
+  S, T = PolynomialRing(parent(a[1]), "T")
+  m = 2*n-1
+  R0 = T^(2*n)
+  R1 = S(reverse(a))
+  V0 = S(0)
+  V1 = S(1)
+
+  while n <= degree(R1)
+    Q, R = divrem(R0,R1)
+    V = V0-Q*V1
+    V0 = V1
+    V1 = V
+    R0 = R1
+    R1 = R
+  end
+
+  return V1*lead(V1)^(-1)
 end
 
 """
-    coordinates(x::fq_nmod, f::FinFieldMorphism)
+    genminpol(f::FinFieldMorphism)
 
-Return the coordinates of `x` in the `domain(f)`-basis 1, u, ..., u^(d-1). The
-coordinates are directly seen in `domain(f)` **and not** in a subspace of
-`codomain(f)` isomorphic to `domain(f)`. Here d = [codomain(f):domain(f)].
+Compute the minimal polynomial of the generator of the codomain 
+of `f` over the domain of `f`.
 """
-function coordinates(x::fq_nmod, f::FinFieldMorphism)
-
-    # We compute the change of basis matrix from the canonical basis of
-    # codomain(f) to the basis 1, t, t², ..., t^(m-1), u, ut², ...,
-    # u^(d-1)t^(m-1)
-    M = inv(coordinates_mat(f))
-
-    R = base_ring(M)
-    E = domain(f)
-    F = codomain(f)
-    m = degree(E)
-    n = degree(F)
-    d::Int = n/m
-    S = MatrixSpace(R, n, 1)
-    col = S()
-
-    # We express x in the new basis
-    for i in 0:(n-1)
-        col[i+1, 1] = coeff(x, i)
-    end
-    product = M*col
-
-    # We transform the F_p basis in a domain(f) basis 1, u, u², ..., u^(d-1)
-    res = Array{fq_nmod}(d)
-    for i in 0:(d-1)
-        tmp = E()
-        for j in 0:(m-1)
-            coeff!(tmp, j, Int(data(product[i*m+j+1, 1])))
-        end
-        res[i+1] = tmp
-    end
-
-    return res
-end
-
-function coordinates_pre(x::fq_nmod, f::FinFieldMorphism, M::nmod_mat)
-    R = base_ring(M)
-    E = domain(f)
-    F = codomain(f)
-    n = degree(E)
-    m = degree(F)
-    d::Int = m/n
-    S = MatrixSpace(R, m, 1)
-    col = S()
-    for i in 0:(m-1)
-        col[i+1, 1] = coeff(x, i)
-    end
-    product = M*col
-    res = Array{fq_nmod}(d)
-    for i in 0:(d-1)
-        tmp = E()
-        for j in 0:(n-1)
-            coeff!(tmp, j, Int(data(product[i*n+j+1, 1])))
-        end
-        res[i+1] = tmp
-    end
-    return res
-end
-
-"""
-    defining_poly(f::FinFieldMorphism)
-
-Return the minimal polynomial of the canonical generator of `codomain(f)` over
-`domain(F)`.
-"""
-function defining_poly(f::FinFieldMorphism)
+function genminpoly(f::FinFieldMorphism)
 
     E = domain(f)
     F = codomain(f)
     d::Int = degree(F)/degree(E)
 
-    # We compute the coordinates u^d in the basis 1, u, u², ..., u^(d-1)
-    tmp = coordinates(gen(F)^d, f)
+    sec = f.inv
+    x = gen(F)
 
-    R, T = PolynomialRing(E, "T")
-
-    # We transform the result into a polynomial
-    res = R(tmp)
-
-    return T^d-res
+    A = typeof(x)[sec(x^i) for i in 0:(2*d-1)]
+    return berlekampMassey(A, d)
 end
 
 ################################################################################
@@ -305,7 +229,7 @@ function find_morph{T <: FinField}(k::T, K::T)
         if haskey(subfields(K), l)
             f = subfields(k)[l][1]
             g = subfields(K)[l][1]
-            P = embedPoly(defining_poly(f), g)
+            P = embedPoly(genminpoly(f), g)
             if needy
                 Q = gcd(Q, P)
             else
