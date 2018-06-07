@@ -110,7 +110,7 @@ anyRoot(x::fq_nmod_poly) = -coeff(linfactor(x), 0)
 ################################################################################
 
 """
-    berlekampMassey{T <: RingElem}(a::Array{T,1},n::Int)
+    berlekampMassey{Y <: RingElem}(a::Array{Y,1}, n::Int)
 
 Compute the minimal polynomial of a linear recurring sequence.
 """
@@ -146,11 +146,26 @@ function genminpoly(f::FinFieldMorphism)
     E = domain(f)
     F = codomain(f)
     d::Int = degree(F)/degree(E)
+    b = 2*d
 
+    # We define `sec`, the section of the morphism `f`
+    
     sec = f.inv
     x = gen(F)
+    y = one(F)
 
-    A = typeof(x)[sec(x^i) for i in 0:(2*d-1)]
+    # We compute the recurring sequence sec(x^j) for j from 0 to 2d-1
+
+    A = Array{typeof(x)}(b)
+
+    for j in 1:(b-1)
+        A[j] = sec(y)
+        y *= x
+    end
+    A[b] = sec(y)
+
+    # We apply Berlekamp Massey algorithm to the sequence
+
     return berlekampMassey(A, d)
 end
 
