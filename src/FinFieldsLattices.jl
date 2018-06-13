@@ -136,7 +136,7 @@ function berlekampMassey{Y <: FieldElem}(a::Array{Y, 1}, n::Int)
 end
 
 """
-    genminpol(f::FinFieldMorphism)
+    genminpoly(f::FinFieldMorphism)
 
 Compute the minimal polynomial of the generator of the codomain 
 of `f` over the domain of `f`.
