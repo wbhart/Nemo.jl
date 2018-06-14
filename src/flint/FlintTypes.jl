@@ -2806,8 +2806,11 @@ end
 const FmpzModMatID = Dict{Tuple{Generic.ResRing{fmpz}, Int, Int}, FmpzModMatSpace}()
 
 mutable struct fmpz_mod_mat <: MatElem{Generic.ResRing{fmpz}}
-  mat::fmpz_mat
-  mod::fmpz
+  entries::Ptr{Void}
+  r::Int
+  c::Int
+  rows::Ptr{Void}
+  n::Int #fmpz_t mod
   base_ring::Generic.ResRing{fmpz}
 
   # Used by view, not finalised!!
@@ -2822,6 +2825,10 @@ mutable struct fmpz_mod_mat <: MatElem{Generic.ResRing{fmpz}}
           (Ref{fmpz_mod_mat}, Int, Int, Ref{fmpz}), z, r, c, n)
     finalizer(z, _fmpz_mod_mat_clear_fn)
     return z
+  end
+
+  function fmpz_mod_mat(r::Int, c::Int, n::T) where {T <: Integer}
+      return fmpz_mod_mat(r, c, fmpz(n))
   end
 
   function fmpz_mod_mat(r::Int, c::Int, n::fmpz, arr::Array{fmpz, 2}, transpose::Bool = false)
@@ -2930,8 +2937,6 @@ end
 function _fmpz_mod_mat_clear_fn(mat::fmpz_mod_mat)
   ccall((:fmpz_mod_mat_clear, :libflint), Void, (Ref{fmpz_mod_mat}, ), mat)
 end
-
-
 
 ###############################################################################
 #

@@ -53,14 +53,14 @@ end
 
 @inline function getindex(a::fmpz_mod_mat, i::Int, j::Int)
   @boundscheck Generic._checkbounds(a, i, j)
-  u = ccall((:fmpz_mod_mat_get_entry, :libflint), UInt,
+  u = ccall((:fmpz_mod_mat_entry, :libflint), UInt,
               (Ref{fmpz_mod_mat}, Int, Int), a, i - 1 , j - 1)
   return base_ring(a)(u)
 end
 
 #as above, but as a plain UInt
 function getindex_raw(a::fmpz_mod_mat, i::Int, j::Int)
-  return ccall((:fmpz_mod_mat_get_entry, :libflint), UInt,
+  return ccall((:fmpz_mod_mat_entry, :libflint), UInt,
                  (Ref{fmpz_mod_mat}, Int, Int), a, i - 1, j - 1)
 end
 
