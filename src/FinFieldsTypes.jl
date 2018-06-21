@@ -46,7 +46,9 @@ function (f::FinFieldSection)(x)
     if x == b
         return a
     else
-        error("Element not in the domain")
+        throw(ArgumentError(string("not an element in the subfield of degree ",
+                                   degree(codomain(f)), " over F_",
+                                   characteristic(codomain(f)))))
     end
 end
 
