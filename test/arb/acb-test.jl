@@ -424,14 +424,25 @@ end
 function test_acb_lindep()
    print("acb.lindep...")
 
-   CC = ComplexField(200)
-   tau = CC(rand(), abs(rand()) + eps())
-   A = modweber_f1(tau)^8; B = modweber_f1(2*tau)^8
+   CC = ComplexField(512)
+   tau1 = CC(rand(), abs(rand()) + eps())
+   tau2 = CC(rand(), abs(rand()) + eps())
+   A1 = modweber_f1(tau1)^8; B1 = modweber_f1(2*tau1)^8
 
-   vals = [A^i*B^j for i in 0:2 for j in 0:2];
-   C = lindep(vals, 100)
+   vals1 = [A1^i*B1^j for i in 0:2 for j in 0:2];
+   C = lindep(vals1, 150)
 
    R, (x, y) = PolynomialRing(ZZ, ["x", "y"])
+   Phi = sum([C[3*i+j+1]*x^i*y^j for i in 0:2 for j in 0:2])
+
+   @test Phi == x^2*y+16*x-y^2
+
+   A2 = modweber_f1(tau2)^8; B2 = modweber_f1(2*tau2)^8
+   vals2 = [A2^i*B2^j for i in 0:2 for j in 0:2]
+
+   vals = [vals1 vals2]'
+   C = lindep(vals, 150)
+
    Phi = sum([C[3*i+j+1]*x^i*y^j for i in 0:2 for j in 0:2])
 
    @test Phi == x^2*y+16*x-y^2
