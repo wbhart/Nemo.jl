@@ -804,8 +804,19 @@ function (R::FqNmodPolyRing)(x::fmpz_poly)
 end
 
 function (R::FqNmodPolyRing)(x::fq_nmod_poly)
-  parent(x) != R && error("Unable to coerce to polynomial")
-  return x
+  k = base_ring(x)
+  K = base_ring(R)
+  dx = degree(x)
+  dR = degree(K)
+  if dR == dx
+      return x
+  elseif dx < dR
+      dR % dx != 0 && error("Coercion impossible")
+      return embedPoly(x, embed(k, K))
+  else dR < dx
+      dx % dR != 0 && error("Coercion impossible")
+      error("Not implemented")
+  end
 end
 
 ################################################################################

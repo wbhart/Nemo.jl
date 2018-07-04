@@ -85,7 +85,7 @@ end
 #
 ################################################################################
 
-function rand(R::PolyRing, d::Int)
+function rand_split(R::PolyRing, d::Int)
     x = gen(R)
     k = base_ring(R)
     r = one(R)
@@ -93,6 +93,11 @@ function rand(R::PolyRing, d::Int)
         r *= x + rand(k)
     end
     return r
+end
+
+function rand(R::PolyRing, d::Int)
+    k = base_ring(R)
+    return R([rand(k) for i in 0:d])
 end
 
 ################################################################################
