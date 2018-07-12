@@ -4,7 +4,7 @@
 #
 ###############################################################################
 
-export FmpqMPolyRing, fmpq_mpoly, degrees
+export FmpqMPolyRing, fmpq_mpoly, degrees, symbols
 
 ###############################################################################
 #
@@ -18,7 +18,7 @@ elem_type(::Type{FmpqMPolyRing}) = fmpq_mpoly
 
 elem_type(::FmpqMPolyRing) = fmpq_mpoly
 
-vars(a::FmpqMPolyRing) = a.S
+symbols(a::FmpqMPolyRing) = a.S
 
 parent(a::fmpq_mpoly) = a.parent
 
@@ -211,7 +211,7 @@ function show(io::IO, x::fmpq_mpoly)
    else
       cstr = ccall((:fmpq_mpoly_get_str_pretty, :libflint), Ptr{UInt8},
           (Ref{fmpq_mpoly}, Ptr{Ptr{UInt8}}, Ref{FmpqMPolyRing}),
-          x, [string(s) for s in vars(parent(x))], x.parent)
+          x, [string(s) for s in symbols(parent(x))], x.parent)
       print(io, unsafe_string(cstr))
 
       ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)

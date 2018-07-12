@@ -16,7 +16,7 @@ parent_type{S, N}(::Type{fmpz_mpoly{S, N}}) = FmpzMPolyRing{S, N}
 
 elem_type{S, N}(::FmpzMPolyRing{S, N}) = fmpz_mpoly{S, N}
 
-vars(a::FmpzMPolyRing) = a.S
+symbols(a::FmpzMPolyRing) = a.S
 
 function gens{S, N}(R::FmpzMPolyRing{S, N})
    A = Array{fmpz_mpoly{S, N}}(R.num_vars)
@@ -98,7 +98,7 @@ function show(io::IO, x::fmpz_mpoly)
    else
       cstr = ccall((:fmpz_mpoly_get_str_pretty, :libflint), Ptr{UInt8}, 
           (Ref{fmpz_mpoly}, Ptr{Ptr{UInt8}}, Ref{FmpzMPolyRing}), 
-          x, [string(s) for s in vars(parent(x))], x.parent)
+          x, [string(s) for s in symbols(parent(x))], x.parent)
       print(io, unsafe_string(cstr))
 
       ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
