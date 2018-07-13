@@ -555,7 +555,7 @@ function mul!(a::fmpq_mpoly, b::fmpq_mpoly, c::fmpq_mpoly)
 end
 
 function setcoeff!(a::fmpq_mpoly, i::Int, c::fmpq)
-   ccall((:fmpq_mpoly_set_coeff_fmpq, :libflint), Void,
+   ccall((:fmpq_mpoly_set_termcoeff_fmpq, :libflint), Void,
          (Ref{fmpq_mpoly}, Int, Ref{fmpq}, Ref{FmpqMPolyRing}),
          a, i - 1, c, a.parent)
    return a
