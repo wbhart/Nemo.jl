@@ -1452,7 +1452,7 @@ end
 doc"""
     lindep(A::Array{acb, 1}, bits::Int)
 > Find a small linear combination of the entries of the array $A$ that is small
-> using LLL). The entries are first scaled by the given number of bits before
+> (using LLL). The entries are first scaled by the given number of bits before
 > truncating the real and imaginary parts to integers for use in LLL. This function can
 > be used to find linear dependence between a list of complex numbers. The algorithm is
 > heuristic only and returns an array of Nemo integers representing the linear
@@ -1469,6 +1469,36 @@ function lindep(A::Array{acb, 1}, bits::Int)
     !flag && error("Insufficient precision in lindep")
     flag, M[i, n + 2] = unique_integer(floor(imag(V[i]) + 0.5))
     !flag && error("Insufficient precision in lindep")
+  end
+  L = lll(M)
+  return [L[1, i] for i = 1:n]
+end
+
+doc"""
+    lindep(A::Array{acb, 2}, bits::Int)
+> Find a (common) small linear combination of the entries in each row of the array $A$,
+> that is small (using LLL). It is assumed that the complex numbers in each row of the
+> array share the same linear combination. The entries are first scaled by the given
+> number of bits before truncating the real and imaginary parts to integers for use in
+> LLL. This function can be used to find a common linear dependence shared across a
+> number of lists of complex numbers. The algorithm is heuristic only and returns an
+> array of Nemo integers representing the common linear combination.
+"""
+function lindep(A::Array{acb, 2}, bits::Int)
+  bits < 0 && throw(DomainError())
+  m, n = size(A)
+  V = [ldexp(s, bits) for s in A]
+  M = zero_matrix(ZZ, n, n + 2*m)
+  for i = 1:n
+     M[i, i] = ZZ(1)
+  end
+  for j = 1:m
+     for i = 1:n
+        flag, M[i, n + 2*j - 1] = unique_integer(floor(real(V[j, i]) + 0.5))
+        !flag && error("Insufficient precision in lindep")
+        flag, M[i, n + 2*j] = unique_integer(floor(imag(V[j, i]) + 0.5))
+        !flag && error("Insufficient precision in lindep")
+     end
   end
   L = lll(M)
   return [L[1, i] for i = 1:n]

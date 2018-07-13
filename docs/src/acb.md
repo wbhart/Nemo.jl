@@ -702,14 +702,26 @@ d = hyp1f1(s, s+1, z)
 lindep(::Array{acb, 1}, n::Int)
 ```
 
+```@docs
+lindep(A::Array{acb, 2}, bits::Int)
+```
+
 **Examples**
 
 ```julia
 CC = ComplexField(128)
 
+# These are two of the roots of x^5 + 3x + 1
 a = CC(1.0050669478588622428791051888364775253, - 0.93725915669289182697903585868761513585)
+b = CC(-0.33198902958450931620250069492231652319)
 
-V = [CC(1), a, a^2, a^3, a^4, a^5];
-W = lindep(V, 20)
+# We recover the polynomial from one root....
+V1 = [CC(1), a, a^2, a^3, a^4, a^5];
+W = lindep(V1, 20)
+
+# ...or from two
+V2 = [CC(1), b, b^2, b^3, b^4, b^5];
+Vs = [V1 V2]'
+X = lindep(Vs, 20)
 ```
 
