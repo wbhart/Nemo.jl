@@ -92,7 +92,9 @@ function test_fmpq_mpoly_manipulation()
 
       f = rand(S, 1:5, 0:100, -100:100)
 
-      @test f == sum((coeff(f, i) * S(fmpq[1], [Nemo._get_termexp_fmpz(f, i)])  for i in 1:length(f)))
+      if length(f) > 0
+        @test f == sum((coeff(f, i) * S(fmpq[1], [Nemo._get_termexp_fmpz(f, i)])  for i in 1:length(f)))
+      end
 
       deg = isdegree(ordering(S))
       rev = isreverse(ordering(S))
