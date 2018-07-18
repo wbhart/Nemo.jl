@@ -101,6 +101,13 @@ parent_type(::Type{padic}) = FlintPadicField
 #
 ###############################################################################
 
+function Base.deepcopy_internal(a::padic, dict::ObjectIdDict)
+   z = parent(a)()
+   ccall((:padic_set, :libflint), Void,
+         (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, parent(a))
+   return z
+end
+
 function Base.hash(a::padic, h::UInt)
    return xor(hash(lift(FlintQQ, a), h), xor(hash(prime(parent(a)), h), h))
 end
