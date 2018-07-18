@@ -27,6 +27,14 @@ function test_padic_constructors()
 
    @test isa(fmpz(1)//7^2 + fmpz(2)//7 + 3 + 4*7 + O(R, 7^2), padic)
 
+   s = R()
+
+   t = deepcopy(s)
+
+   @test isa(t, padic)
+
+   @test parent(t) === R
+
    println("PASS")
 end
 
