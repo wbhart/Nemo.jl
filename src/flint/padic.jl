@@ -473,7 +473,12 @@ doc"""
 > such a value exists. If not, the value of $h$ is undetermined.
 """
 function divides(a::padic, b::padic)
-   iszero(b) && throw(DivideError())
+   if iszero(a)
+      return true, zero(parent(a))
+   end
+   if iszero(b)
+      return false, zero(parent(a))
+   end
    return true, divexact(a, b)
 end
 

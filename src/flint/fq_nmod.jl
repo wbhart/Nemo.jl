@@ -319,7 +319,12 @@ function divexact(x::fq_nmod, y::fq_nmod)
 end
 
 function divides(a::fq_nmod, b::fq_nmod)
-   iszero(b) && error("Division by zero in divides")
+   if iszero(a)
+      return true, zero(parent(a))
+   end
+   if iszero(b)
+      return false, zero(parent(a))
+   end
    return true, divexact(a, b)
 end
 

@@ -400,6 +400,12 @@ end
 
 function divides(z::fq_nmod_poly, x::fq_nmod_poly)
    check_parent(z, x)
+   if iszero(z)
+      return true, zero(parent(z))
+   end
+   if iszero(x)
+      return false, zero(parent(z))
+   end
    q = parent(z)()
    v = Bool(ccall((:fq_nmod_poly_divides, :libflint), Cint,
             (Ref{fq_nmod_poly}, Ref{fq_nmod_poly},

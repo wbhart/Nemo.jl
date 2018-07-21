@@ -358,7 +358,12 @@ function divexact(x::fq, y::fq)
 end
 
 function divides(a::fq, b::fq)
-   iszero(b) && error("Division by zero in divides")
+   if iszero(a)
+      return true, zero(parent(a))
+   end
+   if iszero(b)
+      return false, zero(parent(a))
+   end
    return true, divexact(a, b)
 end
 

@@ -499,6 +499,12 @@ mod(x::fmpz_mod_poly, y::fmpz_mod_poly) = rem(x, y)
 ################################################################################
 
 function divides(z::fmpz_mod_poly, x::fmpz_mod_poly)
+   if iszero(z)
+      return true, zero(parent(z))
+   end
+   if iszero(x)
+      return false, zero(parent(z))
+   end
    q, r = divrem(z, x)
    return iszero(r), q
 end

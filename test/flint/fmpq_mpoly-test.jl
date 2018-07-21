@@ -289,22 +289,21 @@ function test_fmpq_mpoly_divides()
       S, varlist = PolynomialRing(R, var_names, ordering = ord)
 
       for iter = 1:10
-         f = S(0)
-         while iszero(f)
-            f = rand(S, 0:5, 0:100, -100:100)
-         end
+         f = rand(S, 0:5, 0:100, -100:100)
          g = rand(S, 0:5, 0:100, -100:100)
 
          p = f*g
 
          flag, q = divides(p, f)
 
-         @test flag == true
-         @test q == g
+         if flag 
+           @test q * f == p
+         end
 
-         q = divexact(p, f)
-
-         @test q == g
+         if !iszero(f)
+           q = divexact(p, f)
+           @test q == g
+         end
       end
    end
 
