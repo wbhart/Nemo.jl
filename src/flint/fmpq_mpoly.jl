@@ -449,7 +449,12 @@ end
 
 function divides(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
-   iszero(b) && error("Cannot divide by zero")
+   if iszero(a)
+      return true, zero(parent(a))
+   end
+   if iszero(b)
+      return false, zero(parent(a))
+   end
    z = parent(a)()
    d = ccall((:fmpq_mpoly_divides, :libflint), Cint,
        (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),

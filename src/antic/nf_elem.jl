@@ -644,7 +644,12 @@ doc"""
 > if such exists. If not, the value of $h$ is undetermined.
 """
 function divides(a::nf_elem, b::nf_elem)
-  iszero(b) && throw(DivideError())
+   if iszero(a)
+      return true, zero(parent(a))
+   end
+   if iszero(b)
+      return false, zero(parent(a))
+   end
    return true, divexact(a, b)
 end
 

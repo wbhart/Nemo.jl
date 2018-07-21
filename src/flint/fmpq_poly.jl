@@ -483,6 +483,12 @@ divexact(x::fmpq_poly, y::Rational{T}) where T <: Union{Int, BigInt} = divexact(
 ###############################################################################
 
 function divides(z::fmpq_poly, x::fmpq_poly)
+   if iszero(z)
+      return true, zero(parent(z))
+   end
+   if iszero(x)
+      return false, zero(parent(z))
+   end
    q, r = divrem(z, x)
    return iszero(r), q
 end

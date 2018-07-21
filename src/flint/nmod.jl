@@ -291,15 +291,15 @@ function divides(a::nmod, b::nmod)
    m = modulus(R)
    gb = gcd(B, m)
    q, r = divrem(A, gb)
-   if r != 0
+   if !iszero(r)
       return false, b
    end
    ub = divexact(B, gb)
    # The Julia invmod function does not give the correct result for me
    b1 = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
            ub, divexact(m, gb))
-   r = R(q)*b1
-   return true, r
+   rr = R(q)*b1
+   return true, rr
 end
 
 ###############################################################################

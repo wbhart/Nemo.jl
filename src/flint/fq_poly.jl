@@ -399,6 +399,12 @@ function remove(z::fq_poly, p::fq_poly)
 end
 
 function divides(z::fq_poly, x::fq_poly)
+   if iszero(z)
+      return true, zero(parent(z))
+   end
+   if iszero(x)
+      return false, zero(parent(z))
+   end
    check_parent(z, x)
    q = parent(z)()
    v = Bool(ccall((:fq_poly_divides, :libflint), Cint,

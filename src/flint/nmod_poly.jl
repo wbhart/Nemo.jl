@@ -843,6 +843,12 @@ function remove(z::nmod_poly, p::nmod_poly)
 end
 
 function divides(z::nmod_poly, x::nmod_poly)
+   if iszero(z)
+      return true, zero(parent(z))
+   end
+   if iszero(x)
+      return false, zero(parent(z))
+   end
    q, r = divrem(z, x)
    return iszero(r), q
 end
