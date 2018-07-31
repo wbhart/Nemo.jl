@@ -515,9 +515,9 @@ end
 ###############################################################################
 
 function ^(x::fmpz, y::Int)
-    if y < 0; throw(DomainError()); end
     if isone(x); return x; end
     if x == -1; return isodd(y) ? x : -x; end
+    if y < 0; throw(DomainError()); end
     if y > typemax(UInt); throw(DomainError()); end
     if y == 0; return one(FlintZZ); end
     if y == 1; return x; end
