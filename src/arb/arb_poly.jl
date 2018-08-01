@@ -756,6 +756,10 @@ function (a::ArbPolyRing)(b::arb_poly)
    return z
 end
 
+function (R::ArbPolyRing)(p::AbstractAlgebra.Generic.Poly{arb})
+   return R(p.coeffs)
+end
+
 ################################################################################
 #
 #  PolynomialRing constructor
