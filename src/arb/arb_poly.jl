@@ -79,20 +79,6 @@ function show(io::IO, x::ArbPolyRing)
   show(io, x.base_ring)
 end
 
-function show(io::IO, f::arb_poly)
-  if length(f) == 0
-    print(io, "0")
-  else
-    print(io, "[ ")
-    for i in 0:degree(f)-1
-      print(io, coeff(f,i))
-      print(io, ", ")
-    end
-    print(io, coeff(f,degree(f)))
-    print(io, " ]")
-  end
-end
-
 ###############################################################################
 #
 #   Comparisons

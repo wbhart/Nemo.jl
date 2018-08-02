@@ -44,7 +44,7 @@ function test_arb_poly_printing()
    R, x = PolynomialRing(RR, "x")
    f = x^3 + 2x^2 + x + 1
 
-   @test string(f) == "[ 1.0000000000000000000, 1.0000000000000000000, 2.0000000000000000000, 1.0000000000000000000 ]"
+   @test string(f) == "x^3+2.0000000000000000000*x^2+x+1.0000000000000000000"
 
    println("PASS")
 end

@@ -127,7 +127,7 @@ end
 
 needs_parentheses(x::arb) = false
 
-show_minus_one(::Type{Nemo.arb}) = false
+show_minus_one(::Type{arb}) = true
 
 ################################################################################
 #
