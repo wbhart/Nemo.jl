@@ -484,6 +484,11 @@ function isnegative(x::arb)
    return Bool(ccall((:arb_is_negative, :libarb), Cint, (Ref{arb},), x))
 end
 
+# TODO: return true if printed without brackets and x is negative
+function displayed_with_minus_in_front(x::arb)
+   return false
+end
+
 doc"""
     isnonpositive(x::arb)
 > Return `true` if $x$ is certainly nonpositive, otherwise return `false`.

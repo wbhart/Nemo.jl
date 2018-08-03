@@ -356,7 +356,7 @@ function show(io::IO, x::fmpz_laurent_series)
          c = polcoeff(x, i)
          bracket = needs_parentheses(c)
          if !iszero(c)
-            if coeff_printed && !isnegative(c)
+            if coeff_printed && !displayed_with_minus_in_front(c)
                print(io, "+")
             end
             if i*sc + valuation(x) != 0
@@ -397,7 +397,7 @@ end
 
 needs_parentheses(x::fmpz_laurent_series) = pol_length(x) > 1
 
-isnegative(x::fmpz_laurent_series) = pol_length(x) <= 1 && isnegative(polcoeff(x, 0))
+displayed_with_minus_in_front(x::fmpz_laurent_series) = pol_length(x) <= 1 && displayed_with_minus_in_front(polcoeff(x, 0))
 
 show_minus_one(::Type{fmpz_laurent_series})  = show_minus_one(T)
 

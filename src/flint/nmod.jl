@@ -102,7 +102,7 @@ end
 
 needs_parentheses(x::nmod) = false
 
-isnegative(x::nmod) = false
+displayed_with_minus_in_front(x::nmod) = false
 
 show_minus_one(::Type{nmod}) = true
 

@@ -273,7 +273,7 @@ end
 
 needs_parentheses(::Nemo.nf_elem) = true
 
-isnegative(::nf_elem) = false
+displayed_with_minus_in_front(::nf_elem) = false
 
 canonical_unit(x::nf_elem) = x
 

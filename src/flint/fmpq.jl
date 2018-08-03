@@ -165,7 +165,7 @@ end
 
 needs_parentheses(x::fmpq) = false
 
-isnegative(x::fmpq) = x < 0
+displayed_with_minus_in_front(x::fmpq) = x < 0
 
 show_minus_one(::Type{fmpq}) = false
 

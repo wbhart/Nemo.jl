@@ -283,7 +283,7 @@ function show(io::IO, x::FlintPuiseuxSeriesElem)
          c = polcoeff(x.data, i)
          bracket = needs_parentheses(c)
          if !iszero(c)
-            if coeff_printed && !isnegative(c)
+            if coeff_printed && !displayed_with_minus_in_front(c)
                print(io, "+")
             end
             if i*sc + valuation(x.data) != 0
@@ -331,7 +331,7 @@ end
 
 needs_parentheses(x::FlintPuiseuxSeriesElem) = pol_length(x.data) > 1
 
-isnegative(x::FlintPuiseuxSeriesElem) = pol_length(x) <= 1 && isnegative(polcoeff(x.data, 0))
+displayed_with_minus_in_front(x::FlintPuiseuxSeriesElem) = pol_length(x) <= 1 && displayed_with_minus_in_front(polcoeff(x.data, 0))
 
 show_minus_one(::Type{FlintPuiseuxSeriesElem{T}}) where T <: RingElem = show_minus_one(T)
 

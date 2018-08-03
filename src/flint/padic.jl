@@ -234,7 +234,7 @@ end
 
 needs_parentheses(x::padic) = true
 
-isnegative(x::padic) = false
+displayed_with_minus_in_front(x::padic) = false
 
 show_minus_one(::Type{padic}) = true
 
