@@ -12,7 +12,7 @@ import Base: ceil, digamma, zeta, polygamma, erf, erfi, erfc, besselj, bessely,
 
 export ball, radius, midpoint, contains, contains_zero,
        contains_negative, contains_positive, contains_nonnegative,
-       contains_nonpositive, iszero,
+       contains_nonpositive, convert, iszero,
        isnonzero, isexact, isint, ispositive, isfinite,
        isnonnegative, isnegative, isnonpositive, add!, mul!,
        sub!, div!, strongequal, prec, overlaps, unique_integer,
@@ -895,6 +895,18 @@ function unique_integer(x::arb)
   unique = ccall((:arb_get_unique_fmpz, :libarb), Int,
     (Ref{fmpz}, Ref{arb}), z, x)
   return (unique != 0, z)
+end
+
+function (::FlintIntegerRing)(a::arb)
+   if !Nemo.isint(a)
+      error("Argument must be an integer.")
+   end
+   ui = unique_integer(a)
+   if ui[1] == false
+      error("Argument must be an integer.")
+   else
+      return ui[2]
+   end
 end
 
 doc"""
