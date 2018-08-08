@@ -26,7 +26,7 @@ export ball, radius, midpoint, contains, contains_zero,
        sincos, sincospi, sinhcosh, atan2,
        agm, fac, binom, fib, bernoulli, risingfac, risingfac2, polylog,
        chebyshev_t, chebyshev_t2, chebyshev_u, chebyshev_u2, bell, numpart,
-       lindep
+       lindep, canonical_unit
 
 ###############################################################################
 #
@@ -87,6 +87,11 @@ function deepcopy_internal(a::arb, dict::ObjectIdDict)
   b = parent(a)()
   ccall((:arb_set, :libarb), Void, (Ref{arb}, Ref{arb}), b, a)
   return b
+end
+
+
+function canonical_unit(x::arb)
+   return x
 end
 
 function check_parent(a::arb, b::arb)

@@ -20,7 +20,7 @@ export rsqrt, log, log1p, exppii, sin, cos, tan, cot,
        erf, erfi, erfc, ei, si, ci, shi, chi, li, lioffset, expint, gamma,
        besselj, bessely, besseli, besselk, hyp1f1, hyp1f1r, hyperu, hyp2f1,
        jtheta, modeta, modj, modlambda, moddelta, ellipwp, ellipk, ellipe,
-       modweber_f, modweber_f1, modweber_f2
+       modweber_f, modweber_f1, modweber_f2, canonical_unit
 
 ###############################################################################
 #
@@ -102,6 +102,10 @@ function deepcopy_internal(a::acb, dict::ObjectIdDict)
   b = parent(a)()
   ccall((:acb_set, :libarb), Void, (Ref{acb}, Ref{acb}), b, a)
   return b
+end
+
+function canonical_unit(x::acb)
+   return x
 end
 
 # TODO: implement hash
