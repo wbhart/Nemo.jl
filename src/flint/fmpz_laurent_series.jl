@@ -12,7 +12,7 @@ export fmpz_laurent_series, FmpzLaurentSeriesRing
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     O(a::fmpz_laurent_series)
 > Returns $0 + O(x^\mbox{val}(a))$. Usually this function is called with $x^n$
 > as parameter. Then the function returns the power series $0 + O(x^n)$, which
@@ -20,12 +20,12 @@ doc"""
 """
 function O(a::fmpz_laurent_series)
    val = valuation(a)
-   return parent(a)(Array{fmpz}(0), 0, val, val, 1)
+   return parent(a)(Vector{fmpz}(undef, 0), 0, val, val, 1)
 end
 
 parent_type(::Type{fmpz_laurent_series}) = FmpzLaurentSeriesRing
 
-doc"""
+Markdown.doc"""
     parent(a::fmpz_laurent_series)
 > Return the parent of the given power series.
 """
@@ -33,13 +33,13 @@ parent(a::fmpz_laurent_series) = a.parent
 
 elem_type(::Type{FmpzLaurentSeriesRing}) = fmpz_laurent_series
 
-doc"""
+Markdown.doc"""
     base_ring(R::FmpzLaurentSeriesRing)
 > Return the base ring of the given power series ring.
 """
 base_ring(R::FmpzLaurentSeriesRing) = R.base_ring
 
-doc"""
+Markdown.doc"""
     base_ring(a::fmpz_laurent_series)
 > Return the base ring of the power series ring of the given power series.
 """
@@ -49,7 +49,7 @@ isdomain_type(::Type{fmpz_laurent_series}) = true
 
 isexact_type(a::Type{fmpz_laurent_series}) = false
 
-doc"""
+Markdown.doc"""
     var(a::FmpzLaurentSeriesRing)
 > Return the internal name of the generator of the power series ring. Note that
 > this is returned as a `Symbol` not a `String`.
@@ -77,41 +77,41 @@ function Base.hash(a::fmpz_laurent_series, h::UInt)
    return b
 end
 
-doc"""
+Markdown.doc"""
     pol_length(a::fmpz_laurent_series)
 > Return the length of the polynomial underlying the given power series. This
 > will be zero if the power series has no nonzero terms.
 """
 pol_length(a::fmpz_laurent_series) = a.length
 
-doc"""
+Markdown.doc"""
     precision(a::fmpz_laurent_series)
 > Return the precision of the given power series in absolute terms. This will
 > be the sum of the valuation and the length of the underlying polynomial.
 """
 precision(a::fmpz_laurent_series) = a.prec
 
-doc"""
+Markdown.doc"""
     valuation(a::fmpz_laurent_series)
 > Return the valuation of the given power series, i.e. the degree of the first
 > nonzero term (or the precision if it is arithmetically zero).
 """
 valuation(a::fmpz_laurent_series) = a.val
 
-doc"""
+Markdown.doc"""
     scale(a::fmpz_laurent_series)
 > Return the scale factor of the polynomial underlying the given power series.
 """
 scale(a::fmpz_laurent_series) = a.scale
 
-doc"""
+Markdown.doc"""
     max_precision(R::FmpzLaurentSeriesRing)
 > Return the maximum relative precision of power series in the given power
 > series ring.
 """
 max_precision(R::FmpzLaurentSeriesRing) = R.prec_max
 
-doc"""
+Markdown.doc"""
    exp_gcd(a::fmpz_laurent_series)
 > Return the GCD of the exponents of the polynomial underlying the given Laurent series.
 """
@@ -146,7 +146,7 @@ function polcoeff(a::fmpz_laurent_series, n::Int)
       return fmpz(0)
    end
    z = fmpz()
-   ccall((:fmpz_poly_get_coeff_fmpz, :libflint), Void,
+   ccall((:fmpz_poly_get_coeff_fmpz, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz_laurent_series}, Int), z, a, n)
    return z
 end
@@ -164,7 +164,7 @@ function coeff(a::fmpz_laurent_series, n::Int)
    end
 end
 
-doc"""
+Markdown.doc"""
     rescale!(a::fmpz_laurent_series)
 > Rescale the polynomial underlying the series so that the GCD of its exponents is 1.
 > This is only used internally, since the result of every user facing function is a
@@ -187,7 +187,7 @@ function rescale!(a::fmpz_laurent_series)
    return a
 end
 
-doc"""
+Markdown.doc"""
     downscale(a::fmpz_laurent_series, n::Int)
 > Inflate the underlying polynomial by a factor of $n$. This inserts zero coefficients
 > for padding. It is assumed that the scale factor of $a$ is divisible by $n$.
@@ -218,7 +218,7 @@ function downscale(a::fmpz_laurent_series, n::Int)
    return d
 end
 
-doc"""
+Markdown.doc"""
     upscale(a::fmpz_laurent_series, n::Int)
 > Deflate the underlying polynomial by a factor of $n$. This removes zero coefficients
 > that were inserted for padding. It is assumed that the spacing between nonzero coefficients
@@ -246,21 +246,21 @@ function upscale(a::fmpz_laurent_series, n::Int)
    return d
 end
 
-doc"""
+Markdown.doc"""
     zero(R::FmpzLaurentSeriesRing)
 > Return $0 + O(x^n)$ where $n$ is the maximum precision of the power series
 > ring $R$.
 """
 zero(R::FmpzLaurentSeriesRing) = R(0)
 
-doc"""
+Markdown.doc"""
     one(R::FmpzLaurentSeriesRing)
 > Return $1 + O(x^n)$ where $n$ is the maximum precision of the power series
 > ring $R$.
 """
 one(R::FmpzLaurentSeriesRing) = R(1)
 
-doc"""
+Markdown.doc"""
     gen(R::FmpzLaurentSeriesRing)
 > Return the generator of the power series ring, i.e. $x + O(x^{n + 1})$ where
 > $n$ is the maximum precision of the power series ring $R$.
@@ -270,14 +270,14 @@ function gen(R::FmpzLaurentSeriesRing)
    return R([S(1)], 1, max_precision(R) + 1, 1, 1)
 end
 
-doc"""
+Markdown.doc"""
     iszero(a::fmpz_laurent_series)
 > Return `true` if the given power series is arithmetically equal to zero to
 > its current precision, otherwise return `false`.
 """
 iszero(a::fmpz_laurent_series) = pol_length(a) == 0
 
-doc"""
+Markdown.doc"""
     isone(a::fmpz_laurent_series)
 > Return `true` if the given power series is arithmetically equal to one to
 > its current precision, otherwise return `false`.
@@ -286,7 +286,7 @@ function isone(a::fmpz_laurent_series)
    return valuation(a) == 0 && pol_length(a) == 1 && isone(polcoeff(a, 0))
 end
 
-doc"""
+Markdown.doc"""
     isgen(a::fmpz_laurent_series)
 > Return `true` if the given power series is arithmetically equal to the
 > generator of its power series ring to its current precision, otherwise return
@@ -296,14 +296,14 @@ function isgen(a::fmpz_laurent_series)
    return valuation(a) == 1 && pol_length(a) == 1 && isone(polcoeff(a, 0))
 end
 
-doc"""
+Markdown.doc"""
     isunit(a::fmpz_laurent_series)
 > Return `true` if the given power series is arithmetically equal to a unit,
 > i.e. is invertible, otherwise return `false`.
 """
 isunit(a::fmpz_laurent_series) = valuation(a) == 0 && isunit(polcoeff(a, 0))
 
-function deepcopy_internal(a::fmpz_laurent_series, dict::ObjectIdDict) 
+function deepcopy_internal(a::fmpz_laurent_series, dict::IdDict) 
    d = fmpz_laurent_series(a)
    set_prec!(d, precision(a))
    set_val!(d, valuation(a))
@@ -407,7 +407,7 @@ show_minus_one(::Type{fmpz_laurent_series})  = show_minus_one(T)
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     -(a::fmpz_laurent_series)
 > Return $-a$.
 """
@@ -429,7 +429,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     +(a::fmpz_laurent_series, b::fmpz_laurent_series)
 > Return $a + b$.
 """
@@ -485,7 +485,7 @@ function +(a::fmpz_laurent_series, b::fmpz_laurent_series)
    return z
 end
 
-doc"""
+Markdown.doc"""
     -(a::fmpz_laurent_series, b::fmpz_laurent_series)
 > Return $a - b$.
 """
@@ -541,7 +541,7 @@ function -(a::fmpz_laurent_series, b::fmpz_laurent_series)
    return z
 end
 
-doc"""
+Markdown.doc"""
     *(a::fmpz_laurent_series, b::fmpz_laurent_series)
 > Return $a\times b$.
 """
@@ -567,7 +567,7 @@ function *(a::fmpz_laurent_series, b::fmpz_laurent_series)
    lena = min(lena*sa, prec)
    lenb = min(lenb*sb, prec)
    if lena == 0 || lenb == 0
-      return parent(a)(Array{fmpz}(0), 0, prec + zval, zval, 1)
+      return parent(a)(Vector{fmpz}(undef, 0), 0, prec + zval, zval, 1)
    end
    t = base_ring(a)()
    da = div(sa, sz)
@@ -578,7 +578,7 @@ function *(a::fmpz_laurent_series, b::fmpz_laurent_series)
    lenb = pol_length(b)
    lenz = div(prec + sz - 1, sz)
    z = parent(a)()
-   ccall((:fmpz_poly_mullow, :libflint), Void,
+   ccall((:fmpz_poly_mullow, :libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
                z, a, b, lenz)
    set_prec!(z, prec + zval)
@@ -594,7 +594,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     *{T <: RingElem}(a::T, b::fmpz_laurent_series)
 > Return $a\times b$.
 """
@@ -611,7 +611,7 @@ function *(a::fmpz, b::fmpz_laurent_series)
    return z
 end
 
-doc"""
+Markdown.doc"""
     *(a::Union{Integer, Rational, AbstractFloat}, b::fmpz_laurent_series)
 > Return $a\times b$.
 """
@@ -628,13 +628,13 @@ function *(a::Integer, b::fmpz_laurent_series)
    return z
 end
 
-doc"""
+Markdown.doc"""
     *{T <: RingElem}(a::fmpz_laurent_series, b::T)
 > Return $a\times b$.
 """
 *(a::fmpz_laurent_series, b::fmpz) = b*a
 
-doc"""
+Markdown.doc"""
     *(a::fmpz_laurent_series, b::Union{Integer, Rational, AbstractFloat})
 > Return $a\times b$.
 """
@@ -646,7 +646,7 @@ doc"""
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     shift_left(x::fmpz_laurent_series, n::Int)
 > Return the power series $f$ shifted left by $n$ terms, i.e. multiplied by
 > $x^n$.
@@ -658,7 +658,7 @@ function shift_left(x::fmpz_laurent_series, len::Int)
    return z
 end
 
-doc"""
+Markdown.doc"""
     shift_right(f::fmpz_laurent_series, n::Int)
 > Return the power series $f$ shifted right by $n$ terms, i.e. divided by
 > $x^n$.
@@ -676,7 +676,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     truncate(a::fmpz_laurent_series, n::Int)
 > Return $a$ truncated to (absolute) precision $n$.
 """
@@ -723,7 +723,7 @@ function mullow(a::fmpz_laurent_series, b::fmpz_laurent_series, n::Int)
    prec = min(precision(a), precision(b))
    z = parent(a)()
    lenz = min(lena + lenb - 1, div(n + s - 1, s))
-   ccall((:fmpz_poly_mullow, :libflint), Void,
+   ccall((:fmpz_poly_mullow, :libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
                z, a, b, lenz)
    set_prec!(z, prec)
@@ -762,7 +762,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     ^(a::fmpz_laurent_series, b::Int)
 > Return $a^b$. We require $b \geq 0$.
 """
@@ -834,7 +834,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     ==(x::fmpz_laurent_series, y::fmpz_laurent_series)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`. Recall
 > that power series to different precisions may still be arithmetically
@@ -889,7 +889,7 @@ function ==(x::fmpz_laurent_series, y::fmpz_laurent_series)
    return true
 end
 
-doc"""
+Markdown.doc"""
     isequal(x::fmpz_laurent_series, y::fmpz_laurent_series)
 > Return `true` if $x == y$ exactly, otherwise return `false`. Only if the
 > power series are precisely the same, to the same precision, are they declared
@@ -917,7 +917,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     =={T <: RingElem}(x::fmpz_laurent_series, y::T)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
@@ -925,13 +925,13 @@ doc"""
            ((pol_length(x) == 0 && iszero(y)) || (pol_length(x) == 1 &&
              valuation(x) == 0 && polcoeff(x, 0) == y))
 
-doc"""
+Markdown.doc"""
     =={T <: RingElem}(x::T, y::fmpz_laurent_series)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::T, y::fmpz_laurent_series) where {T <: RingElem} = y == x
 
-doc"""
+Markdown.doc"""
     ==(x::fmpz_laurent_series, y::Union{Integer, Rational, AbstractFloat})
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
@@ -939,7 +939,7 @@ doc"""
                   ((pol_length(x) == 0 && iszero(y)) || (pol_length(x) == 1 &&
                     valuation(x) == 0 && polcoeff(x, 0) == y))
 
-doc"""
+Markdown.doc"""
     ==(x::Union{Integer, Rational, AbstractFloat}, y::fmpz_laurent_series)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
@@ -951,7 +951,7 @@ doc"""
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     divexact(a::fmpz_laurent_series, b::fmpz_laurent_series)
 > Return $a/b$. Requires $b$ to be invertible.
 """
@@ -975,7 +975,7 @@ function divexact(a::fmpz_laurent_series, b::fmpz_laurent_series)
    lenb = min(lenb*sb, prec)
    lenb == 0 && throw(DivideError())
    if lena == 0
-      return parent(a)(Array{fmpz}(0), 0, prec + zval, zval, 1)
+      return parent(a)(Vector{fmpz}(undef, 0), 0, prec + zval, zval, 1)
    end
    t = base_ring(a)()
    da = div(sa, sz)
@@ -986,7 +986,7 @@ function divexact(a::fmpz_laurent_series, b::fmpz_laurent_series)
    lenb = pol_length(b)
    lenz = div(prec + sz - 1, sz)
    z = parent(a)()
-   ccall((:fmpz_poly_div_series, :libflint), Void,
+   ccall((:fmpz_poly_div_series, :libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
                z, a, b, lenz)
    set_prec!(z, prec + zval)
@@ -1002,7 +1002,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     divexact(a::fmpz_laurent_series, b::Union{Integer, Rational, AbstractFloat})
 > Return $a/b$ where the quotient is expected to be exact.
 """
@@ -1019,7 +1019,7 @@ function divexact(x::fmpz_laurent_series, y::Union{Integer, Rational, AbstractFl
    return z
 end
 
-doc"""
+Markdown.doc"""
     divexact{T <: RingElem}(a::fmpz_laurent_series, b::T)
 > Return $a/b$ where the quotient is expected to be exact.
 """
@@ -1042,7 +1042,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
    inv(a::fmpz_laurent_series)
 > Return the inverse of the power series $a$, i.e. $1/a$.
 """
@@ -1057,7 +1057,7 @@ function inv(a::fmpz_laurent_series)
    set_scale!(ainv, sa)
    !isunit(a1) && error("Unable to invert power series")
    z = parent(a)()
-   ccall((:fmpz_poly_inv_series, :libflint), Void,
+   ccall((:fmpz_poly_inv_series, :libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
                ainv, a, lenz)
    ainv = rescale!(ainv)
@@ -1070,7 +1070,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
    sqrt(a::fmpz_laurent_series)
 > Return the square root of the power series $a$.
 """
@@ -1108,7 +1108,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     exp(a::fmpz_laurent_series)
 > Return the exponential of the power series $a$.
 """
@@ -1166,7 +1166,7 @@ end
 ###############################################################################
 
 function zero!(a::fmpz_laurent_series)
-  ccall((:fmpz_poly_zero, :libflint), Void,
+  ccall((:fmpz_poly_zero, :libflint), Nothing,
                    (Ref{fmpz_laurent_series},), a)
    set_prec!(a, parent(a).prec_max)
    set_val!(a, parent(a).prec_max)
@@ -1175,7 +1175,7 @@ function zero!(a::fmpz_laurent_series)
 end
 
 function setcoeff!(c::fmpz_laurent_series, n::Int, a::fmpz) 
-   ccall((:fmpz_poly_set_coeff_fmpz, :libflint), Void,
+   ccall((:fmpz_poly_set_coeff_fmpz, :libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Int, Ref{fmpz}),
                c, n, a)
    return c
@@ -1201,7 +1201,7 @@ function mul!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_se
    lena = min(lena*sa, prec)
    lenb = min(lenb*sb, prec)
    if lena == 0 || lenb == 0
-      ccall((:fmpz_poly_zero, :libflint), Void,
+      ccall((:fmpz_poly_zero, :libflint), Nothing,
                 (Ref{fmpz_laurent_series},), c)
       set_prec!(c, prec + aval + bval)
       set_val!(c, aval + bval)
@@ -1216,7 +1216,7 @@ function mul!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_se
       lena = pol_length(a)
       lenb = pol_length(b)
       lenc = min(lena + lenb - 1, div(prec + sz - 1, sz))
-      ccall((:fmpz_poly_mullow, :libflint), Void,
+      ccall((:fmpz_poly_mullow, :libflint), Nothing,
          (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int), c, a, b, lenc)
    end
    set_val!(c, aval + bval)
@@ -1299,7 +1299,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
     eta_qexp(x::fmpz_laurent_series)
 > Return the $q$-series for the eta function, without the leading $q^{1/24}$. It is
 > currently assumed that $x$ is a power of the generator of the Laurent series ring.
@@ -1309,7 +1309,7 @@ function eta_qexp(x::fmpz_laurent_series)
    z = parent(x)()
    zscale = valuation(x)
    prec = max_precision(parent(x))
-   ccall((:fmpz_poly_eta_qexp, :libflint), Void, 
+   ccall((:fmpz_poly_eta_qexp, :libflint), Nothing, 
                                           (Ref{fmpz_laurent_series}, Int, Int), z, 1, div(prec + zscale - 1, zscale))
    set_scale!(z, zscale)
    set_val!(z, 0)
@@ -1350,14 +1350,14 @@ promote_rule(::Type{fmpz_laurent_series}, ::Type{fmpz}) = fmpz_laurent_series
 ###############################################################################
 
 function (R::FmpzLaurentSeriesRing)() 
-   z = fmpz_laurent_series(Array{fmpz}(0), 0, R.prec_max, R.prec_max, 1)
+   z = fmpz_laurent_series(Vector{fmpz}(undef, 0), 0, R.prec_max, R.prec_max, 1)
    z.parent = R
    return z
 end
 
 function (R::FmpzLaurentSeriesRing)(b::Integer) 
    if b == 0
-      z = fmpz_laurent_series(Array{fmpz}(0), 0, R.prec_max, R.prec_max, 1)
+      z = fmpz_laurent_series(Vector{fmpz}(undef, 0), 0, R.prec_max, R.prec_max, 1)
    else
       z = fmpz_laurent_series([fmpz(b)], 1, R.prec_max, 0, 1)
    end
@@ -1367,7 +1367,7 @@ end
 
 function (R::FmpzLaurentSeriesRing)(b::fmpz)
    if iszero(b)
-      z = fmpz_laurent_series(Array{fmpz}(0), 0, R.prec_max, R.prec_max, 1)
+      z = fmpz_laurent_series(Vector{fmpz}(undef, 0), 0, R.prec_max, R.prec_max, 1)
    else
       z = fmpz_laurent_series([b], 1, R.prec_max, 0, 1)
    end
@@ -1394,7 +1394,7 @@ end
 #
 ###############################################################################
 
-doc"""
+Markdown.doc"""
    LaurentSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; cached=true)
 > Return a tuple $(S, x)$ consisting of the parent object `S` of a Laurent series
 > ring over ZZ and a generator `x` for the Laurent series ring.

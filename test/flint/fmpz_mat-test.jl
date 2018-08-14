@@ -141,7 +141,7 @@ function test_fmpz_mat_view()
    @test A[1, 1] == 20
 
    A = 0
-   gc()
+   GC.gc()
 
    @test B[1, 1] == 20
 
@@ -310,14 +310,14 @@ function test_fmpz_mat_gram()
    println("PASS")
 end
 
-function test_fmpz_mat_trace()
+function test_fmpz_mat_tr()
    print("fmpz_mat.trace...")
 
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
 
-   @test trace(A) == 9
+   @test tr(A) == 9
 
    println("PASS")
 end
@@ -648,7 +648,7 @@ function test_fmpz_mat()
    test_fmpz_mat_powering()
    test_fmpz_mat_adhoc_exact_division()
    test_fmpz_mat_gram()
-   test_fmpz_mat_trace()
+   test_fmpz_mat_tr()
    test_fmpz_mat_content()
    test_fmpz_mat_transpose()
    test_fmpz_mat_scaling()

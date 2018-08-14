@@ -333,7 +333,7 @@ function test_nf_elem_divides()
    println("PASS")
 end
 
-function test_nf_elem_norm_trace()
+function test_nf_elem_norm_tr()
    print("nf_elem.norm_trace...")
 
    R, x = PolynomialRing(QQ, "x")
@@ -342,7 +342,7 @@ function test_nf_elem_norm_trace()
    c = 3a^2 - a + 1
 
    @test norm(c) == 113
-   @test trace(c) == -15
+   @test tr(c) == -15
 
    println("PASS")
 end
@@ -411,7 +411,7 @@ function test_nf_elem()
    test_nf_elem_exact_division()
    test_nf_elem_adhoc_exact_division()
    test_nf_elem_divides()
-   test_nf_elem_norm_trace()
+   test_nf_elem_norm_tr()
    test_nf_elem_representation_matrix()
    test_nf_elem_Polynomials()
 

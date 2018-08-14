@@ -379,7 +379,7 @@ function test_fmpq_mpoly_ideal_reduction()
       for iter = 1:10
          num = rand(1:5)
 
-         V = Array{elem_type(S)}(num)
+         V = Vector{elem_type(S)}(undef, num)
 
          for i = 1:num
             V[i] = S(0)

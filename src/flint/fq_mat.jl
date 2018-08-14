@@ -6,7 +6,7 @@
 
 export fq_mat, FqMatSpace, getindex, setindex!, set_entry!, deepcopy, rows, 
        cols, parent, base_ring, zero, one, show, transpose,
-       transpose!, rref, rref!, trace, det, rank, inv, solve, lufact,
+       transpose!, rref, rref!, tr, det, rank, inv, solve, lu,
        sub, hcat, vcat, Array, lift, lift!, MatrixSpace, check_parent,
        howell_form, howell_form!, strong_echelon_form, strong_echelon_form!
 
@@ -54,13 +54,13 @@ end
    el = ccall((:fq_mat_entry, :libflint), Ptr{fq},
               (Ref{fq_mat}, Int, Int), a, i - 1 , j - 1)
    z = base_ring(a)()
-   ccall((:fq_set, :libflint), Void, (Ref{fq}, Ptr{fq}), z, el)
+   ccall((:fq_set, :libflint), Nothing, (Ref{fq}, Ptr{fq}), z, el)
    return z
 end
 
 @inline function setindex!(a::fq_mat, u::fq, i::Int, j::Int)
    @boundscheck Generic._checkbounds(a, i, j)
-   ccall((:fq_mat_entry_set, :libflint), Void,
+   ccall((:fq_mat_entry_set, :libflint), Nothing,
          (Ref{fq_mat}, Int, Int, Ref{fq}, Ref{FqFiniteField}),
          a, i - 1, j - 1, u, base_ring(a)) end
 
@@ -68,16 +68,16 @@ end
    @boundscheck Generic._checkbounds(a, i, j)
    el = ccall((:fq_mat_entry, :libflint), Ptr{fq},
               (Ref{fq_mat}, Int, Int), a, i - 1, j - 1)
-   ccall((:fq_set_fmpz, :libflint), Void,
+   ccall((:fq_set_fmpz, :libflint), Nothing,
          (Ptr{fq}, Ref{fmpz}, Ref{FqFiniteField}), el, u, base_ring(a))
 end
 
 setindex!(a::fq_mat, u::Integer, i::Int, j::Int) =
         setindex!(a, base_ring(a)(u), i, j)
 
-function deepcopy_internal(a::fq_mat, dict::ObjectIdDict)
+function deepcopy_internal(a::fq_mat, dict::IdDict)
   z = fq_mat(rows(a), cols(a), base_ring(a))
-  ccall((:fq_mat_set, :libflint), Void,
+  ccall((:fq_mat_set, :libflint), Nothing,
         (Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}), z, a, base_ring(a))
   return z
 end
@@ -174,14 +174,14 @@ end
 # There is no transpose for fq_mat 
 #function transpose(a::fq_mat)
 #  z = FqMatSpace(base_ring(a), cols(a), rows(a))()
-#  ccall((:fq_mat_transpose, :libflint), Void,
+#  ccall((:fq_mat_transpose, :libflint), Nothing,
 #        (Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}), z, a, base_ring(a))
 #  return z
 #end
 #
 #function transpose!(a::fq_mat)
 #  !issquare(a) && error("Matrix must be a square matrix")
-#  ccall((:fq_mat_transpose, :libflint), Void,
+#  ccall((:fq_mat_transpose, :libflint), Nothing,
 #        (Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}), a, a, base_ring(a))
 #end
 
@@ -193,7 +193,7 @@ end
 
 function -(x::fq_mat)
    z = similar(x)
-   ccall((:fq_mat_neg, :libflint), Void,
+   ccall((:fq_mat_neg, :libflint), Nothing,
          (Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}), z, x, base_ring(x))
    return z
 end
@@ -207,7 +207,7 @@ end
 function +(x::fq_mat, y::fq_mat)
    check_parent(x,y)
    z = similar(x)
-   ccall((:fq_mat_add, :libflint), Void,
+   ccall((:fq_mat_add, :libflint), Nothing,
          (Ref{fq_mat}, Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}),
          z, x, y, base_ring(x))
    return z
@@ -216,7 +216,7 @@ end
 function -(x::fq_mat, y::fq_mat)
    check_parent(x,y)
    z = similar(x)
-   ccall((:fq_mat_sub, :libflint), Void,
+   ccall((:fq_mat_sub, :libflint), Nothing,
          (Ref{fq_mat}, Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}),
          z, x, y, base_ring(x))
 
@@ -227,7 +227,7 @@ function *(x::fq_mat, y::fq_mat)
    (base_ring(x) != base_ring(y)) && error("Base ring must be equal")
    (cols(x) != rows(y)) && error("Dimensions are wrong")
    z = similar(x, rows(x), cols(y))
-   ccall((:fq_mat_mul, :libflint), Void,
+   ccall((:fq_mat_mul, :libflint), Nothing,
          (Ref{fq_mat}, Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}), z, x, y, base_ring(x))
    return z
 end
@@ -240,21 +240,21 @@ end
 ################################################################################
 
 function mul!(a::fq_mat, b::fq_mat, c::fq_mat)
-   ccall((:fq_mat_mul, :libflint), Void,
+   ccall((:fq_mat_mul, :libflint), Nothing,
          (Ref{fq_mat}, Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}),
          a, b, c, base_ring(a))
   return a
 end
 
 function add!(a::fq_mat, b::fq_mat, c::fq_mat)
-   ccall((:fq_mat_add, :libflint), Void,
+   ccall((:fq_mat_add, :libflint), Nothing,
          (Ref{fq_mat}, Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}),
          a, b, c, base_ring(a))
   return a
 end
 
 function zero!(a::fq_mat)
-   ccall((:fq_mat_zero, :libflint), Void,
+   ccall((:fq_mat_zero, :libflint), Nothing,
          (Ref{fq_mat}, Ref{FqFiniteField}), a, base_ring(a))
    return a
 end
@@ -322,7 +322,7 @@ end
 #
 #################################################################################
 
-function trace(a::fq_mat)
+function tr(a::fq_mat)
    !issquare(a) && error("Non-square matrix")
    n = rows(a)
    t = zero(base_ring(a))
@@ -345,7 +345,7 @@ function det(a::fq_mat)
    if n == 0
       return zero(R)
    end
-   r, p, l, u = lufact(a)
+   r, p, l, u = lu(a)
    if r < n
       return zero(R)
    else
@@ -368,7 +368,7 @@ function rank(a::fq_mat)
    if n == 0
       return 0
    end
-   r, _, _, _ = lufact(a)
+   r, _, _, _ = lu(a)
    return r
 end
 
@@ -411,7 +411,7 @@ end
 #
 ################################################################################
 
-function lufact!(P::Generic.perm, x::fq_mat)
+function lu!(P::Generic.perm, x::fq_mat)
    rank = ccall((:fq_mat_lu, :libflint), Cint,
                 (Ptr{Int}, Ref{fq_mat}, Cint, Ref{FqFiniteField}),
                 P.d, x, 0, base_ring(x))
@@ -426,7 +426,7 @@ function lufact!(P::Generic.perm, x::fq_mat)
   return rank
 end
 
-function lufact(x::fq_mat, P = PermGroup(rows(x)))
+function lu(x::fq_mat, P = PermGroup(rows(x)))
    m = rows(x)
    n = cols(x)
    P.n != m && error("Permutation does not match matrix")
@@ -436,7 +436,7 @@ function lufact(x::fq_mat, P = PermGroup(rows(x)))
 
    L = similar(x, m, m)
 
-   rank = lufact!(p, U)
+   rank = lu!(p, U)
 
    for i = 1:m
       for j = 1:n
@@ -466,10 +466,10 @@ function Base.view(x::fq_mat, r1::Int, c1::Int, r2::Int, c2::Int)
    z = fq_mat()
    z.base_ring = x.base_ring
    z.view_parent = x
-   ccall((:fq_mat_window_init, :libflint), Void,
+   ccall((:fq_mat_window_init, :libflint), Nothing,
          (Ref{fq_mat}, Ref{fq_mat}, Int, Int, Int, Int, Ref{FqFiniteField}),
          z, x, r1 - 1, c1 - 1, r2, c2, base_ring(x))
-   finalizer(z, _fq_mat_window_clear_fn)
+   finalizer(_fq_mat_window_clear_fn, z)
    return z
 end
 
@@ -478,7 +478,7 @@ function Base.view(x::fq_mat, r::UnitRange{Int}, c::UnitRange{Int})
 end
 
 function _fq_mat_window_clear_fn(a::fq_mat)
-   ccall((:fq_mat_window_clear, :libflint), Void,
+   ccall((:fq_mat_window_clear, :libflint), Nothing,
          (Ref{fq_mat}, Ref{FqFiniteField}), a, base_ring(a))
 end
 
@@ -502,7 +502,7 @@ function hcat(x::fq_mat, y::fq_mat)
    (base_ring(x) != base_ring(y)) && error("Matrices must have same base ring")
    (x.r != y.r) && error("Matrices must have same number of rows")
    z = similar(x, rows(x), cols(x) + cols(y))
-   ccall((:fq_mat_concat_horizontal, :libflint), Void,
+   ccall((:fq_mat_concat_horizontal, :libflint), Nothing,
          (Ref{fq_mat}, Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}),
          z, x, y, base_ring(x))
    return z
@@ -512,7 +512,7 @@ function vcat(x::fq_mat, y::fq_mat)
    (base_ring(x) != base_ring(y)) && error("Matrices must have same base ring")
    (x.c != y.c) && error("Matrices must have same number of columns")
    z = similar(x, rows(x) + rows(y), cols(x))
-   ccall((:fq_mat_concat_vertical, :libflint), Void,
+   ccall((:fq_mat_concat_vertical, :libflint), Nothing,
          (Ref{fq_mat}, Ref{fq_mat}, Ref{fq_mat}, Ref{FqFiniteField}),
          z, x, y, base_ring(x))
    return z
@@ -525,7 +525,7 @@ end
 ################################################################################
 
 function Array(b::fq_mat)
-  a = Array{fq}(b.r, b.c)
+  a = Array{fq}(undef, b.r, b.c)
   for i = 1:rows(b)
     for j = 1:cols(b)
       a[i, j] = b[i, j]
@@ -544,7 +544,7 @@ function charpoly(R::FqPolyRing, a::fq_mat)
   !issquare(a) && error("Matrix must be square")
   base_ring(R) != base_ring(a) && error("Must have common base ring")
   p = R()
-  ccall((:fq_mat_charpoly, :libflint), Void,
+  ccall((:fq_mat_charpoly, :libflint), Nothing,
           (Ref{fq_poly}, Ref{fq_mat}, Ref{FqFiniteField}), p, a, base_ring(a))
   return p
 end
@@ -553,7 +553,7 @@ function charpoly_danivlesky!(R::FqPolyRing, a::fq_mat)
   !issquare(a) && error("Matrix must be square")
   base_ring(R) != base_ring(a) && error("Must have common base ring")
   p = R()
-  ccall((:fq_mat_charpoly_danilevsky, :libflint), Void,
+  ccall((:fq_mat_charpoly_danilevsky, :libflint), Nothing,
           (Ref{fq_poly}, Ref{fq_mat}, Ref{FqFiniteField}), p, a, base_ring(a))
   return p
 end
@@ -570,7 +570,7 @@ function minpoly(R::FqPolyRing, a::fq_mat)
   base_ring(R) != base_ring(a) && error("Must have common base ring")
   m = deepcopy(a)
   p = R()
-  ccall((:fq_mat_minpoly, :libflint), Void,
+  ccall((:fq_mat_minpoly, :libflint), Nothing,
           (Ref{fq_poly}, Ref{fq_mat}, Ref{FqFiniteField}), p, m, base_ring(a))
   return p
 end

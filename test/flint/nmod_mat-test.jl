@@ -481,11 +481,11 @@ function test_nmod_mat_trace_det()
 
   a = transpose(a)*a
 
-  c = trace(a)
+  c = tr(a)
 
   @test c == Z17(13)
 
-  @test_throws ErrorException trace(b)
+  @test_throws ErrorException tr(b)
 
   c = det(a)
 
@@ -594,11 +594,11 @@ function test_nmod_mat_lu()
 
   b = S([ 2 1 0 1; 0 0 0 0; 0 1 2 0 ])
 
-  r, P, l, u = lufact(a)
+  r, P, l, u = lu(a)
 
   @test l*u == P*a
 
-  r, P, l, u = lufact(b)
+  r, P, l, u = lu(b)
 
   @test l*u == S([ 2 1 0 1; 0 1 2 0; 0 0 0 0])
 
@@ -606,7 +606,7 @@ function test_nmod_mat_lu()
 
   c = matrix(Z17, 6, 3, [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1])
 
-  r, P, l, u = lufact(c)
+  r, P, l, u = lu(c)
 
   @test r == 3
   @test l*u == P*c
@@ -639,7 +639,7 @@ function test_nmod_mat_view()
 
   t = view(a, 2, 2, 3, 2)
 
-  @test t == Z17[2 0]'
+  @test t == transpose(Z17[2 0])
 
   @test view(a, 2, 2, 3, 2) == view(a, 2:3,  2:2)
   @test view(a, 2, 2, 3, 2) == sub(a, 2, 2, 3, 2)
@@ -671,7 +671,7 @@ function test_nmod_mat_view()
   @test A[1, 1] == 20
 
   A = 0
-  gc()
+  GC.gc()
   @test B[1, 1] == 20
 
   println("PASS")

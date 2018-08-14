@@ -4,7 +4,7 @@ os:
   - linux
   - osx
 julia:
-  - 0.6
+  - 1.0
   - nightly
 matrix:
   allow_failures:
@@ -12,5 +12,5 @@ matrix:
 notifications:
   - email: false
 after_success:
-  - julia -e 'Pkg.add("Documenter")'
+  - julia -e 'using Pkg; Pkg.add("Documenter")'
   - DOCUMENTER_DEBUG=true julia -e 'cd(Pkg.dir("Nemo")); include(joinpath("docs", "make.jl"))'

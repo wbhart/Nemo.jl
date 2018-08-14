@@ -276,8 +276,6 @@ function test_fmpz_powering()
 
    @test a^5 == -248832
 
-   @test a^UInt(5) == -248832
-
    println("PASS")
 end
 
@@ -572,7 +570,7 @@ function test_fmpz_number_theoretic()
 
    @test jacobi(fmpz(2), fmpz(5)) == -1
 
-   if !is_windows64()
+   if !Nemo.iswindows64()
 
       @test numpart(10) == 42
 

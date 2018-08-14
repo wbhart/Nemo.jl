@@ -206,7 +206,7 @@ function test_fq_nmod_special_functions()
 
    a = x^4 + 3x^2 + 6x + 1
 
-   @test trace(a) == 1
+   @test tr(a) == 1
 
    @test norm(a) == 4
 
