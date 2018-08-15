@@ -1,3 +1,5 @@
+using Libdl
+
 oldwdir = pwd()
 
 @show M4_VERSION = "1.4.17"
