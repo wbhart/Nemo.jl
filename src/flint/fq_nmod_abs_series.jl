@@ -18,7 +18,7 @@ function O(a::fq_nmod_abs_series)
    end
    prec = length(a) - 1
    prec < 0 && throw(DomainError())
-   z = fq_nmod_abs_series(base_ring(a), Array{fq_nmod}(0), 0, prec)
+   z = fq_nmod_abs_series(base_ring(a), Vector{fq_nmod}(undef, 0), 0, prec)
    z.parent = parent(a)
    return z
 end
@@ -43,14 +43,14 @@ function normalise(a::fq_nmod_abs_series, len::Int)
    ctx = base_ring(a)
    if len > 0
       c = base_ring(a)()
-      ccall((:fq_nmod_poly_get_coeff, :libflint), Void,
+      ccall((:fq_nmod_poly_get_coeff, :libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
           c, a, len - 1, ctx)
    end
    while len > 0 && iszero(c)
       len -= 1
       if len > 0
-         ccall((:fq_nmod_poly_get_coeff, :libflint), Void,
+         ccall((:fq_nmod_poly_get_coeff, :libflint), Nothing,
             (Ref{fq_nmod}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
              c, a, len - 1, ctx)
       end
@@ -71,7 +71,7 @@ function coeff(x::fq_nmod_abs_series, n::Int)
       return base_ring(x)()
    end
    z = base_ring(x)()
-   ccall((:fq_nmod_poly_get_coeff, :libflint), Void,
+   ccall((:fq_nmod_poly_get_coeff, :libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
           z, x, n, base_ring(x))
    return z
@@ -88,7 +88,7 @@ function gen(R::FqNmodAbsSeriesRing)
    return z
 end
 
-function deepcopy_internal(a::fq_nmod_abs_series, dict::ObjectIdDict)
+function deepcopy_internal(a::fq_nmod_abs_series, dict::IdDict)
    z = fq_nmod_abs_series(base_ring(a), a)
    z.prec = a.prec
    z.parent = parent(a)
@@ -140,7 +140,7 @@ show_minus_one(::Type{fq_nmod_abs_series}) = show_minus_one(fq)
 
 function -(x::fq_nmod_abs_series)
    z = parent(x)()
-   ccall((:fq_nmod_poly_neg, :libflint), Void,
+   ccall((:fq_nmod_poly_neg, :libflint), Nothing,
                 (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series}, Ref{FqNmodFiniteField}),
                z, x, base_ring(x))
    z.prec = x.prec
@@ -163,7 +163,7 @@ function +(a::fq_nmod_abs_series, b::fq_nmod_abs_series)
    lenz = max(lena, lenb)
    z = parent(a)()
    z.prec = prec
-   ccall((:fq_nmod_poly_add_series, :libflint), Void,
+   ccall((:fq_nmod_poly_add_series, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series},
           Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                z, a, b, lenz, base_ring(a))
@@ -180,7 +180,7 @@ function -(a::fq_nmod_abs_series, b::fq_nmod_abs_series)
    lenz = max(lena, lenb)
    z = parent(a)()
    z.prec = prec
-   ccall((:fq_nmod_poly_sub_series, :libflint), Void,
+   ccall((:fq_nmod_poly_sub_series, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series},
           Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                z, a, b, lenz, base_ring(a))
@@ -203,7 +203,7 @@ function *(a::fq_nmod_abs_series, b::fq_nmod_abs_series)
       return z
    end
    lenz = min(lena + lenb - 1, prec)
-   ccall((:fq_nmod_poly_mullow, :libflint), Void,
+   ccall((:fq_nmod_poly_mullow, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series},
           Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                z, a, b, lenz, base_ring(a))
@@ -219,7 +219,7 @@ end
 function *(x::fq_nmod, y::fq_nmod_abs_series)
    z = parent(y)()
    z.prec = y.prec
-   ccall((:fq_nmod_poly_scalar_mul_fq_nmod, :libflint), Void,
+   ccall((:fq_nmod_poly_scalar_mul_fq_nmod, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series}, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                z, y, x, parent(x))
    return z
@@ -238,7 +238,7 @@ function shift_left(x::fq_nmod_abs_series, len::Int)
    xlen = length(x)
    z = parent(x)()
    z.prec = x.prec + len
-   ccall((:fq_nmod_poly_shift_left, :libflint), Void,
+   ccall((:fq_nmod_poly_shift_left, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                z, x, len, base_ring(x))
    return z
@@ -252,7 +252,7 @@ function shift_right(x::fq_nmod_abs_series, len::Int)
       z.prec = max(0, x.prec - len)
    else
       z.prec = x.prec - len
-      ccall((:fq_nmod_poly_shift_right, :libflint), Void,
+      ccall((:fq_nmod_poly_shift_right, :libflint), Nothing,
             (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                z, x, len, base_ring(x))
    end
@@ -272,7 +272,7 @@ function truncate(x::fq_nmod_abs_series, prec::Int)
    end
    z = parent(x)()
    z.prec = prec
-   ccall((:fq_nmod_poly_set_trunc, :libflint), Void,
+   ccall((:fq_nmod_poly_set_trunc, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                z, x, prec, base_ring(x))
    return z
@@ -350,7 +350,7 @@ function ==(x::fq_nmod_abs_series, y::fq_nmod)
       return false
    elseif length(x) == 1
       z = base_ring(x)()
-      ccall((:fq_nmod_poly_get_coeff, :libflint), Void,
+      ccall((:fq_nmod_poly_get_coeff, :libflint), Nothing,
             (Ref{fq_nmod}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
              z, x, 0, base_ring(x))
       return z == y
@@ -366,7 +366,7 @@ function ==(x::fq_nmod_abs_series, y::fmpz)
       return false
    elseif length(x) == 1
       z = base_ring(x)()
-      ccall((:fq_nmod_poly_get_coeff, :libflint), Void,
+      ccall((:fq_nmod_poly_get_coeff, :libflint), Nothing,
             (Ref{fq_nmod}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
              z, x, 0, base_ring(x))
       return z == y
@@ -402,7 +402,7 @@ function divexact(x::fq_nmod_abs_series, y::fq_nmod_abs_series)
    prec = min(x.prec, y.prec - v2 + v1)
    z = parent(x)()
    z.prec = prec
-   ccall((:fq_nmod_poly_div_series, :libflint), Void,
+   ccall((:fq_nmod_poly_div_series, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series},
           Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                z, x, y, prec, base_ring(x))
@@ -419,7 +419,7 @@ function divexact(x::fq_nmod_abs_series, y::fq_nmod)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
-   ccall((:fq_nmod_poly_scalar_div_fq_nmod, :libflint), Void,
+   ccall((:fq_nmod_poly_scalar_div_fq_nmod, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series}, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                z, x, y, base_ring(x))
    return z
@@ -436,7 +436,7 @@ function inv(a::fq_nmod_abs_series)
    !isunit(a) && error("Unable to invert power series")
    ainv = parent(a)()
    ainv.prec = a.prec
-   ccall((:fq_nmod_poly_inv_series, :libflint), Void,
+   ccall((:fq_nmod_poly_inv_series, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                ainv, a, a.prec, base_ring(a))
    return ainv
@@ -449,14 +449,14 @@ end
 ###############################################################################
 
 function fit!(z::fq_nmod_abs_series, n::Int)
-   ccall((:fq_nmod_poly_fit_length, :libflint), Void,
+   ccall((:fq_nmod_poly_fit_length, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
          z, n, base_ring(z))
    return nothing
 end
 
 function setcoeff!(z::fq_nmod_abs_series, n::Int, x::fq_nmod)
-   ccall((:fq_nmod_poly_set_coeff, :libflint), Void,
+   ccall((:fq_nmod_poly_set_coeff, :libflint), Nothing,
                 (Ref{fq_nmod_abs_series}, Int, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                z, n, x, base_ring(z))
    return z
@@ -476,7 +476,7 @@ function mul!(z::fq_nmod_abs_series, a::fq_nmod_abs_series, b::fq_nmod_abs_serie
       lenz = 0
    end
    z.prec = prec
-   ccall((:fq_nmod_poly_mullow, :libflint), Void,
+   ccall((:fq_nmod_poly_mullow, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series},
           Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                z, a, b, lenz, base_ring(z))
@@ -491,7 +491,7 @@ function addeq!(a::fq_nmod_abs_series, b::fq_nmod_abs_series)
    lenb = min(lenb, prec)
    lenz = max(lena, lenb)
    a.prec = prec
-   ccall((:fq_nmod_poly_add_series, :libflint), Void,
+   ccall((:fq_nmod_poly_add_series, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series},
           Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                a, a, b, lenz, base_ring(a))

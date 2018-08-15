@@ -426,7 +426,7 @@ function test_acb_mat_linear_solving()
 
    b = CC["6.0 +/- 0.1" "15.0 +/- 0.1" "25.0 +/- 0.1"]
 
-   r, p, L, U = lufact(A)
+   r, p, L, U = lu(A)
 
    @test overlaps(L*U, p*A)
    @test r == 3
@@ -437,7 +437,7 @@ function test_acb_mat_linear_solving()
 
    @test contains(transpose(y), ZZ[1 1 1])
 
-   Nemo.lufact!(p, A)
+   Nemo.lu!(p, A)
 
    y = solve_lu_precomp(p, A, transpose(b))
 

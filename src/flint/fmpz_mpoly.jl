@@ -22,7 +22,7 @@ function gens{S, N}(R::FmpzMPolyRing{S, N})
    A = Array{fmpz_mpoly{S, N}}(R.num_vars)
    for i = 1:R.num_vars
       z = R()
-      ccall((:fmpz_mpoly_gen, :libflint), Void,
+      ccall((:fmpz_mpoly_gen, :libflint), Nothing,
             (Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), z, i - 1, R)
       A[i] = z
    end
@@ -31,7 +31,7 @@ end
 
 function gen{S, N}(R::FmpzMPolyRing{S, N}, i::Int)
    z = R()
-   ccall((:fmpz_mpoly_gen, :libflint), Void,
+   ccall((:fmpz_mpoly_gen, :libflint), Nothing,
             (Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), z, i - 1, R)
    return z
 end
@@ -50,7 +50,7 @@ end
 
 function coeff(a::fmpz_mpoly, i::Int)
    z = fmpz()
-   ccall((:fmpz_mpoly_get_coeff_fmpz, :libflint), Void,
+   ccall((:fmpz_mpoly_get_coeff_fmpz, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}),
          z, a, i, a.parent)
    return z
@@ -58,7 +58,7 @@ end
 
 function deepcopy(a::fmpz_mpoly)
    z = parent(a)()
-   ccall((:fmpz_mpoly_set, :libflint), Void,
+   ccall((:fmpz_mpoly_set, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
          z, a, a.parent)
    return z
@@ -75,7 +75,7 @@ num_vars(x::fmpz_mpoly) = parent(x).num_vars
 function max_degrees{S, N}(a::fmpz_mpoly{S, N})
    R = a.parent
    A = Array(Int, N)
-   ccall((:fmpz_mpoly_max_degrees, :libflint), Void,
+   ccall((:fmpz_mpoly_max_degrees, :libflint), Nothing,
          (Ptr{Int}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), A, a, R)
    biggest = 0
    for i = 1:N
@@ -101,7 +101,7 @@ function show(io::IO, x::fmpz_mpoly)
           x, [string(s) for s in symbols(parent(x))], x.parent)
       print(io, unsafe_string(cstr))
 
-      ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
+      ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), cstr)
    end
 end
 
@@ -132,7 +132,7 @@ end
 
 function -(a::fmpz_mpoly)
    z = parent(a)()
-   ccall((:fmpz_mpoly_neg, :libflint), Void, 
+   ccall((:fmpz_mpoly_neg, :libflint), Nothing, 
        (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
        z, a, a.parent)
    return z
@@ -140,7 +140,7 @@ end
 
 function +{S, N}(a::fmpz_mpoly{S, N}, b::fmpz_mpoly{S, N})
    z = parent(a)()
-   ccall((:fmpz_mpoly_add, :libflint), Void, 
+   ccall((:fmpz_mpoly_add, :libflint), Nothing, 
        (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
        z, a, b, a.parent)
    return z
@@ -148,7 +148,7 @@ end
 
 function -{S, N}(a::fmpz_mpoly{S, N}, b::fmpz_mpoly{S, N})
    z = parent(a)()
-   ccall((:fmpz_mpoly_sub, :libflint), Void, 
+   ccall((:fmpz_mpoly_sub, :libflint), Nothing, 
        (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
        z, a, b, a.parent)
    return z
@@ -156,7 +156,7 @@ end
 
 function *{S, N}(a::fmpz_mpoly{S, N}, b::fmpz_mpoly{S, N})
    z = parent(a)()
-   ccall((:fmpz_mpoly_mul_johnson, :libflint), Void, 
+   ccall((:fmpz_mpoly_mul_johnson, :libflint), Nothing, 
        (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
        z, a, b, a.parent)
    return z
@@ -164,7 +164,7 @@ end
 
 function mul_array{S, N}(a::fmpz_mpoly{S, N}, b::fmpz_mpoly{S, N})
    z = parent(a)()
-   ccall((:fmpz_mpoly_mul_array, :libflint), Void, 
+   ccall((:fmpz_mpoly_mul_array, :libflint), Nothing, 
        (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
        z, a, b, a.parent)
    return z
@@ -178,7 +178,7 @@ end
 
 function *(a::fmpz_mpoly, b::Int)
    r = parent(a)()
-   ccall((:fmpz_mpoly_scalar_mul_si, :libflint), Void,
+   ccall((:fmpz_mpoly_scalar_mul_si, :libflint), Nothing,
         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), 
         r, a, b, a.parent)
    return r
@@ -186,7 +186,7 @@ end
 
 function *(a::fmpz_mpoly, b::fmpz)
    r = parent(a)()
-   ccall((:fmpz_mpoly_scalar_mul_fmpz, :libflint), Void,
+   ccall((:fmpz_mpoly_scalar_mul_fmpz, :libflint), Nothing,
         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz}, Ref{FmpzMPolyRing}), 
         r, a, b, a.parent)
    return r
@@ -198,7 +198,7 @@ end
 
 function +(a::fmpz_mpoly, b::Int)
    r = parent(a)()
-   ccall((:fmpz_mpoly_add_si, :libflint), Void,
+   ccall((:fmpz_mpoly_add_si, :libflint), Nothing,
         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), 
         r, a, b, a.parent)
    return r
@@ -206,7 +206,7 @@ end
 
 function +(a::fmpz_mpoly, b::fmpz)
    r = parent(a)()
-   ccall((:fmpz_mpoly_add_fmpz, :libflint), Void,
+   ccall((:fmpz_mpoly_add_fmpz, :libflint), Nothing,
         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz}, Ref{FmpzMPolyRing}), 
         r, a, b, a.parent)
    return r
@@ -218,7 +218,7 @@ end
 
 function -(a::fmpz_mpoly, b::Int)
    r = parent(a)()
-   ccall((:fmpz_mpoly_sub_si, :libflint), Void,
+   ccall((:fmpz_mpoly_sub_si, :libflint), Nothing,
         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), 
         r, a, b, a.parent)
    return r
@@ -226,7 +226,7 @@ end
 
 function -(a::fmpz_mpoly, b::fmpz)
    r = parent(a)()
-   ccall((:fmpz_mpoly_sub_fmpz, :libflint), Void,
+   ccall((:fmpz_mpoly_sub_fmpz, :libflint), Nothing,
         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz}, Ref{FmpzMPolyRing}), 
         r, a, b, a.parent)
    return r
@@ -245,7 +245,7 @@ end
 function ^(a::fmpz_mpoly, b::Int)
    b < 0 && throw(DomainError())
    z = parent(a)()
-   ccall((:fmpz_mpoly_pow_fps, :libflint), Void,
+   ccall((:fmpz_mpoly_pow_fps, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}),
          z, a, b, parent(a))
    return z
@@ -332,7 +332,7 @@ end
 
 function div_monagan_pearce{S, N}(a::fmpz_mpoly{S, N}, b::fmpz_mpoly{S, N})
    q = parent(a)()
-   ccall((:fmpz_mpoly_div_monagan_pearce, :libflint), Void, 
+   ccall((:fmpz_mpoly_div_monagan_pearce, :libflint), Nothing, 
        (Ref{fmpz_mpoly}, Ref{fmpz_mpoly},
         Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
        q, a, b, a.parent)
@@ -342,7 +342,7 @@ end
 function divrem_monagan_pearce{S, N}(a::fmpz_mpoly{S, N}, b::fmpz_mpoly{S, N})
    q = parent(a)()
    r = parent(a)()
-   ccall((:fmpz_mpoly_divrem_monagan_pearce, :libflint), Void, 
+   ccall((:fmpz_mpoly_divrem_monagan_pearce, :libflint), Nothing, 
        (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz_mpoly},
         Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
        q, r, a, b, a.parent)
@@ -364,7 +364,7 @@ function divrem_monagan_pearce{S, N}(a::fmpz_mpoly{S, N}, b::Array{fmpz_mpoly{S,
    len = length(b)
    q = [parent(a)() for i in 1:len]
    r = parent(a)()
-   ccall((:fmpz_mpoly_divrem_ideal, :libflint), Void, 
+   ccall((:fmpz_mpoly_divrem_ideal, :libflint), Nothing, 
        (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz_mpoly},
         Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}),
        q, r, a, b, len, a.parent)
@@ -379,7 +379,7 @@ end
 
 function divexact(a::fmpz_mpoly, b::Int)
    r = parent(a)()
-   ccall((:fmpz_mpoly_scalar_divexact_si, :libflint), Void,
+   ccall((:fmpz_mpoly_scalar_divexact_si, :libflint), Nothing,
         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), 
         r, a, b, a.parent)
    return r
@@ -387,7 +387,7 @@ end
 
 function divexact(a::fmpz_mpoly, b::fmpz)
    r = parent(a)()
-   ccall((:fmpz_mpoly_scalar_divexact_fmpz, :libflint), Void,
+   ccall((:fmpz_mpoly_scalar_divexact_fmpz, :libflint), Nothing,
         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz}, Ref{FmpzMPolyRing}), 
         r, a, b, a.parent)
    return r
@@ -402,27 +402,27 @@ divexact(a::fmpz_mpoly, b::Integer) = divexact(a, fmpz(b))
 ###############################################################################
 
 function addeq!{S, N}(a::fmpz_mpoly{S, N}, b::fmpz_mpoly{S, N})
-   ccall((:fmpz_mpoly_add, :libflint), Void,
+   ccall((:fmpz_mpoly_add, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Ref{fmpz_mpoly},
           Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), a, a, b, a.parent)
    return a
 end
 
 function mul!{S, N}(a::fmpz_mpoly{S, N}, b::fmpz_mpoly{S, N}, c::fmpz_mpoly{S, N})
-   ccall((:fmpz_mpoly_mul_johnson, :libflint), Void,
+   ccall((:fmpz_mpoly_mul_johnson, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Ref{fmpz_mpoly},
           Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), a, b, c, a.parent)
    return a
 end
 
 function setcoeff!(a::fmpz_mpoly, i::Int, c::Int)
-   ccall((:fmpz_mpoly_set_coeff_si, :libflint), Void,
+   ccall((:fmpz_mpoly_set_coeff_si, :libflint), Nothing,
         (Ref{fmpz_mpoly}, Int, Int, Ref{FmpzMPolyRing}), a, i, c, a.parent)
    return a
 end
 
 function setcoeff!(a::fmpz_mpoly, i::Int, c::fmpz)
-   ccall((:fmpz_mpoly_set_coeff_fmpz, :libflint), Void,
+   ccall((:fmpz_mpoly_set_coeff_fmpz, :libflint), Nothing,
         (Ref{fmpz_mpoly}, Int, Ref{fmpz}, Ref{FmpzMPolyRing}),
                                                           a, i, c, a.parent)
    return a

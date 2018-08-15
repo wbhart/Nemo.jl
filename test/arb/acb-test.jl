@@ -440,7 +440,7 @@ function test_acb_lindep()
    A2 = modweber_f1(tau2)^8; B2 = modweber_f1(2*tau2)^8
    vals2 = [A2^i*B2^j for i in 0:2 for j in 0:2]
 
-   vals = [vals1 vals2]'
+   vals = permutedims([vals1 vals2])
    C = lindep(vals, 150)
 
    Phi = sum([C[3*i+j+1]*x^i*y^j for i in 0:2 for j in 0:2])

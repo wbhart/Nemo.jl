@@ -36,14 +36,14 @@ end
 length(x::fq_nmod_poly) = ccall((:fq_nmod_poly_length, :libflint), Int,
                                 (Ref{fq_nmod_poly},), x)
 
-set_length!(x::fq_nmod_poly, n::Int) = ccall((:_fq_nmod_poly_set_length, :libflint), Void,
+set_length!(x::fq_nmod_poly, n::Int) = ccall((:_fq_nmod_poly_set_length, :libflint), Nothing,
                               (Ref{fq_nmod_poly}, Int), x, n)
 
 function coeff(x::fq_nmod_poly, n::Int)
    n < 0 && throw(DomainError())
    F = (x.parent).base_ring
    temp = F(1)
-   ccall((:fq_nmod_poly_get_coeff, :libflint), Void, 
+   ccall((:fq_nmod_poly_get_coeff, :libflint), Nothing, 
          (Ref{fq_nmod}, Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}),
          temp, x, n, F)
    return temp
@@ -69,7 +69,7 @@ isgen(x::fq_nmod_poly) = ccall((:fq_nmod_poly_is_gen, :libflint), Bool,
 
 degree(f::fq_nmod_poly) = f.length - 1
 
-function deepcopy_internal(a::fq_nmod_poly, dict::ObjectIdDict)
+function deepcopy_internal(a::fq_nmod_poly, dict::IdDict)
    z = fq_nmod_poly(a)
    z.parent = a.parent
    return z
@@ -98,7 +98,7 @@ function show(io::IO, x::fq_nmod_poly)
                   x, string(var(parent(x))),
                   (x.parent).base_ring)
       print(io, unsafe_string(cstr))
-      ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
+      ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), cstr)
    end
 end
 
@@ -119,7 +119,7 @@ show_minus_one(::Type{fq_nmod_poly}) = show_minus_one(fq_nmod)
 
 function -(x::fq_nmod_poly)
    z = parent(x)()
-   ccall((:fq_nmod_poly_neg, :libflint), Void,
+   ccall((:fq_nmod_poly_neg, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}),
          z, x, base_ring(parent(x)))
    return z
@@ -134,7 +134,7 @@ end
 function +(x::fq_nmod_poly, y::fq_nmod_poly)
    check_parent(x,y)
    z = parent(x)()
-   ccall((:fq_nmod_poly_add, :libflint), Void, 
+   ccall((:fq_nmod_poly_add, :libflint), Nothing, 
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}),
          z, x, y, base_ring(parent(x)))
@@ -144,7 +144,7 @@ end
 function -(x::fq_nmod_poly, y::fq_nmod_poly)
    check_parent(x,y)
    z = parent(x)()
-   ccall((:fq_nmod_poly_sub, :libflint), Void,
+   ccall((:fq_nmod_poly_sub, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}),
          z, x, y, base_ring(parent(x)))
@@ -154,7 +154,7 @@ end
 function *(x::fq_nmod_poly, y::fq_nmod_poly)
    check_parent(x,y)
    z = parent(x)()
-   ccall((:fq_nmod_poly_mul, :libflint), Void,
+   ccall((:fq_nmod_poly_mul, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}),
          z, x, y, base_ring(parent(x)))
@@ -171,7 +171,7 @@ function *(x::fq_nmod, y::fq_nmod_poly)
    parent(x) != base_ring(parent(y)) &&
          error("Coefficient rings must be equal")
    z = parent(y)()
-   ccall((:fq_nmod_poly_scalar_mul_fq_nmod, :libflint), Void,
+   ccall((:fq_nmod_poly_scalar_mul_fq_nmod, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{fq_nmod}, Ref{FqNmodFiniteField}),
          z, y, x, parent(x))
@@ -221,7 +221,7 @@ end
 function ^(x::fq_nmod_poly, y::Int)
    y < 0 && throw(DomainError())
    z = parent(x)()
-   ccall((:fq_nmod_poly_pow, :libflint), Void,
+   ccall((:fq_nmod_poly_pow, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}), 
          z, x, y, base_ring(parent(x)))
    return z
@@ -283,7 +283,7 @@ function truncate(x::fq_nmod_poly, n::Int)
       return x
    end
    z = parent(x)()
-   ccall((:fq_nmod_poly_set_trunc, :libflint), Void,
+   ccall((:fq_nmod_poly_set_trunc, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}),
          z, x, n, base_ring(parent(x)))
    return z
@@ -293,7 +293,7 @@ function mullow(x::fq_nmod_poly, y::fq_nmod_poly, n::Int)
    check_parent(x,y)
    n < 0 && throw(DomainError())
    z = parent(x)()
-   ccall((:fq_nmod_poly_mullow, :libflint), Void,
+   ccall((:fq_nmod_poly_mullow, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Int, Ref{FqNmodFiniteField}),
          z, x, y, n, base_ring(parent(x)))
@@ -309,7 +309,7 @@ end
 function reverse(x::fq_nmod_poly, len::Int)
    len < 0 && throw(DomainError())
    z = parent(x)()
-   ccall((:fq_nmod_poly_reverse, :libflint), Void,
+   ccall((:fq_nmod_poly_reverse, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}),
          z, x, len, base_ring(parent(x)))
    return z
@@ -324,7 +324,7 @@ end
 function shift_left(x::fq_nmod_poly, len::Int)
    len < 0 && throw(DomainError())
    z = parent(x)()
-   ccall((:fq_nmod_poly_shift_left, :libflint), Void,
+   ccall((:fq_nmod_poly_shift_left, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}),
          z, x, len, base_ring(parent(x)))
    return z
@@ -333,7 +333,7 @@ end
 function shift_right(x::fq_nmod_poly, len::Int)
    len < 0 && throw(DomainError())
    z = parent(x)()
-   ccall((:fq_nmod_poly_shift_right, :libflint), Void,
+   ccall((:fq_nmod_poly_shift_right, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}),
          z, x, len, base_ring(parent(x)))
    return z
@@ -348,7 +348,7 @@ end
 function div(x::fq_nmod_poly, y::fq_nmod_poly)
    check_parent(x,y)
    z = parent(x)()
-   ccall((:fq_nmod_poly_div_basecase, :libflint), Void,
+   ccall((:fq_nmod_poly_div_basecase, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, x, y, base_ring(parent(x)))
   return z
@@ -357,7 +357,7 @@ end
 function rem(x::fq_nmod_poly, y::fq_nmod_poly)
    check_parent(x,y)
    z = parent(x)()
-   ccall((:fq_nmod_poly_rem, :libflint), Void,
+   ccall((:fq_nmod_poly_rem, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, x, y, base_ring(parent(x)))
   return z
@@ -369,7 +369,7 @@ function divrem(x::fq_nmod_poly, y::fq_nmod_poly)
    check_parent(x,y)
    z = parent(x)()
    r = parent(x)()
-   ccall((:fq_nmod_poly_divrem, :libflint), Void, (Ref{fq_nmod_poly},
+   ccall((:fq_nmod_poly_divrem, :libflint), Nothing, (Ref{fq_nmod_poly},
          Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, r, x, y, base_ring(parent(x)))
    return z,r
@@ -381,7 +381,7 @@ end
 #
 ################################################################################
 
-doc"""
+Markdown.doc"""
     remove(z::fq_nmod_poly, p::fq_nmod_poly)
 > Computes the valuation of $z$ at $p$, that is, the largest $k$ such that
 > $p^k$ divides $z$. Additionally, $z/p^k$ is returned as well.
@@ -432,7 +432,7 @@ function powmod(x::fq_nmod_poly, n::Int, y::fq_nmod_poly)
       n = -n
    end
 
-   ccall((:fq_nmod_poly_powmod_ui_binexp, :libflint), Void,
+   ccall((:fq_nmod_poly_powmod_ui_binexp, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Int, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, x, n, y, base_ring(parent(x)))
   return z
@@ -450,7 +450,7 @@ function powmod(x::fq_nmod_poly, n::fmpz, y::fq_nmod_poly)
       n = -n
    end
 
-   ccall((:fq_nmod_poly_powmod_fmpz_binexp, :libflint), Void,
+   ccall((:fq_nmod_poly_powmod_fmpz_binexp, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fmpz}, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, x, n, y, base_ring(parent(x)))
   return z
@@ -465,7 +465,7 @@ end
 function gcd(x::fq_nmod_poly, y::fq_nmod_poly)
    check_parent(x,y)
    z = parent(x)()
-   ccall((:fq_nmod_poly_gcd, :libflint), Void,
+   ccall((:fq_nmod_poly_gcd, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, x, y, base_ring(parent(x)))
    return z
@@ -476,7 +476,7 @@ function gcdinv(x::fq_nmod_poly, y::fq_nmod_poly)
    z = parent(x)()
    s = parent(x)()
    t = parent(x)()
-   ccall((:fq_nmod_poly_xgcd, :libflint), Void,
+   ccall((:fq_nmod_poly_xgcd, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, 
           Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
            Ref{FqNmodFiniteField}), z, s, t, x, y, base_ring(parent(x)))
@@ -488,7 +488,7 @@ function gcdx(x::fq_nmod_poly, y::fq_nmod_poly)
    z = parent(x)()
    s = parent(x)()
    t = parent(x)()
-   ccall((:fq_nmod_poly_xgcd, :libflint), Void,
+   ccall((:fq_nmod_poly_xgcd, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, 
           Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
            Ref{FqNmodFiniteField}), z, s, t, x, y, base_ring(parent(x)))
@@ -504,7 +504,7 @@ end
 function evaluate(x::fq_nmod_poly, y::fq_nmod)
    base_ring(parent(x)) != parent(y) && error("Incompatible coefficient rings")
    z = parent(y)()
-   ccall((:fq_nmod_poly_evaluate_fq_nmod, :libflint), Void,
+   ccall((:fq_nmod_poly_evaluate_fq_nmod, :libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod_poly}, Ref{fq_nmod},
          Ref{FqNmodFiniteField}), z, x, y, base_ring(parent(x)))
    return z
@@ -519,7 +519,7 @@ end
 function compose(x::fq_nmod_poly, y::fq_nmod_poly)
    check_parent(x,y)
    z = parent(x)()
-   ccall((:fq_nmod_poly_compose, :libflint), Void, 
+   ccall((:fq_nmod_poly_compose, :libflint), Nothing, 
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, x, y, base_ring(parent(x)))
    return z
@@ -533,7 +533,7 @@ end
 
 function derivative(x::fq_nmod_poly)
    z = parent(x)()
-   ccall((:fq_nmod_poly_derivative, :libflint), Void, 
+   ccall((:fq_nmod_poly_derivative, :libflint), Nothing, 
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}),
          z, x, base_ring(parent(x)))
    return z
@@ -547,7 +547,7 @@ end
 
 function inflate(x::fq_nmod_poly, n::Int)
    z = parent(x)()
-   ccall((:fq_nmod_poly_inflate, :libflint), Void, (Ref{fq_nmod_poly},
+   ccall((:fq_nmod_poly_inflate, :libflint), Nothing, (Ref{fq_nmod_poly},
          Ref{fq_nmod_poly}, Culong, Ref{FqNmodFiniteField}),
          z, x, UInt(n), base_ring(parent(x)))
    return z
@@ -555,7 +555,7 @@ end
 
 function deflate(x::fq_nmod_poly, n::Int)
    z = parent(x)()
-   ccall((:fq_nmod_poly_deflate, :libflint), Void,
+   ccall((:fq_nmod_poly_deflate, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Culong, Ref{FqNmodFiniteField}),
          z, x, UInt(n), base_ring(parent(x)))
   return z
@@ -567,7 +567,7 @@ end
 #
 ################################################################################
 
-doc"""
+Markdown.doc"""
     isirreducible(x::fq_nmod_poly)
 > Return `true` if $x$ is irreducible, otherwise return `false`.
 """
@@ -583,7 +583,7 @@ end
 #
 ################################################################################
 
-doc"""
+Markdown.doc"""
     issquarefree(x::fq_nmod_poly)
 > Return `true` if $x$ is squarefree, otherwise return `false`.
 """
@@ -598,7 +598,7 @@ end
 #
 ################################################################################
 
-doc"""
+Markdown.doc"""
     factor(x::fq_nmod_poly)
 > Return the factorisation of $x$.
 """
@@ -612,13 +612,13 @@ function _factor(x::fq_nmod_poly)
    F = base_ring(R)
    a = F()
    fac = fq_nmod_poly_factor(F)
-   ccall((:fq_nmod_poly_factor, :libflint), Void, (Ref{fq_nmod_poly_factor},
+   ccall((:fq_nmod_poly_factor, :libflint), Nothing, (Ref{fq_nmod_poly_factor},
          Ref{fq_nmod}, Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}),
          fac, a, x, F)
    res = Dict{fq_nmod_poly,Int}()
    for i in 1:fac.num
       f = R()
-      ccall((:fq_nmod_poly_factor_get_poly, :libflint), Void,
+      ccall((:fq_nmod_poly_factor_get_poly, :libflint), Nothing,
             (Ref{fq_nmod_poly}, Ref{fq_nmod_poly_factor}, Int,
             Ref{FqNmodFiniteField}), f, fac, i-1, F)
       e = unsafe_load(fac.exp,i)
@@ -627,7 +627,7 @@ function _factor(x::fq_nmod_poly)
    return res, a
 end
 
-doc"""
+Markdown.doc"""
     factor_squarefree(x::fq_nmod_poly)
 > Return the squarefree factorisation of $x$.
 """
@@ -644,7 +644,7 @@ function _factor_squarefree(x::fq_nmod_poly)
   res = Dict{fq_nmod_poly,Int}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:fq_nmod_poly_factor_get_poly, :libflint), Void,
+    ccall((:fq_nmod_poly_factor_get_poly, :libflint), Nothing,
           (Ref{fq_nmod_poly}, Ref{fq_nmod_poly_factor}, Int,
            Ref{FqNmodFiniteField}), f, fac, i-1, F)
     e = unsafe_load(fac.exp, i)
@@ -653,7 +653,7 @@ function _factor_squarefree(x::fq_nmod_poly)
   return res
 end
 
-doc"""
+Markdown.doc"""
     factor_distinct_deg(x::fq_nmod_poly)
 > Return the distinct degree factorisation of a squarefree polynomial $x$.
 """
@@ -661,14 +661,14 @@ function factor_distinct_deg(x::fq_nmod_poly)
    R = parent(x)
    F = base_ring(R)
    fac = fq_nmod_poly_factor(F)
-   degrees = Vector{Int}(degree(x))
-   ccall((:fq_nmod_poly_factor_distinct_deg, :libflint), Void,
+   degrees = Vector{Int}(undef, degree(x))
+   ccall((:fq_nmod_poly_factor_distinct_deg, :libflint), Nothing,
          (Ref{fq_nmod_poly_factor}, Ref{fq_nmod_poly}, Ref{Vector{Int}},
          Ref{FqNmodFiniteField}), fac, x, degrees, F)
    res = Dict{Int, fq_nmod_poly}()
    for i in 1:fac.num
       f = R()
-      ccall((:fq_nmod_poly_factor_get_poly, :libflint), Void,
+      ccall((:fq_nmod_poly_factor_get_poly, :libflint), Nothing,
             (Ref{fq_nmod_poly}, Ref{fq_nmod_poly_factor}, Int,
             Ref{FqNmodFiniteField}), f, fac, i-1, F)
       res[degrees[i]] = f
@@ -683,42 +683,42 @@ end
 ################################################################################
 
 function zero!(z::fq_nmod_poly)
-   ccall((:fq_nmod_poly_zero, :libflint), Void, 
+   ccall((:fq_nmod_poly_zero, :libflint), Nothing, 
          (Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}),
          z, base_ring(parent(z)))
    return z
 end
 
 function fit!(z::fq_nmod_poly, n::Int)
-   ccall((:fq_nmod_poly_fit_length, :libflint), Void, 
+   ccall((:fq_nmod_poly_fit_length, :libflint), Nothing, 
          (Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}),
          z, n, base_ring(parent(z)))
    return nothing
 end
 
 function setcoeff!(z::fq_nmod_poly, n::Int, x::fq_nmod)
-   ccall((:fq_nmod_poly_set_coeff, :libflint), Void, 
+   ccall((:fq_nmod_poly_set_coeff, :libflint), Nothing, 
          (Ref{fq_nmod_poly}, Int, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
          z, n, x, base_ring(parent(z)))
    return z
 end
 
 function mul!(z::fq_nmod_poly, x::fq_nmod_poly, y::fq_nmod_poly)
-   ccall((:fq_nmod_poly_mul, :libflint), Void, 
+   ccall((:fq_nmod_poly_mul, :libflint), Nothing, 
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, x, y, base_ring(parent(x)))
    return z
 end
 
 function add!(z::fq_nmod_poly, x::fq_nmod_poly, y::fq_nmod_poly)
-   ccall((:fq_nmod_poly_add, :libflint), Void, 
+   ccall((:fq_nmod_poly_add, :libflint), Nothing, 
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, x, y, base_ring(parent(x)))
    return z
 end
 
 function sub!(z::fq_nmod_poly, x::fq_nmod_poly, y::fq_nmod_poly)
-   ccall((:fq_nmod_poly_sub, :libflint), Void, 
+   ccall((:fq_nmod_poly_sub, :libflint), Nothing, 
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, x, y, base_ring(parent(x)))
    return z
@@ -726,7 +726,7 @@ end
 
 
 function addeq!(z::fq_nmod_poly, x::fq_nmod_poly)
-   ccall((:fq_nmod_poly_add, :libflint), Void, 
+   ccall((:fq_nmod_poly_add, :libflint), Nothing, 
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
          Ref{FqNmodFiniteField}), z, z, x, base_ring(parent(x)))
    return z

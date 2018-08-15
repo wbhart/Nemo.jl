@@ -55,7 +55,7 @@ isunit(a::nmod) = a.parent.n == 1 ? a.data == 0 : gcd(a.data, a.parent.n) == 1
 
 modulus(R::NmodRing) = R.n
 
-function deepcopy_internal(a::nmod, dict::ObjectIdDict)
+function deepcopy_internal(a::nmod, dict::IdDict)
    R = parent(a)
    return nmod(deepcopy(a.data), R)
 end
@@ -319,7 +319,7 @@ function gcd(x::nmod, y::nmod)
    end
 end
 
-doc"""
+Markdown.doc"""
     gcdx(a::nmod, b::nmod)
 > Compute the extended gcd with the Euclidean structure inherited from
 > $\mathbb{Z}$.
