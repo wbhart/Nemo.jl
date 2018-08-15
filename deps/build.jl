@@ -164,7 +164,7 @@ MPFR_FILE = "mpfr-" * MPFR_VERSION * ".tar.bz2"
 
 if !ispath(joinpath(wdir, "mpfr-$MPFR_VERSION"))
    println("Downloading MPFR sources ... ")
-   download("http://ftp.gnu.org/gnu/mpfr/$MPFR_FILE", joinpath(wdir, MPFR_FILE))
+   download("http://ftp.vim.org/ftp/gnu/mpfr/$MPFR_FILE", joinpath(wdir, MPFR_FILE))
 
    println("DONE")
 end
