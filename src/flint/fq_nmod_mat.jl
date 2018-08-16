@@ -51,10 +51,12 @@ end
 
 @inline function getindex(a::fq_nmod_mat, i::Int, j::Int)
    @boundscheck Generic._checkbounds(a, i, j)
-   el = ccall((:fq_nmod_mat_entry, :libflint), Ptr{fq_nmod},
-              (Ref{fq_nmod_mat}, Int, Int), a, i - 1 , j - 1)
-   z = base_ring(a)()
-   ccall((:fq_nmod_set, :libflint), Nothing, (Ref{fq_nmod}, Ptr{fq_nmod}), z, el)
+   GC.@preserve a begin
+      el = ccall((:fq_nmod_mat_entry, :libflint), Ptr{fq_nmod},
+                 (Ref{fq_nmod_mat}, Int, Int), a, i - 1 , j - 1)
+      z = base_ring(a)()
+      ccall((:fq_nmod_set, :libflint), Nothing, (Ref{fq_nmod}, Ptr{fq_nmod}), z, el)
+   end
    return z
 end
 
@@ -62,14 +64,17 @@ end
    @boundscheck Generic._checkbounds(a, i, j)
    ccall((:fq_nmod_mat_entry_set, :libflint), Nothing,
          (Ref{fq_nmod_mat}, Int, Int, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
-         a, i - 1, j - 1, u, base_ring(a)) end
+         a, i - 1, j - 1, u, base_ring(a))
+end
 
 @inline function setindex!(a::fq_nmod_mat, u::fmpz, i::Int, j::Int)
    @boundscheck Generic._checkbounds(a, i, j)
-   el = ccall((:fq_nmod_mat_entry, :libflint), Ptr{fq_nmod},
-              (Ref{fq_nmod_mat}, Int, Int), a, i - 1, j - 1)
-   ccall((:fq_nmod_set_fmpz, :libflint), Nothing,
-         (Ptr{fq_nmod}, Ref{fmpz}, Ref{FqNmodFiniteField}), el, u, base_ring(a))
+   GC.@preserve a begin
+      el = ccall((:fq_nmod_mat_entry, :libflint), Ptr{fq_nmod},
+                 (Ref{fq_nmod_mat}, Int, Int), a, i - 1, j - 1)
+      ccall((:fq_nmod_set_fmpz, :libflint), Nothing,
+            (Ptr{fq_nmod}, Ref{fmpz}, Ref{FqNmodFiniteField}), el, u, base_ring(a))
+   end
 end
 
 setindex!(a::fq_nmod_mat, u::Integer, i::Int, j::Int) =

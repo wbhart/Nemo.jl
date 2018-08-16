@@ -2309,7 +2309,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
       finalizer(_fmpq_mat_clear_fn, z)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fmpq_mat_entry, :libflint), Ptr{fmpq},
                        (Ref{fmpq_mat}, Int, Int), z, i - 1, j - 1)
@@ -2326,7 +2326,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
             (Ref{fmpq_mat}, Int, Int), z, r, c)
       finalizer(_fmpq_mat_clear_fn, z)
       b = fmpz(1)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fmpq_mat_entry, :libflint), Ptr{fmpq},
                        (Ref{fmpq_mat}, Int, Int), z, i - 1, j - 1)
@@ -2343,7 +2343,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
       finalizer(_fmpq_mat_clear_fn, z)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fmpq_mat_entry, :libflint), Ptr{fmpq},
                        (Ref{fmpq_mat}, Int, Int), z, i - 1, j - 1)
@@ -2360,7 +2360,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
             (Ref{fmpq_mat}, Int, Int), z, r, c)
       finalizer(_fmpq_mat_clear_fn, z)
       b = fmpz(1)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fmpq_mat_entry, :libflint), Ptr{fmpq},
                        (Ref{fmpq_mat}, Int, Int), z, i - 1, j - 1)
@@ -2377,7 +2377,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
       finalizer(_fmpq_mat_clear_fn, z)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fmpq_mat_entry, :libflint), Ptr{fmpq},
                        (Ref{fmpq_mat}, Int, Int), z, i - 1, j - 1)
@@ -2393,7 +2393,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
       finalizer(_fmpq_mat_clear_fn, z)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fmpq_mat_entry, :libflint), Ptr{fmpq},
                        (Ref{fmpq_mat}, Int, Int), z, i - 1, j - 1)
@@ -2409,7 +2409,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
       finalizer(_fmpq_mat_clear_fn, z)
-      for i = 1:min(r, c)
+      GC.@preserve z for i = 1:min(r, c)
          el = ccall((:fmpq_mat_entry, :libflint), Ptr{fmpq},
                     (Ref{fmpq_mat}, Int, Int), z, i - 1, i - 1)
          ccall((:fmpq_set, :libflint), Nothing,
@@ -2484,7 +2484,7 @@ mutable struct fmpz_mat <: MatElem{fmpz}
       ccall((:fmpz_mat_init, :libflint), Nothing,
             (Ref{fmpz_mat}, Int, Int), z, r, c)
       finalizer(_fmpz_mat_clear_fn, z)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
                        (Ref{fmpz_mat}, Int, Int), z, i - 1, j - 1)
@@ -2500,7 +2500,7 @@ mutable struct fmpz_mat <: MatElem{fmpz}
       ccall((:fmpz_mat_init, :libflint), Nothing,
             (Ref{fmpz_mat}, Int, Int), z, r, c)
       finalizer(_fmpz_mat_clear_fn, z)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
                        (Ref{fmpz_mat}, Int, Int), z, i - 1, j - 1)
@@ -2516,7 +2516,7 @@ mutable struct fmpz_mat <: MatElem{fmpz}
       ccall((:fmpz_mat_init, :libflint), Nothing,
             (Ref{fmpz_mat}, Int, Int), z, r, c)
       finalizer(_fmpz_mat_clear_fn, z)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
                        (Ref{fmpz_mat}, Int, Int), z, i - 1, j - 1)
@@ -2532,7 +2532,7 @@ mutable struct fmpz_mat <: MatElem{fmpz}
       ccall((:fmpz_mat_init, :libflint), Nothing,
             (Ref{fmpz_mat}, Int, Int), z, r, c)
       finalizer(_fmpz_mat_clear_fn, z)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
                        (Ref{fmpz_mat}, Int, Int), z, i - 1, j - 1)
@@ -2548,7 +2548,7 @@ mutable struct fmpz_mat <: MatElem{fmpz}
       ccall((:fmpz_mat_init, :libflint), Nothing,
             (Ref{fmpz_mat}, Int, Int), z, r, c)
       finalizer(_fmpz_mat_clear_fn, z)
-      for i = 1:min(r, c)
+      GC.@preserve z for i = 1:min(r, c)
          el = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
                     (Ref{fmpz_mat}, Int, Int), z, i - 1, i- 1)
          ccall((:fmpz_set, :libflint), Nothing,
@@ -3100,7 +3100,7 @@ mutable struct fq_mat <: MatElem{fq}
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             ccall((:fq_mat_entry_set, :libflint), Nothing,
                   (Ref{fq_mat}, Int, Int, Ref{fq}, Ref{FqFiniteField}),
@@ -3116,7 +3116,7 @@ mutable struct fq_mat <: MatElem{fq}
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             ccall((:fq_mat_entry_set, :libflint), Nothing,
                        (Ref{fq_mat}, Int, Int, Ref{fq}, Ref{FqFiniteField}),
@@ -3132,7 +3132,7 @@ mutable struct fq_mat <: MatElem{fq}
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fq_mat_entry, :libflint), Ptr{fq},
                        (Ref{fq_mat}, Int, Int), z, i - 1, j - 1)
@@ -3149,7 +3149,7 @@ mutable struct fq_mat <: MatElem{fq}
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fq_mat_entry, :libflint), Ptr{fq},
                        (Ref{fq_mat}, Int, Int), z, i - 1, j - 1)
@@ -3166,7 +3166,7 @@ mutable struct fq_mat <: MatElem{fq}
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             ccall((:fq_mat_entry_set, :libflint), Nothing,
                     (Ref{fq_mat}, Int, Int, Ref{fq}, Ref{FqFiniteField}),
@@ -3182,7 +3182,7 @@ mutable struct fq_mat <: MatElem{fq}
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             ccall((:fq_mat_entry_set, :libflint), Nothing,
                        (Ref{fq_mat}, Int, Int, Ref{fq}, Ref{FqFiniteField}),
@@ -3214,7 +3214,7 @@ mutable struct fq_mat <: MatElem{fq}
       c = cols(m)
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el1 = ccall((:fq_mat_entry, :libflint), Ptr{fq},
                         (Ref{fq_mat}, Int, Int), z, i - 1, j - 1)
@@ -3288,7 +3288,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             ccall((:fq_nmod_mat_entry_set, :libflint), Nothing,
                   (Ref{fq_nmod_mat}, Int, Int, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
@@ -3304,7 +3304,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             ccall((:fq_nmod_mat_entry_set, :libflint), Nothing,
                        (Ref{fq_nmod_mat}, Int, Int, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
@@ -3320,7 +3320,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fq_nmod_mat_entry, :libflint), Ptr{fq_nmod},
                        (Ref{fq_nmod_mat}, Int, Int), z, i - 1, j - 1)
@@ -3337,7 +3337,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el = ccall((:fq_nmod_mat_entry, :libflint), Ptr{fq_nmod},
                        (Ref{fq_nmod_mat}, Int, Int), z, i - 1, j - 1)
@@ -3354,7 +3354,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             ccall((:fq_nmod_mat_entry_set, :libflint), Nothing,
                     (Ref{fq_nmod_mat}, Int, Int, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
@@ -3370,7 +3370,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             ccall((:fq_nmod_mat_entry_set, :libflint), Nothing,
                        (Ref{fq_nmod_mat}, Int, Int, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
@@ -3402,7 +3402,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       c = cols(m)
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
-      for i = 1:r
+      GC.@preserve z for i = 1:r
          for j = 1:c
             el1 = ccall((:fq_nmod_mat_entry, :libflint), Ptr{fq_nmod},
                         (Ref{fq_nmod_mat}, Int, Int), z, i - 1, j - 1)

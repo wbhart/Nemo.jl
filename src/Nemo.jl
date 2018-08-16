@@ -375,7 +375,7 @@ function test_module(x, y)
      end
    end
 
-   cmd = "using Base.Test; using Nemo; include(\"$test_file\"); $test_function_name();"
+   cmd = "using Test; using Nemo; include(\"$test_file\"); $test_function_name();"
    @info("spawning ", `$julia_exe -e \"$cmd\"`)
    run(`$julia_exe -e $cmd`)
 end

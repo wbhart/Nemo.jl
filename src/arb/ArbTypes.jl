@@ -547,7 +547,7 @@ mutable struct arb_mat <: MatElem{arb}
     ccall((:arb_mat_init, :libarb), Nothing, 
                 (Ref{arb_mat}, Int, Int), z, r, c)
     finalizer(_arb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:arb_mat_entry_ptr, :libarb), Ptr{arb},
                     (Ref{arb_mat}, Int, Int), z, i - 1, j - 1)
@@ -562,7 +562,7 @@ mutable struct arb_mat <: MatElem{arb}
     ccall((:arb_mat_init, :libarb), Nothing, 
                 (Ref{arb_mat}, Int, Int), z, r, c)
     finalizer(_arb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:arb_mat_entry_ptr, :libarb), Ptr{arb},
                     (Ref{arb_mat}, Int, Int), z, i - 1, j - 1)
@@ -577,7 +577,7 @@ mutable struct arb_mat <: MatElem{arb}
     ccall((:arb_mat_init, :libarb), Nothing, 
                 (Ref{arb_mat}, Int, Int), z, r, c)
     finalizer(_arb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:arb_mat_entry_ptr, :libarb), Ptr{arb},
                     (Ref{arb_mat}, Int, Int), z, i - 1, j - 1)
@@ -592,7 +592,7 @@ mutable struct arb_mat <: MatElem{arb}
     ccall((:arb_mat_init, :libarb), Nothing, 
                 (Ref{arb_mat}, Int, Int), z, r, c)
     finalizer(_arb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:arb_mat_entry_ptr, :libarb), Ptr{arb},
                     (Ref{arb_mat}, Int, Int), z, i - 1, j - 1)
@@ -702,7 +702,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -717,7 +717,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -732,7 +732,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -747,7 +747,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -762,7 +762,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -777,7 +777,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -792,7 +792,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -807,7 +807,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -823,7 +823,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -839,7 +839,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -855,7 +855,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)
@@ -871,7 +871,7 @@ mutable struct acb_mat <: MatElem{acb}
     ccall((:acb_mat_init, :libarb), Nothing, 
                 (Ref{acb_mat}, Int, Int), z, r, c)
     finalizer(_acb_mat_clear_fn, z)
-    for i = 1:r
+    GC.@preserve z for i = 1:r
       for j = 1:c
         el = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
                     (Ref{acb_mat}, Int, Int), z, i - 1, j - 1)

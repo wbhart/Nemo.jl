@@ -109,9 +109,12 @@ Markdown.doc"""
 > Return the midpoint of $x$ rounded down to a machine double.
 """
 function Float64(x::arb)
-    t = ccall((:arb_mid_ptr, :libarb), Ptr{arf_struct}, (Ref{arb}, ), x)
-    # 4 == round to nearest
-    return ccall((:arf_get_d, :libarb), Float64, (Ptr{arf_struct}, Int), t, 4)
+   GC.@preserve x begin
+      t = ccall((:arb_mid_ptr, :libarb), Ptr{arf_struct}, (Ref{arb}, ), x)
+      # 4 == round to nearest
+      d = ccall((:arf_get_d, :libarb), Float64, (Ptr{arf_struct}, Int), t, 4)
+   end
+   return d
 end
 
 ################################################################################
