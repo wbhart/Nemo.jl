@@ -233,7 +233,7 @@ function __init__()
          (Ptr{Nothing},), @cfunction(flint_abort, Nothing, ()))
 
    println("")
-   println("Welcome to Nemo version 0.9.0")
+   println("Welcome to Nemo version 0.9.1-dev")
    println("")
    println("Nemo comes with absolutely no warranty whatsoever")
    println("")
@@ -254,7 +254,7 @@ end
 ################################################################################
 
 function versioninfo()
-  print("Nemo version 0.9.0\n")
+  print("Nemo version 0.9.1-dev\n")
   nemorepo = dirname(dirname(@__FILE__))
 
   print("Nemo: ")
@@ -375,7 +375,7 @@ function test_module(x, y)
      end
    end
 
-   cmd = "using Base.Test; using Nemo; include(\"$test_file\"); $test_function_name();"
+   cmd = "using Test; using Nemo; include(\"$test_file\"); $test_function_name();"
    @info("spawning ", `$julia_exe -e \"$cmd\"`)
    run(`$julia_exe -e $cmd`)
 end

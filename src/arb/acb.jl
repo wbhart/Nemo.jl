@@ -123,13 +123,15 @@ end
 ################################################################################
 
 function convert(::Type{ComplexF64}, x::acb)
-    re = ccall((:acb_real_ptr, :libarb), Ptr{arb_struct}, (Ref{acb}, ), x)
-    im = ccall((:acb_imag_ptr, :libarb), Ptr{arb_struct}, (Ref{acb}, ), x)
-    t = ccall((:arb_mid_ptr, :libarb), Ptr{arf_struct}, (Ptr{arb}, ), re)
-    u = ccall((:arb_mid_ptr, :libarb), Ptr{arf_struct}, (Ptr{arb}, ), im)
-    # 4 == round to nearest
-    v = ccall((:arf_get_d, :libarb), Float64, (Ptr{arf_struct}, Int), t, 4)
-    w = ccall((:arf_get_d, :libarb), Float64, (Ptr{arf_struct}, Int), u, 4)
+    GC.@preserve x begin
+      re = ccall((:acb_real_ptr, :libarb), Ptr{arb_struct}, (Ref{acb}, ), x)
+      im = ccall((:acb_imag_ptr, :libarb), Ptr{arb_struct}, (Ref{acb}, ), x)
+      t = ccall((:arb_mid_ptr, :libarb), Ptr{arf_struct}, (Ptr{arb}, ), re)
+      u = ccall((:arb_mid_ptr, :libarb), Ptr{arf_struct}, (Ptr{arb}, ), im)
+      # 4 == round to nearest
+      v = ccall((:arf_get_d, :libarb), Float64, (Ptr{arf_struct}, Int), t, 4)
+      w = ccall((:arf_get_d, :libarb), Float64, (Ptr{arf_struct}, Int), u, 4)
+    end
     return complex(v, w)
 end
 

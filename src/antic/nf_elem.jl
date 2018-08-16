@@ -71,7 +71,7 @@ function hash(a::nf_elem, h::UInt)
              b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
        end
    else
-       for i in 1:a.elem_length
+       GC.@preserve a for i in 1:a.elem_length
              b = xor(b, xor(_hash_integer(unsafe_load(Ptr{Int}(a.elem_coeffs), i), h), h))
              b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
        end

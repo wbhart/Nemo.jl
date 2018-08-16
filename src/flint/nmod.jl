@@ -258,9 +258,10 @@ function inv(x::nmod)
    if R.n == 1
       return deepcopy(x)
    end
-   s = [UInt(0)]
+   #s = [UInt(0)]
+   s = Ref{UInt}()
    g = ccall((:n_gcdinv, :libflint), UInt, (Ptr{UInt}, UInt, UInt),
-         pointer(s), x.data, R.n)
+         s, x.data, R.n)
    g != 1 && error("Impossible inverse in ", R)
    return nmod(s[], R)
 end

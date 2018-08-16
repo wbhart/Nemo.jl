@@ -96,34 +96,42 @@ getindex(x::fmpz_mat, r::UnitRange{Int}, c::UnitRange{Int}) = sub(x, r, c)
 ###############################################################################
 
 function getindex!(v::fmpz, a::fmpz_mat, r::Int, c::Int)
-   z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
-             (Ref{fmpz_mat}, Int, Int), a, r - 1, c - 1)
-   ccall((:fmpz_set, :libflint), Nothing, (Ref{fmpz}, Ptr{fmpz}), v, z)
+   GC.@preserve a begin
+      z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
+                (Ref{fmpz_mat}, Int, Int), a, r - 1, c - 1)
+      ccall((:fmpz_set, :libflint), Nothing, (Ref{fmpz}, Ptr{fmpz}), v, z)
+   end
 end
 
 @inline function getindex(a::fmpz_mat, r::Int, c::Int)
    @boundscheck Generic._checkbounds(a, r, c)
    v = fmpz()
-   z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
-             (Ref{fmpz_mat}, Int, Int), a, r - 1, c - 1)
-   ccall((:fmpz_set, :libflint), Nothing, (Ref{fmpz}, Ptr{fmpz}), v, z)
+   GC.@preserve a begin
+      z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
+                (Ref{fmpz_mat}, Int, Int), a, r - 1, c - 1)
+      ccall((:fmpz_set, :libflint), Nothing, (Ref{fmpz}, Ptr{fmpz}), v, z)
+   end
    return v
 end
 
 @inline function setindex!(a::fmpz_mat, d::fmpz, r::Int, c::Int)
    @boundscheck Generic._checkbounds(a, r, c)
-   z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
-             (Ref{fmpz_mat}, Int, Int), a, r - 1, c - 1)
-   ccall((:fmpz_set, :libflint), Nothing, (Ptr{fmpz}, Ref{fmpz}), z, d)
+   GC.@preserve a begin
+      z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
+                (Ref{fmpz_mat}, Int, Int), a, r - 1, c - 1)
+      ccall((:fmpz_set, :libflint), Nothing, (Ptr{fmpz}, Ref{fmpz}), z, d)
+   end
 end
 
 @inline setindex!(a::fmpz_mat, d::Integer, r::Int, c::Int) = setindex!(a, fmpz(d), r, c)
 
 @inline function setindex!(a::fmpz_mat, d::Int, r::Int, c::Int)
    @boundscheck Generic._checkbounds(a, r, c)
-   z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
-             (Ref{fmpz_mat}, Int, Int), a, r - 1, c - 1)
-   ccall((:fmpz_set_si, :libflint), Nothing, (Ptr{fmpz}, Int), z, d)
+   GC.@preserve a begin
+      z = ccall((:fmpz_mat_entry, :libflint), Ptr{fmpz},
+                (Ref{fmpz_mat}, Int, Int), a, r - 1, c - 1)
+      ccall((:fmpz_set_si, :libflint), Nothing, (Ptr{fmpz}, Int), z, d)
+   end
 end
 
 @inline rows(a::fmpz_mat) = a.r
