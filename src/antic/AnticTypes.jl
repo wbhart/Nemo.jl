@@ -40,7 +40,7 @@ mutable struct AnticNumberField <: Field
             (Ref{AnticNumberField}, Ref{fmpq_poly}), nf, pol)
          finalizer(_AnticNumberField_clear_fn, nf)
          nf.S = s
-         nf.auxilliary_data = Array{Any}(5)
+         nf.auxilliary_data = Array{Any}(undef, 5)
          return nf
       else
          if haskey(AnticNumberFieldID, (parent(pol), pol, s))

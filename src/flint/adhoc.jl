@@ -57,7 +57,7 @@ end
 
 function (a::Generic.AbsSeriesRing{T})(b::fmpz) where {T <: RingElement}
    if b == 0
-      z = Generic.AbsSeries{T}(Array{T}(0), 0, a.prec_max)
+      z = Generic.AbsSeries{T}(Array{T}(undef, 0), 0, a.prec_max)
    else
       z = Generic.AbsSeries{T}([base_ring(a)(b)], 1, a.prec_max)
    end
@@ -128,7 +128,7 @@ end
 
 function (a::Generic.RelSeriesRing{T})(b::fmpz) where {T <: RingElement} 
    if iszero(b)
-      z = Generic.RelSeries{T}(Array{T}(0), 0, a.prec_max, a.prec_max)
+      z = Generic.RelSeries{T}(Array{T}(undef, 0), 0, a.prec_max, a.prec_max)
    else
       z = Generic.RelSeries{T}([base_ring(a)(b)], 1, a.prec_max, 0)
    end

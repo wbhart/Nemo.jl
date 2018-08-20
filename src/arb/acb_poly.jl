@@ -628,7 +628,7 @@ Markdown.doc"""
 function roots(x::acb_poly; target=0, isolate_real=false, initial_prec=0, max_prec=0, max_iter=0)
     deg = degree(x)
     if deg <= 0
-        return Array{acb}(0)
+        return Array{acb}(undef, 0)
     end
 
     initial_prec = (initial_prec >= 2) ? initial_prec : 32

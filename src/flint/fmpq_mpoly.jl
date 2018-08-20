@@ -180,7 +180,7 @@ function degrees_fit_int(a::fmpq_mpoly)
 end
 
 function degrees_int(a::fmpq_mpoly)
-   degs = Vector{Int}(nvars(parent(a)))
+   degs = Vector{Int}(undef, nvars(parent(a)))
    ccall((:fmpq_mpoly_degrees_si, :libflint), Nothing,
          (Ptr{Int}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
          degs, a, a.parent)
@@ -189,7 +189,7 @@ end
 
 function degrees(a::fmpq_mpoly)
    n = nvars(parent(a))
-   degs = Vector{fmpz}(n)
+   degs = Vector{fmpz}(undef, n)
    for i in 1:n
       degs[i] = fmpz()
    end
