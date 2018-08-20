@@ -586,7 +586,7 @@ function _termexp_fits_ui(a::fmpq_mpoly, i::Int)
 end
 
 function _get_termexp_ui(a::fmpq_mpoly, i::Int)
-   z = Vector{UInt}(nvars(parent(a)))
+   z = Vector{UInt}(undef, nvars(parent(a)))
    ccall((:fmpq_mpoly_get_termexp_ui, :libflint), Nothing,
          (Ptr{UInt}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
          z, a, i - 1, parent(a))
