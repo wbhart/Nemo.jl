@@ -56,7 +56,7 @@ export flint_cleanup, flint_set_num_threads
 
 export error_dim_negative, ErrorConstrDimMismatch
 
-export is_windows64
+export iswindows64
 
 export CyclotomicField, MaximalRealSubfield, NumberField, ComplexField, PadicField
 
