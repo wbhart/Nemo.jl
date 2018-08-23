@@ -72,7 +72,7 @@ degree(x::nmod_poly) = ccall((:nmod_poly_degree, :libflint), Int,
                                (Ref{nmod_poly}, ), x)
 
 function coeff(x::nmod_poly, n::Int)
-  n < 0 && throw(DomainError(n, "Index must be nonnegative"))
+  n < 0 && throw(DomainError("Index must be non-negative: $n"))
   return base_ring(x)(ccall((:nmod_poly_get_coeff_ui, :libflint), UInt,
           (Ref{nmod_poly}, Int), x, n))
 end
@@ -341,7 +341,7 @@ end
 ################################################################################
 
 function truncate(a::nmod_poly, n::Int)
-  n < 0 && throw(DomainError())
+  n < 0 && throw(DomainError("Index must be non-negative: $n"))
   z = deepcopy(a)
   if length(z) <= n
     return z
@@ -353,7 +353,7 @@ end
 
 function mullow(x::nmod_poly, y::nmod_poly, n::Int)
   check_parent(x, y)
-  n < 0 && throw(DomainError())
+  n < 0 && throw(DomainError("Index must be non-negative: $n"))
   z = parent(x)()
   ccall((:nmod_poly_mullow, :libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}, Int), z, x, y, n)
@@ -367,7 +367,7 @@ end
 ###############################################################################
 
 function reverse(x::nmod_poly, len::Int)
-  len < 0 && throw(DomainError())
+  len < 0 && throw(DomainError("Index must be non-negative: $n"))
   z = parent(x)()
   ccall((:nmod_poly_reverse, :libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}, Int), z, x, len)

@@ -271,6 +271,9 @@ function test_fmpq_mpoly_powering()
          end
 
          @test (f == 0 && expn == 0 && f^expn == 0) || f^expn == r
+
+         @test_throws DomainError f^-1
+         @test_throws DomainError f^fmpz(-1)
       end
    end
 

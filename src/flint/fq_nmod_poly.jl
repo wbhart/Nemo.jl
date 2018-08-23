@@ -40,7 +40,7 @@ set_length!(x::fq_nmod_poly, n::Int) = ccall((:_fq_nmod_poly_set_length, :libfli
                               (Ref{fq_nmod_poly}, Int), x, n)
 
 function coeff(x::fq_nmod_poly, n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    F = (x.parent).base_ring
    temp = F(1)
    ccall((:fq_nmod_poly_get_coeff, :libflint), Nothing, 
@@ -219,7 +219,7 @@ end
 ################################################################################
 
 function ^(x::fq_nmod_poly, y::Int)
-   y < 0 && throw(DomainError())
+   y < 0 && throw(DomainError("Exponent must be non-negative: $y"))
    z = parent(x)()
    ccall((:fq_nmod_poly_pow, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}), 
@@ -278,7 +278,7 @@ end
 ################################################################################
 
 function truncate(x::fq_nmod_poly, n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    if length(x) <= n
       return x
    end
@@ -291,7 +291,7 @@ end
 
 function mullow(x::fq_nmod_poly, y::fq_nmod_poly, n::Int)
    check_parent(x,y)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    z = parent(x)()
    ccall((:fq_nmod_poly_mullow, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Ref{fq_nmod_poly},
@@ -307,7 +307,7 @@ end
 ################################################################################
 
 function reverse(x::fq_nmod_poly, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Index must be non-negative: $len"))
    z = parent(x)()
    ccall((:fq_nmod_poly_reverse, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}),
@@ -322,7 +322,7 @@ end
 ################################################################################
 
 function shift_left(x::fq_nmod_poly, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    z = parent(x)()
    ccall((:fq_nmod_poly_shift_left, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}),
@@ -331,7 +331,7 @@ function shift_left(x::fq_nmod_poly, len::Int)
 end
 
 function shift_right(x::fq_nmod_poly, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    z = parent(x)()
    ccall((:fq_nmod_poly_shift_right, :libflint), Nothing,
          (Ref{fq_nmod_poly}, Ref{fq_nmod_poly}, Int, Ref{FqNmodFiniteField}),

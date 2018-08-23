@@ -372,6 +372,8 @@ function test_arb_functions()
    @test overlaps(root(x, UInt(3)), RR("0.7454321246472561965628881 +/- 4.10e-26"))
    @test overlaps(root(x, 3), RR("0.7454321246472561965628881 +/- 4.10e-26"))
 
+   @test_throws DomainError root(-x, 3)
+
    @test overlaps(fac(x), RR("0.886581428719259125080918 +/- 6.66e-25"))
    @test fac(UInt(10), RR) == 3628800
    @test fac(Int(10), RR) == 3628800
@@ -394,8 +396,13 @@ function test_arb_functions()
    @test overlaps(bernoulli(12, RR), RR("-0.2531135531135531135531136 +/- 5.36e-26"))
    @test overlaps(bernoulli(UInt(12), RR), RR("-0.2531135531135531135531136 +/- 5.36e-26"))
 
+   @test_throws DomainError bernoulli(-1, RR)
+
    @test overlaps(risingfac(x, 4), RR("4.828427124746190097603377 +/- 7.35e-25"))
    @test overlaps(risingfac(QQ(2,3), 4, RR), RR("10.86419753086419753086420 +/- 2.74e-24"))
+
+   @test_throws DomainError risingfac(x, -1)
+   @test_throws DomainError risingfac(QQ(2, 3), -1, RR)
 
    a, b = risingfac2(x, 4)
    @test overlaps(a, RR("4.828427124746190097603377 +/- 7.35e-25"))
@@ -404,6 +411,8 @@ function test_arb_functions()
    a, b = risingfac2(x, UInt(4))
    @test overlaps(a, RR("4.828427124746190097603377 +/- 7.35e-25"))
    @test overlaps(b, RR("18.48528137423857029281013 +/- 3.08e-24"))
+
+   @test_throws DomainError risingfac(x, -1)
 
    @test overlaps(polylog(x,y), RR("1.89384268220168253175143 +/- 8.27e-24"))
    @test overlaps(polylog(3,y), RR("0.82112384129183065741 +/- 4.76e-21"))
@@ -418,6 +427,9 @@ function test_arb_functions()
    @test overlaps(chebyshev_u(3,x), u3)
    @test overlaps(chebyshev_u(UInt(3),x), u3)
 
+   @test_throws DomainError chebyshev_t(-1, x)
+   @test_throws DomainError chebyshev_u(-1, x)
+
    a, b = chebyshev_t2(3,x)
    @test overlaps(a, t3)
    @test overlaps(b, t2)
@@ -431,6 +443,9 @@ function test_arb_functions()
    a, b = chebyshev_u2(UInt(3),x)
    @test overlaps(a, u3)
    @test overlaps(b, u2)
+
+   @test_throws DomainError chebyshev_t2(-1, x)
+   @test_throws DomainError chebyshev_u2(-1, x)
 
    @test overlaps(bell(ZZ(100), RR), RR("4.758539127676483365879077e+115 +/- 1.16e+90"))
    @test overlaps(bell(100, RR), RR("4.758539127676483365879077e+115 +/- 1.16e+90"))

@@ -152,6 +152,7 @@ function test_nf_elem_manipulation()
 
    @test coeff(d, 1) == 2
    @test coeff(d, 3) == 0
+   @test_throws DomainError coeff(d, -1)
 
    @test degree(K) == 3
 

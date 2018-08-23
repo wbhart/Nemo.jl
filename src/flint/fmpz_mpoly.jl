@@ -243,7 +243,7 @@ end
 ###############################################################################
 
 function ^(a::fmpz_mpoly, b::Int)
-   b < 0 && throw(DomainError())
+   b < 0 && throw(DomainError("Exponent must be non-negative: $b"))
    z = parent(a)()
    ccall((:fmpz_mpoly_pow_fps, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}),

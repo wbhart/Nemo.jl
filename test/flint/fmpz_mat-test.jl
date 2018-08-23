@@ -282,6 +282,8 @@ function test_fmpz_mat_powering()
 
    @test A^0 == one(S)
 
+   @test_throws DomainError A^-1
+
    println("PASS")
 end
 
@@ -359,6 +361,9 @@ function test_fmpz_mat_scaling()
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
 
    @test (A<<5)>>5 == A
+
+   @test_throws DomainError (A<<-1)
+   @test_throws DomainError (A>>-1)
 
    println("PASS")
 end

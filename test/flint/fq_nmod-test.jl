@@ -70,6 +70,8 @@ function test_fq_nmod_manipulation()
 
    @test coeff(2x + 1, 1) == 2
 
+   @test_throws DomainError coeff(2x + 1, -1) 
+
    println("PASS")
 end
 
