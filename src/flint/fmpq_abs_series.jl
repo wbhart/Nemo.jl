@@ -15,7 +15,7 @@ export fmpq_abs_series, FmpqAbsSeriesRing, tan, tanh, sin, sinh, asin, asinh,
 
 function O(a::fmpq_abs_series)
    prec = length(a) - 1
-   prec < 0 && throw(DomainError())
+   prec < 0 && throw(DomainError("Precision must be non-negative: $prec"))
    z = parent(a)()
    z.prec = prec
    z.parent = parent(a)
@@ -276,7 +276,7 @@ end
 ###############################################################################
 
 function shift_left(x::fmpq_abs_series, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    xlen = length(x)
    z = parent(x)()
    z.prec = x.prec + len
@@ -287,7 +287,7 @@ function shift_left(x::fmpq_abs_series, len::Int)
 end
 
 function shift_right(x::fmpq_abs_series, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    xlen = length(x)
    z = parent(x)()
    if len >= xlen
@@ -308,7 +308,7 @@ end
 ###############################################################################
 
 function truncate(x::fmpq_abs_series, prec::Int)
-   prec < 0 && throw(DomainError())
+   prec < 0 && throw(DomainError("Precision must be non-negative: $prec"))
    if x.prec <= prec
       return x
    end
@@ -327,7 +327,7 @@ end
 ###############################################################################
 
 function ^(a::fmpq_abs_series, b::Int)
-   b < 0 && throw(DomainError())
+   b < 0 && throw(DomainError("Exponent must be non-negative: $b"))
    # special case powers of x for constructing power series efficiently
    if precision(a) > 0 && isgen(a) && b > 0
       return shift_left(a, b - 1)

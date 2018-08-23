@@ -101,6 +101,8 @@ function test_fq_poly_manipulation()
 
    @test coeff(h, 2) == x
 
+   @test_throws DomainError coeff(h, -1)
+
    @test length(h) == 3
 
    @test canonical_unit(-x*y + x + 1) == 22x
@@ -229,7 +231,11 @@ function test_fq_poly_truncation()
 
    @test truncate(f, 1) == 3
 
+   @test_throws DomainError truncate(f, -1)
+
    @test mullow(f, g, 4) == (x^2+x)*y^3+(x^4+3*x^2+4*x+1)*y^2+(x^4+x^3+2*x^2+7*x+5)*y+(3*x^3+6*x+6)
+
+   @test_throws DomainError mullow(f, g, -1)
 
    println("PASS")
 end
@@ -244,6 +250,8 @@ function test_fq_poly_reverse()
 
    @test reverse(f, 7) == 3y^6 + (x + 1)*y^5 + x*y^4
 
+   @test_throws DomainError reverse(f, -1)
+
    println("PASS")
 end
 
@@ -257,7 +265,11 @@ function test_fq_poly_shift()
 
    @test shift_left(f, 7) == x*y^9 + (x + 1)*y^8 + 3y^7
 
+   @test_throws DomainError shift_left(f, -1)
+
    @test shift_right(f, 3) == 0
+
+   @test_throws DomainError shift_right(f, -1)
 
    println("PASS")
 end
@@ -271,6 +283,8 @@ function test_fq_poly_powering()
    f = x*y^2 + (x + 1)*y + 3
 
    @test f^5 == (x^5)*y^10+(5*x^5+5*x^4)*y^9+(10*x^5+35*x^4+10*x^3)*y^8+(10*x^5+90*x^4+90*x^3+10*x^2)*y^7+(5*x^5+110*x^4+300*x^3+110*x^2+5*x)*y^6+(x^5+65*x^4+460*x^3+460*x^2+65*x+1)*y^5+(15*x^4+330*x^3+900*x^2+330*x+15)*y^4+(90*x^3+810*x^2+810*x+90)*y^3+(270*x^2+945*x+270)*y^2+(405*x+405)*y+243
+
+   @test_throws DomainError f^-1
 
    println("PASS")
 end

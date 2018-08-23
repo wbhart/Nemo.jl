@@ -91,7 +91,7 @@ Markdown.doc"""
 > constant coefficient.
 """
 function coeff(x::nf_elem, n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    z = fmpq()
    ccall((:nf_elem_get_coeff_fmpq, :libantic), Nothing,
      (Ref{fmpq}, Ref{nf_elem}, Int, Ref{AnticNumberField}), z, x, n, parent(x))
@@ -99,7 +99,7 @@ function coeff(x::nf_elem, n::Int)
 end
 
 function num_coeff!(z::fmpz, x::nf_elem, n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    ccall((:nf_elem_get_coeff_fmpz, :libantic), Nothing,
      (Ref{fmpz}, Ref{nf_elem}, Int, Ref{AnticNumberField}), z, x, n, parent(x))
    return z

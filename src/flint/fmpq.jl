@@ -587,7 +587,7 @@ Markdown.doc"""
 > Calkin-Wilf enumeration. If $x < 0$ we throw a `DomainError()`.
 """
 function next_minimal(a::fmpq)
-   a < 0 && throw(DomainError())
+   a < 0 && throw(DomainError("Argument must be non-negative: $a"))
    c = fmpq()
    ccall((:fmpq_next_minimal, :libflint), Nothing, (Ref{fmpq}, Ref{fmpq}), c, a)
    return c
@@ -621,7 +621,7 @@ Markdown.doc"""
 > being faster to produce than the minimal-height order.
 """
 function next_calkin_wilf(a::fmpq)
-   a < 0 && throw(DomainError())
+   a < 0 && throw(DomainError("Argument must be non-negative: $a"))
    c = fmpq()
    ccall((:fmpq_next_calkin_wilf, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}), c, a)
@@ -656,7 +656,7 @@ Markdown.doc"""
 > fit in a single limb. For larger $n$, a divide and conquer strategy is used.
 """
 function harmonic(n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    c = fmpq()
    ccall((:fmpq_harmonic_ui, :libflint), Nothing, (Ref{fmpq}, Int), c, n)
    return c
@@ -667,7 +667,7 @@ Markdown.doc"""
 > Computes the Bernoulli number $B_n$ for nonnegative $n$.
 """
 function bernoulli(n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    c = fmpq()
    ccall((:bernoulli_fmpq_ui, :libarb), Nothing, (Ref{fmpq}, Int), c, n)
    return c
@@ -682,7 +682,7 @@ Markdown.doc"""
 """
 function bernoulli_cache(n::Int)
    n = n + 1
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    ccall((:bernoulli_cache_compute, :libarb), Nothing, (Int,), n)
 end
 

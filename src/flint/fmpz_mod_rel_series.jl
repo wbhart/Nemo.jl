@@ -14,7 +14,7 @@ export fmpz_mod_rel_series, FmpzModRelSeriesRing
 
 function O(a::fmpz_mod_rel_series)
    val = pol_length(a) + valuation(a) - 1
-   val < 0 && throw(DomainError())
+   val < 0 && throw(DomainError("Valuation must be non-negative: $val"))
    z = fmpz_mod_rel_series(modulus(a), Vector{fmpz}(undef, 0), 0, val, val)
    z.parent = parent(a)
    return z
@@ -299,7 +299,7 @@ end
 ###############################################################################
 
 function shift_left(x::fmpz_mod_rel_series, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    xlen = pol_length(x)
    z = fmpz_mod_rel_series(x)
    z.prec = x.prec + len
@@ -309,7 +309,7 @@ function shift_left(x::fmpz_mod_rel_series, len::Int)
 end
 
 function shift_right(x::fmpz_mod_rel_series, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    xlen = pol_length(x)
    xval = valuation(x)
    z = parent(x)()
@@ -335,7 +335,7 @@ end
 ###############################################################################
 
 function truncate(x::fmpz_mod_rel_series, prec::Int)
-   prec < 0 && throw(DomainError())
+   prec < 0 && throw(DomainError("Index must be non-negative: $prec"))
    xlen = pol_length(x)
    xprec = precision(x)
    xval = valuation(x)
@@ -364,7 +364,7 @@ end
 ###############################################################################
 
 function ^(a::fmpz_mod_rel_series, b::Int)
-   b < 0 && throw(DomainError())
+   b < 0 && throw(DomainError("Exponent must be non-negative: $b"))
    if isgen(a)
       z = parent(a)()
       z = setcoeff!(z, 0, fmpz(1))

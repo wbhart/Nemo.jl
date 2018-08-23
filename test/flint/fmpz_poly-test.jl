@@ -68,6 +68,8 @@ function test_fmpz_poly_manipulation()
 
    @test coeff(f, 1) == 2
 
+   @test_throws DomainError coeff(f, -1)
+
    @test canonical_unit(-x + 1) == -1
 
    @test deepcopy(f) == f
@@ -182,7 +184,11 @@ function test_fmpz_poly_truncation()
 
    @test truncate(f, 2) == 2*x+1
 
+   @test_throws DomainError truncate(f, -1)
+
    @test mullow(f, g, 3) == 7*x^2+5*x+1
+   
+   @test_throws DomainError mullow(f, g, -1)
 
    println("PASS")
 end
@@ -208,7 +214,11 @@ function test_fmpz_poly_shift()
 
    @test shift_left(f, 3) == x^5 + 2x^4 + x^3
 
+   @test_throws DomainError shift_left(f, -1)
+
    @test shift_right(f, 1) == x + 2
+
+   @test_throws DomainError shift_right(f, -1)
 
    println("PASS")
 end

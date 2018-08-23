@@ -541,7 +541,7 @@ Markdown.doc"""
 > exception is thrown.
 """
 function Base.exp(a::padic)
-   !iszero(a) && a.v <= 0 && throw(DomainError())
+   !iszero(a) && a.v <= 0 && throw(DomainError("Valuation must be positive: $a"))
    ctx = parent(a)
    z = padic(a.N)
    z.parent = ctx
@@ -559,7 +559,7 @@ Markdown.doc"""
 > exception is thrown.
 """
 function log(a::padic)
-   (a.v > 0 || a.v < 0 || iszero(a)) && throw(DomainError())
+   (a.v > 0 || a.v < 0 || iszero(a)) && throw(DomainError("Valuation must be zero: $(a)"))
    ctx = parent(a)
    z = padic(a.N)
    z.parent = ctx
@@ -578,7 +578,7 @@ Markdown.doc"""
 > thrown.
 """
 function teichmuller(a::padic)
-   a.v < 0 && throw(DomainError())
+   a.v < 0 && throw(DomainError("Valuation must be non-negative"))
    ctx = parent(a)
    z = padic(a.N)
    z.parent = ctx

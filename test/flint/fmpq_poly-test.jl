@@ -113,6 +113,8 @@ function test_fmpq_poly_manipulation()
 
    @test coeff(h, 2) == fmpz(12)//7
 
+   @test_throws DomainError coeff(h, -1)
+
    @test length(h) == 3
 
    @test canonical_unit(-fmpz(12)//7*y + 1) == fmpz(-12)//7
@@ -279,7 +281,11 @@ function test_fmpq_poly_truncation()
 
    @test truncate(f, 1) == 3
 
+   @test_throws DomainError truncate(f, -1)
+
    @test mullow(f, g, 4) == 47*y^3 + 86*y^2 + 40*y + 3
+
+   @test_throws DomainError mullow(f, g, -1)
 
    println("PASS")
 end
@@ -293,6 +299,8 @@ function test_fmpq_poly_reverse()
 
    @test reverse(f, 7) == 3*y^6 + 7*y^5 + 3*y^4
 
+   @test_throws DomainError reverse(f, -1)
+
    println("PASS")
 end
 
@@ -305,7 +313,11 @@ function test_fmpq_poly_shift()
 
    @test shift_left(f, 7) == 3*y^9 + 7*y^8 + 3*y^7
 
+   @test_throws DomainError shift_left(f, -1)
+
    @test shift_right(f, 3) == 0
+
+   @test_throws DomainError shift_right(f, -1)
 
    println("PASS")
 end
@@ -318,6 +330,8 @@ function test_fmpq_poly_powering()
    f = 3*y^2 + 7*y + 3
 
    @test f^5 == 243*y^10 + 2835*y^9 + 14445*y^8 + 42210*y^7 + 78135*y^6 + 95557*y^5 + 78135*y^4 + 42210*y^3 + 14445*y^2 + 2835*y + 243
+
+   @test_throws DomainError f^(-1)
 
    println("PASS")
 end

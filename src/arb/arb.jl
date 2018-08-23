@@ -1493,7 +1493,10 @@ Markdown.doc"""
     root(x::arb, n::Int)
 > Return the $n$-th root of $x$. We require $x \geq 0$.
 """
-root(x::arb, n::Int) = x < 0 ? throw(DomainError()) : root(x, UInt(n))
+function root(x::arb, n::Int)
+  x < 0 && throw(DomainError("Argument must be positive: $x"))
+  return root(x, UInt(n))
+end
 
 Markdown.doc"""
     fac(x::arb)
@@ -1607,7 +1610,7 @@ Markdown.doc"""
     bernoulli(n::Int, r::ArbField)
 > Return the $n$-th Bernoulli number as an element of the given Arb field.
 """
-bernoulli(n::Int, r::ArbField) = n >= 0 ? bernoulli(UInt(n), r) : throw(DomainError)
+bernoulli(n::Int, r::ArbField) = n >= 0 ? bernoulli(UInt(n), r) : throw(DomainError("Index must be non-negative: $n"))
 
 function risingfac(x::arb, n::UInt)
   z = parent(x)()
@@ -1620,7 +1623,7 @@ Markdown.doc"""
     risingfac(x::arb, n::Int)
 > Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an Arb.
 """
-risingfac(x::arb, n::Int) = n < 0 ? throw(DomainError()) : risingfac(x, UInt(n))
+risingfac(x::arb, n::Int) = n < 0 ? throw(DomainError("Index must be non-negative: $n")) : risingfac(x, UInt(n))
 
 function risingfac(x::fmpq, n::UInt, r::ArbField)
   z = r()
@@ -1634,7 +1637,7 @@ Markdown.doc"""
 > Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an element of the
 > given Arb field.
 """
-risingfac(x::fmpq, n::Int, r::ArbField) = n < 0 ? throw(DomainError()) : risingfac(x, UInt(n), r)
+risingfac(x::fmpq, n::Int, r::ArbField) = n < 0 ? throw(DomainError("Index must be non-negative: $n")) : risingfac(x, UInt(n), r)
 
 function risingfac2(x::arb, n::UInt)
   z = parent(x)()
@@ -1649,7 +1652,7 @@ Markdown.doc"""
 > Return a tuple containing the rising factorial $x(x + 1)\ldots (x + n - 1)$
 > and its derivative.
 """
-risingfac2(x::arb, n::Int) = n < 0 ? throw(DomainError()) : risingfac2(x, UInt(n))
+risingfac2(x::arb, n::Int) = n < 0 ? throw(DomainError("Index must be non-negative: $n")) : risingfac2(x, UInt(n))
 
 Markdown.doc"""
     polylog(s::arb, a::arb)
@@ -1707,25 +1710,25 @@ Markdown.doc"""
     chebyshev_t(n::Int, x::arb)
 > Return the value of the Chebyshev polynomial $T_n(x)$.
 """
-chebyshev_t(n::Int, x::arb) = n < 0 ? throw(DomainError()) : chebyshev_t(UInt(n), x)
+chebyshev_t(n::Int, x::arb) = n < 0 ? throw(DomainError("Index must be non-negative: $n")) : chebyshev_t(UInt(n), x)
 
 Markdown.doc"""
     chebyshev_u(n::Int, x::arb)
 > Return the value of the Chebyshev polynomial $U_n(x)$.
 """
-chebyshev_u(n::Int, x::arb) = n < 0 ? throw(DomainError()) : chebyshev_u(UInt(n), x)
+chebyshev_u(n::Int, x::arb) = n < 0 ? throw(DomainError("Index must be non-negative: $n")) : chebyshev_u(UInt(n), x)
 
 Markdown.doc"""
     chebyshev_t2(n::Int, x::arb)
 > Return the tuple $(T_{n}(x), T_{n-1}(x))$.
 """
-chebyshev_t2(n::Int, x::arb) = n < 0 ? throw(DomainError()) : chebyshev_t2(UInt(n), x)
+chebyshev_t2(n::Int, x::arb) = n < 0 ? throw(DomainError("Index must be non-negative: $n")) : chebyshev_t2(UInt(n), x)
 
 Markdown.doc"""
     chebyshev_u2(n::Int, x::arb)
 > Return the tuple $(U_{n}(x), U_{n-1}(x))$
 """
-chebyshev_u2(n::Int, x::arb) = n < 0 ? throw(DomainError()) : chebyshev_u2(UInt(n), x)
+chebyshev_u2(n::Int, x::arb) = n < 0 ? throw(DomainError("Index must be non-negative: $n")) : chebyshev_u2(UInt(n), x)
 
 Markdown.doc"""
     bell(n::fmpz, r::ArbField)
@@ -1776,7 +1779,7 @@ Markdown.doc"""
 > returns an array of Nemo integers representing the linear combination.  
 """
 function lindep(A::Array{arb, 1}, bits::Int)
-  bits < 0 && throw(DomainError())
+  bits < 0 && throw(DomainError("Number of bits must be non-negative: $bits"))
   n = length(A)
   V = [floor(ldexp(s, bits) + 0.5) for s in A]
   M = zero_matrix(ZZ, n, n + 1)

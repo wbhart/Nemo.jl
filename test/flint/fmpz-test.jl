@@ -204,11 +204,19 @@ function test_fmpz_logarithm()
 
    @test flog(b, a) == 1
 
+   @test_throws DomainError flog(b, -a)
+
    @test flog(b, 12) == 1
+
+   @test_throws DomainError flog(b, -12)
 
    @test clog(b, a) == 2
 
+   @test_throws DomainError clog(b, -a)
+
    @test clog(b, 12) == 2
+
+   @test_throws DomainError clog(b, -12)
 
    println("PASS")
 end
@@ -260,9 +268,15 @@ function test_fmpz_shift()
 
    @test fdivpow2(a, 2) == -3
 
+   @test_throws DomainError fdivpow2(a, -1)
+
    @test cdivpow2(a, 2) == -3
 
+   @test_throws DomainError cdivpow2(a, -1)
+
    @test tdivpow2(a, 2) == -3
+
+   @test_throws DomainError tdivpow2(a, -1)
 
    @test a << 4 == -192
 
@@ -399,9 +413,17 @@ function test_fmpz_roots()
 
    @test isqrt(fmpz(12)) == 3
 
+   @test_throws DomainError isqrt(-fmpz(12))
+
    @test isqrtrem(fmpz(12)) == (3, 3)
 
+   @test_throws DomainError isqrtrem(-fmpz(12))
+
    @test root(fmpz(1000), 3) == 10
+
+   @test_throws DomainError root(-fmpz(1000), 4)
+
+   @test_throws DomainError root(fmpz(1000), -3)
 
    println("PASS")
 end
@@ -412,6 +434,10 @@ function test_fmpz_extended_gcd()
    @test gcdx(fmpz(12), fmpz(5)) == (1, -2, 5)
 
    @test gcdinv(fmpz(5), fmpz(12)) == (1, 5)
+
+   @test_throws DomainError gcdinv(-fmpz(5), fmpz(12))
+
+   @test_throws DomainError gcdinv(fmpz(13), fmpz(12))
 
    println("PASS")
 end
@@ -433,13 +459,19 @@ function test_fmpz_bit_twiddling()
 
    @test a == 8
 
+   @test_throws DomainError combit!(a, -1)
+
    setbit!(a, 0)
 
    @test a == 9
 
+   @test_throws DomainError setbit!(a, -1)
+
    clrbit!(a, 0)
 
    @test a == 8
+
+   @test_throws DomainError clrbit!(a, -1)
 
    println("PASS")
 end
@@ -481,15 +513,29 @@ function test_fmpz_modular_arithmetic()
 
    @test powmod(fmpz(12), fmpz(110), fmpz(13)) == 1
 
+   @test_throws DomainError powmod(fmpz(12), fmpz(110), fmpz(-1))
+
    @test powmod(fmpz(12), 110, fmpz(13)) == 1
+
+   @test_throws DomainError powmod(fmpz(12), 110, fmpz(-1))
 
    @test invmod(fmpz(12), fmpz(13)) == 12
 
+   @test_throws DomainError invmod(fmpz(12), fmpz(-13))
+
    @test sqrtmod(fmpz(12), fmpz(13)) == 5
+
+   @test_throws DomainError sqrtmod(fmpz(12), fmpz(-13))
 
    @test crt(fmpz(5), fmpz(13), fmpz(7), fmpz(37), true) == 44
 
    @test crt(fmpz(5), fmpz(13), 7, 37, false) == 44
+
+   @test_throws DomainError crt(fmpz(5), fmpz(13), -7, 37, true)
+
+   @test_throws DomainError crt(fmpz(5), fmpz(13), 7, -37, true)
+
+   @test_throws DomainError crt(fmpz(5), fmpz(13), -7, -37, true)
 
    println("PASS")
 end
@@ -544,7 +590,11 @@ function test_fmpz_number_theoretic()
 
    @test sigma(fmpz(128), 10) == fmpz("1181745669222511412225")
 
+   @test_throws DomainError sigma(fmpz(1), -1)
+
    @test eulerphi(fmpz(12480)) == 3072
+
+   @test_throws DomainError  eulerphi(-fmpz(12480))
 
    @test remove(fmpz(12), fmpz(2)) == (2, 3)
 
@@ -556,25 +606,47 @@ function test_fmpz_number_theoretic()
 
    @test divisor_lenstra(fmpz(12), fmpz(4), fmpz(5)) == 4
 
+   @test_throws DomainError divisor_lenstra(fmpz(12), -fmpz(4), fmpz(5)) 
+   @test_throws DomainError divisor_lenstra(fmpz(1), fmpz(4), fmpz(5)) 
+   @test_throws DomainError divisor_lenstra(fmpz(10), fmpz(4), fmpz(3)) 
+
    @test risingfac(fmpz(12), 5) == 524160
+
+   @test_throws DomainError risingfac(fmpz(12), -1)
 
    @test risingfac(12, 5) == 524160
 
+   @test_throws DomainError risingfac(12, -1)
+
    @test primorial(7) == 210
+
+   @test_throws DomainError primorial(-7)
 
    @test binom(12, 5) == 792
 
    @test bell(12) == 4213597
 
+   @test_throws DomainError bell(-1)
+
    @test moebiusmu(fmpz(13)) == -1
 
+   @test_throws DomainError moebiusmu(-fmpz(1))
+
    @test jacobi(fmpz(2), fmpz(5)) == -1
+
+   @test_throws DomainError jacobi(fmpz(5), fmpz(2))
+
+   @test_throws DomainError jacobi(-fmpz(5), fmpz(2))
 
    if !Nemo.iswindows64()
 
       @test numpart(10) == 42
 
+      @test_throws DomainError numpart(-10)
+
       @test numpart(fmpz(1000)) == fmpz("24061467864032622473692149727991")
+
+      @test_throws DomainError numpart(-fmpz(1000))
 
    end
 
@@ -585,6 +657,8 @@ function test_fmpz_square_root()
    print("fmpz.square_root...")
 
    @test sqrt(fmpz(4)) == 2
+
+   @test_throws DomainError sqrt(-fmpz(4))
 
    @test sqrt(fmpz(0)) == 0
 

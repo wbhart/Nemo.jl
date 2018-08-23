@@ -1250,7 +1250,10 @@ Markdown.doc"""
     risingfac(x::acb, n::Int)
 > Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an Acb.
 """
-risingfac(x::acb, n::Int) = n < 0 ? throw(DomainError()) : risingfac(x, UInt(n))
+function risingfac(x::acb, n::Int)
+  n < 0 && throw(DomainError("Argument must be non-negative: $n"))
+  return risingfac(x, UInt(n))
+end
 
 function risingfac2(x::acb, n::UInt)
   z = parent(x)()
@@ -1265,7 +1268,10 @@ Markdown.doc"""
 > Return a tuple containing the rising factorial $x(x + 1)\ldots (x + n - 1)$
 > and its derivative.
 """
-risingfac2(x::acb, n::Int) = n < 0 ? throw(DomainError()) : risingfac2(x, UInt(n))
+function risingfac2(x::acb, n::Int)
+  n < 0 && throw(DomainError("Argument must be non-negative: $n"))
+  return risingfac2(x, UInt(n))
+end
 
 Markdown.doc"""
     polylog(s::acb, a::acb)
@@ -1473,7 +1479,7 @@ Markdown.doc"""
 > combination.
 """
 function lindep(A::Array{acb, 1}, bits::Int)
-  bits < 0 && throw(DomainError())
+  bits < 0 && throw(DomainError("Number of bits must be non-negative: $bits"))
   n = length(A)
   V = [ldexp(s, bits) for s in A]
   M = zero_matrix(ZZ, n, n + 2)
@@ -1499,7 +1505,7 @@ Markdown.doc"""
 > array of Nemo integers representing the common linear combination.
 """
 function lindep(A::Array{acb, 2}, bits::Int)
-  bits < 0 && throw(DomainError())
+  bits < 0 && throw(DomainError("Number of bits must be non-negative: $bits"))
   m, n = size(A)
   V = [ldexp(s, bits) for s in A]
   M = zero_matrix(ZZ, n, n + 2*m)

@@ -33,7 +33,7 @@ length(x::fmpz_poly) = ccall((:fmpz_poly_length, :libflint), Int,
                              (Ref{fmpz_poly},), x)
 
 function coeff(x::fmpz_poly, n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    z = fmpz()
    ccall((:fmpz_poly_get_coeff_fmpz, :libflint), Nothing, 
                (Ref{fmpz}, Ref{fmpz_poly}, Int), z, x, n)
@@ -226,7 +226,7 @@ end
 ###############################################################################
 
 function ^(x::fmpz_poly, y::Int)
-   y < 0 && throw(DomainError())
+   y < 0 && throw(DomainError("Exponent must be non-negative: $y"))
    z = parent(x)()
    ccall((:fmpz_poly_pow, :libflint), Nothing, 
                 (Ref{fmpz_poly}, Ref{fmpz_poly}, Int), 
@@ -279,7 +279,7 @@ end
 ###############################################################################
 
 function truncate(a::fmpz_poly, n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    
    if length(a) <= n
       return a
@@ -293,7 +293,7 @@ end
 
 function mullow(x::fmpz_poly, y::fmpz_poly, n::Int)
    check_parent(x, y)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    
    z = parent(x)()
    ccall((:fmpz_poly_mullow, :libflint), Nothing,
@@ -308,7 +308,7 @@ end
 ###############################################################################
 
 function reverse(x::fmpz_poly, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Index must be non-negative: $len"))
    z = parent(x)()
    ccall((:fmpz_poly_reverse, :libflint), Nothing,
                 (Ref{fmpz_poly}, Ref{fmpz_poly}, Int), z, x, len)
@@ -322,7 +322,7 @@ end
 ###############################################################################
 
 function shift_left(x::fmpz_poly, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    z = parent(x)()
    ccall((:fmpz_poly_shift_left, :libflint), Nothing,
       (Ref{fmpz_poly}, Ref{fmpz_poly}, Int), z, x, len)
@@ -330,7 +330,7 @@ function shift_left(x::fmpz_poly, len::Int)
 end
 
 function shift_right(x::fmpz_poly, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    z = parent(x)()
    ccall((:fmpz_poly_shift_right, :libflint), Nothing,
        (Ref{fmpz_poly}, Ref{fmpz_poly}, Int), z, x, len)

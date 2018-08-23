@@ -28,7 +28,7 @@ set_length!(x::acb_poly, n::Int) = ccall((:_acb_poly_set_length, :libarb), Nothi
 degree(x::acb_poly) = length(x) - 1
 
 function coeff(a::acb_poly, n::Int)
-  n < 0 && throw(DomainError())
+  n < 0 && throw(DomainError("Index must be non-negative: $n"))
   t = parent(a).base_ring()
   ccall((:acb_poly_get_coeff_acb, :libarb), Nothing,
               (Ref{acb}, Ref{acb_poly}, Int), t, a, n)
@@ -194,7 +194,7 @@ end
 ###############################################################################
 
 function shift_left(x::acb_poly, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    z = parent(x)()
    ccall((:acb_poly_shift_left, :libarb), Nothing,
       (Ref{acb_poly}, Ref{acb_poly}, Int), z, x, len)
@@ -202,7 +202,7 @@ function shift_left(x::acb_poly, len::Int)
 end
 
 function shift_right(x::acb_poly, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    z = parent(x)()
    ccall((:acb_poly_shift_right, :libarb), Nothing,
        (Ref{acb_poly}, Ref{acb_poly}, Int), z, x, len)
@@ -252,7 +252,7 @@ function -(x::acb_poly, y::acb_poly)
 end
 
 function ^(x::acb_poly, y::Int)
-  y < 0 && throw(DomainError())
+  y < 0 && throw(DomainError("Exponent must be non-negative: $y"))
   z = parent(x)()
   ccall((:acb_poly_pow_ui, :libarb), Nothing,
               (Ref{acb_poly}, Ref{acb_poly}, UInt, Int),
@@ -346,7 +346,7 @@ end
 ###############################################################################
 
 function truncate(a::acb_poly, n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    if length(a) <= n
       return a
    end
@@ -358,7 +358,7 @@ function truncate(a::acb_poly, n::Int)
 end
 
 function mullow(x::acb_poly, y::acb_poly, n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    z = parent(x)()
    ccall((:acb_poly_mullow, :libarb), Nothing,
          (Ref{acb_poly}, Ref{acb_poly}, Ref{acb_poly}, Int, Int),

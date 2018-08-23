@@ -360,7 +360,7 @@ divexact(a::fmpq_mpoly, b::Rational{<:Integer}) = divexact(a, fmpq(b))
 ###############################################################################
 
 function ^(a::fmpq_mpoly, b::Int)
-   b < 0 && throw(DomainError())
+   b < 0 && throw(DomainError("Exponent must be non-negative: $b"))
    z = parent(a)()
    ccall((:fmpq_mpoly_pow_si, :libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
@@ -369,7 +369,7 @@ function ^(a::fmpq_mpoly, b::Int)
 end
 
 function ^(a::fmpq_mpoly, b::fmpz)
-   b < 0 && throw(DomainError())
+   b < 0 && throw(DomainError("Exponent must be non-negative: $b"))
    z = parent(a)()
    ccall((:fmpq_mpoly_pow_fmpz, :libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{fmpz}, Ref{FmpqMPolyRing}),

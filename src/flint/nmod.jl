@@ -441,7 +441,7 @@ end
 ###############################################################################
 
 function ResidueRing(R::FlintIntegerRing, n::Int; cached::Bool=true)
-   n <= 0 && throw(DomainError())
+   n <= 0 && throw(DomainError("Modulus must be non-negative: $n"))
    return NmodRing(UInt(n), cached)
 end
 

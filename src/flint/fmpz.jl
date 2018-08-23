@@ -412,7 +412,7 @@ function rem(x::fmpz, c::Int)
 end
 
 function tdivpow2(x::fmpz, c::Int)
-    c < 0 && throw(DomainError())
+    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
     z = fmpz()
     ccall((:fmpz_tdiv_q_2exp, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
@@ -420,7 +420,7 @@ function tdivpow2(x::fmpz, c::Int)
 end
 
 function fdivpow2(x::fmpz, c::Int)
-    c < 0 && throw(DomainError())
+    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
     z = fmpz()
     ccall((:fmpz_fdiv_q_2exp, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
@@ -428,7 +428,7 @@ function fdivpow2(x::fmpz, c::Int)
 end
 
 function fmodpow2(x::fmpz, c::Int)
-    c < 0 && throw(DomainError())
+    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
     z = fmpz()
     ccall((:fmpz_fdiv_r_2exp, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
@@ -436,7 +436,7 @@ function fmodpow2(x::fmpz, c::Int)
 end
 
 function cdivpow2(x::fmpz, c::Int)
-    c < 0 && throw(DomainError())
+    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
     z = fmpz()
     ccall((:fmpz_cdiv_q_2exp, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
@@ -517,8 +517,8 @@ end
 function ^(x::fmpz, y::Int)
     if isone(x); return x; end
     if x == -1; return isodd(y) ? x : -x; end
-    if y < 0; throw(DomainError()); end
-    if y > typemax(UInt); throw(DomainError()); end
+    if y < 0; throw(DomainError("Exponent must be non-negative: $y")); end
+    if y > typemax(UInt); throw(DomainError("Exponent too large")); end
     if y == 0; return one(FlintZZ); end
     if y == 1; return x; end
     z = fmpz()
@@ -619,7 +619,7 @@ Markdown.doc"""
 > Return $2^cx$ where $c \geq 0$.
 """
 function <<(x::fmpz, c::Int)
-    c < 0 && throw(DomainError())
+    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
     c == 0 && return x
     z = fmpz()
     ccall((:fmpz_mul_2exp, :libflint), Nothing,
@@ -632,7 +632,7 @@ Markdown.doc"""
 > Return $x/2^c$, discarding any remainder, where $c \geq 0$.
 """
 function >>(x::fmpz, c::Int)
-    c < 0 && throw(DomainError())
+    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
     c == 0 && return x
     z = fmpz()
     ccall((:fmpz_fdiv_q_2exp, :libflint), Nothing,
@@ -678,7 +678,7 @@ Markdown.doc"""
 > Return $x^p (\mod m)$. The remainder will be in the range $[0, m)$
 """
 function powmod(x::fmpz, p::fmpz, m::fmpz)
-    m <= 0 && throw(DomainError())
+    m <= 0 && throw(DomainError("Exponent must be non-negative: $m"))
     if p < 0
        x = invmod(x, m)
        p = -p
@@ -695,7 +695,7 @@ Markdown.doc"""
 > Return $x^p (\mod m)$. The remainder will be in the range $[0, m)$
 """
 function powmod(x::fmpz, p::Int, m::fmpz)
-    m <= 0 && throw(DomainError())
+    m <= 0 && throw(DomainError("Exponent must be non-negative: $m"))
     if p < 0
        x = invmod(x, m)
        p = -p
@@ -712,7 +712,7 @@ Markdown.doc"""
 > Return $x^{-1} (\mod m)$. The remainder will be in the range $[0, m)$
 """
 function invmod(x::fmpz, m::fmpz)
-    m <= 0 && throw(DomainError())
+    m <= 0 && throw(DomainError("Modulus must be non-negative: $m"))
     z = fmpz()
     if isone(m)
         return fmpz(0)
@@ -731,7 +731,7 @@ Markdown.doc"""
 > not terminate.
 """
 function sqrtmod(x::fmpz, m::fmpz)
-    m <= 0 && throw(DomainError())
+    m <= 0 && throw(DomainError("Modulus must be non-negative: $m"))
     z = fmpz()
     if (ccall((:fmpz_sqrtmod, :libflint), Cint,
               (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, m) == 0)
@@ -760,10 +760,10 @@ Markdown.doc"""
 > If `signed = true`, $r$ will be in the range $-m_1m_2/2 < r \leq m_1m_2/2$.
 > If `signed = false` the value will be in the range $0 \leq r < m_1m_2$.
 """
-function crt(r1::fmpz, m1::fmpz, r2::Int, m2::Int, signed=false)
+function crt(r1::fmpz, m1::fmpz, r2::Int, m2::Int, signed = false)
    z = fmpz()
-   r2 < 0 && throw(DomainError())
-   m2 < 0 && throw(DomainError())
+   r2 < 0 && throw(DomainError("Second residue must be non-negative: $r2"))
+   m2 < 0 && throw(DomainError("Second modulus must be non-negative: $m2"))
    ccall((:fmpz_CRT_ui, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Int, Int, Cint),
           z, r1, m1, r2, m2, signed)
@@ -781,8 +781,8 @@ Markdown.doc"""
 > Return the floor of the logarithm of $x$ to base $c$.
 """
 function flog(x::fmpz, c::fmpz)
-    c <= 0 && throw(DomainError())
-    x <= 0 && throw(DomainError())
+    c <= 0 && throw(DomainError("Base must be non-negative: $c"))
+    x <= 0 && throw(DomainError("Argument must be non-negative: $x"))
     return ccall((:fmpz_flog, :libflint), Int,
                  (Ref{fmpz}, Ref{fmpz}), x, c)
 end
@@ -792,8 +792,8 @@ Markdown.doc"""
 > Return the ceiling of the logarithm of $x$ to base $c$.
 """
 function clog(x::fmpz, c::fmpz)
-    c <= 0 && throw(DomainError())
-    x <= 0 && throw(DomainError())
+    c <= 0 && throw(DomainError("Base must be non-negative: $c"))
+    x <= 0 && throw(DomainError("Argument must be non-negative: $x"))
     return ccall((:fmpz_clog, :libflint), Int,
                  (Ref{fmpz}, Ref{fmpz}), x, c)
 end
@@ -803,7 +803,7 @@ Markdown.doc"""
 > Return the floor of the logarithm of $x$ to base $c$.
 """
 function flog(x::fmpz, c::Int)
-    c <= 0 && throw(DomainError())
+    c <= 0 && throw(DomainError("Base must be non-negative: $c"))
     return ccall((:fmpz_flog_ui, :libflint), Int,
                  (Ref{fmpz}, Int), x, c)
 end
@@ -813,7 +813,7 @@ Markdown.doc"""
 > Return the ceiling of the logarithm of $x$ to base $c$.
 """
 function clog(x::fmpz, c::Int)
-    c <= 0 && throw(DomainError())
+    c <= 0 && throw(DomainError("Base must be non-negative: $c"))
     return ccall((:fmpz_clog_ui, :libflint), Int,
                  (Ref{fmpz}, Int), x, c)
 end
@@ -933,8 +933,8 @@ Markdown.doc"""
 > coprime. We require $b \geq a \geq 0$.
 """
 function gcdinv(a::fmpz, b::fmpz)
-   a < 0 && throw(DomainError())
-   b < a && throw(DomainError())
+   a < 0 && throw(DomainError("First argument must be non-negative: $a"))
+   b < a && throw(DomainError("First argument $a must be smaller than second argument $b"))
    g = fmpz()
    s = fmpz()
    ccall((:fmpz_gcdinv, :libflint), Nothing,
@@ -954,7 +954,7 @@ Markdown.doc"""
 > Return the floor of the square root of $x$.
 """
 function isqrt(x::fmpz)
-    x < 0 && throw(DomainError())
+    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
     z = fmpz()
     ccall((:fmpz_sqrt, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
     return z
@@ -966,7 +966,7 @@ Markdown.doc"""
 > and the remainder $r$, i.e. such that $x = s^2 + r$. We require $x \geq 0$.
 """
 function isqrtrem(x::fmpz)
-    x < 0 && throw(DomainError())
+    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
     s = fmpz()
     r = fmpz()
     ccall((:fmpz_sqrtrem, :libflint), Nothing,
@@ -980,7 +980,7 @@ Markdown.doc"""
 > exception. We require $x \geq 0$.
 """
 function Base.sqrt(x::fmpz)
-    x < 0 && throw(DomainError())
+    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
     s = fmpz()
     r = fmpz()
     ccall((:fmpz_sqrtrem, :libflint), Nothing,
@@ -995,8 +995,8 @@ Markdown.doc"""
 > $x \geq 0$ if $n$ is even.
 """
 function root(x::fmpz, n::Int)
-   x < 0 && iseven(n) && throw(DomainError())
-   n <= 0 && throw(DomainError())
+   x < 0 && iseven(n) && throw(DomainError("Argument $x must be positive if exponent $n is even"))
+   n <= 0 && throw(DomainError("Exponent must be non-negative: $n"))
    z = fmpz()
    ccall((:fmpz_root, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, n)
@@ -1137,9 +1137,9 @@ Markdown.doc"""
 > require gcd$(r, m) = 1$ and this condition is not checked.
 """
 function divisor_lenstra(n::fmpz, r::fmpz, m::fmpz)
-   r <= 0 && throw(DomainError())
-   m <= r && throw(DomainError())
-   n <= m && throw(DomainError())
+   r <= 0 && throw(DomainError("Residue class must be non-negative: $r"))
+   m <= r && throw(DomainError("Modulus must be bigger than residue class: $m"))
+   n <= m && throw(DomainError("Argument must be bigger than modulus: $n"))
    z = fmpz()
    if !Bool(ccall((:fmpz_divisor_in_residue_class_lenstra, :libflint),
        Cint, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, n, r, m))
@@ -1154,7 +1154,7 @@ Markdown.doc"""
 > $x \geq 0$.
 """
 function fac(x::Int)
-    x < 0 && throw(DomainError())
+    x < 0 && throw(DomainError("Argument must be non-negative: $n"))
     z = fmpz()
     ccall((:fmpz_fac_ui, :libflint), Nothing, (Ref{fmpz}, UInt), z, x)
     return z
@@ -1166,7 +1166,7 @@ Markdown.doc"""
 > If $n < 0$ we throw a `DomainError()`.
 """
 function risingfac(x::fmpz, y::Int)
-    y < 0 && throw(DomainError())
+    y < 0 && throw(DomainError("Argument must be non-negative: $y"))
     z = fmpz()
     ccall((:fmpz_rfac_ui, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, UInt), z, x, y)
@@ -1179,7 +1179,7 @@ Markdown.doc"""
 > If $n < 0$ we throw a `DomainError()`.
 """
 function risingfac(x::Int, y::Int)
-    y < 0 && throw(DomainError())
+    y < 0 && throw(DomainError("Argument must be non-negative: $y"))
     z = fmpz()
     if x < 0
        if y <= -x # we don't pass zero
@@ -1199,7 +1199,7 @@ Markdown.doc"""
 > equal to $n$. If $n < 0$ we throw a `DomainError()`.
 """
 function primorial(x::Int)
-    x < 0 && throw(DomainError())
+    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
     z = fmpz()
     ccall((:fmpz_primorial, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, x)
@@ -1213,7 +1213,7 @@ Markdown.doc"""
 > convenience, we define $F_0 = 0$.
 """
 function fib(x::Int)
-    x < 0 && throw(DomainError())
+    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
     z = fmpz()
     ccall((:fmpz_fib_ui, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, x)
@@ -1225,7 +1225,7 @@ Markdown.doc"""
 > Return the Bell number $B_n$.
 """
 function bell(x::Int)
-    x < 0 && throw(DomainError())
+    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
     z = fmpz()
     ccall((:arith_bell_number, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, x)
@@ -1252,7 +1252,7 @@ Markdown.doc"""
 > returned is either $-1$, $0$ or $1$. If $x < 0$ we throw a `DomainError()`.
 """
 function moebiusmu(x::fmpz)
-   x < 0 && throw(DomainError())
+   x < 0 && throw(DomainError("Argument must be non-negative: $x"))
    return Int(ccall((:fmpz_moebius_mu, :libflint), Cint,
                     (Ref{fmpz},), x))
 end
@@ -1263,8 +1263,8 @@ Markdown.doc"""
 > $y \leq x$ or $x < 0$, we throw a `DomainError()`.
 """
 function jacobi(x::fmpz, y::fmpz)
-   y <= x && throw(DomainError())
-   x < 0 && throw(DomainError())
+   y <= x && throw(DomainError("Second argument must be larger than first argument: $x $y"))
+   x < 0 && throw(DomainError("First argument must be non-negative: $x"))
    return Int(ccall((:fmpz_jacobi, :libflint), Cint,
                     (Ref{fmpz}, Ref{fmpz}), x, y))
 end
@@ -1275,7 +1275,7 @@ Markdown.doc"""
 > $y < 0$ we throw a `DomainError()`.
 """
 function sigma(x::fmpz, y::Int)
-   y < 0 && throw(DomainError())
+   y < 0 && throw(DomainError("Second argument must be non-negative: $y"))
    z = fmpz()
    ccall((:fmpz_divisor_sigma, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, y)
@@ -1288,7 +1288,7 @@ Markdown.doc"""
 > positive integers less than $x$ that are coprime with $x$.
 """
 function eulerphi(x::fmpz)
-   x < 0 && throw(DomainError())
+   x < 0 && throw(DomainError("Argument must be non-negative: $x"))
    z = fmpz()
    ccall((:fmpz_euler_phi, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}), z, x)
@@ -1304,7 +1304,7 @@ function numpart(x::Int)
    if (Sys.iswindows() ? true : false) && Int == Int64
       error("not yet supported on win64")
    end
-   x < 0 && throw(DomainError())
+   x < 0 && throw(DomainError("Argument must be non-negative: $x"))
    z = fmpz()
    ccall((:partitions_fmpz_ui, :libarb), Nothing,
          (Ref{fmpz}, UInt), z, x)
@@ -1320,7 +1320,7 @@ function numpart(x::fmpz)
    if (Sys.iswindows() ? true : false) && Int == Int64
       error("not yet supported on win64")
    end
-   x < 0 && throw(DomainError())
+   x < 0 && throw(DomainError("Argument must be non-negative: $x"))
    z = fmpz()
    ccall((:partitions_fmpz_fmpz, :libarb), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, 0)
@@ -1437,7 +1437,7 @@ Markdown.doc"""
 > that this function modifies its input in-place.
 """
 function clrbit!(x::fmpz, c::Int)
-    c < 0 && throw(DomainError())
+    c < 0 && throw(DomainError("Second argument must be non-negative: $c"))
     ccall((:fmpz_clrbit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 
@@ -1447,7 +1447,7 @@ Markdown.doc"""
 > that this function modifies its input in-place.
 """
 function setbit!(x::fmpz, c::Int)
-    c < 0 && throw(DomainError())
+    c < 0 && throw(DomainError("Second argument must be non-negative: $c"))
     ccall((:fmpz_setbit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 
@@ -1457,7 +1457,7 @@ Markdown.doc"""
 > Note that this function modifies its input in-place.
 """
 function combit!(x::fmpz, c::Int)
-    c < 0 && throw(DomainError())
+    c < 0 && throw(DomainError("Second argument must be non-negative: $c"))
     ccall((:fmpz_combit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 

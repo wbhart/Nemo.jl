@@ -44,7 +44,7 @@ function Base.hash(a::fq_nmod, h::UInt)
 end
 
 function coeff(x::fq_nmod, n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    return ccall((:nmod_poly_get_coeff_ui, :libflint), UInt,
                 (Ref{fq_nmod}, Int), x, n)
 end
