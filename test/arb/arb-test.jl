@@ -47,6 +47,7 @@ function test_arb_basic_ops()
    @test contains(ball(RR(1), RR(0.0001)), 1)
 
    @test Float64(RR(0.5)) == 0.5
+   @test convert(Float64, RR(0.5)) == 0.5
    @test abs(Float64(RR("2.3")) - 2.3) < 1e-10
 
    println("PASS")

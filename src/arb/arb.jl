@@ -117,6 +117,14 @@ function Float64(x::arb)
    return d
 end
 
+Markdown.doc"""
+    convert(::Type{Float64}, x::arb)
+> Return the midpoint of $x$ rounded down to a machine double.
+"""
+function convert(::Type{Float64}, x::arb)
+    return Float64(x)
+end
+
 ################################################################################
 #
 #  String I/O
