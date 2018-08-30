@@ -784,7 +784,7 @@ function lll!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
    end
    ccall((:fmpz_lll, :libflint), Nothing,
          (Ref{fmpz_mat}, Ptr{nothing}, Ref{lll_ctx}), x, C_NULL, ctx)
-   return z
+   return x
 end
 
 Markdown.doc"""
@@ -825,7 +825,7 @@ function lll_gram!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
    u = similar(x, rows(x), rows(x))
    ccall((:fmpz_lll, :libflint), Nothing,
          (Ref{fmpz_mat}, Ref{fmpz_mat}, Ref{lll_ctx}), x, u, ctx)
-   return z
+   return x
 end
 
 
