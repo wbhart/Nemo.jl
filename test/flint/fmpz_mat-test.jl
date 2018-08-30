@@ -509,6 +509,14 @@ function test_fmpz_mat_lll()
 
    @test T*A == L
 
+   B = deepcopy(A)
+   lll!(B)
+   @test B == lll(A)
+
+   B = gram(A)
+   lll_gram!(B)
+   @test B == lll_gram(gram(A))
+
    println("PASS")
 end
 

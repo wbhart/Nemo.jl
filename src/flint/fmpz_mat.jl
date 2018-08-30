@@ -6,13 +6,13 @@
 
 export fmpz_mat, FmpzMatSpace, getindex, getindex!, setindex!, rows, cols,
        charpoly, det, det_divisor, det_given_divisor, gram, hadamard,
-       ishadamard, hnf, ishnf, hnf_with_transform, hnf_modular, lll, lll_ctx,
-       lll_gram, lll_with_transform, lll_gram_with_transform, lll_with_removal,
-       lll_with_removal_transform, nullspace, rank, rref, reduce_mod, similar,
-       snf, snf_diagonal, issnf, solve, solve_rational, cansolve,
-       cansolve_with_nullspace, solve_dixon, tr, transpose, content, hcat,
-       vcat, addmul!, zero!, window, pseudo_inv, hnf_modular_eldiv,
-       nullspace_right_rational
+       ishadamard, hnf, ishnf, hnf_with_transform, hnf_modular, lll, lll!, 
+       lll_ctx, lll_gram, lll_gram!, lll_with_transform,
+       lll_gram_with_transform, lll_with_removal, lll_with_removal_transform,
+       nullspace, rank, rref, reduce_mod, similar, snf, snf_diagonal, issnf,
+       solve, solve_rational, cansolve, cansolve_with_nullspace, solve_dixon,
+       tr, transpose, content, hcat, vcat, addmul!, zero!, window, pseudo_inv,
+       hnf_modular_eldiv, nullspace_right_rational
 
 ###############################################################################
 #
@@ -784,10 +784,26 @@ function lll(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
    if rows(z) == 0
      return z
    end
-   u = similar(x, rows(x), rows(x))
    ccall((:fmpz_lll, :libflint), Nothing,
-         (Ref{fmpz_mat}, Ref{fmpz_mat}, Ref{lll_ctx}), z, u, ctx)
+         (Ref{fmpz_mat}, Ptr{nothing}, Ref{lll_ctx}), z, C_NULL, ctx)
    return z
+end
+
+Markdown.doc"""
+    lll!(x::fmpz_mat, ctx=lll_ctx(0.99, 0.51))
+> Perform the LLL reduction of the matrix $x$ inplace. By default the matrix
+> $x$ is a > $\mathbb{Z}$-basis and the Gram matrix is maintained throughout in
+> approximate form. The LLL is performed with reduction parameters
+> $\delta = 0.99$ and $\eta = 0.51$. All of these defaults can be overridden by
+> specifying an optional context object.
+"""
+function lll!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
+   if rows(x) == 0
+     return x
+   end
+   ccall((:fmpz_lll, :libflint), Nothing,
+         (Ref{fmpz_mat}, Ptr{nothing}, Ref{lll_ctx}), x, C_NULL, ctx)
+   return x
 end
 
 Markdown.doc"""
@@ -814,11 +830,23 @@ Markdown.doc"""
 """
 function lll_gram(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
    z = deepcopy(x)
-   u = similar(x, rows(x), rows(x))
    ccall((:fmpz_lll, :libflint), Nothing,
-         (Ref{fmpz_mat}, Ref{fmpz_mat}, Ref{lll_ctx}), z, u, ctx)
+         (Ref{fmpz_mat}, Ptr{nothing}, Ref{lll_ctx}), z, C_NULL, ctx)
    return z
 end
+
+Markdown.doc"""
+    lll_gram!(x::fmpz_mat, ctx=lll_ctx(0.99, 0.51, :gram))
+> Given the Gram matrix $x$ of a matrix, compute the Gram matrix of its LLL
+> reduction inplace.
+"""
+function lll_gram!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
+   u = similar(x, rows(x), rows(x))
+   ccall((:fmpz_lll, :libflint), Nothing,
+         (Ref{fmpz_mat}, Ref{fmpz_mat}, Ref{lll_ctx}), x, u, ctx)
+   return x
+end
+
 
 Markdown.doc"""
     lll_with_removal_transform(x::fmpz_mat, b::fmpz, ctx=lll_ctx(0.99, 0.51))
