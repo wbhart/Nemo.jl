@@ -297,6 +297,14 @@ lll_with_removal(::fmpz_mat, ::fmpz, ::lll_ctx)
 lll_with_removal_transform(::fmpz_mat, ::fmpz, ::lll_ctx)
 ```
 
+```@docs
+lll!(::fmpz_mat, ::lll_ctx)
+```
+
+```@docs
+lll_gram!(::fmpz_mat, ::lll_ctx)
+```
+
 **Examples**
 
 ```julia
