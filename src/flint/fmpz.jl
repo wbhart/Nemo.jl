@@ -51,7 +51,7 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash, fac, bell,
 
 parent_type(::Type{fmpz}) = FlintIntegerRing
 
-Markdown.doc"""
+@doc Markdown.doc"""
     parent(a::fmpz)
 > Returns the unique Flint integer parent object `FlintZZ`.
 """
@@ -59,13 +59,13 @@ parent(a::fmpz) = FlintZZ
 
 elem_type(::Type{FlintIntegerRing}) = fmpz
 
-Markdown.doc"""
+@doc Markdown.doc"""
     base_ring(a::FlintIntegerRing)
 > Returns `Union{}` as this ring is not dependent on another ring.
 """
 base_ring(a::FlintIntegerRing) = Union{}
 
-Markdown.doc"""
+@doc Markdown.doc"""
     base_ring(a::fmpz)
 > Returns `Union{}` as the parent ring is not dependent on another ring.
 """
@@ -135,26 +135,26 @@ function deepcopy_internal(a::fmpz, dict::IdDict)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     one(R::FlintIntegerRing)
 > Return the integer $1$.
 """
 one(R::FlintIntegerRing) = fmpz(1)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     zero(R::FlintIntegerRing)
 > Return the integer $1$.
 """
 zero(R::FlintIntegerRing) = fmpz(0)
 
 
-Markdown.doc"""
+@doc Markdown.doc"""
     sign(a::fmpz)
 > Returns the sign of $a$, i.e. $+1$, $0$ or $-1$.
 """
 sign(a::fmpz) = Int(ccall((:fmpz_sgn, :libflint), Cint, (Ref{fmpz},), a))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     fits(::Type{Int}, a::fmpz)
 > Returns `true` if the given integer fits into an `Int`, otherwise returns
 > `false`.
@@ -162,7 +162,7 @@ Markdown.doc"""
 fits(::Type{Int}, a::fmpz) = ccall((:fmpz_fits_si, :libflint), Bool,
                                    (Ref{fmpz},), a)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     fits(::Type{UInt}, a::fmpz)
 > Returns `true` if the given integer fits into a `UInt`, otherwise returns
 > `false`.
@@ -170,32 +170,32 @@ Markdown.doc"""
 fits(::Type{UInt}, a::fmpz) = sign(a) < 0 ? false :
               ccall((:fmpz_abs_fits_ui, :libflint), Bool, (Ref{fmpz},), a)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     size(a::fmpz)
 > Returns the number of limbs required to store the absolute value of $a$.
 """
 size(a::fmpz) = Int(ccall((:fmpz_size, :libflint), Cint, (Ref{fmpz},), a))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isunit(a::fmpz)
 > Return `true` if the given integer is a unit, i.e. $\pm 1$, otherwise return
 > `false`.
 """
 isunit(a::fmpz) = ccall((:fmpz_is_pm1, :libflint), Bool, (Ref{fmpz},), a)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     iszero(a::fmpz)
 > Return `true` if the given integer is zero, otherwise return `false`.
 """
 iszero(a::fmpz) = ccall((:fmpz_is_zero, :libflint), Bool, (Ref{fmpz},), a)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isone(a::fmpz)
 > Return `true` if the given integer is one, otherwise return `false`.
 """
 isone(a::fmpz) = ccall((:fmpz_is_one, :libflint), Bool, (Ref{fmpz},), a)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     denominator(a::fmpz)
 > Returns the denominator of $a$ thought of as a rational. Always returns $1$.
 """
@@ -203,7 +203,7 @@ function denominator(a::fmpz)
    return fmpz(1)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     numerator(a::fmpz)
 > Returns the numerator of $a$ thought of as a rational. Always returns $a$.
 """
@@ -614,7 +614,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     <<(x::fmpz, c::Int)
 > Return $2^cx$ where $c \geq 0$.
 """
@@ -627,7 +627,7 @@ function <<(x::fmpz, c::Int)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     >>(x::fmpz, c::Int)
 > Return $x/2^c$, discarding any remainder, where $c \geq 0$.
 """
@@ -646,7 +646,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     mod(x::fmpz, y::fmpz)
 > Return the remainder after division of $x$ by $y$. The remainder will be the
 > least nonnegative remainder.
@@ -658,7 +658,7 @@ function mod(x::fmpz, y::fmpz)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     mod(x::fmpz, y::Int)
 > Return the remainder after division of $x$ by $y$. The remainder will be the
 > least nonnegative remainder.
@@ -673,7 +673,7 @@ function mod(x::fmpz, c::Int)
     end
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     powmod(x::fmpz, p::fmpz, m::fmpz)
 > Return $x^p (\mod m)$. The remainder will be in the range $[0, m)$
 """
@@ -690,7 +690,7 @@ function powmod(x::fmpz, p::fmpz, m::fmpz)
     return r
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     powmod(x::fmpz, p::Int, m::fmpz)
 > Return $x^p (\mod m)$. The remainder will be in the range $[0, m)$
 """
@@ -707,7 +707,7 @@ function powmod(x::fmpz, p::Int, m::fmpz)
     return r
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     invmod(x::fmpz, m::fmpz)
 > Return $x^{-1} (\mod m)$. The remainder will be in the range $[0, m)$
 """
@@ -724,7 +724,7 @@ function invmod(x::fmpz, m::fmpz)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     sqrtmod(x::fmpz, m::fmpz)
 > Return a square root of $x (\mod m)$ if one exists. The remainder will be in
 > the range $[0, m)$. We require that $m$ is prime, otherwise the algorithm may
@@ -740,7 +740,7 @@ function sqrtmod(x::fmpz, m::fmpz)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     crt(r1::fmpz, m1::fmpz, r2::fmpz, m2::fmpz, signed=false)
 > Find $r$ such that $r \equiv r_1 (\mod m_1)$ and $r \equiv r_2 (\mod m_2)$.
 > If `signed = true`, $r$ will be in the range $-m_1m_2/2 < r \leq m_1m_2/2$.
@@ -754,7 +754,7 @@ function crt(r1::fmpz, m1::fmpz, r2::fmpz, m2::fmpz, signed=false)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     crt(r1::fmpz, m1::fmpz, r2::Int, m2::Int, signed=false)
 > Find $r$ such that $r \equiv r_1 (\mod m_1)$ and $r \equiv r_2 (\mod m_2)$.
 > If `signed = true`, $r$ will be in the range $-m_1m_2/2 < r \leq m_1m_2/2$.
@@ -776,7 +776,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     flog(x::fmpz, c::fmpz)
 > Return the floor of the logarithm of $x$ to base $c$.
 """
@@ -787,7 +787,7 @@ function flog(x::fmpz, c::fmpz)
                  (Ref{fmpz}, Ref{fmpz}), x, c)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     clog(x::fmpz, c::fmpz)
 > Return the ceiling of the logarithm of $x$ to base $c$.
 """
@@ -798,7 +798,7 @@ function clog(x::fmpz, c::fmpz)
                  (Ref{fmpz}, Ref{fmpz}), x, c)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     flog(x::fmpz, c::Int)
 > Return the floor of the logarithm of $x$ to base $c$.
 """
@@ -808,7 +808,7 @@ function flog(x::fmpz, c::Int)
                  (Ref{fmpz}, Int), x, c)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     clog(x::fmpz, c::Int)
 > Return the ceiling of the logarithm of $x$ to base $c$.
 """
@@ -824,7 +824,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     gcd(x::fmpz, y::fmpz)
 > Return the greatest common divisor of $x$ and $y$. The returned result will
 > always be nonnegative and will be zero iff $x$ and $y$ are zero.
@@ -836,7 +836,7 @@ function gcd(x::fmpz, y::fmpz)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     gcd(x::Array{fmpz, 1})
 > Return the greatest common divisor of the elements of $x$. The returned
 > result will always be nonnegative and will be zero iff all elements of $x$
@@ -864,7 +864,7 @@ function gcd(x::Array{fmpz, 1})
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     lcm(x::fmpz, y::fmpz)
 > Return the least common multiple of $x$ and $y$. The returned result will
 > always be nonnegative and will be zero iff $x$ and $y$ are zero.
@@ -876,7 +876,7 @@ function lcm(x::fmpz, y::fmpz)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     lcm(x::Array{fmpz, 1})
 > Return the least common multiple of the elements of $x$. The returned result
 > will always be nonnegative and will be zero iff the elements of $x$ are zero.
@@ -906,7 +906,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     gcdx(a::fmpz, b::fmpz)
 > Return a tuple $g, s, t$ such that $g$ is the greatest common divisor of $a$
 > and $b$ and integers $s$ and $t$ such that $g = as + bt$.
@@ -924,7 +924,7 @@ function gcdx(a::fmpz, b::fmpz)
     g, s, t
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     gcdinv(a::fmpz, b::fmpz)
 > Return a tuple $g, s$ where $g$ is the greatest common divisor of $a$ and
 > $b$ and where $s$ is the inverse of $a$ modulo $b$ if $g = 1$. This function
@@ -949,7 +949,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isqrt(x::fmpz)
 > Return the floor of the square root of $x$.
 """
@@ -960,7 +960,7 @@ function isqrt(x::fmpz)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isqrtrem(x::fmpz)
 > Return a tuple $s, r$ consisting of the floor $s$ of the square root of $x$
 > and the remainder $r$, i.e. such that $x = s^2 + r$. We require $x \geq 0$.
@@ -974,7 +974,7 @@ function isqrtrem(x::fmpz)
     return s, r
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     sqrt(x::fmpz)
 > Return the square root $s$ of $x$ if $x$ is a square, otherwise raise an
 > exception. We require $x \geq 0$.
@@ -989,7 +989,7 @@ function Base.sqrt(x::fmpz)
     return s
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     root(x::fmpz, n::Int)
 > Return the floor of the $n$-the root of $x$. We require $n > 0$ and that
 > $x \geq 0$ if $n$ is even.
@@ -1028,7 +1028,7 @@ function _factor(a::fmpz)
    return res, canonical_unit(a)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     factor(a::fmpz)
 > Return a factorisation of $a$ using a `Fac` struct (see the documentation on
 > factorisation in Nemo.
@@ -1044,7 +1044,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     divisible(x::fmpz, y::fmpz)
 > Return `true` if $x$ is divisible by $y$, otherwise return `false`. We
 > require $x \neq 0$.
@@ -1055,7 +1055,7 @@ function divisible(x::fmpz, y::fmpz)
               (Ref{fmpz}, Ref{fmpz}), x, y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     divisible(x::fmpz, y::Int)
 > Return `true` if $x$ is divisible by $y$, otherwise return `false`. We
 > require $x \neq 0$.
@@ -1066,20 +1066,20 @@ function divisible(x::fmpz, y::Int)
               (Ref{fmpz}, Int), x, y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     issquare(x::fmpz)
 > Return `true` if $x$ is a square, otherwise return `false`.
 """
 issquare(x::fmpz) = Bool(ccall((:fmpz_is_square, :libflint), Cint,
                                (Ref{fmpz},), x))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     is_prime(x::UInt)
 > Return `true` if $x$ is a prime number, otherwise return `false`.
 """
 is_prime(x::UInt) = Bool(ccall((:n_is_prime, :libflint), Cint, (UInt,), x))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isprime(x::fmpz)
 > Return `true` if $x$ is a prime number, otherwise return `false`.
 """
@@ -1087,7 +1087,7 @@ Markdown.doc"""
 isprime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, :libflint), Cint,
                               (Ref{fmpz},), x))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isprobabprime(x::fmpz)
 > Return `true` if $x$ is a very probably a prime number, otherwise return
 > `false`. No counterexamples are known to this test, but it is conjectured
@@ -1096,7 +1096,7 @@ Markdown.doc"""
 isprobabprime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, :libflint), Cint,
                                     (Ref{fmpz},), x))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     remove(x::fmpz, y::fmpz)
 > Return the tuple $n, z$ such that $x = y^nz$ where $y$ and $z$ are coprime.
 """
@@ -1114,7 +1114,7 @@ remove(x::Integer, y::fmpz) = remove(fmpz(x), y)
 
 remove(x::Integer, y::Integer) = remove(fmpz(x), fmpz(y))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     valuation(x::fmpz, y::fmpz)
 > Return the largest $n$ such that $y^n$ divides $x$.
 """
@@ -1129,7 +1129,7 @@ valuation(x::Integer, y::fmpz) = valuation(fmpz(x), y)
 
 valuation(x::Integer, y::Integer) = valuation(fmpz(x), fmpz(y))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     divisor_lenstra(n::fmpz, r::fmpz, m::fmpz)
 > If $n$ has a factor which lies in the residue class $r (\mod m)$ for
 > $0 < r < m < n$, this function returns such a factor. Otherwise it returns
@@ -1148,7 +1148,7 @@ function divisor_lenstra(n::fmpz, r::fmpz, m::fmpz)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     fac(x::Int)
 > Return the factorial of $x$, i.e. $x! = 1.2.3\ldots x$. We require
 > $x \geq 0$.
@@ -1160,7 +1160,7 @@ function fac(x::Int)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     risingfac(x::fmpz, y::Int)
 > Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
 > If $n < 0$ we throw a `DomainError()`.
@@ -1173,7 +1173,7 @@ function risingfac(x::fmpz, y::Int)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     risingfac(x::Int, y::Int)
 > Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
 > If $n < 0$ we throw a `DomainError()`.
@@ -1193,7 +1193,7 @@ function risingfac(x::Int, y::Int)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     primorial(x::Int)
 >  Return the primorial of $n$, i.e. the product of all primes less than or
 > equal to $n$. If $n < 0$ we throw a `DomainError()`.
@@ -1206,7 +1206,7 @@ function primorial(x::Int)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     fib(x::Int)
 >  Return the $n$-th Fibonacci number $F_n$. We define $F_1 = 1$, $F_2 = 1$ and
 > $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. We require $n \geq 0$. For
@@ -1220,7 +1220,7 @@ function fib(x::Int)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     bell(x::Int)
 > Return the Bell number $B_n$.
 """
@@ -1232,7 +1232,7 @@ function bell(x::Int)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     binom(n::Int, k::Int)
 > Return the binomial coefficient $\frac{n!}{(n - k)!k!}$. If $n, k < 0$ or
 > $k > n$ we return $0$.
@@ -1246,7 +1246,7 @@ function binom(n::Int, k::Int)
     return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     moebiusmu(x::fmpz)
 > Returns the Moebius mu function of $x$ as an \code{Int}. The value
 > returned is either $-1$, $0$ or $1$. If $x < 0$ we throw a `DomainError()`.
@@ -1257,7 +1257,7 @@ function moebiusmu(x::fmpz)
                     (Ref{fmpz},), x))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     jacobi(x::fmpz, y::fmpz)
 > Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. If
 > $y \leq x$ or $x < 0$, we throw a `DomainError()`.
@@ -1269,7 +1269,7 @@ function jacobi(x::fmpz, y::fmpz)
                     (Ref{fmpz}, Ref{fmpz}), x, y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     sigma(x::fmpz, y::Int)
 > Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
 > $y < 0$ we throw a `DomainError()`.
@@ -1282,7 +1282,7 @@ function sigma(x::fmpz, y::Int)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     eulerphi(x::fmpz)
 > Return the value of the Euler phi function at $x$, i.e. the number of
 > positive integers less than $x$ that are coprime with $x$.
@@ -1295,7 +1295,7 @@ function eulerphi(x::fmpz)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     numpart(x::Int)
 > Return the number of partitions of $x$. This function is not available on
 > Windows 64.
@@ -1311,7 +1311,7 @@ function numpart(x::Int)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     numpart(x::fmpz)
 > Return the number of partitions of $x$. This function is not available on
 > Windows 64.
@@ -1333,31 +1333,31 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     bin(n::fmpz)
 > Return $n$ as a binary string.
 """
 bin(n::fmpz) = base(n, 2)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     oct(n::fmpz)
 > Return $n$ as a octal string.
 """
 oct(n::fmpz) = base(n, 8)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     dec(n::fmpz)
 > Return $n$ as a decimal string.
 """
 dec(n::fmpz) = base(n, 10)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     hex(n::fmpz) = base(n, 16)
 > Return $n$ as a hexadecimal string.
 """
 hex(n::fmpz) = base(n, 16)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     base(n::fmpz, b::Integer)
 > Return $n$ as a string in base $b$. We require $2 \leq b \leq 62$.
 """
@@ -1377,13 +1377,13 @@ function ndigits_internal(x::fmpz, b::Integer = 10)
     abs(x) < fmpz(b)^(n - 1) ? n - 1 : n
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     ndigits(x::fmpz, b::Integer = 10)
 > Return the number of digits of $x$ in the base $b$ (default is $b = 10$).
 """
 ndigits(x::fmpz, b::Integer = 10) = iszero(x) ? 1 : ndigits_internal(x, b)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     nbits(x::fmpz)
 > Return the number of binary bits of $x$. We return zero if $x = 0$.
 """
@@ -1397,28 +1397,28 @@ nbits(x::fmpz) = iszero(x) ? 0 : Int(ccall((:fmpz_sizeinbase, :libflint), UInt,
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     popcount(x::fmpz)
 > Return the number of ones in the binary representation of $x$.
 """
 popcount(x::fmpz) = Int(ccall((:fmpz_popcnt, :libflint), UInt,
                               (Ref{fmpz},), x))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     prevpow2(x::fmpz)
 > Return the previous power of $2$ up to including $x$.
 """
 prevpow2(x::fmpz) = x < 0 ? -prevpow2(-x) :
                             (x <= 2 ? x : one(FlintZZ) << (ndigits(x, 2) - 1))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     nextpow2(x::fmpz)
 > Return the next power of $2$ that is at least $x$.
 """
 nextpow2(x::fmpz) = x < 0 ? -nextpow2(-x) :
                             (x <= 2 ? x : one(FlintZZ) << ndigits(x - 1, 2))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     trailing_zeros(x::fmpz)
 > Count the trailing zeros in the binary representation of $x$.
 """
@@ -1431,7 +1431,7 @@ trailing_zeros(x::fmpz) = ccall((:fmpz_val2, :libflint), Int,
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     clrbit!(x::fmpz, c::Int)
 > Clear bit $c$ of $x$, where the least significant bit is the $0$-th bit. Note
 > that this function modifies its input in-place.
@@ -1441,7 +1441,7 @@ function clrbit!(x::fmpz, c::Int)
     ccall((:fmpz_clrbit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     setbit!(x::fmpz, c::Int)
 > Set bit $c$ of $x$, where the least significant bit is the $0$-th bit. Note
 > that this function modifies its input in-place.
@@ -1451,7 +1451,7 @@ function setbit!(x::fmpz, c::Int)
     ccall((:fmpz_setbit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     combit!(x::fmpz, c::Int)
 > Complement bit $c$ of $x$, where the least significant bit is the $0$-th bit.
 > Note that this function modifies its input in-place.

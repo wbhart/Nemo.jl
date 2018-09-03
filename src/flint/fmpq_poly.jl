@@ -26,7 +26,7 @@ var(a::FmpqPolyRing) = a.S
 #
 ###############################################################################    
   
-Markdown.doc"""
+@doc Markdown.doc"""
     denominator(a::fmpq_poly)
 > Return the least common denominator of the coefficients of the polynomial
 > $a$.
@@ -622,7 +622,7 @@ end
 #
 ################################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     factor(x::fmpq_poly)
 > Returns the factorization of $x$.
 """
@@ -652,7 +652,7 @@ function _factor(x::fmpq_poly)
    return res, fmpq(z, denominator(x))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isirreducible(x::fmpq_poly)
 > Checks if $x$ is irreducible.
 """
@@ -667,7 +667,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     signature(f::fmpq_poly)
 > Return the signature of $f$, i.e. a tuple $(r, s)$ where $r$ is the number of
 > real roots of $f$ and $s$ is half the number of complex roots.

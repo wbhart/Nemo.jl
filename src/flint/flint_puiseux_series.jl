@@ -14,19 +14,19 @@ export FlintPuiseuxSeriesRing, FlintPuiseuxSeriesField,
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     laurent_ring{T <: RingElement}(R::PuiseuxSeriesRing{T})
 > Return the `LaurentSeriesRing` underlying the given `PuiseuxSeriesRing`.
 """ 
 laurent_ring(R::FlintPuiseuxSeriesRing{T}) where T <: RingElem = R.laurent_ring::parent_type(T)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     laurent_ring{T <: FieldElement}(R::PuiseuxSeriesField{T})
 > Return the `LaurentSeriesField` underlying the given `PuiseuxSeriesField`.
 """
 laurent_ring(R::FlintPuiseuxSeriesField{T}) where T <: FieldElem = R.laurent_ring::parent_type(T)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     O{T <: RingElement}(a::PuiseuxSeriesElem{T})
 > Returns $0 + O(x^\mbox{val}(a))$. Usually this function is called with $x^n$
 > as parameter for some rational $n$. Then the function returns the Puiseux series
@@ -45,7 +45,7 @@ parent_type(::Type{T}) where {S <: RingElem, T <: FlintPuiseuxSeriesRingElem{S}}
 
 parent_type(::Type{T}) where {S <: FieldElem, T <: FlintPuiseuxSeriesFieldElem{S}} = FlintPuiseuxSeriesField{S}
 
-Markdown.doc"""
+@doc Markdown.doc"""
     parent(a::PuiseuxSeriesElem)
 > Return the parent of the given Puiseux series.
 """
@@ -55,32 +55,32 @@ elem_type(::Type{T}) where {S <: RingElem, T <: FlintPuiseuxSeriesRing{S}} = Fli
 
 elem_type(::Type{T}) where {S <: FieldElem, T <: FlintPuiseuxSeriesField{S}} = FlintPuiseuxSeriesFieldElem{S}
 
-Markdown.doc"""
+@doc Markdown.doc"""
     base_ring(R::FlintPuiseuxSeriesRing)
 > Return the base (coefficient) ring of the given Puiseux series ring.
 """
 base_ring(R::FlintPuiseuxSeriesRing{T}) where T <: RingElem = base_ring(laurent_ring(R))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     base_ring(R::FlintPuiseuxSeriesField)
 > Return the base (coefficient) ring of the given Puiseux series field.
 """
 base_ring(R::FlintPuiseuxSeriesField{T}) where T <: FieldElem = base_ring(laurent_ring(R))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     base_ring(a::PuiseuxSeriesElem)
 > Return the base (coefficient) ring of the Puiseux series ring of the given Puiseux
 > series.
 """
 base_ring(a::FlintPuiseuxSeriesElem) = base_ring(parent(a))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     max_precision(R::FlintPuiseuxSeriesRing)
 > Return the maximum precision of the underlying Laurent series ring.
 """
 max_precision(R::FlintPuiseuxSeriesRing{T}) where T <: RingElem = max_precision(laurent_ring(R))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     max_precision(R::FlintPuiseuxSeriesField)
 > Return the maximum precision of the underlying Laurent series field.
 """
@@ -110,13 +110,13 @@ function Base.hash(a::FlintPuiseuxSeriesElem, h::UInt)
    return b
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     precision(a::FlintPuiseuxSeriesElem)
 > Return the precision of the given Puiseux series in absolute terms.
 """
 precision(a::FlintPuiseuxSeriesElem) = precision(a.data)//a.scale
 
-Markdown.doc"""
+@doc Markdown.doc"""
     valuation(a::FlintPuiseuxSeriesElem)
 > Return the valuation of the given Puiseux series, i.e. the exponent of the first
 > nonzero term (or the precision if it is arithmetically zero).
@@ -125,7 +125,7 @@ valuation(a::FlintPuiseuxSeriesElem) = valuation(a.data)//a.scale
 
 scale(a::FlintPuiseuxSeriesElem) = a.scale
 
-Markdown.doc"""
+@doc Markdown.doc"""
     coeff(a::FlintPuiseuxSeriesElem, n::Int)
 > Return the coefficient of the term of exponent $n$ of the given Puiseux series.
 """
@@ -134,7 +134,7 @@ function coeff(a::FlintPuiseuxSeriesElem, n::Int)
    return coeff(a.data, n*s)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     coeff(a::FlintPuiseuxSeriesElem, r::Rational{Int})
 > Return the coefficient of the term of exponent $r$ of the given Puiseux series.
 """
@@ -148,35 +148,35 @@ function coeff(a::FlintPuiseuxSeriesElem, r::Rational{Int})
    return coeff(a.data, n*div(s, d))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     zero(R::FlintPuiseuxSeriesRing)
 > Return $0 + O(x^n)$ where $n$ is the maximum precision of the Puiseux series
 > ring $R$.
 """
 zero(R::FlintPuiseuxSeriesRing) = R(0)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     zero(R::FlintPuiseuxSeriesField)
 > Return $0 + O(x^n)$ where $n$ is the maximum precision of the Puiseux series
 > ring $R$.
 """
 zero(R::FlintPuiseuxSeriesField) = R(0)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     one(R::FlintPuiseuxSeriesRing)
 > Return $1 + O(x^n)$ where $n$ is the maximum precision of the Puiseux series
 > ring $R$.
 """
 one(R::FlintPuiseuxSeriesField) = R(1)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     one(R::FlintPuiseuxSeriesField)
 > Return $1 + O(x^n)$ where $n$ is the maximum precision of the Puiseux series
 > ring $R$.
 """
 one(R::FlintPuiseuxSeriesRing) = R(1)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     gen(R::FlintPuiseuxSeriesRing)
 > Return the generator of the Puiseux series ring, i.e. $x + O(x^{n + 1})$ where
 > $n$ is the maximum precision of the Puiseux series ring $R$.
@@ -186,7 +186,7 @@ function gen(R::FlintPuiseuxSeriesRing)
    return R(gen(S), 1)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     gen(R::FlintPuiseuxSeriesField)
 > Return the generator of the Puiseux series ring, i.e. $x + O(x^{n + 1})$ where
 > $n$ is the maximum precision of the Puiseux series ring $R$.
@@ -196,14 +196,14 @@ function gen(R::FlintPuiseuxSeriesField)
    return R(gen(S), 1)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     iszero(a::FlintPuiseuxSeriesElem)
 > Return `true` if the given Puiseux series is arithmetically equal to zero to
 > its current precision, otherwise return `false`.
 """
 iszero(a::FlintPuiseuxSeriesElem) = iszero(a.data)
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isone(a::FlintPuiseuxSeriesElem)
 > Return `true` if the given Puiseux series is arithmetically equal to one to
 > its current precision, otherwise return `false`.
@@ -212,7 +212,7 @@ function isone(a::FlintPuiseuxSeriesElem)
    return isone(a.data)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isgen(a::FlintPuiseuxSeriesElem)
 > Return `true` if the given Puiseux series is arithmetically equal to the
 > generator of its Puiseux series ring to its current precision, otherwise return
@@ -222,20 +222,20 @@ function isgen(a::FlintPuiseuxSeriesElem)
    return valuation(a) == 1 && pol_length(a.data) == 1 && isone(polcoeff(a.data, 0))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isunit(a::FlintPuiseuxSeriesElem)
 > Return `true` if the given Puiseux series is arithmetically equal to a unit,
 > i.e. is invertible, otherwise return `false`.
 """
 isunit(a::FlintPuiseuxSeriesElem) = valuation(a) == 0 && isunit(polcoeff(a.data, 0))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     modulus(a::PuiseuxSeriesElem)
 > Return the modulus of the coefficients of the given Puiseux series.
 """
 modulus(a::FlintPuiseuxSeriesElem) = modulus(base_ring(a))
 
-Markdown.doc"""
+@doc Markdown.doc"""
     rescale(a::FlintPuiseuxSeriesElem)
 > Rescale so that the scale of the given Puiseux series and the scale of the underlying
 > Laurent series are coprime. This function is used internally, as all user facing
@@ -496,7 +496,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
    sqrt{T <: RingElem}(a::FlintPuiseuxSeriesElem{T})
 > Return the square root of the given Puiseux series.
 """
@@ -516,7 +516,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
    exp{T <: RingElem}(a::FlintPuiseuxSeriesElem{T})
 > Return the exponential of the given Puiseux series.
 """

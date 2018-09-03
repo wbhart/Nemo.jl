@@ -90,7 +90,7 @@ function isequal(x::arb_poly, y::arb_poly)
                                       (Ref{arb_poly}, Ref{arb_poly}), x, y)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     overlaps(x::arb_poly, y::arb_poly)
 > Return `true` if the coefficient balls of $x$ overlap the coefficient balls
 > of $y$, otherwise return `false`.
@@ -100,7 +100,7 @@ function overlaps(x::arb_poly, y::arb_poly)
                                       (Ref{arb_poly}, Ref{arb_poly}), x, y)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     contains(x::arb_poly, y::arb_poly)
 > Return `true` if the coefficient balls of $x$ contain the corresponding
 > coefficient balls of $y$, otherwise return `false`.
@@ -110,7 +110,7 @@ function contains(x::arb_poly, y::arb_poly)
                                       (Ref{arb_poly}, Ref{arb_poly}), x, y)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     contains(x::arb_poly, y::fmpz_poly)
 > Return `true` if the coefficient balls of $x$ contain the corresponding
 > exact coefficients of $y$, otherwise return `false`.
@@ -120,7 +120,7 @@ function contains(x::arb_poly, y::fmpz_poly)
                                       (Ref{arb_poly}, Ref{fmpz_poly}), x, y)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     contains(x::arb_poly, y::fmpq_poly)
 > Return `true` if the coefficient balls of $x$ contain the corresponding
 > exact coefficients of $y$, otherwise return `false`.
@@ -151,7 +151,7 @@ function !=(x::arb_poly, y::arb_poly)
     return false
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     unique_integer(x::arb_poly)
 > Return a tuple `(t, z)` where $t$ is `true` if there is a unique integer
 > contained in each of the coefficients of $x$, otherwise sets $t$ to `false`.
@@ -371,7 +371,7 @@ function evaluate(x::arb_poly, y::arb)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::arb_poly, y::arb)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -393,7 +393,7 @@ function evaluate(x::arb_poly, y::acb)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::arb_poly, y::acb)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -415,7 +415,7 @@ function evaluate(x::arb_poly, y::fmpz)
     return evaluate(x, base_ring(parent(x))(y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::arb_poly, y::Integer)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -424,7 +424,7 @@ function evaluate2(x::arb_poly, y::Integer)
     return evaluate2(x, base_ring(parent(x))(y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::arb_poly, y::Float64)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -433,7 +433,7 @@ function evaluate2(x::arb_poly, y::Float64)
     return evaluate2(x, base_ring(parent(x))(y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::arb_poly, y::fmpz)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -442,7 +442,7 @@ function evaluate2(x::arb_poly, y::fmpz)
     return evaluate2(x, base_ring(parent(x))(y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::arb_poly, y::fmpq)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -518,7 +518,7 @@ function arb_vec_clear(v::Ptr{arb_struct}, n::Int)
    ccall((:_arb_vec_clear, :libarb), Nothing, (Ptr{arb_struct}, Int), v, n)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     from_roots(R::ArbPolyRing, b::Array{arb, 1})
 > Construct a polynomial in the given polynomial ring from a list of its roots.
 """
@@ -600,7 +600,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     roots_upper_bound(f::arb_poly) -> arb
 
 > Returns an upper bound for the absolute value of all complex roots of $f$.

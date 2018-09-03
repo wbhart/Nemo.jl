@@ -104,7 +104,7 @@ function isequal(x::acb_poly, y::acb_poly)
                                       (Ref{acb_poly}, Ref{acb_poly}), x, y)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     overlaps(x::acb_poly, y::acb_poly)
 > Return `true` if the coefficient boxes of $x$ overlap the coefficient boxes
 > of $y$, otherwise return `false`.
@@ -114,7 +114,7 @@ function overlaps(x::acb_poly, y::acb_poly)
                                       (Ref{acb_poly}, Ref{acb_poly}), x, y)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     contains(x::acb_poly, y::acb_poly)
 > Return `true` if the coefficient boxes of $x$ contain the corresponding
 > coefficient boxes of $y$, otherwise return `false`.
@@ -124,7 +124,7 @@ function contains(x::acb_poly, y::acb_poly)
                                       (Ref{acb_poly}, Ref{acb_poly}), x, y)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     contains(x::acb_poly, y::fmpz_poly)
 > Return `true` if the coefficient boxes of $x$ contain the corresponding
 > exact coefficients of $y$, otherwise return `false`.
@@ -134,7 +134,7 @@ function contains(x::acb_poly, y::fmpz_poly)
                                       (Ref{acb_poly}, Ref{fmpz_poly}), x, y)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     contains(x::acb_poly, y::fmpq_poly)
 > Return `true` if the coefficient boxes of $x$ contain the corresponding
 > exact coefficients of $y$, otherwise return `false`.
@@ -165,7 +165,7 @@ function !=(x::acb_poly, y::acb_poly)
     return false
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     unique_integer(x::acb_poly)
 > Return a tuple `(t, z)` where $t$ is `true` if there is a unique integer
 > contained in the (constant) polynomial $x$, along with that integer $z$
@@ -178,7 +178,7 @@ function unique_integer(x::acb_poly)
   return (unique != 0, z)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isreal(x::acb_poly)
 > Return `true` if all the coefficients of $x$ are real, i.e. have exact zero
 > imaginary parts.
@@ -394,7 +394,7 @@ function evaluate(x::acb_poly, y::acb)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::acb_poly, y::acb)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -416,7 +416,7 @@ function evaluate(x::acb_poly, y::fmpz)
     return evaluate(x, base_ring(parent(x))(y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::acb_poly, y::Integer)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -425,7 +425,7 @@ function evaluate2(x::acb_poly, y::Integer)
     return evaluate2(x, base_ring(parent(x))(y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::acb_poly, y::Float64)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -434,7 +434,7 @@ function evaluate2(x::acb_poly, y::Float64)
     return evaluate2(x, base_ring(parent(x))(y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::acb_poly, y::fmpq)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -443,7 +443,7 @@ function evaluate2(x::acb_poly, y::fmpz)
     return evaluate2(x, base_ring(parent(x))(y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::acb_poly, y::fmpq)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -452,7 +452,7 @@ function evaluate2(x::acb_poly, y::fmpq)
     return evaluate2(x, base_ring(parent(x))(y))
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     evaluate2(x::acb_poly, y::arb)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
@@ -528,7 +528,7 @@ function acb_vec_clear(v::Ptr{acb_struct}, n::Int)
    ccall((:_acb_vec_clear, :libarb), Nothing, (Ptr{acb_struct}, Int), v, n)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     from_roots(R::AcbPolyRing, b::Array{acb, 1})
 > Construct a polynomial in the given polynomial ring from a list of its roots.
 """
@@ -610,7 +610,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     roots(x::acb_poly; target=0, isolate_real=false, initial_prec=0, max_prec=0, max_iter=0)
 > Attempts to isolate the complex roots of the complex polynomial $x$ by
 > iteratively refining balls in which they lie.
@@ -714,7 +714,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     roots_upper_bound(f::acb_poly) -> arb
 
 > Returns an upper bound for the absolute value of all complex roots of $f$.

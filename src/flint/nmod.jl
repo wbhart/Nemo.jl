@@ -320,7 +320,7 @@ function gcd(x::nmod, y::nmod)
    end
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     gcdx(a::nmod, b::nmod)
 > Compute the extended gcd with the Euclidean structure inherited from
 > $\mathbb{Z}$.

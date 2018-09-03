@@ -634,7 +634,7 @@ function Base.exp(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    log(a::fmpq_rel_series)
 > Return log$(a)$. Requires the constant term to be one.
 """
@@ -653,7 +653,7 @@ function log(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    tan(a::fmpq_rel_series)
 > Return tan$(a)$. Requires a zero constant term.
 """
@@ -675,7 +675,7 @@ function tan(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    tanh(a::fmpq_rel_series)
 > Return tanh$(a)$. Requires a zero constant term.
 """
@@ -697,7 +697,7 @@ function tanh(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    sin(a::fmpq_rel_series)
 > Return sin$(a)$. Requires a zero constant term.
 """
@@ -722,7 +722,7 @@ function sin(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    sinh(a::fmpq_rel_series)
 > Return sinh$(a)$. Requires a zero constant term.
 """
@@ -744,7 +744,7 @@ function sinh(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    cos(a::fmpq_rel_series)
 > Return cos$(a)$. Requires a zero constant term.
 """
@@ -769,7 +769,7 @@ function cos(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    cosh(a::fmpq_rel_series)
 > Return cosh$(a)$. Requires a zero constant term.
 """
@@ -791,7 +791,7 @@ function cosh(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    asin(a::fmpq_rel_series)
 > Return asin$(a)$. Requires a zero constant term.
 """
@@ -813,7 +813,7 @@ function asin(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    asinh(a::fmpq_rel_series)
 > Return asinh$(a)$. Requires a zero constant term.
 """
@@ -835,7 +835,7 @@ function asinh(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    atan(a::fmpq_rel_series)
 > Return atan$(a)$. Requires a zero constant term.
 """
@@ -857,7 +857,7 @@ function atan(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    atanh(a::fmpq_rel_series)
 > Return atanh$(a)$. Requires a zero constant term.
 """
@@ -879,7 +879,7 @@ function atanh(a::fmpq_rel_series)
    return z
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
    sqrt(a::fmpq_rel_series)
 > Return the power series square root of $a$. Requires a constant term equal to
 > one.

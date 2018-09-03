@@ -306,7 +306,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     ldexp(x::acb_mat, y::Int)
 > Return $2^yx$. Note that $y$ can be positive, zero or negative.
 """
@@ -323,7 +323,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     isequal(x::arb_mat, y::arb_mat)
 > Return `true` if the matrices of balls $x$ and $y$ are precisely equal,
 > i.e. if all matrix entries have the same midpoints and radii.
@@ -345,7 +345,7 @@ function !=(x::arb_mat, y::arb_mat)
   return Bool(r)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     overlaps(x::arb_mat, y::arb_mat)
 > Returns `true` if all entries of $x$ overlap with the corresponding entry of
 > $y$, otherwise return `false`.
@@ -356,7 +356,7 @@ function overlaps(x::arb_mat, y::arb_mat)
   return Bool(r)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     contains(x::arb_mat, y::arb_mat)
 > Returns `true` if all entries of $x$ contain the corresponding entry of
 > $y$, otherwise return `false`.
@@ -373,7 +373,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     contains(x::arb_mat, y::fmpz_mat)
 > Returns `true` if all entries of $x$ contain the corresponding entry of
 > $y$, otherwise return `false`.
@@ -385,7 +385,7 @@ function contains(x::arb_mat, y::fmpz_mat)
 end
 
 
-Markdown.doc"""
+@doc Markdown.doc"""
     contains(x::arb_mat, y::fmpq_mat)
 > Returns `true` if all entries of $x$ contain the corresponding entry of
 > $y$, otherwise return `false`.
@@ -414,7 +414,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     inv(M::arb_mat)
 > Given a  $n\times n$ matrix of type `arb_mat`, return an
 > $n\times n$ matrix $X$ such that $AX$ contains the
@@ -504,7 +504,7 @@ end
 #
 ################################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     exp(x::arb_mat)
 > Returns the exponential of the matrix $x$.
 """
@@ -614,7 +614,7 @@ end
 #
 ################################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     bound_inf_norm(x::arb_mat)
 > Returns a nonnegative element $z$ of type `arb`, such that $z$ is an upper
 > bound for the infinity norm for every matrix in $x$

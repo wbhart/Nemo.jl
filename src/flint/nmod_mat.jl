@@ -357,7 +357,7 @@ function strong_echelon_form!(a::nmod_mat)
   ccall((:nmod_mat_strong_echelon_form, :libflint), Nothing, (Ref{nmod_mat}, ), a)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     strong_echelon_form(a::nmod_mat)
 > Return the strong echeleon form of $a$. The matrix $a$ must have at least as
 > many rows as columns.
@@ -374,7 +374,7 @@ function howell_form!(a::nmod_mat)
   ccall((:nmod_mat_howell_form, :libflint), Nothing, (Ref{nmod_mat}, ), a)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     howell_form(a::nmod_mat)
 > Return the Howell normal form of $a$. The matrix $a$ must have at least as
 > many rows as columns.
@@ -594,7 +594,7 @@ end
 #
 ################################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     lift(a::nmod_mat)
 > Return a lift of the matrix $a$ to a matrix over $\mathbb{Z}$, i.e. where the
 > entries of the returned matrix are those of $a$ lifted to $\mathbb{Z}$.

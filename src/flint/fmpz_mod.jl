@@ -10,7 +10,7 @@
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     gcdx(a::ResElem{fmpz}, b::ResElem{fmpz})
 > Compute the extended gcd with the Euclidean structure inherited from
 > $\mathbb{Z}$.

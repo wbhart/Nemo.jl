@@ -591,7 +591,7 @@ end
 #
 ###############################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     signature(f::fmpz_poly)
 > Return the signature of the polynomial $f$, i.e. a tuple $(r, s)$ such that
 > $r$ is the number of real roots of $f$ and $s$ is half the number of complex
@@ -637,7 +637,7 @@ end
 #
 ################################################################################
 
-Markdown.doc"""
+@doc Markdown.doc"""
     factor(x::fmpz_poly)
 > Returns the factorization of $x$.
 """
@@ -690,7 +690,7 @@ function chebyshev_u(n::Int, x::fmpz_poly)
    return isgen(x) ? z : compose(z, x)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     cyclotomic(n::Int, x::fmpz_poly)
 > Return the $n$th cyclotomic polynomial, defined as
 > $$\Phi_n(x) = \prod_{\omega} (x-\omega),$$ where $\omega$ runs over all the 
@@ -703,7 +703,7 @@ function cyclotomic(n::Int, x::fmpz_poly)
    return isgen(x) ? z : compose(z, x)
 end
    
-Markdown.doc"""
+@doc Markdown.doc"""
     swinnerton_dyer(n::Int, x::fmpz_poly)
 > Return the Swinnerton-Dyer polynomial $S_n$, defined as the integer 
 > polynomial
@@ -719,7 +719,7 @@ function swinnerton_dyer(n::Int, x::fmpz_poly)
    return isgen(x) ? z : compose(z, x)
 end
    
-Markdown.doc"""
+@doc Markdown.doc"""
     cos_minpoly(n::Int, x::fmpz_poly)
 > Return the minimal polynomial of $2 \cos(2 \pi / n)$. For suitable choice of 
 > $n$, this gives the minimal polynomial of $2 \cos(a \pi)$ or $2 \sin(a \pi)$ for any
@@ -732,7 +732,7 @@ function cos_minpoly(n::Int, x::fmpz_poly)
    return isgen(x) ? z : compose(z, x)
 end
    
-Markdown.doc"""
+@doc Markdown.doc"""
     theta_qexp(e::Int, n::Int, x::fmpz_poly)
 > Return the $q$-expansion to length $n$ of the Jacobi theta function raised to
 > the power $r$, i.e. $\vartheta(q)^r$ where 
@@ -745,7 +745,7 @@ function theta_qexp(e::Int, n::Int, x::fmpz_poly)
    return isgen(x) ? z : compose(z, x)
 end
 
-Markdown.doc"""
+@doc Markdown.doc"""
     eta_qexp(e::Int, n::Int, x::fmpz_poly)
 > Return the $q$-expansion to length $n$ of the Dedekind eta function (without 
 > the leading factor $q^{1/24}$) raised to the power $r$, i.e.
