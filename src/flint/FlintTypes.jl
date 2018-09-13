@@ -383,6 +383,39 @@ struct nmod <: ResElem{UInt}
    parent::NmodRing
 end
 
+################################################################################
+#
+#   GaloisField / gfp
+#
+###############################################################################
+
+mutable struct GaloisField <: FinField
+   n::UInt
+   ninv::UInt
+
+   function GaloisField(n::UInt, cached::Bool=true)
+      if haskey(GaloisFieldID, n)
+         return GaloisFieldID[n]
+      else
+         ninv = ccall((:n_preinvert_limb, :libflint), UInt, (UInt,), n)
+         z = new(n, ninv)
+         if cached
+            GaloisFieldID[n] = z
+         end
+         return z
+      end
+   end
+end
+
+const GaloisFieldID = Dict{UInt, GaloisField}()
+
+struct gfp_elem <: FinFieldElem
+   data::UInt
+   parent::GaloisField
+end
+
+const Zmodn = Union{nmod, gfp_elem}
+
 ###############################################################################
 #
 #   NmodPolyRing / nmod_poly
