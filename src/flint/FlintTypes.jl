@@ -2953,6 +2953,213 @@ function _nmod_mat_clear_fn(mat::nmod_mat)
   ccall((:nmod_mat_clear, :libflint), Nothing, (Ref{nmod_mat}, ), mat)
 end
 
+################################################################################
+#
+#   GFPMatSpace / gfp_mat
+#
+###############################################################################
+
+mutable struct GFPMatSpace <: MatSpace{gfp_elem}
+  base_ring::GaloisField
+  n::UInt
+  rows::Int
+  cols::Int
+
+  function GFPMatSpace(R::GaloisField, r::Int, c::Int,
+                        cached::Bool = true)
+    (r < 0 || c < 0) && throw(error_dim_negative)
+    if haskey(GFPMatID, (R, r, c))
+      return GFPMatID[R, r, c]
+    else
+      z = new(R, R.n, r, c)
+      if cached
+        GFPMatID[R, r, c] = z
+      end
+      return z
+    end
+  end
+end
+
+const GFPMatID = Dict{Tuple{GaloisField, Int, Int}, GFPMatSpace}()
+
+mutable struct gfp_mat <: MatElem{gfp_elem}
+  entries::Ptr{Nothing}
+  r::Int                  # Int
+  c::Int                  # Int
+  rows::Ptr{Nothing}
+  n::UInt                # mp_limb_t / Culong
+  ninv::UInt             # mp_limb_t / Culong
+  norm::UInt             # mp_limb_t / Culong
+  base_ring::GaloisField
+  view_parent
+
+  # Used by view, not finalised!!
+  function gfp_mat()
+    z = new()
+    return z
+  end
+
+  function gfp_mat(r::Int, c::Int, n::UInt)
+    z = new()
+    ccall((:nmod_mat_init, :libflint), Nothing,
+            (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
+    finalizer(_gfp_mat_clear_fn, z)
+    return z
+  end
+
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{UInt, 2}, transpose::Bool = false)
+    z = new()
+    ccall((:nmod_mat_init, :libflint), Nothing,
+            (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
+    finalizer(_gfp_mat_clear_fn, z)
+    if transpose
+      se = set_entry_t!
+      r, c = c, r
+    else
+      se = set_entry!
+    end
+    for i = 1:r
+      for j = 1:c
+        se(z, i, j, arr[i, j])
+      end
+    end
+    return z
+  end
+
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{UInt, 1}, transpose::Bool = false)
+    z = new()
+    ccall((:nmod_mat_init, :libflint), Nothing,
+            (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
+    finalizer(_gfp_mat_clear_fn, z)
+    if transpose
+      se = set_entry_t!
+      r, c = c, r
+    else
+      se = set_entry!
+    end
+    for i = 1:r
+      for j = 1:c
+        se(z, i, j, arr[(i - 1) * c + j])
+      end
+    end
+    return z
+  end
+
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{fmpz, 2}, transpose::Bool = false)
+    z = new()
+    ccall((:nmod_mat_init, :libflint), Nothing,
+            (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
+    finalizer(_gfp_mat_clear_fn, z)
+    if transpose
+      se = set_entry_t!
+      r, c = c, r
+    else
+      se = set_entry!
+    end
+    for i = 1:r
+      for j = 1:c
+        se(z, i, j, arr[i, j])
+      end
+    end
+    return z
+  end
+
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{fmpz, 1}, transpose::Bool = false)
+    z = new()
+    ccall((:nmod_mat_init, :libflint), Nothing,
+            (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
+    finalizer(_gfp_mat_clear_fn, z)
+    if transpose
+      se = set_entry_t!
+      r, c = c, r
+    else
+      se = set_entry!
+    end
+    for i = 1:r
+      for j = 1:c
+        se(z, i, j, arr[(i - 1) * c + j])
+      end
+    end
+    return z
+  end
+
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{T, 2}, transpose::Bool = false) where {T <: Integer}
+    arr_fmpz = map(fmpz, arr)
+    return gfp_mat(r, c, n, arr_fmpz, transpose)
+  end
+
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{T, 1}, transpose::Bool = false) where {T <: Integer}
+    arr_fmpz = map(fmpz, arr)
+    return gfp_mat(r, c, n, arr_fmpz, transpose)
+  end
+
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{gfp_elem, 2}, transpose::Bool = false)
+    z = new()
+    ccall((:nmod_mat_init, :libflint), Nothing,
+            (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
+    finalizer(_gfp_mat_clear_fn, z)
+    if transpose
+      se = set_entry_t!
+      r, c = c, r
+    else
+      se = set_entry!
+    end
+    for i = 1:r
+      for j = 1:c
+        se(z, i, j, arr[i, j])
+      end
+    end
+    return z
+  end
+
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{gfp_elem, 1}, transpose::Bool = false)
+    z = new()
+    ccall((:nmod_mat_init, :libflint), Nothing,
+            (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
+    finalizer(_gfp_mat_clear_fn, z)
+    if transpose
+      se = set_entry_t!
+      r, c = c, r
+    else
+      se = set_entry!
+    end
+    for i = 1:r
+      for j = 1:c
+        se(z, i, j, arr[(i - 1) * c + j])
+      end
+    end
+    return z
+  end
+
+  function gfp_mat(n::UInt, b::fmpz_mat)
+    z = new()
+    ccall((:nmod_mat_init, :libflint), Nothing,
+            (Ref{gfp_mat}, Int, Int, UInt), z, b.r, b.c, n)
+    finalizer(_gfp_mat_clear_fn, z)
+    ccall((:fmpz_mat_get_nmod_mat, :libflint), Nothing,
+            (Ref{gfp_mat}, Ref{fmpz_mat}), z, b)
+    return z
+  end
+
+  function gfp_mat(n::Int, b::fmpz_mat)
+    (n < 0) && error("Modulus must be positive")
+    return gfp_mat(UInt(n), b)
+  end
+
+  function gfp_mat(n::fmpz, b::fmpz_mat)
+    (n < 0) && error("Modulus must be positive")
+    (n > typemax(UInt)) &&
+          error("Modulus must be smaller than ", fmpz(typemax(UInt)))
+    return gfp_mat(UInt(n), b)
+  end
+end
+
+function _gfp_mat_clear_fn(mat::gfp_mat)
+  ccall((:nmod_mat_clear, :libflint), Nothing, (Ref{gfp_mat}, ), mat)
+end
+
+const Zmodn_mat = Union{nmod_mat, gfp_mat}
+
 ###############################################################################
 #
 #   FqPolyRing / fq_poly
