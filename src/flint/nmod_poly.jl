@@ -479,7 +479,7 @@ function rem(x::nmod_poly, y::nmod_poly)
   return z
 end
 
-mod(x::nmod_poly, y::nmod_poly) = rem(x,y)
+mod(x::T, y::T) where T <: Zmodn_poly = rem(x, y)
 
 ################################################################################
 #
@@ -526,7 +526,7 @@ end
 #
 ################################################################################
 
-function invmod(x::nmod_poly, y::nmod_poly)
+function invmod(x::T, y::T) where T <: Zmodn_poly
   length(y) == 0 && error("Second argument must not be 0")
   check_parent(x,y)
   if length(y) == 1 
@@ -534,7 +534,7 @@ function invmod(x::nmod_poly, y::nmod_poly)
   end
   z = parent(x)()
   r = ccall((:nmod_poly_invmod, :libflint), Int32,
-          (Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}), z, x, y)
+          (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   r == 0 ? error("Impossible inverse in invmod") : return z
 end
 
@@ -548,7 +548,7 @@ function mulmod(x::T, y::T, z::T) where T <: Zmodn_poly
   return w
 end
 
-function powmod(x::nmod_poly, e::Int, y::nmod_poly)
+function powmod(x::T, e::Int, y::T) where T <: Zmodn_poly
   check_parent(x,y)
   z = parent(x)()
 
@@ -561,7 +561,7 @@ function powmod(x::nmod_poly, e::Int, y::nmod_poly)
   end
 
   ccall((:nmod_poly_powmod_ui_binexp, :libflint), Nothing,
-        (Ref{nmod_poly}, Ref{nmod_poly}, Int, Ref{nmod_poly}), z, x, e, y)
+        (Ref{T}, Ref{T}, Int, Ref{T}), z, x, e, y)
 
   return z
 end
