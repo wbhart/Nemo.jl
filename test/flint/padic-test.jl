@@ -339,13 +339,19 @@ function test_padic_special_functions()
 
    @test exp(c) == 1 + 3*7^1 + 3*7^2 + 4*7^3 + 4*7^4 + O(R, 7^5)
 
+   @test_throws DomainError exp(R(7)^-1)
+
    @test log(a) == 1*7^1 + 5*7^2 + O(R, 7^3)
+
+   @test_throws DomainError log(c)
 
    @test exp(R(0)) == 1
 
    @test log(R(1)) == 0
 
    @test teichmuller(b) == 2 + 4*7^1 + 6*7^2 + O(R, 7^3)
+
+   @test_throws DomainError teichmuller(R(7)^-1)
 
    println("PASS")
 end

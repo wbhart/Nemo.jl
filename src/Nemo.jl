@@ -1,26 +1,35 @@
-VERSION >= v"0.4.0-dev+6521" && __precompile__()
-
 module Nemo
+
+using AbstractAlgebra
+
+using Markdown
+
+using InteractiveUtils
 
 if VERSION >= v"0.7.0-"
    using Libdl
 end
 
-import Base: Array, abs, acos, acosh, asin, asinh, atan, atan2, atanh, base,
-             bin, ceil, checkbounds, conj, convert, cmp, contains, cos, cosh,
-             cospi, cot, coth, dec, deepcopy, deepcopy_internal, deserialize,
-             det, div, divrem, expm1, exp, eye, floor, gamma, gcd, gcdx, getindex,
+import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh, 
+             bin, ceil, checkbounds, conj, convert, cmp, cos, cosh,
+             cospi, cot, coth, dec, deepcopy, deepcopy_internal, 
+             div, divrem, expm1, exp, floor, gcd, gcdx, getindex,
              hash, hcat, hex, hypot, intersect, inv, invmod, isequal,
              isfinite, isinteger, isless, isqrt, isreal, iszero, lcm, ldexp, length,
-             lgamma, log, log1p, lufact, lufact!, mod, ndigits, nextpow2, norm,
-             nullspace, numerator, oct, one, parent, parse, precision,
-             prevpow2, rand, rank, Rational, rem, reverse, serialize,
+             log, log1p, mod, ndigits, numerator, oct, one, parent, parse, precision,
+             rand, Rational, rem, reverse,
              setindex!, show, similar, sign, sin, sinh, sinpi, size, sqrt, string,
-             tan, tanh, trace, trailing_zeros, transpose, transpose!, truncate,
-             typed_hvcat, typed_hcat, var, vcat, xor, zero, zeros, +, -, *, ==, ^,
+             tan, tanh, trailing_zeros, transpose, truncate,
+             typed_hvcat, typed_hcat, vcat, xor, zero, zeros, +, -, *, ==, ^,
              &, |, <<, >>, ~, <=, >=, <, >, //, /, !=
 
-import AbstractAlgebra
+if VERSION <= v"0.7.0"
+   import Base: atan2, base, contains, nextpow2, prevpow2
+end
+
+import LinearAlgebra: det, norm, nullspace, rank, transpose!, hessenberg, tr, lu, lu!
+
+import AbstractAlgebra: nullspace
 
 # We don't want the QQ, ZZ, FiniteField, NumberField from AbstractAlgebra
 # as they are for parents of Julia types or naive implementations
@@ -37,7 +46,7 @@ exclude = [:QQ, :ZZ, :RR, :RealField, :FiniteField, :NumberField,
 
 for i in names(AbstractAlgebra)
   i in exclude && continue
-  eval(parse("import AbstractAlgebra." * string(i)))
+  eval(Meta.parse("import AbstractAlgebra." * string(i)))
   eval(Expr(:export, i))
 end
 
@@ -47,7 +56,7 @@ export flint_cleanup, flint_set_num_threads
 
 export error_dim_negative, ErrorConstrDimMismatch
 
-export is_windows64
+export iswindows64
 
 export CyclotomicField, MaximalRealSubfield, NumberField, ComplexField, PadicField
 
@@ -56,10 +65,6 @@ export ZZ, QQ, RealField, FiniteField, NumberField
 
 if VERSION >= v"0.6.0-dev.2024" # julia started exporting iszero (again?)
    import Base: iszero
-end
-
-if VERSION < v"0.6-"
-   import Base: isprime, factor, parity, sub, call
 end
 
 if VERSION >= v"0.7.0-DEV.264" # julia started exporting sincos
@@ -76,11 +81,11 @@ end
 #
 ###############################################################################
 
-is_windows64() = (is_windows() ? true : false) && (Int == Int64)
+iswindows64() = (Sys.iswindows() ? true : false) && (Int == Int64)
 
 const pkgdir = realpath(joinpath(dirname(@__FILE__), ".."))
 const libdir = joinpath(pkgdir, "local", "lib")
-if is_windows()
+if Sys.iswindows()
    const libgmp = joinpath(pkgdir, "local", "lib", "libgmp-16")
 else
    const libgmp = joinpath(pkgdir, "local", "lib", "libgmp")
@@ -115,7 +120,7 @@ function trace_free(n::UInt)
   global active_mem
 #  @assert haskey(active_mem, n)
   delete!(active_mem, n)
-  ccall(:jl_free, Void, (UInt, ), n)
+  ccall(:jl_free, Nothing, (UInt, ), n)
 end
 
 function trace_realloc(n::UInt, s::UInt)
@@ -147,7 +152,7 @@ function trace_counted_free(n::UInt, s::UInt)
   global active_mem
 #  @assert haskey(active_mem, n)
   delete!(active_mem, n)
-  ccall(:jl_gc_counted_free, Void, (UInt, UInt), n, s)
+  ccall(:jl_gc_counted_free, Nothing, (UInt, UInt), n, s)
 end
 
 function show_active(l::UInt = UInt(0), frames::Int = 2)
@@ -162,31 +167,31 @@ function show_active(l::UInt = UInt(0), frames::Int = 2)
 end
 
 function trace_memory(b::Bool)
-  if is_windows()
+  if Sys.iswindows()
     return
   end
   if b
-    ccall((:__gmp_set_memory_functions, libgmp), Void,
-       (Ptr{Void},Ptr{Void},Ptr{Void}),
+    ccall((:__gmp_set_memory_functions, libgmp), Nothing,
+       (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
        cfunction(trace_counted_malloc, UInt, (UInt, )),
        cfunction(trace_counted_realloc, UInt, (UInt, UInt, UInt)),
-       cfunction(trace_counted_free, Void, (UInt, UInt)))
+       cfunction(trace_counted_free, Nothing, (UInt, UInt)))
 
-    ccall((:__flint_set_memory_functions, libflint), Void,
-       (Ptr{Void},Ptr{Void},Ptr{Void},Ptr{Void}),
+    ccall((:__flint_set_memory_functions, libflint), Nothing,
+       (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
        cfunction(trace_malloc, UInt, (UInt, )),
        cfunction(trace_calloc, UInt, (UInt, UInt)),
        cfunction(trace_realloc, UInt, (UInt, UInt)),
-       cfunction(trace_free, Void, (UInt, )))
+       cfunction(trace_free, Nothing, (UInt, )))
   else    
-    ccall((:__gmp_set_memory_functions, libgmp), Void,
-       (Ptr{Void},Ptr{Void},Ptr{Void}),
+    ccall((:__gmp_set_memory_functions, libgmp), Nothing,
+       (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
        cglobal(:jl_gc_counted_malloc),
        cglobal(:jl_gc_counted_realloc_with_old_size),
        cglobal(:jl_gc_counted_free))
 
-    ccall((:__flint_set_memory_functions, libflint), Void,
-       (Ptr{Void},Ptr{Void},Ptr{Void},Ptr{Void}),
+    ccall((:__flint_set_memory_functions, libflint), Nothing,
+       (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
        cglobal(:jl_malloc),
        cglobal(:jl_calloc),
        cglobal(:jl_realloc),
@@ -198,7 +203,7 @@ function __init__()
 
    if "HOSTNAME" in keys(ENV) && ENV["HOSTNAME"] == "juliabox"
        push!(Libdl.DL_LOAD_PATH, "/usr/local/lib")
-   elseif is_linux()
+   elseif Sys.islinux()
        push!(Libdl.DL_LOAD_PATH, libdir)
        Libdl.dlopen(libgmp)
        Libdl.dlopen(libmpfr)
@@ -209,37 +214,37 @@ function __init__()
       push!(Libdl.DL_LOAD_PATH, libdir)
    end
 
-   if !is_windows()
-      ccall((:__gmp_set_memory_functions, libgmp), Void,
-         (Ptr{Void},Ptr{Void},Ptr{Void}),
+   if !Sys.iswindows()
+      ccall((:__gmp_set_memory_functions, libgmp), Nothing,
+         (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
          cglobal(:jl_gc_counted_malloc),
          cglobal(:jl_gc_counted_realloc_with_old_size),
          cglobal(:jl_gc_counted_free))
 
-      ccall((:__flint_set_memory_functions, libflint), Void,
-         (Ptr{Void},Ptr{Void},Ptr{Void},Ptr{Void}),
+      ccall((:__flint_set_memory_functions, libflint), Nothing,
+         (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
          cglobal(:jl_malloc),
          cglobal(:jl_calloc),
          cglobal(:jl_realloc),
          cglobal(:jl_free))
    end
 
-   ccall((:flint_set_abort, libflint), Void,
-      (Ptr{Void},), cfunction(flint_abort, Void, ()))
+   ccall((:flint_set_abort, libflint), Nothing,
+         (Ptr{Nothing},), @cfunction(flint_abort, Nothing, ()))
 
    println("")
-   println("Welcome to Nemo version 0.8.5")
+   println("Welcome to Nemo version 0.9.2-dev")
    println("")
    println("Nemo comes with absolutely no warranty whatsoever")
    println("")
 end
 
 function flint_set_num_threads(a::Int)
-   ccall((:flint_set_num_threads, libflint), Void, (Int,), a)
+   ccall((:flint_set_num_threads, libflint), Nothing, (Int,), a)
 end
 
 function flint_cleanup()
-   ccall((:flint_cleanup, libflint), Void, ())
+   ccall((:flint_cleanup, libflint), Nothing, ())
 end
 
 ###############################################################################
@@ -249,7 +254,7 @@ end
 ################################################################################
 
 function versioninfo()
-  print("Nemo version 0.8.5\n")
+  print("Nemo version 0.9.2-dev\n")
   nemorepo = dirname(dirname(@__FILE__))
 
   print("Nemo: ")
@@ -370,8 +375,8 @@ function test_module(x, y)
      end
    end
 
-   cmd = "using Base.Test; using Nemo; include(\"$test_file\"); $test_function_name();"
-   info("spawning ", `$julia_exe -e \"$cmd\"`)
+   cmd = "using Test; using Nemo; include(\"$test_file\"); $test_function_name();"
+   @info("spawning ", `$julia_exe -e \"$cmd\"`)
    run(`$julia_exe -e $cmd`)
 end
 

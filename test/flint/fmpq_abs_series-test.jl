@@ -249,6 +249,8 @@ function test_fmpq_abs_series_powering()
 
    @test d^12 == 4096*x^12+24576*x^14+O(x^15)
 
+   @test_throws DomainError a^(-1)
+
    println("PASS")
 end
 
@@ -264,7 +266,11 @@ function test_fmpq_abs_series_shift()
 
    @test shift_left(a, 2) == 2*x^3+x^5
 
+   @test_throws DomainError shift_left(a, -1)
+
    @test shift_left(b, 2) == O(x^6)
+
+   @test_throws DomainError shift_right(b, -1)
 
    @test shift_right(c, 1) == 1+2*x+O(x^4)
 
@@ -284,6 +290,8 @@ function test_fmpq_abs_series_truncation()
    d = 2x + x^3 + O(x^4)
 
    @test truncate(a, 3) == 2*x + O(x^3)
+
+   @test_throws DomainError truncate(a, -1)
 
    @test truncate(b, 2) == O(x^2)
 

@@ -19,7 +19,7 @@ fmpq(a::Rational{BigInt}) = fmpq(fmpz(a.num), fmpz(a.den))
 
 function fmpq(a::Rational{Int})
   r = fmpq()
-  ccall((:fmpq_set_si, :libflint), Void, (Ref{fmpq}, Int64, UInt64), r, numerator(a), denominator(a))
+  ccall((:fmpq_set_si, :libflint), Nothing, (Ref{fmpq}, Int64, UInt64), r, numerator(a), denominator(a))
   return r
 end
 
@@ -79,23 +79,23 @@ end
 
 function numerator(a::fmpq)
    z = fmpz()
-   ccall((:fmpq_numerator, :libflint), Void, (Ref{fmpz}, Ref{fmpq}), z, a)
+   ccall((:fmpq_numerator, :libflint), Nothing, (Ref{fmpz}, Ref{fmpq}), z, a)
    return z
 end
 
 function denominator(a::fmpq)
    z = fmpz()
-   ccall((:fmpq_denominator, :libflint), Void, (Ref{fmpz}, Ref{fmpq}), z, a)
+   ccall((:fmpq_denominator, :libflint), Nothing, (Ref{fmpz}, Ref{fmpq}), z, a)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     abs(a::fmpq)
 > Return the absolute value of $a$.
 """
 function abs(a::fmpq)
    z = fmpq()
-   ccall((:fmpq_abs, :libflint), Void, (Ref{fmpq}, Ref{fmpq}), z, a)
+   ccall((:fmpq_abs, :libflint), Nothing, (Ref{fmpq}, Ref{fmpq}), z, a)
    return z
 end
 
@@ -113,18 +113,18 @@ end
 
 isunit(a::fmpq) = !iszero(a)
 
-doc"""
+@doc Markdown.doc"""
     height(a::fmpq)
 > Return the height of the fraction $a$, namely the largest of the absolute
 > values of the numerator and denominator.
 """
 function height(a::fmpq)
    temp = fmpz()
-   ccall((:fmpq_height, :libflint), Void, (Ref{fmpz}, Ref{fmpq}), temp, a)
+   ccall((:fmpq_height, :libflint), Nothing, (Ref{fmpz}, Ref{fmpq}), temp, a)
    return temp
 end
 
-doc"""
+@doc Markdown.doc"""
     height_bits(a::fmpq)
 > Return the number of bits of the height of the fraction $a$.
 """
@@ -132,9 +132,9 @@ function height_bits(a::fmpq)
    return ccall((:fmpq_height_bits, :libflint), Int, (Ref{fmpq},), a)
 end
 
-function deepcopy_internal(a::fmpq, dict::ObjectIdDict)
+function deepcopy_internal(a::fmpq, dict::IdDict)
    z = fmpq()
-   ccall((:fmpq_set, :libflint), Void, (Ref{fmpq}, Ref{fmpq}), z, a)
+   ccall((:fmpq_set, :libflint), Nothing, (Ref{fmpq}, Ref{fmpq}), z, a)
    return z
 end
 
@@ -165,7 +165,7 @@ end
 
 needs_parentheses(x::fmpq) = false
 
-isnegative(x::fmpq) = x < 0
+displayed_with_minus_in_front(x::fmpq) = x < 0
 
 show_minus_one(::Type{fmpq}) = false
 
@@ -177,7 +177,7 @@ show_minus_one(::Type{fmpq}) = false
 
 function -(a::fmpq)
    z = fmpq()
-   ccall((:fmpq_neg, :libflint), Void, (Ref{fmpq}, Ref{fmpq}), z, a)
+   ccall((:fmpq_neg, :libflint), Nothing, (Ref{fmpq}, Ref{fmpq}), z, a)
    return z
 end
 
@@ -189,21 +189,21 @@ end
 
 function +(a::fmpq, b::fmpq)
    z = fmpq()
-   ccall((:fmpq_add, :libflint), Void,
+   ccall((:fmpq_add, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpq}), z, a, b)
    return z
 end
 
 function -(a::fmpq, b::fmpq)
    z = fmpq()
-   ccall((:fmpq_sub, :libflint), Void,
+   ccall((:fmpq_sub, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpq}), z, a, b)
    return z
 end
 
 function *(a::fmpq, b::fmpq)
    z = fmpq()
-   ccall((:fmpq_mul, :libflint), Void,
+   ccall((:fmpq_mul, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpq}), z, a, b)
    return z
 end
@@ -216,14 +216,14 @@ end
 
 function +(a::fmpq, b::Int)
    z = fmpq()
-   ccall((:fmpq_add_si, :libflint), Void,
+   ccall((:fmpq_add_si, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Int), z, a, b)
    return z
 end
 
 function +(a::fmpq, b::fmpz)
    z = fmpq()
-   ccall((:fmpq_add_fmpz, :libflint), Void,
+   ccall((:fmpq_add_fmpz, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpz}), z, a, b)
    return z
 end
@@ -238,14 +238,14 @@ end
 
 function -(a::fmpq, b::Int)
    z = fmpq()
-   ccall((:fmpq_sub_si, :libflint), Void,
+   ccall((:fmpq_sub_si, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Int), z, a, b)
    return z
 end
 
 function -(a::fmpq, b::fmpz)
    z = fmpq()
-   ccall((:fmpq_sub_fmpz, :libflint), Void,
+   ccall((:fmpq_sub_fmpz, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpz}), z, a, b)
    return z
 end
@@ -256,7 +256,7 @@ end
 
 function *(a::fmpq, b::fmpz)
    z = fmpq()
-   ccall((:fmpq_mul_fmpz, :libflint), Void,
+   ccall((:fmpq_mul_fmpz, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpz}), z, a, b)
    return z
 end
@@ -287,7 +287,7 @@ function ==(a::fmpq, b::fmpq)
                 (Ref{fmpq}, Ref{fmpq}), a, b)
 end
 
-doc"""
+@doc Markdown.doc"""
     isless(a::fmpq, b::fmpq)
 > Return `true` if $a < b$, otherwise return `false`.
 """
@@ -319,7 +319,7 @@ end
 
 ==(a::Rational{T}, b::fmpq) where {T <: Integer} = b == a
 
-doc"""
+@doc Markdown.doc"""
     isless(a::fmpq, b::Integer)
 > Return `true` if $a < b$, otherwise return `false`.
 """
@@ -329,7 +329,7 @@ function isless(a::fmpq, b::Integer)
                 (Ref{fmpq}, Ref{fmpq}), a, z) < 0
 end
 
-doc"""
+@doc Markdown.doc"""
     isless(a::Integer, b::fmpq)
 > Return `true` if $a < b$, otherwise return `false`.
 """
@@ -339,7 +339,7 @@ function isless(a::Integer, b::fmpq)
                 (Ref{fmpq}, Ref{fmpq}), z, b) < 0
 end
 
-doc"""
+@doc Markdown.doc"""
     isless(a::fmpq, b::fmpz)
 > Return `true` if $a < b$, otherwise return `false`.
 """
@@ -349,7 +349,7 @@ function isless(a::fmpq, b::fmpz)
                 (Ref{fmpq}, Ref{fmpq}), a, z) < 0
 end
 
-doc"""
+@doc Markdown.doc"""
     isless(a::fmpz, b::fmpq)
 > Return `true` if $a < b$, otherwise return `false`.
 """
@@ -371,7 +371,7 @@ isless(a::fmpq, b::Rational{T}) where {T <: Integer} = isless(a, fmpq(b))
 
 function ^(a::fmpq, b::Int)
    temp = fmpq()
-   ccall((:fmpq_pow_si, :libflint), Void,
+   ccall((:fmpq_pow_si, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Int), temp, a, b)
    return temp
 end
@@ -382,24 +382,24 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     <<(a::fmpq, b::Int)
 > Return $2^b/a$.
 """
 function >>(a::fmpq, b::Int)
    z = fmpq()
-   ccall((:fmpq_div_2exp, :libflint), Void,
+   ccall((:fmpq_div_2exp, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Int), z, a, b)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     <<(a::fmpq, b::Int)
 > Return $2^b\times a$.
 """
 function <<(a::fmpq, b::Int)
    z = fmpq()
-   ccall((:fmpq_mul_2exp, :libflint), Void,
+   ccall((:fmpq_mul_2exp, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Int), z, a, b)
    return z
 end
@@ -424,7 +424,7 @@ function Base.sqrt(a::fmpq)
 
 function inv(a::fmpq)
     z = fmpq()
-    ccall((:fmpq_inv, :libflint), Void, (Ref{fmpq}, Ref{fmpq}), z, a)
+    ccall((:fmpq_inv, :libflint), Nothing, (Ref{fmpq}, Ref{fmpq}), z, a)
     return z
  end
  
@@ -436,7 +436,7 @@ function inv(a::fmpq)
 
 function divexact(a::fmpq, b::fmpq)
    z = fmpq()
-   ccall((:fmpq_div, :libflint), Void,
+   ccall((:fmpq_div, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpq}), z, a, b)
    return z
 end
@@ -456,7 +456,7 @@ end
 
 function divexact(a::fmpq, b::fmpz)
    z = fmpq()
-   ccall((:fmpq_div_fmpz, :libflint), Void,
+   ccall((:fmpq_div_fmpz, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpz}), z, a, b)
    return z
 end
@@ -477,19 +477,19 @@ divexact(a::Rational{T}, b::fmpq) where {T <: Integer} = divexact(fmpq(a), b)
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     mod(a::fmpq, b::fmpz)
 > Return $a \pmod{b}$ where $b$ is an integer coprime to the denominator of
 > $a$.
 """
 function mod(a::fmpq, b::fmpz)
    z = fmpz()
-   ccall((:fmpq_mod_fmpz, :libflint), Void,
+   ccall((:fmpq_mod_fmpz, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpq}, Ref{fmpz}), z, a, b)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     mod(a::fmpq, b::Integer)
 > Return $a \pmod{b}$ where $b$ is an integer coprime to the denominator of
 > $a$.
@@ -504,7 +504,7 @@ mod(a::fmpq, b::Integer) = mod(a, fmpz(b))
 
 function gcd(a::fmpq, b::fmpq)
    z = fmpq()
-   ccall((:fmpq_gcd, :libflint), Void,
+   ccall((:fmpq_gcd, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpq}), z, a, b)
    return z
 end
@@ -525,7 +525,7 @@ valuation(a::fmpq, b::Integer) = valuation(a, fmpz(b))
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     reconstruct(a::fmpz, b::fmpz)
 > Attempt to find a rational number $n/d$ such that
 > $0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
@@ -541,7 +541,7 @@ function reconstruct(a::fmpz, b::fmpz)
    return c
 end
 
-doc"""
+@doc Markdown.doc"""
     reconstruct(a::fmpz, b::Integer)
 > Attempt to find a rational number $n/d$ such that
 > $0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
@@ -550,7 +550,7 @@ doc"""
 """
 reconstruct(a::fmpz, b::Integer) =  reconstruct(a, fmpz(b))
 
-doc"""
+@doc Markdown.doc"""
     reconstruct(a::Integer, b::fmpz)
 > Attempt to find a rational number $n/d$ such that
 > $0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
@@ -559,7 +559,7 @@ doc"""
 """
 reconstruct(a::Integer, b::fmpz) =  reconstruct(fmpz(a), b)
 
-doc"""
+@doc Markdown.doc"""
     reconstruct(a::Integer, b::Integer)
 > Attempt to find a rational number $n/d$ such that
 > $0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
@@ -574,7 +574,7 @@ reconstruct(a::Integer, b::Integer) =  reconstruct(fmpz(a), fmpz(b))
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     next_minimal(a::fmpq)
 > Given $x$, returns the next rational number in the sequence obtained by
 > enumerating all positive denominators $q$, and for each $q$ enumerating
@@ -587,13 +587,13 @@ doc"""
 > Calkin-Wilf enumeration. If $x < 0$ we throw a `DomainError()`.
 """
 function next_minimal(a::fmpq)
-   a < 0 && throw(DomainError())
+   a < 0 && throw(DomainError("Argument must be non-negative: $a"))
    c = fmpq()
-   ccall((:fmpq_next_minimal, :libflint), Void, (Ref{fmpq}, Ref{fmpq}), c, a)
+   ccall((:fmpq_next_minimal, :libflint), Nothing, (Ref{fmpq}, Ref{fmpq}), c, a)
    return c
 end
 
-doc"""
+@doc Markdown.doc"""
     next_signed_minimal(a::fmpq)
 > Given a signed rational number $x$ assumed to be in canonical form,
 > returns the next element in the minimal-height sequence generated by
@@ -604,12 +604,12 @@ doc"""
 """
 function next_signed_minimal(a::fmpq)
    c = fmpq()
-   ccall((:fmpq_next_signed_minimal, :libflint), Void,
+   ccall((:fmpq_next_signed_minimal, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}), c, a)
    return c
 end
 
-doc"""
+@doc Markdown.doc"""
     next_calkin_wilf(a::fmpq)
 > Given $x$ return the next number in the breadth-first traversal of the
 > Calkin-Wilf tree. Starting with zero, this generates every nonnegative
@@ -621,14 +621,14 @@ doc"""
 > being faster to produce than the minimal-height order.
 """
 function next_calkin_wilf(a::fmpq)
-   a < 0 && throw(DomainError())
+   a < 0 && throw(DomainError("Argument must be non-negative: $a"))
    c = fmpq()
-   ccall((:fmpq_next_calkin_wilf, :libflint), Void,
+   ccall((:fmpq_next_calkin_wilf, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}), c, a)
    return c
 end
 
-doc"""
+@doc Markdown.doc"""
     next_signed_calkin_wilf(a::fmpq)
 > Given a signed rational number $x$ returns the next element in the
 > Calkin-Wilf sequence with negative numbers interleaved. The sequence begins
@@ -638,7 +638,7 @@ doc"""
 """
 function next_signed_calkin_wilf(a::fmpq)
    c = fmpq()
-   ccall((:fmpq_next_signed_calkin_wilf, :libflint), Void,
+   ccall((:fmpq_next_signed_calkin_wilf, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}), c, a)
    return c
 end
@@ -649,31 +649,31 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     harmonic(n::Int)
 > Computes the harmonic number $H_n = 1 + 1/2 + 1/3 + \cdots + 1/n$.
 > Table lookup is used for $H_n$ whose numerator and denominator
 > fit in a single limb. For larger $n$, a divide and conquer strategy is used.
 """
 function harmonic(n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    c = fmpq()
-   ccall((:fmpq_harmonic_ui, :libflint), Void, (Ref{fmpq}, Int), c, n)
+   ccall((:fmpq_harmonic_ui, :libflint), Nothing, (Ref{fmpq}, Int), c, n)
    return c
 end
 
-doc"""
+@doc Markdown.doc"""
     bernoulli(n::Int)
 > Computes the Bernoulli number $B_n$ for nonnegative $n$.
 """
 function bernoulli(n::Int)
-   n < 0 && throw(DomainError())
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
    c = fmpq()
-   ccall((:bernoulli_fmpq_ui, :libarb), Void, (Ref{fmpq}, Int), c, n)
+   ccall((:bernoulli_fmpq_ui, :libarb), Nothing, (Ref{fmpq}, Int), c, n)
    return c
 end
 
-doc"""
+@doc Markdown.doc"""
     bernoulli_cache(n::Int)
 > Precomputes and caches all the Bernoulli numbers up to $B_n$.
 > This is much faster than repeatedly calling `bernoulli(k)`.
@@ -682,33 +682,33 @@ doc"""
 """
 function bernoulli_cache(n::Int)
    n = n + 1
-   n < 0 && throw(DomainError())
-   ccall((:bernoulli_cache_compute, :libarb), Void, (Int,), n)
+   n < 0 && throw(DomainError("Index must be non-negative: $n"))
+   ccall((:bernoulli_cache_compute, :libarb), Nothing, (Int,), n)
 end
 
-doc"""
+@doc Markdown.doc"""
     dedekind_sum(h::fmpz, k::fmpz)
 """
 function dedekind_sum(h::fmpz, k::fmpz)
    c = fmpq()
-   ccall((:fmpq_dedekind_sum, :libflint), Void,
+   ccall((:fmpq_dedekind_sum, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpz}, Ref{fmpz}), c, h, k)
    return c
 end
 
-doc"""
+@doc Markdown.doc"""
     dedekind_sum(h::fmpz, k::Integer)
 > Computes the Dedekind sum $s(h,k)$ for arbitrary $h$ and $k$.
 """
 dedekind_sum(h::fmpz, k::Integer) = dedekind_sum(h, fmpz(k))
 
-doc"""
+@doc Markdown.doc"""
     dedekind_sum(h::Integer, k::fmpz)
 > Computes the Dedekind sum $s(h,k)$ for arbitrary $h$ and $k$.
 """
 dedekind_sum(h::Integer, k::fmpz) = dedekind_sum(fmpz(h), k)
 
-doc"""
+@doc Markdown.doc"""
     dedekind_sum(h::Integer, k::Integer)
 > Computes the Dedekind sum $s(h,k)$ for arbitrary $h$ and $k$.
 """
@@ -721,25 +721,25 @@ dedekind_sum(h::Integer, k::Integer) = dedekind_sum(fmpz(h), fmpz(k))
 ###############################################################################
 
 function zero!(c::fmpq)
-   ccall((:fmpq_zero, :libflint), Void,
+   ccall((:fmpq_zero, :libflint), Nothing,
          (Ref{fmpq},), c)
    return c
 end
 
 function mul!(c::fmpq, a::fmpq, b::fmpq)
-   ccall((:fmpq_mul, :libflint), Void,
+   ccall((:fmpq_mul, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpq}), c, a, b)
    return c
 end
 
 function addeq!(c::fmpq, a::fmpq)
-   ccall((:fmpq_add, :libflint), Void,
+   ccall((:fmpq_add, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpq}), c, c, a)
    return c
 end
 
 function add!(c::fmpq, a::fmpq, b::fmpq)
-   ccall((:fmpq_add, :libflint), Void,
+   ccall((:fmpq_add, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpq}), c, a, b)
    return c
 end
@@ -752,7 +752,7 @@ end
 
 function Rational(z::fmpq)
    r = Rational{BigInt}(0)
-   ccall((:fmpq_get_mpz_frac, :libflint), Void,
+   ccall((:fmpq_get_mpz_frac, :libflint), Nothing,
          (Ref{BigInt}, Ref{BigInt}, Ref{fmpq}), r.num, r.den, z)
    return r
 end

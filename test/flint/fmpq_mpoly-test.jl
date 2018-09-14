@@ -271,6 +271,9 @@ function test_fmpq_mpoly_powering()
          end
 
          @test (f == 0 && expn == 0 && f^expn == 0) || f^expn == r
+
+         @test_throws DomainError f^-1
+         @test_throws DomainError f^fmpz(-1)
       end
    end
 
@@ -379,7 +382,7 @@ function test_fmpq_mpoly_ideal_reduction()
       for iter = 1:10
          num = rand(1:5)
 
-         V = Array{elem_type(S)}(num)
+         V = Vector{elem_type(S)}(undef, num)
 
          for i = 1:num
             V[i] = S(0)

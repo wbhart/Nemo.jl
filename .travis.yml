@@ -4,13 +4,27 @@ os:
   - linux
   - osx
 julia:
-  - 0.6
+  - 1.0
   - nightly
 matrix:
   allow_failures:
     - julia: nightly
 notifications:
   - email: false
-after_success:
-  - julia -e 'Pkg.add("Documenter")'
-  - DOCUMENTER_DEBUG=true julia -e 'cd(Pkg.dir("Nemo")); include(joinpath("docs", "make.jl"))'
+script:
+  - julia -e 'using Pkg; Pkg.clone(pwd());'
+  - while sleep 30; do echo "still alive"; done &
+  - julia -e 'using Pkg; Pkg.build("Nemo");'
+  - julia -e 'using Pkg; Pkg.test("Nemo");'
+  # - travis_wait julia -e 'using Pkg; Pkg.build("Nemo")'
+  # - if [ -f test/runtests.jl ]; then julia --check-bounds=yes -e 'using Pkg; Pkg.test("Nemo", coverage=true)'; fi
+
+    #jobs:
+    #  include:
+    #    - stage: "Deploy docs"
+    #      julia: 1.0
+    #      os: linux
+    #      script:
+    #        - julia -e 'using Pkg; Pkg.add([PackageSpec("Documenter"), PackageSpec(path=pwd())])'
+    #        - julia docs/make.jl
+    #      after_success: skip

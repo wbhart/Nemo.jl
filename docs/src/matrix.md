@@ -20,6 +20,7 @@ Generic ring $R$                      | AbstractAlgebra.jl  | `Generic.Mat{T}`  
 $\mathbb{Z}$                          | Flint               | `fmpz_mat`          | `FmpzMatSpace`
 $\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint               | `nmod_mat`          | `NmodMatSpace`
 $\mathbb{Q}$                          | Flint               | `fmpq_mat`          | `FmpqMatSpace`
+$\mathbb{Z}/p\mathbb{Z}$ (small $p$)  | Flint               | `gfp_mat`           | `GFPMatSpace`
 $\mathbb{F}_{p^n}$ (small $p$)        | Flint               | `fq_nmod_mat`       | `FqNmodMatSpace`
 $\mathbb{F}_{p^n}$ (large $p$)        | Flint               | `fq_mat`            | `FqMatSpace
 $\mathbb{R}$                          | Arb                 | `arb_mat`           | `ArbMatSpace`
@@ -186,6 +187,7 @@ reduce_mod(A, 2)
 
 ```@docs
 lift(::nmod_mat)
+lift(::gfp_mat)
 ```
 
 **Examples**
@@ -297,6 +299,14 @@ lll_with_removal(::fmpz_mat, ::fmpz, ::lll_ctx)
 lll_with_removal_transform(::fmpz_mat, ::fmpz, ::lll_ctx)
 ```
 
+```@docs
+lll!(::fmpz_mat, ::lll_ctx)
+```
+
+```@docs
+lll_gram!(::fmpz_mat, ::lll_ctx)
+```
+
 **Examples**
 
 ```julia
@@ -347,6 +357,7 @@ C = snf_diagonal(B)
 
 ```@docs
 strong_echelon_form(::nmod_mat)
+strong_echelon_form(::gfp_mat)
 ```
 
 **Examples**
@@ -364,6 +375,7 @@ B = strong_echelon_form(A)
 
 ```@docs
 howell_form(::nmod_mat)
+howell_form(::gfp_mat)
 ```
 
 **Examples**

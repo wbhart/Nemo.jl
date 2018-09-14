@@ -298,6 +298,8 @@ function test_fmpz_rel_series_powering()
 
    @test d^12 == 4096*x^12+24576*x^14+O(x^15)
 
+   @test_throws DomainError a^-1
+
    println("PASS")
 end
 
@@ -319,6 +321,9 @@ function test_fmpz_rel_series_shift()
 
    @test shift_right(d, 3) == 1+O(x^1)
 
+   @test_throws DomainError shift_left(a, -1)
+
+   @test_throws DomainError shift_right(a, -1)
    println("PASS")
 end
 
@@ -339,6 +344,8 @@ function test_fmpz_rel_series_truncation()
    @test truncate(c, 5) == 2*x^2+x+1+O(x^5)
 
    @test truncate(d, 5) == x^3+2*x+O(x^4)
+
+   @test_throws DomainError truncate(a, -1)
 
    println("PASS")
 end

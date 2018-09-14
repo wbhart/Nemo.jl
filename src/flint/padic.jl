@@ -12,7 +12,7 @@ export FlintPadicField, padic, prime, teichmuller, log
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     O(R::FlintPadicField, m::fmpz)
 > Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
 > is not found to be a power of `p = prime(R)`.
@@ -34,7 +34,7 @@ function O(R::FlintPadicField, m::fmpz)
    return d
 end
 
-doc"""
+@doc Markdown.doc"""
     O(R::FlintPadicField, m::fmpq)
 > Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
 > is not found to be a power of `p = prime(R)`.
@@ -57,7 +57,7 @@ function O(R::FlintPadicField, m::fmpq)
    return r
 end
 
-doc"""
+@doc Markdown.doc"""
     O(R::FlintPadicField, m::Integer)
 > Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
 > is not found to be a power of `p = prime(R)`.
@@ -66,19 +66,19 @@ O(R::FlintPadicField, m::Integer) = O(R, fmpz(m))
 
 elem_type(::Type{FlintPadicField}) = padic
 
-doc"""
+@doc Markdown.doc"""
     base_ring(a::FlintPadicField)
 > Returns `Union{}` as this field is not dependent on another field.
 """
 base_ring(a::FlintPadicField) = Union{}
 
-doc"""
+@doc Markdown.doc"""
     base_ring(a::padic)
 > Returns `Union{}` as this field is not dependent on another field.
 """
 base_ring(a::padic) = Union{}
 
-doc"""
+@doc Markdown.doc"""
     parent(a::padic)
 > Returns the parent of the given p-adic field element.
 """
@@ -101,9 +101,9 @@ parent_type(::Type{padic}) = FlintPadicField
 #
 ###############################################################################
 
-function Base.deepcopy_internal(a::padic, dict::ObjectIdDict)
+function Base.deepcopy_internal(a::padic, dict::IdDict)
    z = parent(a)()
-   ccall((:padic_set, :libflint), Void,
+   ccall((:padic_set, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, parent(a))
    return z
 end
@@ -112,25 +112,25 @@ function Base.hash(a::padic, h::UInt)
    return xor(hash(lift(FlintQQ, a), h), xor(hash(prime(parent(a)), h), h))
 end
 
-doc"""
+@doc Markdown.doc"""
     prime(R::FlintPadicField)
 > Return the prime $p$ for the given $p$-adic field.
 """
 function prime(R::FlintPadicField)
    z = fmpz()
-   ccall((:padic_ctx_pow_ui, :libflint), Void,
+   ccall((:padic_ctx_pow_ui, :libflint), Nothing,
          (Ref{fmpz}, Int, Ref{FlintPadicField}), z, 1, R)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     precision(a::padic)
 > Return the precision of the given $p$-adic field element, i.e. if the element
 > is known to $O(p^n)$ this function will return $n$.
 """
 precision(a::padic) = a.N
 
-doc"""
+@doc Markdown.doc"""
     valuation(a::padic)
 > Return the valuation of the given $p$-adic field element, i.e. if the given
 > element is divisible by $p^n$ but not a higher power of $p$ then the function
@@ -138,53 +138,53 @@ doc"""
 """
 valuation(a::padic) = a.v
 
-doc"""
+@doc Markdown.doc"""
     lift(R::FlintRationalField, a::padic)
 > Return a lift of the given $p$-adic field element to $\mathbb{Q}$.
 """
 function lift(R::FlintRationalField, a::padic)
     ctx = parent(a)
     r = fmpq()
-    ccall((:padic_get_fmpq, :libflint), Void,
+    ccall((:padic_get_fmpq, :libflint), Nothing,
           (Ref{fmpq}, Ref{padic}, Ref{FlintPadicField}), r, a, ctx)
     return r
 end
 
-doc"""
+@doc Markdown.doc"""
     lift(R::FlintIntegerRing, a::padic)
 > Return a lift of the given $p$-adic field element to $\mathbb{Z}$.
 """
 function lift(R::FlintIntegerRing, a::padic)
     ctx = parent(a)
     r = fmpz()
-    ccall((:padic_get_fmpz, :libflint), Void,
+    ccall((:padic_get_fmpz, :libflint), Nothing,
           (Ref{fmpz}, Ref{padic}, Ref{FlintPadicField}), r, a, ctx)
     return r
 end
 
-doc"""
+@doc Markdown.doc"""
     zero(R::FlintPadicField)
 > Return zero in the given $p$-adic field, to the default precision.
 """
 function zero(R::FlintPadicField)
    z = padic(R.prec_max)
-   ccall((:padic_zero, :libflint), Void, (Ref{padic},), z)
+   ccall((:padic_zero, :libflint), Nothing, (Ref{padic},), z)
    z.parent = R
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     one(R::FlintPadicField)
 > Return zero in the given $p$-adic field, to the default precision.
 """
 function one(R::FlintPadicField)
    z = padic(R.prec_max)
-   ccall((:padic_one, :libflint), Void, (Ref{padic},), z)
+   ccall((:padic_one, :libflint), Nothing, (Ref{padic},), z)
    z.parent = R
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     iszero(a::padic)
 > Return `true` if the given p-adic field element is zero, otherwise return
 > `false`.
@@ -192,7 +192,7 @@ doc"""
 iszero(a::padic) = Bool(ccall((:padic_is_zero, :libflint), Cint,
                               (Ref{padic},), a))
 
-doc"""
+@doc Markdown.doc"""
     isone(a::padic)
 > Return `true` if the given p-adic field element is one, otherwise return
 > `false`.
@@ -200,7 +200,7 @@ doc"""
 isone(a::padic) = Bool(ccall((:padic_is_one, :libflint), Cint,
                              (Ref{padic},), a))
 
-doc"""
+@doc Markdown.doc"""
     isunit(a::padic)
 > Return `true` if the given p-adic field element is invertible, i.e. nonzero,
 > otherwise return `false`.
@@ -217,12 +217,12 @@ isunit(a::padic) = !Bool(ccall((:padic_is_zero, :libflint), Cint,
 function show(io::IO, x::padic)
    ctx = parent(x)
    cstr = ccall((:padic_get_str, :libflint), Ptr{UInt8},
-               (Ptr{Void}, Ref{padic}, Ref{FlintPadicField}),
+               (Ptr{Nothing}, Ref{padic}, Ref{FlintPadicField}),
                    C_NULL, x, ctx)
 
    print(io, unsafe_string(cstr))
 
-   ccall((:flint_free, :libflint), Void, (Ptr{UInt8},), cstr)
+   ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), cstr)
    print(io, " + O(")
    print(io, prime(ctx))
    print(io, "^$(x.N))")
@@ -234,7 +234,7 @@ end
 
 needs_parentheses(x::padic) = true
 
-isnegative(x::padic) = false
+displayed_with_minus_in_front(x::padic) = false
 
 show_minus_one(::Type{padic}) = true
 
@@ -258,7 +258,7 @@ function -(x::padic)
    end
    ctx = parent(x)
    z = padic(x.N)
-   ccall((:padic_neg, :libflint), Void,
+   ccall((:padic_neg, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                      z, x, ctx)
    z.parent = ctx
@@ -276,7 +276,7 @@ function +(x::padic, y::padic)
    ctx = parent(x)
    z = padic(min(x.N, y.N))
    z.parent = ctx
-   ccall((:padic_add, :libflint), Void,
+   ccall((:padic_add, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, x, y, ctx)
    return z
@@ -287,7 +287,7 @@ function -(x::padic, y::padic)
    ctx = parent(x)
    z = padic(min(x.N, y.N))
    z.parent = ctx
-   ccall((:padic_sub, :libflint), Void,
+   ccall((:padic_sub, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                   z, x, y, ctx)
    return z
@@ -298,7 +298,7 @@ function *(x::padic, y::padic)
    ctx = parent(x)
    z = padic(min(x.N + y.v, y.N + x.v))
    z.parent = ctx
-   ccall((:padic_mul, :libflint), Void,
+   ccall((:padic_mul, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, x, y, ctx)
    return z
@@ -356,7 +356,7 @@ function ==(a::padic, b::padic)
    check_parent(a, b)
    ctx = parent(a)
    z = padic(min(a.N, b.N))
-   ccall((:padic_sub, :libflint), Void,
+   ccall((:padic_sub, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, a, b, ctx)
    return Bool(ccall((:padic_is_zero, :libflint), Cint,
@@ -398,7 +398,7 @@ function ^(a::padic, n::Int)
    ctx = parent(a)
    z = padic(a.N + (n - 1)*a.v)
    z.parent = ctx
-   ccall((:padic_pow_si, :libflint), Void,
+   ccall((:padic_pow_si, :libflint), Nothing,
                 (Ref{padic}, Ref{padic}, Int, Ref{FlintPadicField}),
                z, a, n, ctx)
    return z
@@ -446,7 +446,7 @@ divexact(a::fmpq, b::padic) = inv(inv(a)*b)
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     inv(a::padic)
 > Returns $a^{-1}$. If $a = 0$ a `DivideError()` is thrown.
 """
@@ -466,7 +466,7 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     divides(f::padic, g::padic)
 > Returns a pair consisting of a flag which is set to `true` if $g$ divides
 > $f$ and `false` otherwise, and a value $h$ such that $f = gh$ if
@@ -488,7 +488,7 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     gcd(x::padic, y::padic)
 > Returns the greatest common divisor of $x$ and $y$, i.e. the function returns
 > $1$ unless both $a$ and $b$ are $0$, in which case it returns $0$.
@@ -509,7 +509,7 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     sqrt(a::padic)
 > Return the $p$-adic square root of $a$. We define this only when the
 > valuation of $a$ is even. The precision of the output will be
@@ -533,7 +533,7 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     exp(a::padic)
 > Return the $p$-adic exponential of $a$. We define this only when the
 > valuation of $a$ is positive (unless $a = 0$). The precision of the output
@@ -541,7 +541,7 @@ doc"""
 > exception is thrown.
 """
 function Base.exp(a::padic)
-   !iszero(a) && a.v <= 0 && throw(DomainError())
+   !iszero(a) && a.v <= 0 && throw(DomainError("Valuation must be positive: $a"))
    ctx = parent(a)
    z = padic(a.N)
    z.parent = ctx
@@ -551,7 +551,7 @@ function Base.exp(a::padic)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     log(a::padic)
 > Return the $p$-adic logarithm of $a$. We define this only when the valuation
 > of $a$ is zero (but not for $a == 0$). The precision of the output will be
@@ -559,7 +559,7 @@ doc"""
 > exception is thrown.
 """
 function log(a::padic)
-   (a.v > 0 || a.v < 0 || iszero(a)) && throw(DomainError())
+   (a.v > 0 || a.v < 0 || iszero(a)) && throw(DomainError("Valuation must be zero: $(a)"))
    ctx = parent(a)
    z = padic(a.N)
    z.parent = ctx
@@ -569,7 +569,7 @@ function log(a::padic)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     teichmuller(a::padic)
 > Return the Teichmuller lift of the $p$-adic value $a$. We require the
 > valuation of $a$ to be nonnegative. The precision of the output will be the
@@ -578,11 +578,11 @@ doc"""
 > thrown.
 """
 function teichmuller(a::padic)
-   a.v < 0 && throw(DomainError())
+   a.v < 0 && throw(DomainError("Valuation must be non-negative"))
    ctx = parent(a)
    z = padic(a.N)
    z.parent = ctx
-   ccall((:padic_teichmuller, :libflint), Void,
+   ccall((:padic_teichmuller, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, ctx)
    return z
 end
@@ -596,7 +596,7 @@ end
 function zero!(z::padic)
    z.N = parent(z).prec_max
    ctx = parent(z)
-   ccall((:padic_zero, :libflint), Void,
+   ccall((:padic_zero, :libflint), Nothing,
          (Ref{padic}, Ref{FlintPadicField}), z, ctx)
    return z
 end
@@ -604,7 +604,7 @@ end
 function mul!(z::padic, x::padic, y::padic)
    z.N = min(x.N + y.v, y.N + x.v)
    ctx = parent(x)
-   ccall((:padic_mul, :libflint), Void,
+   ccall((:padic_mul, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, x, y, ctx)
    return z
@@ -613,7 +613,7 @@ end
 function addeq!(x::padic, y::padic)
    x.N = min(x.N, y.N)
    ctx = parent(x)
-   ccall((:padic_add, :libflint), Void,
+   ccall((:padic_add, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                x, x, y, ctx)
    return x
@@ -622,7 +622,7 @@ end
 function addeq!(z::padic, x::padic, y::padic)
    z.N = min(x.N, y.N)
    ctx = parent(x)
-   ccall((:padic_add, :libflint), Void,
+   ccall((:padic_add, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, x, y, ctx)
    return z
@@ -660,7 +660,7 @@ function (R::FlintPadicField)(n::fmpz)
       N, = remove(n, p)
    end
    z = padic(N + R.prec_max)
-   ccall((:padic_set_fmpz, :libflint), Void,
+   ccall((:padic_set_fmpz, :libflint), Nothing,
          (Ref{padic}, Ref{fmpz}, Ref{FlintPadicField}), z, n, R)
    z.parent = R
    return z
@@ -678,7 +678,7 @@ function (R::FlintPadicField)(n::fmpq)
      N = -flog(m, p)
    end
    z = padic(N + R.prec_max)
-   ccall((:padic_set_fmpq, :libflint), Void,
+   ccall((:padic_set_fmpq, :libflint), Nothing,
          (Ref{padic}, Ref{fmpq}, Ref{FlintPadicField}), z, n, R)
    z.parent = R
    return z
@@ -699,7 +699,7 @@ end
 
 # inner constructor is also used directly
 
-doc"""
+@doc Markdown.doc"""
     FlintPadicField(p::Integer, prec::Int)
 > Returns the parent object for the $p$-adic field for given prime $p$, where
 > the default absolute precision of elements of the field is given by `prec`.

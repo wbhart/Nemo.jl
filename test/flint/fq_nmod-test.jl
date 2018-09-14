@@ -70,6 +70,8 @@ function test_fq_nmod_manipulation()
 
    @test coeff(2x + 1, 1) == 2
 
+   @test_throws DomainError coeff(2x + 1, -1) 
+
    println("PASS")
 end
 
@@ -206,7 +208,7 @@ function test_fq_nmod_special_functions()
 
    a = x^4 + 3x^2 + 6x + 1
 
-   @test trace(a) == 1
+   @test tr(a) == 1
 
    @test norm(a) == 4
 

@@ -6,7 +6,7 @@
 
 export rows, cols, zero, one, deepcopy, -, transpose, +, *, &, ==, !=,
        strongequal, overlaps, contains, inv, divexact, charpoly, det,
-       lufact, lufact!, solve, solve!, solve_lu_precomp, solve_lu_precomp!,
+       lu, lu!, solve, solve!, solve_lu_precomp, solve_lu_precomp!,
        swap_rows, swap_rows!, bound_inf_norm, isreal
 
 ###############################################################################
@@ -47,9 +47,11 @@ base_ring(a::AcbMatSpace) = a.base_ring
 base_ring(a::acb_mat) = a.base_ring
 
 function getindex!(z::acb, x::acb_mat, r::Int, c::Int)
-  v = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
-              (Ref{acb_mat}, Int, Int), x, r - 1, c - 1)
-  ccall((:acb_set, :libarb), Void, (Ref{acb}, Ptr{acb}), z, v)
+  GC.@preserve x begin
+    v = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
+                (Ref{acb_mat}, Int, Int), x, r - 1, c - 1)
+    ccall((:acb_set, :libarb), Nothing, (Ref{acb}, Ptr{acb}), z, v)
+  end
   return z
 end
 
@@ -57,9 +59,11 @@ end
   @boundscheck Generic._checkbounds(x, r, c)
 
   z = base_ring(x)()
-  v = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
-              (Ref{acb_mat}, Int, Int), x, r - 1, c - 1)
-  ccall((:acb_set, :libarb), Void, (Ref{acb}, Ptr{acb}), z, v)
+  GC.@preserve x begin
+     v = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
+               (Ref{acb_mat}, Int, Int), x, r - 1, c - 1)
+     ccall((:acb_set, :libarb), Nothing, (Ref{acb}, Ptr{acb}), z, v)
+  end
   return z
 end
 
@@ -68,9 +72,11 @@ for T in [Integer, Float64, fmpz, fmpq, arb, BigFloat, acb, AbstractString]
       @inline function setindex!(x::acb_mat, y::$T, r::Int, c::Int)
          @boundscheck Generic._checkbounds(x, r, c)
 
-         z = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
-                   (Ref{acb_mat}, Int, Int), x, r - 1, c - 1)
-         _acb_set(z, y, prec(base_ring(x)))
+         GC.@preserve x begin
+            z = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
+                      (Ref{acb_mat}, Int, Int), x, r - 1, c - 1)
+            _acb_set(z, y, prec(base_ring(x)))
+         end
       end
    end
 end
@@ -84,9 +90,11 @@ for T in [Integer, Float64, fmpz, fmpq, arb, BigFloat, AbstractString]
       @inline function setindex!(x::acb_mat, y::Tuple{$T, $T}, r::Int, c::Int)
          @boundscheck Generic._checkbounds(x, r, c)
 
-         z = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
-                   (Ref{acb_mat}, Int, Int), x, r - 1, c - 1)
-         _acb_set(z, y[1], y[2], prec(base_ring(x)))
+         GC.@preserve x begin
+            z = ccall((:acb_mat_entry_ptr, :libarb), Ptr{acb},
+                      (Ref{acb_mat}, Int, Int), x, r - 1, c - 1)
+            _acb_set(z, y[1], y[2], prec(base_ring(x)))
+         end
       end
    end
 end
@@ -98,7 +106,7 @@ zero(x::AcbMatSpace) = x()
 
 function one(x::AcbMatSpace)
   z = x()
-  ccall((:acb_mat_one, :libarb), Void, (Ref{acb_mat}, ), z)
+  ccall((:acb_mat_one, :libarb), Nothing, (Ref{acb_mat}, ), z)
   return z
 end
 
@@ -106,9 +114,9 @@ rows(a::acb_mat) = a.r
 
 cols(a::acb_mat) = a.c
 
-function deepcopy_internal(x::acb_mat, dict::ObjectIdDict)
+function deepcopy_internal(x::acb_mat, dict::IdDict)
   z = similar(x)
-  ccall((:acb_mat_set, :libarb), Void, (Ref{acb_mat}, Ref{acb_mat}), z, x)
+  ccall((:acb_mat_set, :libarb), Nothing, (Ref{acb_mat}, Ref{acb_mat}), z, x)
   return z
 end
 
@@ -153,7 +161,7 @@ end
 
 function -(x::acb_mat)
   z = similar(x)
-  ccall((:acb_mat_neg, :libarb), Void, (Ref{acb_mat}, Ref{acb_mat}), z, x)
+  ccall((:acb_mat_neg, :libarb), Nothing, (Ref{acb_mat}, Ref{acb_mat}), z, x)
   return z
 end
 
@@ -165,7 +173,7 @@ end
 
 function transpose(x::acb_mat)
   z = similar(x, cols(x), rows(x))
-  ccall((:acb_mat_transpose, :libarb), Void,
+  ccall((:acb_mat_transpose, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}), z, x)
   return z
 end
@@ -179,7 +187,7 @@ end
 function +(x::acb_mat, y::acb_mat)
   check_parent(x, y)
   z = similar(x)
-  ccall((:acb_mat_add, :libarb), Void,
+  ccall((:acb_mat_add, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{acb_mat}, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -188,7 +196,7 @@ end
 function -(x::acb_mat, y::acb_mat)
   check_parent(x, y)
   z = similar(x)
-  ccall((:acb_mat_sub, :libarb), Void,
+  ccall((:acb_mat_sub, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{acb_mat}, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -197,7 +205,7 @@ end
 function *(x::acb_mat, y::acb_mat)
   cols(x) != rows(y) && error("Matrices have wrong dimensions")
   z = similar(x, rows(x), cols(y))
-  ccall((:acb_mat_mul, :libarb), Void,
+  ccall((:acb_mat_mul, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{acb_mat}, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -212,7 +220,7 @@ end
 function ^(x::acb_mat, y::UInt)
   rows(x) != cols(x) && error("Matrix must be square")
   z = similar(x)
-  ccall((:acb_mat_pow_ui, :libarb), Void,
+  ccall((:acb_mat_pow_ui, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, UInt, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -220,7 +228,7 @@ end
 
 function *(x::acb_mat, y::Int)
   z = similar(x)
-  ccall((:acb_mat_scalar_mul_si, :libarb), Void,
+  ccall((:acb_mat_scalar_mul_si, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Int, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -230,7 +238,7 @@ end
 
 function *(x::acb_mat, y::fmpz)
   z = similar(x)
-  ccall((:acb_mat_scalar_mul_fmpz, :libarb), Void,
+  ccall((:acb_mat_scalar_mul_fmpz, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{fmpz}, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -240,7 +248,7 @@ end
 
 function *(x::acb_mat, y::arb)
   z = similar(x)
-  ccall((:acb_mat_scalar_mul_arb, :libarb), Void,
+  ccall((:acb_mat_scalar_mul_arb, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{arb}, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -250,7 +258,7 @@ end
 
 function *(x::acb_mat, y::acb)
   z = similar(x)
-  ccall((:acb_mat_scalar_mul_acb, :libarb), Void,
+  ccall((:acb_mat_scalar_mul_acb, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{acb}, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -340,13 +348,13 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     ldexp(x::acb_mat, y::Int)
 > Return $2^yx$. Note that $y$ can be positive, zero or negative.
 """
 function ldexp(x::acb_mat, y::Int)
   z = similar(x)
-  ccall((:acb_mat_scalar_mul_2exp_si, :libarb), Void,
+  ccall((:acb_mat_scalar_mul_2exp_si, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Int), z, x, y)
   return z
 end
@@ -357,7 +365,7 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     isequal(x::acb_mat, y::acb_mat)
 > Return `true` if the matrices of balls $x$ and $y$ are precisely equal,
 > i.e. if all matrix entries have the same midpoints and radii.
@@ -379,7 +387,7 @@ function !=(x::acb_mat, y::acb_mat)
   return Bool(r)
 end
 
-doc"""
+@doc Markdown.doc"""
     overlaps(x::acb_mat, y::acb_mat)
 > Returns `true` if all entries of $x$ overlap with the corresponding entry of
 > $y$, otherwise return `false`.
@@ -390,7 +398,7 @@ function overlaps(x::acb_mat, y::acb_mat)
   return Bool(r)
 end
 
-doc"""
+@doc Markdown.doc"""
     contains(x::acb_mat, y::acb_mat)
 > Returns `true` if all entries of $x$ contain the corresponding entry of
 > $y$, otherwise return `false`.
@@ -407,7 +415,7 @@ end
 #
 ################################################################################
 
-doc"""
+@doc Markdown.doc"""
     contains(x::acb_mat, y::fmpz_mat)
 > Returns `true` if all entries of $x$ contain the corresponding entry of
 > $y$, otherwise return `false`.
@@ -418,7 +426,7 @@ function contains(x::acb_mat, y::fmpz_mat)
   return Bool(r)
 end
 
-doc"""
+@doc Markdown.doc"""
     contains(x::acb_mat, y::fmpq_mat)
 > Returns `true` if all entries of $x$ contain the corresponding entry of
 > $y$, otherwise return `false`.
@@ -443,7 +451,7 @@ end
 #
 ################################################################################
 
-doc"""
+@doc Markdown.doc"""
     isreal(M::acb_mat)
 > Returns whether every entry of $M$ has vanishing imaginary part.
 """
@@ -456,7 +464,7 @@ isreal(x::acb_mat) =
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     inv(M::acb_mat)
 > Given a $n\times n$ matrix of type `acb_mat`, return an
 > $n\times n$ matrix $X$ such that $AX$ contains the
@@ -490,7 +498,7 @@ end
 function divexact(x::acb_mat, y::Int)
   y == 0 && throw(DivideError())
   z = similar(x)
-  ccall((:acb_mat_scalar_div_si, :libarb), Void,
+  ccall((:acb_mat_scalar_div_si, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Int, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -498,7 +506,7 @@ end
 
 function divexact(x::acb_mat, y::fmpz)
   z = similar(x)
-  ccall((:acb_mat_scalar_div_fmpz, :libarb), Void,
+  ccall((:acb_mat_scalar_div_fmpz, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{fmpz}, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -506,7 +514,7 @@ end
 
 function divexact(x::acb_mat, y::arb)
   z = similar(x)
-  ccall((:acb_mat_scalar_div_arb, :libarb), Void,
+  ccall((:acb_mat_scalar_div_arb, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{arb}, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -514,7 +522,7 @@ end
 
 function divexact(x::acb_mat, y::acb)
   z = similar(x)
-  ccall((:acb_mat_scalar_div_acb, :libarb), Void,
+  ccall((:acb_mat_scalar_div_acb, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{acb}, Int),
               z, x, y, prec(base_ring(x)))
   return z
@@ -537,7 +545,7 @@ divexact(x::acb_mat, y::Rational{T}) where T <: Union{Int, BigInt} = divexact(x,
 function charpoly(x::AcbPolyRing, y::acb_mat)
   base_ring(x) != base_ring(y) && error("Base rings must coincide")
   z = x()
-  ccall((:acb_mat_charpoly, :libarb), Void,
+  ccall((:acb_mat_charpoly, :libarb), Nothing,
               (Ref{acb_poly}, Ref{acb_mat}, Int), z, y, prec(base_ring(y)))
   return z
 end
@@ -551,7 +559,7 @@ end
 function det(x::acb_mat)
   cols(x) != rows(x) && error("Matrix must be square")
   z = base_ring(x)()
-  ccall((:acb_mat_det, :libarb), Void,
+  ccall((:acb_mat_det, :libarb), Nothing,
               (Ref{acb}, Ref{acb_mat}, Int), z, x, prec(base_ring(x)))
   return z
 end
@@ -562,14 +570,14 @@ end
 #
 ################################################################################
 
-doc"""
+@doc Markdown.doc"""
     exp(x::acb_mat)
 > Returns the exponential of the matrix $x$.
 """
 function Base.exp(x::acb_mat)
   cols(x) != rows(x) && error("Matrix must be square")
   z = similar(x)
-  ccall((:acb_mat_exp, :libarb), Void,
+  ccall((:acb_mat_exp, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Int), z, x, prec(base_ring(x)))
   return z
 end
@@ -580,7 +588,7 @@ end
 #
 ###############################################################################
 
-function lufact!(P::Generic.perm, x::acb_mat)
+function lu!(P::Generic.perm, x::acb_mat)
   P.d .-= 1
   r = ccall((:acb_mat_lu, :libarb), Cint,
               (Ptr{Int}, Ref{acb_mat}, Ref{acb_mat}, Int),
@@ -591,14 +599,14 @@ function lufact!(P::Generic.perm, x::acb_mat)
   return rows(x)
 end
 
-function lufact(P::Generic.perm, x::acb_mat)
+function lu(P::Generic.perm, x::acb_mat)
   cols(x) != rows(x) && error("Matrix must be square")
   parent(P).n != rows(x) && error("Permutation does not match matrix")
   R = base_ring(x)
   L = similar(x)
   U = deepcopy(x)
   n = cols(x)
-  lufact!(P, U)
+  lu!(P, U)
   for i = 1:n
     for j = 1:n
       if i > j
@@ -632,7 +640,7 @@ end
 
 function solve_lu_precomp!(z::acb_mat, P::Generic.perm, LU::acb_mat, y::acb_mat)
   Q = inv(P)
-  ccall((:acb_mat_solve_lu_precomp, :libarb), Void,
+  ccall((:acb_mat_solve_lu_precomp, :libarb), Nothing,
               (Ref{acb_mat}, Ptr{Int}, Ref{acb_mat}, Ref{acb_mat}, Int),
               z, Q.d .- 1, LU, y, prec(base_ring(LU)))
   nothing
@@ -660,8 +668,8 @@ function swap_rows(x::acb_mat, i::Int, j::Int)
 end
 
 function swap_rows!(x::acb_mat, i::Int, j::Int)
-  ccall((:acb_mat_swap_rows, :libarb), Void,
-              (Ref{acb_mat}, Ptr{Void}, Int, Int),
+  ccall((:acb_mat_swap_rows, :libarb), Nothing,
+              (Ref{acb_mat}, Ptr{Nothing}, Int, Int),
               x, C_NULL, i - 1, j - 1)
 end
 
@@ -671,21 +679,23 @@ end
 #
 ################################################################################
 
-doc"""
+@doc Markdown.doc"""
     bound_inf_norm(x::acb_mat)
 > Returns a nonnegative element $z$ of type `acb`, such that $z$ is an upper
 > bound for the infinity norm for every matrix in $x$
 """
 function bound_inf_norm(x::acb_mat)
   z = arb()
-  t = ccall((:arb_rad_ptr, :libarb), Ptr{mag_struct}, (Ref{arb}, ), z)
-  ccall((:acb_mat_bound_inf_norm, :libarb), Void,
-              (Ptr{mag_struct}, Ref{acb_mat}), t, x)
-  s = ccall((:arb_mid_ptr, :libarb), Ptr{arf_struct}, (Ref{arb}, ), z)
-  ccall((:arf_set_mag, :libarb), Void,
-              (Ptr{arf_struct}, Ptr{mag_struct}), s, t)
-  ccall((:mag_zero, :libarb), Void,
-              (Ptr{mag_struct},), t)
+  GC.@preserve x z begin
+     t = ccall((:arb_rad_ptr, :libarb), Ptr{mag_struct}, (Ref{arb}, ), z)
+     ccall((:acb_mat_bound_inf_norm, :libarb), Nothing,
+                 (Ptr{mag_struct}, Ref{acb_mat}), t, x)
+     s = ccall((:arb_mid_ptr, :libarb), Ptr{arf_struct}, (Ref{arb}, ), z)
+     ccall((:arf_set_mag, :libarb), Nothing,
+                 (Ptr{arf_struct}, Ptr{mag_struct}), s, t)
+     ccall((:mag_zero, :libarb), Nothing,
+                 (Ptr{mag_struct},), t)
+  end
   return ArbField(prec(base_ring(x)))(z)
 end
 
@@ -699,7 +709,7 @@ for (s,f) in (("add!","acb_mat_add"), ("mul!","acb_mat_mul"),
               ("sub!","acb_mat_sub"))
   @eval begin
     function ($(Symbol(s)))(z::acb_mat, x::acb_mat, y::acb_mat)
-      ccall(($f, :libarb), Void,
+      ccall(($f, :libarb), Nothing,
                   (Ref{acb_mat}, Ref{acb_mat}, Ref{acb_mat}, Int),
                   z, x, y, prec(base_ring(x)))
       return z
@@ -878,7 +888,7 @@ function identity_matrix(R::AcbField, n::Int)
      error("dimension must not be negative")
    end
    z = acb_mat(n, n)
-   ccall((:acb_mat_one, :libarb), Void, (Ref{acb_mat}, ), z)
+   ccall((:acb_mat_one, :libarb), Nothing, (Ref{acb_mat}, ), z)
    z.base_ring = R
    return z
 end

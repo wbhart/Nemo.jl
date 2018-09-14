@@ -386,9 +386,13 @@ function test_fmpq_rational_enumeration()
 
    @test next_minimal(fmpz(2)//3) == fmpz(3)//2
 
+   @test_throws DomainError next_minimal(fmpz(-1)//1)
+
    @test next_signed_minimal(-fmpz(21)//31) == fmpz(31)//21
 
    @test next_calkin_wilf(fmpz(321)//113) == fmpz(113)//244
+
+   @test_throws DomainError next_calkin_wilf(fmpz(-1)//1)
 
    @test next_signed_calkin_wilf(-fmpz(51)//17) == fmpz(1)//4
 
@@ -399,6 +403,8 @@ function test_fmpq_special_functions()
    print("fmpq.special_functions...")
 
    @test harmonic(12) == fmpz(86021)//27720
+
+   @test_throws DomainError harmonic(-1)
 
    @test dedekind_sum(12, 13) == -fmpz(11)//13
 

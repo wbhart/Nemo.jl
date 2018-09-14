@@ -181,7 +181,7 @@ function test_fmpq_mat_view()
    @test A[1, 1] == 20
 
    A = 0
-   gc()
+   GC.gc()
 
    @test B[1, 1] == 20
 
@@ -376,14 +376,14 @@ function test_fmpq_mat_gso()
    println("PASS")
 end
 
-function test_fmpq_mat_trace()
+function test_fmpq_mat_tr()
    print("fmpq_mat.trace...")
 
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
  
-   @test trace(A) == 9
+   @test tr(A) == 9
 
    println("PASS")
 end
@@ -601,7 +601,7 @@ function test_fmpq_mat()
    test_fmpq_mat_powering()
    test_fmpq_mat_adhoc_exact_division()
    test_fmpq_mat_gso()
-   test_fmpq_mat_trace()
+   test_fmpq_mat_tr()
    test_fmpq_mat_transpose()
    test_fmpq_mat_inversion()
    test_fmpq_mat_exact_division()

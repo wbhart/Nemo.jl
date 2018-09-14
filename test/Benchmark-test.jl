@@ -37,7 +37,7 @@ end
 function test_benchmark_resultant()
    print("Benchmark.resultant...")
 
-   R, x = FiniteField(7, 11, "x")
+   R, x = FlintFiniteField(7, 11, "x")
    S, y = PolynomialRing(R, "y")
    T = ResidueRing(S, y^3 + 3x*y + 1)
    U, z = PolynomialRing(T, "z")

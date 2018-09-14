@@ -1,6 +1,6 @@
 ###############################################################################
 #
-#   nmod.jl : Nemo nmod (integers modulo small n)
+#   gfp_elem.jl : Nemo gfp_elem (integers modulo small n)
 #
 ###############################################################################
 
@@ -10,18 +10,18 @@
 #
 ###############################################################################
 
-parent_type(::Type{nmod}) = NmodRing
+parent_type(::Type{gfp_elem}) = GaloisField
 
-elem_type(::Type{NmodRing}) = nmod
+elem_type(::Type{GaloisField}) = gfp_elem
 
-base_ring(a::NmodRing) = Union{}
+base_ring(a::GaloisField) = Union{}
 
-base_ring(a::nmod) = Union{}
+base_ring(a::gfp_elem) = Union{}
 
-parent(a::nmod) = a.parent
+parent(a::gfp_elem) = a.parent
 
-function check_parent(a::nmod, b::nmod)
-   a.parent != b.parent && error("Operations on distinct residue rings not supported")
+function check_parent(a::gfp_elem, b::gfp_elem)
+   a.parent != b.parent && error("Operations on distinct Galois fields not supported")
 end
 
 ###############################################################################
@@ -30,34 +30,30 @@ end
 #
 ###############################################################################
 
-function Base.hash(a::nmod, h::UInt)
-   b = 0x1812aa3492cbf4d9%UInt
+function Base.hash(a::gfp_elem, h::UInt)
+   b = 0x749c75e438001387%UInt
    return xor(xor(hash(a.data), h), b)
 end
 
-function zero(R::NmodRing)
-   return nmod(UInt(0), R)
+function zero(R::GaloisField)
+   return gfp_elem(UInt(0), R)
 end
 
-function one(R::NmodRing)
-   if R.n == 1
-      return nmod(UInt(0), R)
-   else
-      return nmod(UInt(1), R)
-   end
+function one(R::GaloisField)
+   return gfp_elem(UInt(1), R)
 end
 
-iszero(a::nmod) = a.data == 0
+iszero(a::gfp_elem) = a.data == 0
 
-isone(a::nmod) = a.parent.n == 1 ? a.data == 0 : a.data == 1
+isone(a::gfp_elem) = a.data == 1
 
-isunit(a::nmod) = a.parent.n == 1 ? a.data == 0 : gcd(a.data, a.parent.n) == 1
+isunit(a::gfp_elem) = a.data != 0
 
-modulus(R::NmodRing) = R.n
+modulus(R::GaloisField) = R.n
 
-function deepcopy_internal(a::nmod, dict::IdDict)
+function deepcopy_internal(a::gfp_elem, dict::IdDict)
    R = parent(a)
-   return nmod(deepcopy(a.data), R)
+   return gfp_elem(deepcopy(a.data), R)
 end
 
 ###############################################################################
@@ -66,24 +62,8 @@ end
 #
 ###############################################################################
 
-function canonical_unit(x::nmod)
-  #the simple return x does not work
-  # - if x == 0, this is not a unit
-  # - if R is not a field....
-  if iszero(x)
-    return parent(x)(0)
-  end
-  g = gcd(modulus(x), data(x))
-  u = divexact(data(x), g)
-  a, b = ppio(modulus(x), u) 
-  if isone(a)
-    r = u
-  elseif isone(b)
-    r = b
-  else
-    r = crt(fmpz(1), fmpz(a), fmpz(u), fmpz(b))
-  end
-  return parent(x)(r)
+function canonical_unit(x::gfp_elem)
+  return x
 end
 
 ###############################################################################
@@ -92,19 +72,19 @@ end
 #
 ###############################################################################
 
-function show(io::IO, R::NmodRing)
-   print(io, "Integers modulo ", signed(widen(R.n)))
+function show(io::IO, R::GaloisField)
+   print(io, "Galois field with characteristic ", signed(widen(R.n)))
 end
 
-function show(io::IO, a::nmod)
+function show(io::IO, a::gfp_elem)
    print(io, signed(widen(a.data)))
 end
 
-needs_parentheses(x::nmod) = false
+needs_parentheses(x::gfp_elem) = false
 
-displayed_with_minus_in_front(x::nmod) = false
+displayed_with_minus_in_front(x::gfp_elem) = false
 
-show_minus_one(::Type{nmod}) = true
+show_minus_one(::Type{gfp_elem}) = true
 
 ###############################################################################
 #
@@ -112,12 +92,12 @@ show_minus_one(::Type{nmod}) = true
 #
 ###############################################################################
 
-function -(x::nmod)
+function -(x::gfp_elem)
    if x.data == 0
       return deepcopy(x)
    else
       R = parent(x)
-      return nmod(R.n - x.data, R)
+      return gfp_elem(R.n - x.data, R)
    end
 end
 
@@ -127,36 +107,36 @@ end
 #
 ###############################################################################
 
-function +(x::nmod, y::nmod)
+function +(x::gfp_elem, y::gfp_elem)
    check_parent(x, y)
    R = parent(x)
    n = modulus(R)
    d = x.data + y.data - n
    if d > x.data
-      return nmod(d + n, R)
+      return gfp_elem(d + n, R)
    else
-      return nmod(d, R)
+      return gfp_elem(d, R)
    end
 end
 
-function -(x::nmod, y::nmod)
+function -(x::gfp_elem, y::gfp_elem)
    check_parent(x, y)
    R = parent(x)
    n = modulus(R)
    d = x.data - y.data
    if d > x.data
-      return nmod(d + n, R)
+      return gfp_elem(d + n, R)
    else
-      return nmod(d, R)
+      return gfp_elem(d, R)
    end
 end
 
-function *(x::nmod, y::nmod)
+function *(x::gfp_elem, y::gfp_elem)
    check_parent(x, y)
    R = parent(x)
    d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
              x.data, y.data, R.n, R.ninv)
-   return nmod(d, R)
+   return gfp_elem(d, R)
 end
 
 ###############################################################################
@@ -165,44 +145,56 @@ end
 #
 ###############################################################################
 
-function *(x::Integer, y::nmod)
+function *(x::Integer, y::gfp_elem)
    R = parent(y)
    return R(widen(x)*signed(widen(y.data)))
 end
 
-*(x::nmod, y::Integer) = y*x
+*(x::gfp_elem, y::Integer) = y*x
 
-function *(x::Int, y::nmod)
+function *(x::Int, y::gfp_elem)
    R = parent(y)
    if x < 0
       d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
              UInt(-x), y.data, R.n, R.ninv)
-      return -nmod(d, R)
+      return -gfp_elem(d, R)
    else
       d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
              UInt(x), y.data, R.n, R.ninv)
-      return nmod(d, R)
+      return gfp_elem(d, R)
    end
 end
 
-*(x::nmod, y::Int) = y*x
+*(x::gfp_elem, y::Int) = y*x
 
-function *(x::UInt, y::nmod)
+function *(x::UInt, y::gfp_elem)
    R = parent(y)
    d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
              UInt(x), y.data, R.n, R.ninv)
-   return nmod(d, R)
+   return gfp_elem(d, R)
 end
 
-*(x::nmod, y::UInt) = y*x
+*(x::gfp_elem, y::UInt) = y*x
 
-+(x::nmod, y::Integer) = x + parent(x)(y)
++(x::gfp_elem, y::Integer) = x + parent(x)(y)
 
-+(x::Integer, y::nmod) = y + x
++(x::Integer, y::gfp_elem) = y + x
 
--(x::nmod, y::Integer) = x - parent(x)(y)
+-(x::gfp_elem, y::Integer) = x - parent(x)(y)
 
--(x::Integer, y::nmod) = parent(y)(x) - y
+-(x::Integer, y::gfp_elem) = parent(y)(x) - y
+
+*(x::fmpz, y::gfp_elem) = BigInt(x)*y
+
+*(x::gfp_elem, y::fmpz) = y*x
+
++(x::gfp_elem, y::fmpz) = x + parent(x)(y)
+
++(x::fmpz, y::gfp_elem) = y + x
+
+-(x::gfp_elem, y::fmpz) = x - parent(x)(y)
+
+-(x::fmpz, y::gfp_elem) = parent(y)(x) - y
 
 ###############################################################################
 #
@@ -210,7 +202,7 @@ end
 #
 ###############################################################################
 
-function ^(x::nmod, y::Int)
+function ^(x::gfp_elem, y::Int)
    R = parent(x)
    if y < 0
       x = inv(x)
@@ -218,7 +210,7 @@ function ^(x::nmod, y::Int)
    end
    d = ccall((:n_powmod2_preinv, :libflint), UInt, (UInt, Int, UInt, UInt),
              UInt(x.data), y, R.n, R.ninv)
-   return nmod(d, R)
+   return gfp_elem(d, R)
 end
 
 ###############################################################################
@@ -227,7 +219,7 @@ end
 #
 ###############################################################################
 
-function ==(x::nmod, y::nmod)
+function ==(x::gfp_elem, y::gfp_elem)
    check_parent(x, y)
    return x.data == y.data
 end
@@ -238,13 +230,13 @@ end
 #
 ###############################################################################
 
-==(x::nmod, y::Integer) = x == parent(x)(y)
+==(x::gfp_elem, y::Integer) = x == parent(x)(y)
 
-==(x::Integer, y::nmod) = parent(y)(x) == y
+==(x::Integer, y::gfp_elem) = parent(y)(x) == y
 
-==(x::nmod, y::fmpz) = x == parent(x)(y)
+==(x::gfp_elem, y::fmpz) = x == parent(x)(y)
 
-==(x::fmpz, y::nmod) = parent(y)(x) == y
+==(x::fmpz, y::gfp_elem) = parent(y)(x) == y
 
 ###############################################################################
 #
@@ -252,18 +244,12 @@ end
 #
 ###############################################################################
 
-function inv(x::nmod)
+function inv(x::gfp_elem)
    R = parent(x)
-   (x == 0 && R.n != 1) && throw(DivideError())
-   if R.n == 1
-      return deepcopy(x)
-   end
-   #s = [UInt(0)]
-   s = Ref{UInt}()
-   g = ccall((:n_gcdinv, :libflint), UInt, (Ptr{UInt}, UInt, UInt),
-         s, x.data, R.n)
-   g != 1 && error("Impossible inverse in ", R)
-   return nmod(s[], R)
+   x == 0 && throw(DivideError())
+   xinv = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
+            x.data, R.n)
+   return gfp_elem(xinv, R)
 end
 
 ###############################################################################
@@ -272,65 +258,25 @@ end
 #
 ###############################################################################
 
-function divexact(x::nmod, y::nmod)
+function divexact(x::gfp_elem, y::gfp_elem)
    check_parent(x, y)
-   fl, q = divides(x, y)
-   if !fl
-     error("Impossible inverse in ", parent(x))
-   end
-   return q
+   R = parent(x)
+   yinv = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
+           y.data, R.n)
+   d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
+             x.data, yinv, R.n, R.ninv)
+   return d
 end
 
-function divides(a::nmod, b::nmod)
+function divides(a::gfp_elem, b::gfp_elem)
    check_parent(a, b)
    if iszero(a)
       return true, a
    end
-   A = data(a)
-   B = data(b)
-   R = parent(a)
-   m = modulus(R)
-   gb = gcd(B, m)
-   q, r = divrem(A, gb)
-   if !iszero(r)
-      return false, b
+   if iszero(b)
+      return false, a
    end
-   ub = divexact(B, gb)
-   # The Julia invmod function does not give the correct result for me
-   b1 = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
-           ub, divexact(m, gb))
-   rr = R(q)*b1
-   return true, rr
-end
-
-###############################################################################
-#
-#   GCD
-#
-###############################################################################
-
-function gcd(x::nmod, y::nmod)
-   check_parent(x, y)
-   R = parent(x)
-   d = gcd(gcd(x.data, R.n), y.data)
-   if d == R.n
-      return nmod(0, R)
-   else
-      return nmod(d, R)
-   end
-end
-
-@doc Markdown.doc"""
-    gcdx(a::nmod, b::nmod)
-> Compute the extended gcd with the Euclidean structure inherited from
-> $\mathbb{Z}$.
-"""
-function gcdx(a::nmod, b::nmod)
-   m = modulus(a)
-   R = parent(a)
-   g, u, v = gcdx(fmpz(a.data), fmpz(b.data))
-   G, U, V = gcdx(g, fmpz(m))
-   return R(G), R(U)*R(u), R(U)*R(v)
+   return true, divexact(a, b)
 end
 
 ###############################################################################
@@ -339,20 +285,20 @@ end
 #
 ###############################################################################
 
-function zero!(z::nmod)
+function zero!(z::gfp_elem)
    R = parent(z)
-   return nmod(UInt(0), R)
+   return gfp_elem(UInt(0), R)
 end
 
-function mul!(z::nmod, x::nmod, y::nmod)
+function mul!(z::gfp_elem, x::gfp_elem, y::gfp_elem)
    return x*y
 end
 
-function addeq!(z::nmod, x::nmod)
+function addeq!(z::gfp_elem, x::gfp_elem)
    return z + x
 end
 
-function add!(z::nmod, x::nmod, y::nmod)
+function add!(z::gfp_elem, x::gfp_elem, y::gfp_elem)
    return x + y
 end
 
@@ -362,12 +308,12 @@ end
 #
 ###############################################################################
 
-function rand(R::NmodRing)
+function rand(R::GaloisField)
    n = rand(UInt(0):R.n - 1)
-   return nmod(n, R)
+   return gfp_elem(n, R)
 end
 
-function rand(R::NmodRing, b::UnitRange{Int64})
+function rand(R::GaloisField, b::UnitRange{Int64})
    n = rand(b)
    return R(n)
 end
@@ -378,7 +324,7 @@ end
 #
 ###############################################################################
 
-promote_rule(::Type{nmod}, ::Type{T}) where T <: Integer = nmod
+promote_rule(::Type{gfp_elem}, ::Type{T}) where T <: Integer = gfp_elem
 
 ###############################################################################
 #
@@ -386,20 +332,20 @@ promote_rule(::Type{nmod}, ::Type{T}) where T <: Integer = nmod
 #
 ###############################################################################
 
-function (R::NmodRing)()
-   return nmod(UInt(0), R)
+function (R::GaloisField)()
+   return gfp_elem(UInt(0), R)
 end
 
-function (R::NmodRing)(a::Integer)
+function (R::GaloisField)(a::Integer)
    n = R.n
    d = a%signed(widen(n))
    if d < 0
       d += n
    end
-   return nmod(UInt(d), R)
+   return gfp_elem(UInt(d), R)
 end
 
-function (R::NmodRing)(a::Int)
+function (R::GaloisField)(a::Int)
    n = R.n
    ninv = R.ninv
    if reinterpret(Int, n) > 0 && a < 0
@@ -413,38 +359,47 @@ function (R::NmodRing)(a::Int)
       d = ccall((:n_mod2_preinv, :libflint), UInt, (UInt, UInt, UInt),
              d, n, ninv)
    end
-   return nmod(d, R)
+   return gfp_elem(d, R)
 end
 
-function (R::NmodRing)(a::UInt)
+function (R::GaloisField)(a::UInt)
    n = R.n
    ninv = R.ninv
    a = ccall((:n_mod2_preinv, :libflint), UInt, (UInt, UInt, UInt),
              a, n, ninv)
-   return nmod(a, R)
+   return gfp_elem(a, R)
 end
 
-function (R::NmodRing)(a::fmpz)
+function (R::GaloisField)(a::fmpz)
    d = ccall((:fmpz_fdiv_ui, :libflint), UInt, (Ref{fmpz}, UInt),
              a, R.n)
-   return nmod(d, R)
+   return gfp_elem(d, R)
 end
 
-function (R::NmodRing)(a::nmod)
+function (R::GaloisField)(a::gfp_elem)
    return a
 end
 
 ###############################################################################
 #
-#   nmod constructor
+#   gfp_elem constructor
 #
 ###############################################################################
 
-function ResidueRing(R::FlintIntegerRing, n::Int; cached::Bool=true)
-   n <= 0 && throw(DomainError("Modulus must be non-negative: $n"))
-   return NmodRing(UInt(n), cached)
+function GF(n::Int; cached::Bool=true)
+   (n < 0) && throw(DomainError("Characteristic must be prime: $n"))
+   un = UInt(n)
+   !is_prime(un) && throw(DomainError("Characteristic must be prime: $n"))
+   return GaloisField(un, cached)
 end
 
-function ResidueRing(R::FlintIntegerRing, n::UInt; cached::Bool=true)
-   return NmodRing(n, cached)
+function GF(n::UInt; cached::Bool=true)
+   un = UInt(n)
+   !is_prime(un) && throw(DomainError("Characteristic must be prime: $n"))
+   return GaloisField(un, cached)
 end
+
+function GF(n::fmpz; cached::Bool=true)
+   return ResidueField(Nemo.ZZ, n)
+end
+
