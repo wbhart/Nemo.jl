@@ -55,6 +55,8 @@ include("flint/fmpq_mat.jl")
 
 include("flint/nmod_mat.jl")
 
+include("flint/gfp_mat.jl")
+
 include("flint/fq_mat.jl")
 
 include("flint/fq_nmod_mat.jl")
