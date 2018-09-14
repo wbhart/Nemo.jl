@@ -623,11 +623,11 @@ end
 #
 ################################################################################
 
-function charpoly(R::NmodPolyRing, a::T) where T <: Zmodn_mat
+function charpoly(R::NmodPolyRing, a::nmod_mat)
   m = deepcopy(a)
   p = R()
   ccall((:nmod_mat_charpoly, :libflint), Nothing,
-          (Ref{T}, Ref{T}), p, m)
+          (Ref{nmod_poly}, Ref{nmod_mat}), p, m)
   return p
 end
 
