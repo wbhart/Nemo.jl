@@ -43,6 +43,12 @@ end
 set_entry!(a::gfp_mat, i::Int, j::Int, u::gfp_elem) =
         set_entry!(a, i, j, u.data)
 
+@inline function setindex!(a::gfp_mat, u::gfp_elem, i::Int, j::Int)
+  @boundscheck Generic._checkbounds(a, i, j)
+  (base_ring(a) != parent(u)) && error("Parent objects must coincide")
+  set_entry!(a, i, j, u.data)
+end
+
 function deepcopy_internal(a::gfp_mat, dict::IdDict)
   z = gfp_mat(rows(a), cols(a), a.n)
   if isdefined(a, :base_ring)
@@ -272,7 +278,7 @@ function (a::GFPMatSpace)(b::fmpz)
    return M
 end
 
-function (a::GFPMatSpace)(b::nmod)
+function (a::GFPMatSpace)(b::gfp_elem)
    parent(b) != base_ring(a) && error("Unable to coerce to matrix")
    M = a()
    for i = 1:a.rows
