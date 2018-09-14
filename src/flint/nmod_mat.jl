@@ -74,7 +74,7 @@ end
   set_entry!(a, i, j, u)
 end
 
-@inline function setindex!(a::T, u::nmod, i::Int, j::Int) where T <: Zmodn_mat
+@inline function setindex!(a::nmod_mat, u::nmod, i::Int, j::Int)
   @boundscheck Generic._checkbounds(a, i, j)
   (base_ring(a) != parent(u)) && error("Parent objects must coincide") 
   set_entry!(a, i, j, u.data)
@@ -137,7 +137,7 @@ function one(a::NmodMatSpace)
 end
 
 function iszero(a::T) where T <: Zmodn_mat
-  r = ccall((:nmod_mat_is_zero, :libflint), Cint, (Ref{nmod_mat}, ), a)
+  r = ccall((:nmod_mat_is_zero, :libflint), Cint, (Ref{T}, ), a)
   return Bool(r)
 end
 

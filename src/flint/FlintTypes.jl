@@ -699,7 +699,7 @@ mutable struct gfp_poly_factor
   end
 end
 
-function _gfp_poly_factor_clear_fn(a::nmod_poly_factor)
+function _gfp_poly_factor_clear_fn(a::gfp_poly_factor)
   ccall((:nmod_poly_factor_clear, :libflint), Nothing,
           (Ref{gfp_poly_factor}, ), a)
 end

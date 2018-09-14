@@ -398,3 +398,8 @@ function GF(n::UInt; cached::Bool=true)
    !is_prime(un) && throw(DomainError("Characteristic must be prime: $n"))
    return GaloisField(un, cached)
 end
+
+function GF(n::fmpz; cached::Bool=true)
+   return ResidueField(Nemo.ZZ, n)
+end
+
