@@ -184,6 +184,18 @@ end
 
 -(x::Integer, y::gfp_elem) = parent(y)(x) - y
 
+*(x::fmpz, y::gfp_elem) = BigInt(x)*y
+
+*(x::gfp_elem, y::fmpz) = y*x
+
++(x::gfp_elem, y::fmpz) = x + parent(x)(y)
+
++(x::fmpz, y::gfp_elem) = y + x
+
+-(x::gfp_elem, y::fmpz) = x - parent(x)(y)
+
+-(x::fmpz, y::gfp_elem) = parent(y)(x) - y
+
 ###############################################################################
 #
 #   Powering
