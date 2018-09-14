@@ -23,6 +23,7 @@ $\mathbb{Z}$                          | Flint               | `fmpz_poly`       
 $\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint               | `nmod_poly`         | `NmodPolyRing`
 $\mathbb{Z}/n\mathbb{Z}$ (large $n$)  | Flint               | `fmpz_mod_poly`     | `FmpzModPolyRing`
 $\mathbb{Q}$                          | Flint               | `fmpq_poly`         | `FmpqPolyRing`
+$\mathbb{Z}/p\mathbb{Z}$ (prime $p$)  | Flint               | `gfp_poly`          | `GFPPolyRing`
 $\mathbb{F}_{p^n}$ (small $p$)        | Flint               | `fq_nmod_poly`      | `FqNmodPolyRing`
 $\mathbb{F}_{p^n}$ (large $p$)        | Flint               | `fq_poly`           | `FqPolyRing`
 $\mathbb{R}$                          | Arb                 | `arb_poly`          | `ArbPolyRing`
@@ -149,6 +150,7 @@ ring of the residue ring, e.g. from $\mathbb{Z}/n\mathbb{Z}$ to $\mathbb{Z}$.
 
 ```@docs
 lift(::FmpzPolyRing, ::nmod_poly)
+lift(::FmpzPolyRing, ::gfp_poly)
 lift(::FmpzPolyRing, ::fmpz_mod_poly)
 ```
 
@@ -231,6 +233,7 @@ associative array with polynomial factors as keys and exponents as values.
 
 ```@docs
 isirreducible(::nmod_poly)
+isirreducible(::gfp_poly)
 isirreducible(::fmpz_mod_poly)
 isirreducible(::fq_poly)
 isirreducible(::fq_nmod_poly)
@@ -238,6 +241,7 @@ isirreducible(::fq_nmod_poly)
 
 ```@docs
 issquarefree(::nmod_poly)
+issquarefree(::gfp_poly)
 issquarefree(::fmpz_mod_poly)
 issquarefree(::fq_poly)
 issquarefree(::fq_nmod_poly)
@@ -246,6 +250,7 @@ issquarefree(::fq_nmod_poly)
 ```@docs
 factor(::fmpz_poly)
 factor(::nmod_poly)
+factor(::gfp_poly)
 factor(::fmpz_mod_poly)
 factor(::fq_poly)
 factor(::fq_nmod_poly)
@@ -253,6 +258,7 @@ factor(::fq_nmod_poly)
 
 ```@docs
 factor_squarefree(::nmod_poly)
+factor_squarefree(::gfp_poly)
 factor_squarefree(::fmpz_mod_poly)
 factor_squarefree(::fq_poly)
 factor_squarefree(::fq_nmod_poly)
@@ -260,6 +266,7 @@ factor_squarefree(::fq_nmod_poly)
 
 ```@docs
 factor_distinct_deg(::nmod_poly)
+factor_distinct_deg(::gfp_poly)
 factor_distinct_deg(::fmpz_mod_poly)
 factor_distinct_deg(::fq_poly)
 factor_distinct_deg(::fq_nmod_poly)

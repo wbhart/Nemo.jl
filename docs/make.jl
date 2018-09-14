@@ -18,6 +18,7 @@ makedocs(
                            "rational.md",
                            "arb.md",
                            "acb.md",
+                           "gfp.md",
                            "finitefield.md",
                            "numberfield.md",
                            "padic.md"],
