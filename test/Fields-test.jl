@@ -1,4 +1,5 @@
 include("flint/fmpq-test.jl")
+include("flint/gfp-test.jl")
 include("flint/fq-test.jl")
 include("flint/fq_nmod-test.jl")
 include("flint/padic-test.jl")
@@ -13,6 +14,7 @@ function test_fields()
    test_acb()
 
    test_fmpq()
+   test_gfp()
    test_fq()
    test_fq_nmod()
    test_padic()
