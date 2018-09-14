@@ -358,7 +358,7 @@ C = snf_diagonal(B)
 ```@docs
 strong_echelon_form(::nmod_mat)
 strong_echelon_form(::gfp_mat)
-``
+```
 
 **Examples**
 
