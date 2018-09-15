@@ -334,23 +334,6 @@ end
 
 ################################################################################
 #
-#  Row echelon form
-#
-################################################################################
-
-function rref(a::T) where T <: Zmodn_mat
-  z = deepcopy(a)
-  r = ccall((:nmod_mat_rref, :libflint), Int, (Ref{T}, ), z)
-  return r, z
-end
-
-function rref!(a::T) where T <: Zmodn_mat
-  r = ccall((:nmod_mat_rref, :libflint), Int, (Ref{T}, ), a)
-  return r
-end
-
-################################################################################
-#
 #  Strong echelon form and Howell form
 #
 ################################################################################

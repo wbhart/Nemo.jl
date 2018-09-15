@@ -425,20 +425,23 @@ function test_nmod_mat_row_echelon_form()
 
   c = a*transpose(a)
 
-  r, d = rref(a)
+  r, den, d = rref(a)
 
-  @test d == R([ 1 0 0 8; 0 1 0 15; 0 0 1 16])
+  @test d == R([ 12 0 0 11; 0 12 0 10; 0 0 12 5])
   @test r == 3
+  @test den == Z17(12)
 
-  r = rref!(a)
+  r, den = rref!(a)
 
-  @test a == R([ 1 0 0 8; 0 1 0 15; 0 0 1 16])
+  @test a == R([ 12 0 0 11; 0 12 0 10; 0 0 12 5])
   @test r == 3
+  @test den == Z17(12)
 
-  r, d = rref(b)
+  r, den, d = rref(b)
 
-  @test d == parent(b)([ 1 0 0 ; 0 0 1; 0 0 0; 0 0 0])
+  @test d == parent(b)([ 2 0 0 ; 0 0 2; 0 0 0; 0 0 0])
   @test r == 2
+  @test den == Z17(2)
 
   println("PASS")
 end

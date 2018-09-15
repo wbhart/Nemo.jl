@@ -97,6 +97,23 @@ end
 
 ################################################################################
 #
+#  Row reduced echelon form
+#
+################################################################################
+
+function rref(a::gfp_mat)
+  z = deepcopy(a)
+  r = ccall((:nmod_mat_rref, :libflint), Int, (Ref{gfp_mat}, ), z)
+  return r, z
+end
+
+function rref!(a::gfp_mat)
+  r = ccall((:nmod_mat_rref, :libflint), Int, (Ref{gfp_mat}, ), a)
+  return r
+end
+
+################################################################################
+#
 #  Strong echelon form and Howell form
 #
 ################################################################################
@@ -109,9 +126,7 @@ end
 function strong_echelon_form(a::gfp_mat)
   (rows(a) < cols(a)) &&
               error("Matrix must have at least as many rows as columns")
-  z = deepcopy(a)
-  strong_echelon_form!(z)
-  return z
+  return rref(a)
 end
 
 @doc Markdown.doc"""
@@ -123,9 +138,7 @@ function howell_form(a::gfp_mat)
   (rows(a) < cols(a)) &&
               error("Matrix must have at least as many rows as columns")
 
-  z = deepcopy(a)
-  howell_form!(z)
-  return z
+  return rref(a)
 end
 
 ################################################################################
