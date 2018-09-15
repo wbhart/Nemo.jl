@@ -19,12 +19,12 @@ script:
   # - travis_wait julia -e 'using Pkg; Pkg.build("Nemo")'
   # - if [ -f test/runtests.jl ]; then julia --check-bounds=yes -e 'using Pkg; Pkg.test("Nemo", coverage=true)'; fi
 
-    #jobs:
-    #  include:
-    #    - stage: "Deploy docs"
-    #      julia: 1.0
-    #      os: linux
-    #      script:
-    #        - julia -e 'using Pkg; Pkg.add([PackageSpec("Documenter"), PackageSpec(path=pwd())])'
-    #        - julia docs/make.jl
-    #      after_success: skip
+jobs:
+  include:
+    - stage: "Deploy docs"
+      julia: 1.0
+      os: linux
+      script:
+        - julia -e 'using Pkg; Pkg.add([PackageSpec("Documenter"), PackageSpec(path=pwd())])'
+        - julia docs/make.jl
+      after_success: skip
