@@ -253,11 +253,11 @@ end
 function test_gfp_mat_unary_ops()
   print("gfp_mat.unary_ops...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
   S = MatrixSpace(Z2, 3, 4)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
@@ -276,7 +276,7 @@ end
 function test_gfp_mat_binary_ops()
   print("gfp_mat.binary_ops...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
 
@@ -308,10 +308,10 @@ end
 function test_gfp_mat_adhoc_binary()
   print("gfp_mat.adhoc_binary...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
 
@@ -351,7 +351,7 @@ end
 function test_gfp_mat_comparison()
   print("gfp_mat.comparison...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
 
@@ -369,7 +369,7 @@ end
 function test_gfp_mat_adhoc_comparison()
   print("gfp_mat.comparison...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
 
@@ -387,7 +387,7 @@ end
 function test_gfp_mat_powering()
   print("gfp_mat.powering...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
 
@@ -411,10 +411,10 @@ end
 function test_gfp_mat_row_echelon_form()
   print("gfp_mat.row_echelon_form...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
   S = MatrixSpace(Z2, 3, 4)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
@@ -461,16 +461,19 @@ function test_gfp_mat_howell_form()
   @test howell_form(b) == 1
   @test strong_echelon_form(d) == R([1 0 0; 0 0 0; 0 0 1])
 
+  a = matrix(Z17, [0 1 0 0; 0 0 1 0; 0 0 0 1; 0 0 0 0])
+  @test strong_echelon_form(a) == matrix(Z17, [0 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1])
+
   println("PASS")
 end
 
 function test_gfp_mat_trace_det()
   print("gfp_mat.trace_det...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
   S = MatrixSpace(Z2, 3, 4)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
@@ -505,10 +508,10 @@ end
 function test_gfp_mat_rank()
   print("gfp_mat.rank...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
   S = MatrixSpace(Z2, 3, 4)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
@@ -535,10 +538,10 @@ end
 function test_gfp_mat_inv()
   print("gfp_mat.inv...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
   S = MatrixSpace(Z2, 3, 4)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
@@ -561,7 +564,7 @@ end
 function test_gfp_mat_solve()
   print("gfp_mat.solve...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
 
@@ -586,7 +589,7 @@ function test_gfp_mat_lu()
   print("gfp_mat.lu...")
 
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
 
@@ -614,6 +617,24 @@ function test_gfp_mat_lu()
   println("PASS")
 end
 
+function test_gfp_mat_swap_rows()
+  print("gfp_mat.swap_rows...")
+
+  Z17 = GF(17)
+
+  A = matrix(Z17, 5, 1, [1, 2, 3, 4, 5])
+
+  B = swap_rows(A, 3, 4)
+  @test B == matrix(Z17, 5, 1, [1, 2, 4, 3, 5])
+
+  swap_rows!(A, 3, 4)
+  @test A == matrix(Z17, 5, 1, [1, 2, 4, 3, 5])
+
+  @test_throws ErrorException swap_rows(A, 0, 5)
+  @test_throws ErrorException swap_rows(A, 4, 6)
+
+  println("PASS")
+end
 function test_gfp_mat_view()
   print("gfp_mat.view...")
 
@@ -708,7 +729,7 @@ end
 function test_gfp_mat_concatenation()
   print("gfp_mat.concatenation...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
 
@@ -811,6 +832,7 @@ function test_gfp_mat()
   test_gfp_mat_inv()
   test_gfp_mat_lu()
   test_gfp_mat_view()
+  test_gfp_mat_swap_rows()
   test_gfp_mat_sub()
   test_gfp_mat_concatenation()
   test_gfp_mat_conversion()

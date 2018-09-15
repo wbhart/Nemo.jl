@@ -617,6 +617,25 @@ function test_nmod_mat_lu()
   println("PASS")
 end
 
+function test_nmod_mat_swap_rows()
+  print("nmod_mat.swap_rows...")
+
+  Z17 = ResidueRing(ZZ, 17)
+
+  A = matrix(Z17, 5, 1, [1, 2, 3, 4, 5])
+
+  B = swap_rows(A, 3, 4)
+  @test B == matrix(Z17, 5, 1, [1, 2, 4, 3, 5])
+
+  swap_rows!(A, 3, 4)
+  @test A == matrix(Z17, 5, 1, [1, 2, 4, 3, 5])
+
+  @test_throws ErrorException swap_rows(A, 0, 5)
+  @test_throws ErrorException swap_rows(A, 4, 6)
+
+  println("PASS")
+end
+
 function test_nmod_mat_view()
   print("nmod_mat.view...")
 
@@ -813,6 +832,7 @@ function test_nmod_mat()
   test_nmod_mat_rank()
   test_nmod_mat_inv()
   test_nmod_mat_lu()
+  test_nmod_mat_swap_rows()
   test_nmod_mat_view()
   test_nmod_mat_sub()
   test_nmod_mat_concatenation()

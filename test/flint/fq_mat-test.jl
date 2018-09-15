@@ -224,7 +224,7 @@ function test_fq_mat_manipulation()
 
   @test iszero(e)
 
-  @test_throws ErrorException one(MatrixSpace(ResidueRing(ZZ, 2), 1, 2))
+  @test_throws ErrorException one(MatrixSpace(F9, 1, 2))
 
   @test issquare(a)
 
@@ -395,7 +395,7 @@ end
 function test_fq_mat_row_echelon_form()
   print("fq_mat.row_echelon_form...")
 
-  F17 = ResidueRing(ZZ,17)
+  F17, _ = FlintFiniteField(fmpz(17), 1, "a")
   R = MatrixSpace(F17, 3, 4)
   RR = MatrixSpace(F17, 4, 3)
 
