@@ -126,7 +126,19 @@ end
 function strong_echelon_form(a::gfp_mat)
   (rows(a) < cols(a)) &&
               error("Matrix must have at least as many rows as columns")
-  return rref(a)
+  r, z = rref(a)
+  j_new =  1
+  for i in 1:r
+    for j in j_new:cols(a)
+      if isone(a[i, j]) && i != j
+        z[i, j] = 0
+        z[j, j] = 1
+        j_new = j
+        continue
+      end
+    end
+  end
+  return z
 end
 
 @doc Markdown.doc"""
@@ -137,8 +149,7 @@ end
 function howell_form(a::gfp_mat)
   (rows(a) < cols(a)) &&
               error("Matrix must have at least as many rows as columns")
-
-  return rref(a)
+  return rref(a)[2]
 end
 
 ################################################################################
