@@ -16,15 +16,17 @@ script:
   - while sleep 30; do echo "still alive"; done &
   - julia -e 'using Pkg; Pkg.build("Nemo");'
   - julia -e 'using Pkg; Pkg.test("Nemo");'
-  # - travis_wait julia -e 'using Pkg; Pkg.build("Nemo")'
-  # - if [ -f test/runtests.jl ]; then julia --check-bounds=yes -e 'using Pkg; Pkg.test("Nemo", coverage=true)'; fi
+
+env:
+   global:
+      - DOCUMENTER_DEBUG=true
 
 jobs:
-  include:
-    - stage: "Deploy docs"
-      julia: 1.0
-      os: linux
-      script:
-        - julia -e 'using Pkg; Pkg.add([PackageSpec("Documenter"), PackageSpec(path=pwd())])'
-        - julia docs/make.jl
-      after_success: skip
+   include:
+     - stage: "Documentation"
+       julia: 1.0
+       os: linux
+       script:
+         - julia --project=docs/ -e 'using Pkg; Pkg.instantiate(); Pkg.add(PackageSpec(path=pwd()))'
+         - julia --project=docs/ docs/make.jl
+       after_success: skip
