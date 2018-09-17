@@ -1,8 +1,8 @@
-function randelem(R::Nemo.NmodRing, n)
+function randelem(R::Nemo.GaloisField, n)
    return rand(R, -n:n)
 end
 
-function randmat(R::NmodMatSpace, d::Int)
+function randmat(R::GFPMatSpace, d::Int)
    m = R.rows
    n = R.cols
    r = R()
@@ -14,46 +14,46 @@ function randmat(R::NmodMatSpace, d::Int)
    return r
 end
 
-function test_nmod_mat_constructors()
-  print("nmod_mat.constructors...")
+function test_gfp_mat_constructors()
+  print("gfp_mat.constructors...")
 
-  Z2 = ResidueRing(ZZ, 2)
-  Z3 = ResidueRing(ZZ, 3)
+  Z2 = GF(2)
+  Z3 = GF(3)
 
-  R = NmodMatSpace(Z2, 2, 2)
+  R = GFPMatSpace(Z2, 2, 2)
 
-  @test elem_type(R) == nmod_mat
-  @test elem_type(NmodMatSpace) == nmod_mat
-  @test parent_type(nmod_mat) == NmodMatSpace
+  @test elem_type(R) == gfp_mat
+  @test elem_type(GFPMatSpace) == gfp_mat
+  @test parent_type(gfp_mat) == GFPMatSpace
 
-  @test isa(R, NmodMatSpace)
+  @test isa(R, GFPMatSpace)
 
   @test base_ring(R) == Z2
 
-  S = NmodMatSpace(Z3, 2, 2)
+  S = GFPMatSpace(Z3, 2, 2)
 
-  @test isa(S, NmodMatSpace)
+  @test isa(S, GFPMatSpace)
 
-  RR = NmodMatSpace(Z2, 2, 2)
+  RR = GFPMatSpace(Z2, 2, 2)
 
-  @test isa(RR, NmodMatSpace)
+  @test isa(RR, GFPMatSpace)
 
   @test R == RR
 
-  @test_throws ErrorException NmodMatSpace(Z2, 2, -1)
-  @test_throws ErrorException NmodMatSpace(Z2, -1, 2)
-  @test_throws ErrorException NmodMatSpace(Z2, -1, -1)
+  @test_throws ErrorException GFPMatSpace(Z2, 2, -1)
+  @test_throws ErrorException GFPMatSpace(Z2, -1, 2)
+  @test_throws ErrorException GFPMatSpace(Z2, -1, -1)
 
   a = R()
 
-  @test isa(a, nmod_mat)
+  @test isa(a, gfp_mat)
   @test parent(a) == R
 
   ar = [ BigInt(1) BigInt(1); BigInt(1) BigInt(1) ]
 
   b = R(ar)
 
-  @test isa(b, nmod_mat)
+  @test isa(b, gfp_mat)
   @test parent(b) == R
   @test rows(b) == 2 && cols(b) == 2
   @test_throws ErrorConstrDimMismatch R(reshape(ar,1,4))
@@ -68,7 +68,7 @@ function test_nmod_mat_constructors()
   ar = [ ZZ(1) ZZ(1); ZZ(1) ZZ(1) ]
 
   c = R(ar)
-  @test isa(c, nmod_mat)
+  @test isa(c, gfp_mat)
   @test parent(c) == R
   @test rows(c) == 2 && cols(c) == 2
   @test_throws ErrorConstrDimMismatch R(reshape(ar,4,1))
@@ -82,7 +82,7 @@ function test_nmod_mat_constructors()
 
   d = R(ar)
 
-  @test isa(d, nmod_mat)
+  @test isa(d, gfp_mat)
   @test parent(d) == R
   @test rows(d) == 2 && cols(d) == 2
   @test_throws ErrorConstrDimMismatch R(reshape(ar,1,4))
@@ -96,7 +96,7 @@ function test_nmod_mat_constructors()
 
   e = R(ar)
 
-  @test isa(e, nmod_mat)
+  @test isa(e, gfp_mat)
   @test parent(e) == R
   @test rows(e) == 2 && cols(e) == 2
 
@@ -108,7 +108,7 @@ function test_nmod_mat_constructors()
 
   f = R(ar)
 
-  @test isa(f, nmod_mat)
+  @test isa(f, gfp_mat)
   @test parent(f) == R
   @test rows(f) == 2 && cols(f) == 2
   @test_throws ErrorConstrDimMismatch R(reshape(ar,4,1))
@@ -118,11 +118,11 @@ function test_nmod_mat_constructors()
   @test_throws ErrorConstrDimMismatch R([Z2(1), Z2(1), Z2(1)])
   @test_throws ErrorConstrDimMismatch R([Z2(1), Z2(1), Z2(1), Z2(1), Z2(1)])
 
-  @test isa(S(1), nmod_mat)
+  @test isa(S(1), gfp_mat)
 
-  @test isa(S(fmpz(1)), nmod_mat)
+  @test isa(S(fmpz(1)), gfp_mat)
 
-  @test isa(S(Z3(1)), nmod_mat)
+  @test isa(S(Z3(1)), gfp_mat)
 
   g = deepcopy(e)
 
@@ -137,11 +137,11 @@ function test_nmod_mat_constructors()
 
    for T in [Z3, fmpz, Int, BigInt]
       M = matrix(Z3, map(T, arr))
-      @test isa(M, nmod_mat)
+      @test isa(M, gfp_mat)
       @test M.base_ring == Z3
 
       M2 = matrix(Z3, 2, 3, map(T, arr2))
-      @test isa(M2, nmod_mat)
+      @test isa(M2, gfp_mat)
       @test M2.base_ring == Z3
       @test rows(M2) == 2
       @test cols(M2) == 3
@@ -151,22 +151,22 @@ function test_nmod_mat_constructors()
 
    M3 = zero_matrix(Z3, 2, 3)
 
-   @test isa(M3, nmod_mat)
+   @test isa(M3, gfp_mat)
    @test M3.base_ring == Z3
 
    M4 = identity_matrix(Z3, 3)
 
-   @test isa(M4, nmod_mat)
+   @test isa(M4, gfp_mat)
    @test M4.base_ring == Z3
 
   println("PASS")
 end
 
-function test_nmod_mat_printing()
-  print("nmod_mat.printing...")
+function test_gfp_mat_printing()
+  print("gfp_mat.printing...")
 
-  Z2 = ResidueRing(ZZ, 2)
-  R = NmodMatSpace(Z2, 2, 2)
+  Z2 = GF(2)
+  R = GFPMatSpace(Z2, 2, 2)
 
   a = R(1)
 
@@ -175,12 +175,12 @@ function test_nmod_mat_printing()
   println("PASS")
 end
 
-function test_nmod_mat_manipulation()
-  print("nmod_mat.manipulation...")
-  Z10 = ResidueRing(ZZ, 10)
-  R = NmodMatSpace(Z10, 2, 2)
-  Z20 = ResidueRing(ZZ, 20)
-  S = NmodMatSpace(Z20, 2, 2)
+function test_gfp_mat_manipulation()
+  print("gfp_mat.manipulation...")
+  Z11 = GF(11)
+  R = GFPMatSpace(Z11, 2, 2)
+  Z23 = GF(23)
+  S = GFPMatSpace(Z23, 2, 2)
 
   ar = [ 1 2; 3 4]
 
@@ -194,41 +194,41 @@ function test_nmod_mat_manipulation()
 
   c = R([ 1 3; 2 4])
 
-  @test a[1,1] == Z10(1)
+  @test a[1,1] == Z11(1)
 
   a[1,1] = UInt(2)
 
-  @test a[1,1] == Z10(2)
-  @test_throws BoundsError a[0,-1] = Z10(2)
+  @test a[1,1] == Z11(2)
+  @test_throws BoundsError a[0,-1] = Z11(2)
 
   a[2,1] = ZZ(3)
 
-  @test a[2,1] == Z10(ZZ(3))
+  @test a[2,1] == Z11(ZZ(3))
   @test_throws BoundsError a[-10,-10] = ZZ(3)
 
-  a[2,2] = Z10(4)
+  a[2,2] = Z11(4)
 
-  @test a[2,2] == Z10(4)
-  @test_throws BoundsError a[-2,2] = Z10(4)
+  @test a[2,2] == Z11(4)
+  @test_throws BoundsError a[-2,2] = Z11(4)
 
   a[1,2] = 5
 
-  @test a[1,2] == Z10(5)
+  @test a[1,2] == Z11(5)
   @test_throws BoundsError a[-2,2] = 5
 
   @test a != b
 
   d = one(R)
 
-  @test isa(d, nmod_mat)
+  @test isa(d, gfp_mat)
 
   e = zero(R)
 
-  @test isa(e, nmod_mat)
+  @test isa(e, gfp_mat)
 
   @test iszero(e)
 
-  @test_throws ErrorException one(MatrixSpace(ResidueRing(ZZ, 2), 1, 2))
+  @test_throws ErrorException one(MatrixSpace(GF(2), 1, 2))
 
   @test issquare(a)
 
@@ -242,22 +242,22 @@ function test_nmod_mat_manipulation()
 
   @test b == c
 
-  @test transpose(MatrixSpace(Z10,1,2)([ 1 2; ])) ==
-          MatrixSpace(Z10,2,1)(reshape([ 1 ; 2],2,1))
+  @test transpose(MatrixSpace(Z11,1,2)([ 1 2; ])) ==
+          MatrixSpace(Z11,2,1)(reshape([ 1 ; 2],2,1))
 
   @test_throws ErrorConstrDimMismatch transpose!(R([ 1 2 ;]))
 
   println("PASS")
 end
 
-function test_nmod_mat_unary_ops()
-  print("nmod_mat.unary_ops...")
+function test_gfp_mat_unary_ops()
+  print("gfp_mat.unary_ops...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
   S = MatrixSpace(Z2, 3, 4)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
@@ -273,10 +273,10 @@ function test_nmod_mat_unary_ops()
   println("PASS")
 end
 
-function test_nmod_mat_binary_ops()
-  print("nmod_mat.binary_ops...")
+function test_gfp_mat_binary_ops()
+  print("gfp_mat.binary_ops...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
 
@@ -305,13 +305,13 @@ function test_nmod_mat_binary_ops()
   println("PASS")
 end
 
-function test_nmod_mat_adhoc_binary()
-  print("nmod_mat.adhoc_binary...")
+function test_gfp_mat_adhoc_binary()
+  print("gfp_mat.adhoc_binary...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
 
@@ -348,10 +348,10 @@ function test_nmod_mat_adhoc_binary()
   println("PASS")
 end
 
-function test_nmod_mat_comparison()
-  print("nmod_mat.comparison...")
+function test_gfp_mat_comparison()
+  print("gfp_mat.comparison...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
 
@@ -366,10 +366,10 @@ function test_nmod_mat_comparison()
   println("PASS")
 end
 
-function test_nmod_mat_adhoc_comparison()
-  print("nmod_mat.comparison...")
+function test_gfp_mat_adhoc_comparison()
+  print("gfp_mat.comparison...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
 
@@ -384,10 +384,10 @@ function test_nmod_mat_adhoc_comparison()
   println("PASS")
 end
 
-function test_nmod_mat_powering()
-  print("nmod_mat.powering...")
+function test_gfp_mat_powering()
+  print("gfp_mat.powering...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
 
@@ -408,13 +408,13 @@ function test_nmod_mat_powering()
   println("PASS")
 end
 
-function test_nmod_mat_row_echelon_form()
-  print("nmod_mat.row_echelon_form...")
+function test_gfp_mat_row_echelon_form()
+  print("gfp_mat.row_echelon_form...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
   S = MatrixSpace(Z2, 3, 4)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
@@ -425,55 +425,55 @@ function test_nmod_mat_row_echelon_form()
 
   c = a*transpose(a)
 
-  r, den, d = rref(a)
+  r, d = rref(a)
 
-  @test d == R([ 12 0 0 11; 0 12 0 10; 0 0 12 5])
+  @test d == R([ 1 0 0 8; 0 1 0 15; 0 0 1 16])
   @test r == 3
-  @test den == Z17(12)
 
-  r, den = rref!(a)
+  r = rref!(a)
 
-  @test a == R([ 12 0 0 11; 0 12 0 10; 0 0 12 5])
+  @test a == R([ 1 0 0 8; 0 1 0 15; 0 0 1 16])
   @test r == 3
-  @test den == Z17(12)
 
-  r, den, d = rref(b)
+  r, d = rref(b)
 
-  @test d == parent(b)([ 2 0 0 ; 0 0 2; 0 0 0; 0 0 0])
+  @test d == parent(b)([ 1 0 0 ; 0 0 1; 0 0 0; 0 0 0])
   @test r == 2
-  @test den == Z17(2)
 
   println("PASS")
 end
 
-function test_nmod_mat_howell_form()
-  print("nmod_mat.howell_form...")
+function test_gfp_mat_howell_form()
+  print("gfp_mat.howell_form...")
 
-  Z17 = ResidueRing(ZZ, 12)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
 
   a = R([4 1 0; 0 0 5; 0 0 0 ])
 
   b = R([8 5 5; 0 9 8; 0 0 10])
 
-  c = R([4 1 0; 0 3 0; 0 0 1])
+  c = R([1 13 0; 0 0 1; 0 0 0])
 
   d = R([4 0 0; 0 0 1; 0 0 0])
 
   @test howell_form(a) == c
-  @test howell_form(b) == c
-  @test strong_echelon_form(d) == R([4 0 0; 0 0 0; 0 0 1])
+  @test howell_form(b) == 1
+  @test strong_echelon_form(d) == R([1 0 0; 0 0 0; 0 0 1])
+
+  a = matrix(Z17, [0 1 0 0; 0 0 1 0; 0 0 0 1; 0 0 0 0])
+  @test strong_echelon_form(a) == matrix(Z17, [0 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1])
 
   println("PASS")
 end
 
-function test_nmod_mat_trace_det()
-  print("nmod_mat.trace_det...")
+function test_gfp_mat_trace_det()
+  print("gfp_mat.trace_det...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
   S = MatrixSpace(Z2, 3, 4)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
@@ -505,13 +505,13 @@ function test_nmod_mat_trace_det()
   println("PASS")
 end
 
-function test_nmod_mat_rank()
-  print("nmod_mat.rank...")
+function test_gfp_mat_rank()
+  print("gfp_mat.rank...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
   S = MatrixSpace(Z2, 3, 4)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
@@ -535,13 +535,13 @@ function test_nmod_mat_rank()
   println("PASS")
 end
 
-function test_nmod_mat_inv()
-  print("nmod_mat.inv...")
+function test_gfp_mat_inv()
+  print("gfp_mat.inv...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
-  Z2 = ResidueRing(ZZ,2)
+  Z2 = GF(2)
   S = MatrixSpace(Z2, 3, 4)
 
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
@@ -561,10 +561,10 @@ function test_nmod_mat_inv()
   println("PASS")
 end
 
-function test_nmod_mat_solve()
-  print("nmod_mat.solve...")
+function test_gfp_mat_solve()
+  print("gfp_mat.solve...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
 
@@ -585,11 +585,11 @@ function test_nmod_mat_solve()
   println("PASS")
 end
 
-function test_nmod_mat_lu()
-  print("nmod_mat.lu...")
+function test_gfp_mat_lu()
+  print("gfp_mat.lu...")
 
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
 
@@ -617,10 +617,10 @@ function test_nmod_mat_lu()
   println("PASS")
 end
 
-function test_nmod_mat_swap_rows()
-  print("nmod_mat.swap_rows...")
+function test_gfp_mat_swap_rows()
+  print("gfp_mat.swap_rows...")
 
-  Z17 = ResidueRing(ZZ, 17)
+  Z17 = GF(17)
 
   A = matrix(Z17, 5, 1, [1, 2, 3, 4, 5])
 
@@ -635,11 +635,10 @@ function test_nmod_mat_swap_rows()
 
   println("PASS")
 end
+function test_gfp_mat_view()
+  print("gfp_mat.view...")
 
-function test_nmod_mat_view()
-  print("nmod_mat.view...")
-
-  Z17 = ResidueRing(ZZ, 17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
 
@@ -677,7 +676,7 @@ function test_nmod_mat_view()
 
   B = @inferred view(A, 1, 1, 2, 2)
 
-  @test typeof(B) == nmod_mat
+  @test typeof(B) == gfp_mat
   @test B == MatrixSpace(Z17, 2, 2)([1 2; 4 5])
 
   B[1, 1] = 10
@@ -685,7 +684,7 @@ function test_nmod_mat_view()
 
   C = @inferred view(B, 1:2, 1:2)
 
-  @test typeof(C) == nmod_mat
+  @test typeof(C) == gfp_mat
   @test C == MatrixSpace(Z17, 2, 2)([10 2; 4 5])
 
   C[1, 1] = 20
@@ -699,17 +698,17 @@ function test_nmod_mat_view()
   println("PASS")
 end
 
-function test_nmod_mat_sub()
-   print("nmod_mat.sub...")
+function test_gfp_mat_sub()
+   print("gfp_mat.sub...")
 
-   Z17 = ResidueRing(ZZ, 17)
+   Z17 = GF(17)
    S = MatrixSpace(Z17, 3, 3)
 
    A = S([1 2 3; 4 5 6; 7 8 9])
 
    B = @inferred sub(A, 1, 1, 2, 2)
 
-   @test typeof(B) == nmod_mat
+   @test typeof(B) == gfp_mat
    @test B == MatrixSpace(Z17, 2, 2)([1 2; 4 5])
 
    B[1, 1] = 10
@@ -717,7 +716,7 @@ function test_nmod_mat_sub()
 
    C = @inferred sub(B, 1:2, 1:2)
 
-   @test typeof(C) == nmod_mat
+   @test typeof(C) == gfp_mat
    @test C == MatrixSpace(Z17, 2, 2)([10 2; 4 5])
 
    C[1, 1] = 20
@@ -727,10 +726,10 @@ function test_nmod_mat_sub()
    println("PASS")
 end
 
-function test_nmod_mat_concatenation()
-  print("nmod_mat.concatenation...")
+function test_gfp_mat_concatenation()
+  print("gfp_mat.concatenation...")
 
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
 
@@ -767,10 +766,10 @@ function test_nmod_mat_concatenation()
   println("PASS")
 end
 
-function test_nmod_mat_conversion()
-  print("nmod_mat.conversion...")
+function test_gfp_mat_conversion()
+  print("gfp_mat.conversion...")
 
-  Z17 = ResidueRing(ZZ, 17)
+  Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(ZZ, 3, 3)
 
@@ -794,10 +793,10 @@ function test_nmod_mat_conversion()
   println("PASS")
 end
 
-function test_nmod_mat_charpoly()
-   print("nmod_mat.charpoly...")
+function test_gfp_mat_charpoly()
+   print("gfp_mat.charpoly...")
 
-   R = ResidueRing(ZZ, 17)
+   R = GF(17)
 
    for dim = 0:5
       S = MatrixSpace(R, dim, dim)
@@ -816,28 +815,28 @@ function test_nmod_mat_charpoly()
    println("PASS")
 end
 
-function test_nmod_mat()
-  test_nmod_mat_constructors()
-  test_nmod_mat_printing()
-  test_nmod_mat_manipulation()
-  test_nmod_mat_unary_ops()
-  test_nmod_mat_binary_ops()
-  test_nmod_mat_adhoc_binary()
-  test_nmod_mat_comparison()
-  test_nmod_mat_adhoc_comparison()
-  test_nmod_mat_powering()
-  test_nmod_mat_row_echelon_form()
-  test_nmod_mat_howell_form()
-  test_nmod_mat_trace_det()
-  test_nmod_mat_rank()
-  test_nmod_mat_inv()
-  test_nmod_mat_lu()
-  test_nmod_mat_swap_rows()
-  test_nmod_mat_view()
-  test_nmod_mat_sub()
-  test_nmod_mat_concatenation()
-  test_nmod_mat_conversion()
-  test_nmod_mat_charpoly()
+function test_gfp_mat()
+  test_gfp_mat_constructors()
+  test_gfp_mat_printing()
+  test_gfp_mat_manipulation()
+  test_gfp_mat_unary_ops()
+  test_gfp_mat_binary_ops()
+  test_gfp_mat_adhoc_binary()
+  test_gfp_mat_comparison()
+  test_gfp_mat_adhoc_comparison()
+  test_gfp_mat_powering()
+  test_gfp_mat_row_echelon_form()
+  test_gfp_mat_howell_form()
+  test_gfp_mat_trace_det()
+  test_gfp_mat_rank()
+  test_gfp_mat_inv()
+  test_gfp_mat_lu()
+  test_gfp_mat_view()
+  test_gfp_mat_swap_rows()
+  test_gfp_mat_sub()
+  test_gfp_mat_concatenation()
+  test_gfp_mat_conversion()
+  test_gfp_mat_charpoly()
 
   println("")
 end

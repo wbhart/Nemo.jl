@@ -3,6 +3,8 @@ using Documenter, Nemo
 makedocs(
          format   = :html,
          sitename = "Nemo.jl",
+         modules = [Nemo],
+         clean = true,
          doctest = false,
          pages    = [
              "index.md",
@@ -18,6 +20,7 @@ makedocs(
                            "rational.md",
                            "arb.md",
                            "acb.md",
+                           "gfp.md",
                            "finitefield.md",
                            "numberfield.md",
                            "padic.md"],
@@ -31,5 +34,6 @@ deploydocs(
    repo   = "github.com/Nemocas/Nemo.jl.git",
    target = "build",
    deps = nothing,
-   make   = nothing
+   make   = nothing,
+   osname = "linux"
 )
