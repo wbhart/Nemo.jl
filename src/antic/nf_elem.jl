@@ -277,6 +277,8 @@ displayed_with_minus_in_front(::nf_elem) = false
 
 canonical_unit(x::nf_elem) = x
 
+canonical_unit(x::nf_elem) = x
+
 ###############################################################################
 #
 #   Unary operators
