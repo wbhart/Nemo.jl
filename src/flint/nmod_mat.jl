@@ -603,15 +603,15 @@ end
 ################################################################################
 
 @doc Markdown.doc"""
-    lift(a::nmod_mat)
+    lift(a::Zmodn_mat)
 > Return a lift of the matrix $a$ to a matrix over $\mathbb{Z}$, i.e. where the
 > entries of the returned matrix are those of $a$ lifted to $\mathbb{Z}$.
 """
-function lift(a::nmod_mat)
+function lift(a::T) where {T <: Zmodn_mat}
   z = fmpz_mat(rows(a), cols(a))
   z.base_ring = FlintIntegerRing()
   ccall((:fmpz_mat_set_nmod_mat, :libflint), Nothing,
-          (Ref{fmpz_mat}, Ref{nmod_mat}), z, a)
+          (Ref{fmpz_mat}, Ref{T}), z, a)
   return z 
 end
 

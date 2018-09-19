@@ -45,3 +45,23 @@ In addition, all the functionality for generic residue rings is available:
 
 [https://nemocas.github.io/AbstractAlgebra.jl/residue.html](https://nemocas.github.io/AbstractAlgebra.jl/residue.html)
 
+Below we describe the functionality that is provided in addition to this interface.
+
+## Basic manipulation
+
+```@docs
+characteristic(::GaloisField)
+```
+
+```@docs
+order(::GaloisField)
+```
+
+**Examples**
+
+```julia
+F = GF(3)
+
+a = characteristic(F)
+b = order(F)
+```
