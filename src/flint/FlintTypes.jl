@@ -842,6 +842,144 @@ end
 
 ###############################################################################
 #
+#   GFPFmpzPolyRing / gfp_fmpz_poly
+#
+###############################################################################
+
+mutable struct GFPFmpzPolyRing <: PolyRing{Generic.ResF{fmpz}}
+  base_ring::Generic.ResField{fmpz}
+  S::Symbol
+  n::fmpz
+
+  function GFPFmpzPolyRing(R::Generic.ResField{fmpz}, s::Symbol, cached::Bool = true)
+    m = modulus(R)
+    if haskey(GFPFmpzPolyRingID, (m, s))
+       return GFPFmpzPolyRingID[m, s]
+    else
+       z = new(R, s, m)
+       if cached
+          GFPFmpzPolyRingID[m ,s] = z
+       end
+       return z
+    end
+  end
+end
+
+const GFPFmpzPolyRingID = Dict{Tuple{fmpz, Symbol}, GFPFmpzPolyRing}()
+
+const ZmodNFmpzPolyRing = Union{FmpzModPolyRing, GFPFmpzPolyRing}
+
+mutable struct gfp_fmpz_poly <: PolyElem{Generic.Res{fmpz}}
+   coeffs::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   p::Int
+   parent::GFPFmpzPolyRing
+
+   function gfp_fmpz_poly(n::fmpz)
+      z = new()
+      ccall((:fmpz_mod_poly_init, :libflint), Nothing,
+            (Ref{gfp_fmpz_poly}, Ref{fmpz}), z, n)
+      finalizer(_fmpz_mod_poly_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_poly(n::fmpz, a::UInt)
+      z = new()
+      ccall((:fmpz_mod_poly_init, :libflint), Nothing,
+            (Ref{gfp_fmpz_poly}, Ref{fmpz}), z, n)
+      ccall((:fmod_poly_set_coeff_ui, :libflint), Nothing,
+              (Ref{gfp_fmpz_poly}, Int, UInt), z, 0, a)
+      finalizer(_fmpz_mod_poly_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_poly(n::fmpz, a::fmpz)
+      z = new()
+      ccall((:fmpz_mod_poly_init, :libflint), Nothing,
+            (Ref{gfp_fmpz_poly}, Ref{fmpz}), z, n)
+      ccall((:fmpz_mod_poly_set_coeff_fmpz, :libflint), Nothing,
+              (Ref{gfp_fmpz_poly}, Int, Ref{fmpz}), z, 0, a)
+      finalizer(_fmpz_mod_poly_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_poly(n::fmpz, arr::Array{fmpz, 1})
+      length(arr) == 0 && error("Array must have length > 0")
+      z = new()
+      ccall((:fmpz_mod_poly_init2, :libflint), Nothing,
+            (Ref{gfp_fmpz_poly}, Ref{fmpz}, Int), z, n, length(arr))
+      for i in 1:length(arr)
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, :libflint), Nothing,
+              (Ref{gfp_fmpz_poly}, Int, Ref{fmpz}), z, i - 1, arr[i])
+      end
+      finalizer(_fmpz_mod_poly_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_poly(n::fmpz, arr::Array{Generic.ResF{fmpz}, 1})
+      z = new()
+      ccall((:fmpz_mod_poly_init2, :libflint), Nothing,
+            (Ref{gfp_fmpz_poly}, Ref{fmpz}, Int), z, n, length(arr))
+      for i in 1:length(arr)
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, :libflint), Nothing,
+              (Ref{gfp_fmpz_poly}, Int, Ref{fmpz}), z, i - 1, arr[i].data)
+      end
+      finalizer(_fmpz_mod_poly_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_poly(n::fmpz, f::fmpz_poly)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, :libflint), Nothing,
+            (Ref{gfp_fmpz_poly}, Ref{fmpz}, Int), z, n, length(f))
+      ccall((:fmpz_mod_poly_set_fmpz_poly, :libflint), Nothing,
+            (Ref{gfp_fmpz_poly}, Ref{fmpz_poly}), z, f)
+      finalizer(_fmpz_mod_poly_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_poly(n::fmpz, f::gfp_fmpz_poly)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, :libflint), Nothing,
+            (Ref{gfp_fmpz_poly}, Ref{fmpz}, Int), z, n, length(f))
+      ccall((:fmpz_mod_poly_set, :libflint), Nothing,
+            (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}), z, f)
+      finalizer(_fmpz_mod_poly_clear_fn, z)
+      return z
+   end
+end
+
+function _fmpz_mod_poly_clear_fn(x::gfp_fmpz_poly)
+  ccall((:fmpz_mod_poly_clear, :libflint), Nothing, (Ref{gfp_fmpz_poly}, ), x)
+end
+
+mutable struct gfp_fmpz_poly_factor
+  poly::Ptr{gfp_fmpz_poly}
+  exp::Ptr{Int}
+  num::Int
+  alloc::Int
+  n::fmpz
+
+  function gfp_fmpz_poly_factor(n::fmpz)
+    z = new()
+    ccall((:fmpz_mod_poly_factor_init, :libflint), Nothing,
+            (Ref{gfp_fmpz_poly_factor}, ), z)
+    z.n = n
+    finalizer(_gfp_fmpz_poly_factor_clear_fn, z)
+    return z
+  end
+end
+
+function _gfp_fmpz_poly_factor_clear_fn(a::gfp_fmpz_poly_factor)
+  ccall((:fmpz_mod_poly_factor_clear, :libflint), Nothing,
+          (Ref{gfp_fmpz_poly_factor}, ), a)
+end
+
+const Zmodn_fmpz_poly = Union{fmpz_mod_poly, gfp_fmpz_poly}
+
+###############################################################################
+#
 #   FmpzMPolyRing / fmpz_mpoly
 #
 ###############################################################################

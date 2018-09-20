@@ -16,18 +16,19 @@ The following table shows each of the polynomial types available in Nemo, the
 base ring $R$, and the Julia/Nemo types for that kind of polynomial (the type
 information is mainly of concern to developers).
 
-Base ring                             | Library             | Element type        | Parent type
---------------------------------------|---------------------|---------------------|----------------------
-Generic ring $R$                      | AbstractAlgebra.jl  | `Generic.Poly{T}`   | `Generic.PolyRing{T}`
-$\mathbb{Z}$                          | Flint               | `fmpz_poly`         | `FmpzPolyRing`
-$\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint               | `nmod_poly`         | `NmodPolyRing`
-$\mathbb{Z}/n\mathbb{Z}$ (large $n$)  | Flint               | `fmpz_mod_poly`     | `FmpzModPolyRing`
-$\mathbb{Q}$                          | Flint               | `fmpq_poly`         | `FmpqPolyRing`
-$\mathbb{Z}/p\mathbb{Z}$ (prime $p$)  | Flint               | `gfp_poly`          | `GFPPolyRing`
-$\mathbb{F}_{p^n}$ (small $p$)        | Flint               | `fq_nmod_poly`      | `FqNmodPolyRing`
-$\mathbb{F}_{p^n}$ (large $p$)        | Flint               | `fq_poly`           | `FqPolyRing`
-$\mathbb{R}$                          | Arb                 | `arb_poly`          | `ArbPolyRing`
-$\mathbb{C}$                          | Arb                 | `acb_poly`          | `AcbPolyRing`
+Base ring                                   | Library             | Element type        | Parent type
+--------------------------------------------|---------------------|---------------------|----------------------
+Generic ring $R$                            | AbstractAlgebra.jl  | `Generic.Poly{T}`   | `Generic.PolyRing{T}`
+$\mathbb{Z}$                                | Flint               | `fmpz_poly`         | `FmpzPolyRing`
+$\mathbb{Z}/n\mathbb{Z}$ (small $n$)        | Flint               | `nmod_poly`         | `NmodPolyRing`
+$\mathbb{Z}/n\mathbb{Z}$ (large $n$)        | Flint               | `fmpz_mod_poly`     | `FmpzModPolyRing`
+$\mathbb{Q}$                                | Flint               | `fmpq_poly`         | `FmpqPolyRing`
+$\mathbb{Z}/p\mathbb{Z}$ (small prime $p$)  | Flint               | `gfp_poly`          | `GFPPolyRing`
+$\mathbb{Z}/p\mathbb{Z}$ (large prime $p$)  | Flint               | `gfp_fmpz_poly`     | `GFPFmpzPolyRing`
+$\mathbb{F}_{p^n}$ (small $p$)              | Flint               | `fq_nmod_poly`      | `FqNmodPolyRing`
+$\mathbb{F}_{p^n}$ (large $p$)              | Flint               | `fq_poly`           | `FqPolyRing`
+$\mathbb{R}$                                | Arb                 | `arb_poly`          | `ArbPolyRing`
+$\mathbb{C}$                                | Arb                 | `acb_poly`          | `AcbPolyRing`
 
 The string representation of the variable and the base ring $R$ of a generic
 polynomial is stored in its parent object. 
@@ -152,6 +153,7 @@ ring of the residue ring, e.g. from $\mathbb{Z}/n\mathbb{Z}$ to $\mathbb{Z}$.
 lift(::FmpzPolyRing, ::nmod_poly)
 lift(::FmpzPolyRing, ::gfp_poly)
 lift(::FmpzPolyRing, ::fmpz_mod_poly)
+lift(::FmpzPolyRing, ::gfp_fmpz_poly)
 ```
 
 **Examples**
@@ -235,6 +237,7 @@ associative array with polynomial factors as keys and exponents as values.
 isirreducible(::nmod_poly)
 isirreducible(::gfp_poly)
 isirreducible(::fmpz_mod_poly)
+isirreducible(::gfp_fmpz_poly)
 isirreducible(::fq_poly)
 isirreducible(::fq_nmod_poly)
 ```
@@ -243,6 +246,7 @@ isirreducible(::fq_nmod_poly)
 issquarefree(::nmod_poly)
 issquarefree(::gfp_poly)
 issquarefree(::fmpz_mod_poly)
+issquarefree(::gfp_fmpz_poly)
 issquarefree(::fq_poly)
 issquarefree(::fq_nmod_poly)
 ```
@@ -252,6 +256,7 @@ factor(::fmpz_poly)
 factor(::nmod_poly)
 factor(::gfp_poly)
 factor(::fmpz_mod_poly)
+factor(::gfp_fmpz_poly)
 factor(::fq_poly)
 factor(::fq_nmod_poly)
 ```
@@ -260,6 +265,7 @@ factor(::fq_nmod_poly)
 factor_squarefree(::nmod_poly)
 factor_squarefree(::gfp_poly)
 factor_squarefree(::fmpz_mod_poly)
+factor_squarefree(::gfp_fmpz_poly)
 factor_squarefree(::fq_poly)
 factor_squarefree(::fq_nmod_poly)
 ```
@@ -268,6 +274,7 @@ factor_squarefree(::fq_nmod_poly)
 factor_distinct_deg(::nmod_poly)
 factor_distinct_deg(::gfp_poly)
 factor_distinct_deg(::fmpz_mod_poly)
+factor_distinct_deg(::gfp_fmpz_poly)
 factor_distinct_deg(::fq_poly)
 factor_distinct_deg(::fq_nmod_poly)
 ```

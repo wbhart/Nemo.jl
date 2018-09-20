@@ -24,7 +24,6 @@ elem_type(::Type{gfp_poly}) = gfp_poly
 
 elem_type(::Type{GFPPolyRing}) = gfp_poly
 
-
 ################################################################################
 #
 #   Basic helper
