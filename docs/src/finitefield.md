@@ -121,7 +121,7 @@ n = isgen(x)
 Various special functions with finite field specific behaviour are defined.
 
 ```@docs
-trace(::fq)
+tr(::fq)
 ```
 
 ```@docs
@@ -143,7 +143,7 @@ R, x = FiniteField(ZZ(7), 5, "x")
 
 a = x^4 + 3x^2 + 6x + 1
 
-b = trace(a)
+b = tr(a)
 c = norm(a)
 d = frobenius(a)
 f = frobenius(a, 3)

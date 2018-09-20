@@ -214,7 +214,7 @@ norm(::nf_elem)
 ```
 
 ```@docs
-trace(::nf_elem)
+tr(::nf_elem)
 ```
 
 **Examples**
@@ -226,5 +226,5 @@ K, a = NumberField(x^3 + 3x + 1, "a")
 c = 3a^2 - a + 1
 
 d = norm(c)
-f = trace(c)
+f = tr(c)
 ```
