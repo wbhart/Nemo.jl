@@ -1326,26 +1326,47 @@ mutable struct FqNmodFiniteField <: FinField
    end
 
    function FqNmodFiniteField(f::nmod_poly, s::Symbol, cached::Bool = true)
-      if haskey(FqNmodFiniteFieldIDPol, (parent(f), f, s))
-         return FqNmodFiniteFieldIDPol[parent(f), f, s]
+      if haskey(FqNmodFiniteFieldIDNmodPol, (parent(f), f, s))
+         return FqNmodFiniteFieldIDNmodPol[parent(f), f, s]
       else
          z = new()
          ccall((:fq_nmod_ctx_init_modulus, :libflint), Nothing,
             (Ref{FqNmodFiniteField}, Ref{nmod_poly}, Ptr{UInt8}),
 	      z, f, string(s))
          if cached
-            FqNmodFiniteFieldIDPol[parent(f), f, s] = z
+            FqNmodFiniteFieldIDNmodPol[parent(f), f, s] = z
          end
          finalizer(_FqNmodFiniteField_clear_fn, z)
          return z
       end
    end
+   
+   function FqNmodFiniteField(f::gfp_poly, s::Symbol, cached::Bool = true)
+      if haskey(FqNmodFiniteFieldIDGFPPol, (parent(f), f, s))
+         return FqNmodFiniteFieldIDGFPPol[parent(f), f, s]
+      else
+         z = new()
+         ccall((:fq_nmod_ctx_init_modulus, :libflint), Nothing,
+            (Ref{FqNmodFiniteField}, Ref{gfp_poly}, Ptr{UInt8}),
+	      z, f, string(s))
+         if cached
+            FqNmodFiniteFieldIDGFPPol[parent(f), f, s] = z
+         end
+         finalizer(_FqNmodFiniteField_clear_fn, z)
+         return z
+      end
+   end
+
 end
 
 const FqNmodFiniteFieldID = Dict{Tuple{fmpz, Int, Symbol}, FqNmodFiniteField}()
 
-const FqNmodFiniteFieldIDPol = Dict{Tuple{NmodPolyRing, nmod_poly, Symbol},
+const FqNmodFiniteFieldIDNmodPol = Dict{Tuple{NmodPolyRing, nmod_poly, Symbol},
                                     FqNmodFiniteField}()
+
+const FqNmodFiniteFieldIDGFPPol = Dict{Tuple{GFPPolyRing, gfp_poly, Symbol},
+                                    FqNmodFiniteField}()
+
 
 function _FqNmodFiniteField_clear_fn(a :: FqNmodFiniteField)
    ccall((:fq_nmod_ctx_clear, :libflint), Nothing, (Ref{FqNmodFiniteField},), a)
@@ -1443,25 +1464,44 @@ mutable struct FqFiniteField <: FinField
    end
 
    function FqFiniteField(f::fmpz_mod_poly, s::Symbol, cached::Bool = true)
-      if haskey(FqFiniteFieldIDPol, (f, s))
-         return FqFiniteFieldIDPol[f, s]
+      if haskey(FqFiniteFieldIDFmpzPol, (f, s))
+         return FqFiniteFieldIDFmpzPol[f, s]
       else
          z = new()
          ccall((:fq_ctx_init_modulus, :libflint), Nothing,
                (Ref{FqFiniteField}, Ref{fmpz_mod_poly}, Ptr{UInt8}),
                   z, f, string(s))
          if cached
-            FqFiniteFieldIDPol[f, s] = z
+            FqFiniteFieldIDFmpzPol[f, s] = z
          end
          finalizer(_FqFiniteField_clear_fn, z)
          return z
       end
    end
+   
+   function FqFiniteField(f::gfp_fmpz_poly, s::Symbol, cached::Bool = true)
+      if haskey(FqFiniteFieldIDGFPPol, (f, s))
+         return FqFiniteFieldIDGFPPol[f, s]
+      else
+         z = new()
+         ccall((:fq_ctx_init_modulus, :libflint), Nothing,
+               (Ref{FqFiniteField}, Ref{gfp_fmpz_poly}, Ptr{UInt8}),
+                  z, f, string(s))
+         if cached
+            FqFiniteFieldIDGFPPol[f, s] = z
+         end
+         finalizer(_FqFiniteField_clear_fn, z)
+         return z
+      end
+   end
+
 end
 
 const FqFiniteFieldID = Dict{Tuple{fmpz, Int, Symbol}, FqFiniteField}()
 
-const FqFiniteFieldIDPol = Dict{Tuple{fmpz_mod_poly, Symbol}, FqFiniteField}()
+const FqFiniteFieldIDFmpzPol = Dict{Tuple{fmpz_mod_poly, Symbol}, FqFiniteField}()
+
+const FqFiniteFieldIDGFPPol = Dict{Tuple{gfp_fmpz_poly, Symbol}, FqFiniteField}()
 
 function _FqFiniteField_clear_fn(a :: FqFiniteField)
    ccall((:fq_ctx_clear, :libflint), Nothing, (Ref{FqFiniteField},), a)

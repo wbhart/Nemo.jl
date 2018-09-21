@@ -596,3 +596,10 @@ function FlintFiniteField(pol::fmpz_mod_poly, s::AbstractString; cached = true)
 
    return parent_obj, gen(parent_obj)
 end
+
+function FlintFiniteField(pol::gfp_fmpz_poly, s::AbstractString; cached = true)
+   S = Symbol(s)
+   parent_obj = FqFiniteField(pol, S, cached)
+
+   return parent_obj, gen(parent_obj)
+end

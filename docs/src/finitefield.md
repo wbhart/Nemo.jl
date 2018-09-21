@@ -63,6 +63,7 @@ FlintFiniteField(::Integer, ::Int, ::AbstractString)
 
 ```@docs
 FlintFiniteField(::fmpz_mod_poly, ::AbstractString)
+FlintFiniteField(::gfp_fmpz_poly, ::AbstractString)
 ```
 
 Here are some examples of creating finite fields and making use of the
@@ -98,6 +99,10 @@ coeff(::fq, ::Int)
 
 ```@docs
 degree(::FqFiniteField)
+```
+
+```@docs
+characteristic(::FqFiniteField)
 ```
 
 ```@docs

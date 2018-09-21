@@ -56,6 +56,18 @@ function deepcopy_internal(a::gfp_elem, dict::IdDict)
    return gfp_elem(deepcopy(a.data), R)
 end
 
+@doc Markdown.doc"""
+    order(a::GaloisField) -> fmpz
+> Return the order, i.e. the number of elements in, the given Galois field.
+"""
+order(R::GaloisField) = fmpz(R.n)
+
+@doc Markdown.doc"""
+    characteristic(a::GaloisField) -> fmpz
+> Return the characteristic of the given Galois field.
+"""
+characterstic(R::GaloisField) = fmpz(R.n)
+
 ###############################################################################
 #
 #   Canonicalisation
@@ -403,3 +415,20 @@ function GF(n::fmpz; cached::Bool=true)
    return ResidueField(Nemo.ZZ, n)
 end
 
+################################################################################
+#
+#   Characteristic & order
+#
+################################################################################
+
+@doc Markdown.doc"""
+    characteristic(a::ResField{fmpz}) -> fmpz
+> Return the characteristic of the given Galois field.
+"""
+characteristic(F::Generic.ResField{fmpz}) = modulus(F)
+
+@doc Markdown.doc"""
+    order(a::ResField{fmpz}) -> fmpz
+> Return the order, i.e. the number of elements in, the given Galois field.
+"""
+order(F::Generic.ResField{fmpz}) = modulus(F)

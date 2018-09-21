@@ -464,7 +464,7 @@ function FlintFiniteField(char::Int, deg::Int, s::AbstractString; cached = true)
    return parent_obj, gen(parent_obj)
 end
 
-function FlintFiniteField(pol::nmod_poly, s::AbstractString; cached = true)
+function FlintFiniteField(pol::Zmodn_poly, s::AbstractString; cached = true)
    S = Symbol(s)
    parent_obj = FqNmodFiniteField(pol, S, cached)
 

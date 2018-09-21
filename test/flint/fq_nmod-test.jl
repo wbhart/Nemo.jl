@@ -8,14 +8,18 @@ function test_fq_nmod_constructors()
    @test parent_type(fq_nmod) == FqNmodFiniteField
 
    Sy, y = PolynomialRing(ResidueRing(FlintZZ, 3), "y")
+   Syy, yy = GF(3)["y"]
 
    T, z = FiniteField(y^2 + 1, "z")
+   T2, z2 = FiniteField(yy^2 + 1, "z")
 
    @test isa(R, FqNmodFiniteField)
    @test isa(T, FqNmodFiniteField)
+   @test isa(T2, FqNmodFiniteField)
 
    @test isa(3x^4 + 2x^3 + 4x^2 + x + 1, fq_nmod)
    @test isa(z^2 + z + 1, fq_nmod)
+   @test isa(z2^2 + z2 + 1, fq_nmod)
 
    a = R()
    
