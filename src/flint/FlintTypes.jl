@@ -2620,7 +2620,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
       return z
    end
 
-   function fmpq_mat(r::Int, c::Int, arr::Array{fmpq, 2})
+   function fmpq_mat(r::Int, c::Int, arr::AbstractArray{fmpq, 2})
       z = new()
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
@@ -2636,7 +2636,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
       return z
    end
 
-   function fmpq_mat(r::Int, c::Int, arr::Array{fmpz, 2})
+   function fmpq_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 2})
       z = new()
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
@@ -2654,7 +2654,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
    end
 
 
-   function fmpq_mat(r::Int, c::Int, arr::Array{fmpq, 1})
+   function fmpq_mat(r::Int, c::Int, arr::AbstractArray{fmpq, 1})
       z = new()
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
@@ -2670,7 +2670,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
       return z
    end
 
-   function fmpq_mat(r::Int, c::Int, arr::Array{fmpz, 1})
+   function fmpq_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 1})
       z = new()
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
@@ -2688,7 +2688,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
    end
 
 
-   function fmpq_mat(r::Int, c::Int, arr::Array{T, 2}) where {T <: Integer}
+   function fmpq_mat(r::Int, c::Int, arr::AbstractArray{T, 2}) where {T <: Integer}
       z = new()
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
@@ -2704,7 +2704,7 @@ mutable struct fmpq_mat <: MatElem{fmpq}
       return z
    end
 
-   function fmpq_mat(r::Int, c::Int, arr::Array{T, 1}) where {T <: Integer}
+   function fmpq_mat(r::Int, c::Int, arr::AbstractArray{T, 1}) where {T <: Integer}
       z = new()
       ccall((:fmpq_mat_init, :libflint), Nothing,
             (Ref{fmpq_mat}, Int, Int), z, r, c)
@@ -2795,7 +2795,7 @@ mutable struct fmpz_mat <: MatElem{fmpz}
       return z
    end
 
-   function fmpz_mat(r::Int, c::Int, arr::Array{fmpz, 2})
+   function fmpz_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 2})
       z = new()
       ccall((:fmpz_mat_init, :libflint), Nothing,
             (Ref{fmpz_mat}, Int, Int), z, r, c)
@@ -2811,7 +2811,7 @@ mutable struct fmpz_mat <: MatElem{fmpz}
       return z
    end
 
-   function fmpz_mat(r::Int, c::Int, arr::Array{fmpz, 1})
+   function fmpz_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 1})
       z = new()
       ccall((:fmpz_mat_init, :libflint), Nothing,
             (Ref{fmpz_mat}, Int, Int), z, r, c)
@@ -2827,7 +2827,7 @@ mutable struct fmpz_mat <: MatElem{fmpz}
       return z
    end
 
-   function fmpz_mat(r::Int, c::Int, arr::Array{T, 2}) where {T <: Integer}
+   function fmpz_mat(r::Int, c::Int, arr::AbstractArray{T, 2}) where {T <: Integer}
       z = new()
       ccall((:fmpz_mat_init, :libflint), Nothing,
             (Ref{fmpz_mat}, Int, Int), z, r, c)
@@ -2843,7 +2843,7 @@ mutable struct fmpz_mat <: MatElem{fmpz}
       return z
    end
 
-   function fmpz_mat(r::Int, c::Int, arr::Array{T,1}) where {T <: Integer}
+   function fmpz_mat(r::Int, c::Int, arr::AbstractArray{T,1}) where {T <: Integer}
       z = new()
       ccall((:fmpz_mat_init, :libflint), Nothing,
             (Ref{fmpz_mat}, Int, Int), z, r, c)
@@ -2940,7 +2940,7 @@ mutable struct nmod_mat <: MatElem{nmod}
     return z
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{UInt, 2}, transpose::Bool = false)
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{UInt, 2}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
@@ -2959,7 +2959,7 @@ mutable struct nmod_mat <: MatElem{nmod}
     return z
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{UInt, 1}, transpose::Bool = false)
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{UInt, 1}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
@@ -2978,7 +2978,7 @@ mutable struct nmod_mat <: MatElem{nmod}
     return z
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{fmpz, 2}, transpose::Bool = false)
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{fmpz, 2}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
@@ -2997,7 +2997,7 @@ mutable struct nmod_mat <: MatElem{nmod}
     return z
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{fmpz, 1}, transpose::Bool = false)
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{fmpz, 1}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
@@ -3016,17 +3016,17 @@ mutable struct nmod_mat <: MatElem{nmod}
     return z
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{T, 2}, transpose::Bool = false) where {T <: Integer}
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{T, 2}, transpose::Bool = false) where {T <: Integer}
     arr_fmpz = map(fmpz, arr)
     return nmod_mat(r, c, n, arr_fmpz, transpose)
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{T, 1}, transpose::Bool = false) where {T <: Integer}
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{T, 1}, transpose::Bool = false) where {T <: Integer}
     arr_fmpz = map(fmpz, arr)
     return nmod_mat(r, c, n, arr_fmpz, transpose)
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{nmod, 2}, transpose::Bool = false)
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{nmod, 2}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
@@ -3045,7 +3045,7 @@ mutable struct nmod_mat <: MatElem{nmod}
     return z
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::Array{nmod, 1}, transpose::Bool = false)
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{nmod, 1}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
@@ -3145,7 +3145,7 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
     return z
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{UInt, 2}, transpose::Bool = false)
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{UInt, 2}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
@@ -3164,7 +3164,7 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
     return z
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{UInt, 1}, transpose::Bool = false)
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{UInt, 1}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
@@ -3183,7 +3183,7 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
     return z
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{fmpz, 2}, transpose::Bool = false)
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{fmpz, 2}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
@@ -3202,7 +3202,7 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
     return z
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{fmpz, 1}, transpose::Bool = false)
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{fmpz, 1}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
@@ -3221,17 +3221,17 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
     return z
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{T, 2}, transpose::Bool = false) where {T <: Integer}
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{T, 2}, transpose::Bool = false) where {T <: Integer}
     arr_fmpz = map(fmpz, arr)
     return gfp_mat(r, c, n, arr_fmpz, transpose)
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{T, 1}, transpose::Bool = false) where {T <: Integer}
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{T, 1}, transpose::Bool = false) where {T <: Integer}
     arr_fmpz = map(fmpz, arr)
     return gfp_mat(r, c, n, arr_fmpz, transpose)
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{gfp_elem, 2}, transpose::Bool = false)
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{gfp_elem, 2}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
@@ -3250,7 +3250,7 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
     return z
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::Array{gfp_elem, 1}, transpose::Bool = false)
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{gfp_elem, 1}, transpose::Bool = false)
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
@@ -3619,7 +3619,7 @@ mutable struct fq_mat <: MatElem{fq}
       return z
    end
 
-   function fq_mat(r::Int, c::Int, arr::Array{fq, 2}, ctx::FqFiniteField)
+   function fq_mat(r::Int, c::Int, arr::AbstractArray{fq, 2}, ctx::FqFiniteField)
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
@@ -3635,7 +3635,7 @@ mutable struct fq_mat <: MatElem{fq}
       return z
    end
 
-   function fq_mat(r::Int, c::Int, arr::Array{fq, 1}, ctx::FqFiniteField)
+   function fq_mat(r::Int, c::Int, arr::AbstractArray{fq, 1}, ctx::FqFiniteField)
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
@@ -3651,7 +3651,7 @@ mutable struct fq_mat <: MatElem{fq}
       return z
    end
 
-   function fq_mat(r::Int, c::Int, arr::Array{fmpz, 2}, ctx::FqFiniteField)
+   function fq_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 2}, ctx::FqFiniteField)
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
@@ -3668,7 +3668,7 @@ mutable struct fq_mat <: MatElem{fq}
       return z
    end
 
-   function fq_mat(r::Int, c::Int, arr::Array{fmpz, 1}, ctx::FqFiniteField)
+   function fq_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 1}, ctx::FqFiniteField)
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
@@ -3685,7 +3685,7 @@ mutable struct fq_mat <: MatElem{fq}
       return z
    end
 
-   function fq_mat(r::Int, c::Int, arr::Array{T, 2}, ctx::FqFiniteField) where {T <: Integer}
+   function fq_mat(r::Int, c::Int, arr::AbstractArray{T, 2}, ctx::FqFiniteField) where {T <: Integer}
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
@@ -3701,7 +3701,7 @@ mutable struct fq_mat <: MatElem{fq}
       return z
    end
 
-   function fq_mat(r::Int, c::Int, arr::Array{T ,1}, ctx::FqFiniteField) where {T <: Integer}
+   function fq_mat(r::Int, c::Int, arr::AbstractArray{T ,1}, ctx::FqFiniteField) where {T <: Integer}
       z = new()
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
@@ -3807,7 +3807,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       return z
    end
 
-   function fq_nmod_mat(r::Int, c::Int, arr::Array{fq_nmod, 2}, ctx::FqNmodFiniteField)
+   function fq_nmod_mat(r::Int, c::Int, arr::AbstractArray{fq_nmod, 2}, ctx::FqNmodFiniteField)
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
@@ -3823,7 +3823,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       return z
    end
 
-   function fq_nmod_mat(r::Int, c::Int, arr::Array{fq_nmod, 1}, ctx::FqNmodFiniteField)
+   function fq_nmod_mat(r::Int, c::Int, arr::AbstractArray{fq_nmod, 1}, ctx::FqNmodFiniteField)
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
@@ -3839,7 +3839,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       return z
    end
 
-   function fq_nmod_mat(r::Int, c::Int, arr::Array{fmpz, 2}, ctx::FqNmodFiniteField)
+   function fq_nmod_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 2}, ctx::FqNmodFiniteField)
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
@@ -3856,7 +3856,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       return z
    end
 
-   function fq_nmod_mat(r::Int, c::Int, arr::Array{fmpz, 1}, ctx::FqNmodFiniteField)
+   function fq_nmod_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 1}, ctx::FqNmodFiniteField)
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
@@ -3873,7 +3873,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       return z
    end
 
-   function fq_nmod_mat(r::Int, c::Int, arr::Array{T, 2}, ctx::FqNmodFiniteField) where {T <: Integer}
+   function fq_nmod_mat(r::Int, c::Int, arr::AbstractArray{T, 2}, ctx::FqNmodFiniteField) where {T <: Integer}
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
@@ -3889,7 +3889,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
       return z
    end
 
-   function fq_nmod_mat(r::Int, c::Int, arr::Array{T ,1}, ctx::FqNmodFiniteField) where {T <: Integer}
+   function fq_nmod_mat(r::Int, c::Int, arr::AbstractArray{T ,1}, ctx::FqNmodFiniteField) where {T <: Integer}
       z = new()
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)

@@ -1237,28 +1237,28 @@ function (a::FmpzMatSpace)()
    return z
 end
 
-function (a::FmpzMatSpace)(arr::Array{fmpz, 2})
+function (a::FmpzMatSpace)(arr::AbstractArray{fmpz, 2})
    _check_dim(a.rows, a.cols, arr)
    z = fmpz_mat(a.rows, a.cols, arr)
    z.base_ring = FlintZZ
    return z
 end
 
-function (a::FmpzMatSpace)(arr::Array{T, 2}) where {T <: Integer}
+function (a::FmpzMatSpace)(arr::AbstractArray{T, 2}) where {T <: Integer}
    _check_dim(a.rows, a.cols, arr)
    z = fmpz_mat(a.rows, a.cols, arr)
    z.base_ring = FlintZZ
    return z
 end
 
-function (a::FmpzMatSpace)(arr::Array{fmpz, 1})
+function (a::FmpzMatSpace)(arr::AbstractArray{fmpz, 1})
    _check_dim(a.rows, a.cols, arr)
    z = fmpz_mat(a.rows, a.cols, arr)
    z.base_ring = FlintZZ
    return z
 end
 
-function (a::FmpzMatSpace)(arr::Array{T, 1}) where {T <: Integer}
+function (a::FmpzMatSpace)(arr::AbstractArray{T, 1}) where {T <: Integer}
    _check_dim(a.rows, a.cols, arr)
    z = fmpz_mat(a.rows, a.cols, arr)
    z.base_ring = FlintZZ
@@ -1314,26 +1314,26 @@ end
 #
 ###############################################################################
 
-function matrix(R::FlintIntegerRing, arr::Array{fmpz, 2})
+function matrix(R::FlintIntegerRing, arr::AbstractArray{fmpz, 2})
    z = fmpz_mat(size(arr, 1), size(arr, 2), arr)
    z.base_ring = FlintZZ
    return z
 end
 
-function matrix(R::FlintIntegerRing, arr::Array{<: Integer, 2})
+function matrix(R::FlintIntegerRing, arr::AbstractArray{<: Integer, 2})
    z = fmpz_mat(size(arr, 1), size(arr, 2), arr)
    z.base_ring = FlintZZ
    return z
 end
 
-function matrix(R::FlintIntegerRing, r::Int, c::Int, arr::Array{fmpz, 1})
+function matrix(R::FlintIntegerRing, r::Int, c::Int, arr::AbstractArray{fmpz, 1})
    _check_dim(r, c, arr)
    z = fmpz_mat(r, c, arr)
    z.base_ring = FlintZZ
    return z
 end
 
-function matrix(R::FlintIntegerRing, r::Int, c::Int, arr::Array{<: Integer, 1})
+function matrix(R::FlintIntegerRing, r::Int, c::Int, arr::AbstractArray{<: Integer, 1})
    _check_dim(r, c, arr)
    z = fmpz_mat(r, c, arr)
    z.base_ring = FlintZZ

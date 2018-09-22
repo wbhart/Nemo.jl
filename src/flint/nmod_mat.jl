@@ -715,49 +715,49 @@ function (a::NmodMatSpace)(b::nmod)
    return M
 end
 
-function (a::NmodMatSpace)(arr::Array{BigInt, 2}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{BigInt, 2}, transpose::Bool = false)
   _check_dim(a.rows, a.cols, arr, transpose)
   z = nmod_mat(a.rows, a.cols, a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
-function (a::NmodMatSpace)(arr::Array{BigInt, 1}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{BigInt, 1}, transpose::Bool = false)
   _check_dim(a.rows, a.cols, arr)
   z = nmod_mat(a.rows, a.cols, a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
-function (a::NmodMatSpace)(arr::Array{fmpz, 2}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{fmpz, 2}, transpose::Bool = false)
   _check_dim(a.rows, a.cols, arr, transpose)
   z = nmod_mat(a.rows, a.cols, a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
-function (a::NmodMatSpace)(arr::Array{fmpz, 1}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{fmpz, 1}, transpose::Bool = false)
   _check_dim(a.rows, a.cols, arr)
   z = nmod_mat(a.rows, a.cols, a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
-function (a::NmodMatSpace)(arr::Array{Int, 2}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{Int, 2}, transpose::Bool = false)
   _check_dim(a.rows, a.cols, arr, transpose)
   z = nmod_mat(a.rows, a.cols, a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
-function (a::NmodMatSpace)(arr::Array{Int, 1}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{Int, 1}, transpose::Bool = false)
   _check_dim(a.rows, a.cols, arr)
   z = nmod_mat(a.rows, a.cols, a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
-function (a::NmodMatSpace)(arr::Array{nmod, 2}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{nmod, 2}, transpose::Bool = false)
   _check_dim(a.rows, a.cols, arr, transpose)
   (length(arr) > 0 && (base_ring(a) != parent(arr[1]))) && error("Elements must have same base ring")
   z = nmod_mat(a.rows, a.cols, a.n, arr, transpose)
@@ -765,7 +765,7 @@ function (a::NmodMatSpace)(arr::Array{nmod, 2}, transpose::Bool = false)
   return z
 end
 
-function (a::NmodMatSpace)(arr::Array{nmod, 1}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{nmod, 1}, transpose::Bool = false)
   _check_dim(a.rows, a.cols, arr)
   (length(arr) > 0 && (base_ring(a) != parent(arr[1]))) && error("Elements must have same base ring")
   z = nmod_mat(a.rows, a.cols, a.n, arr, transpose)
@@ -786,13 +786,13 @@ end
 #
 ###############################################################################
 
-function matrix(R::NmodRing, arr::Array{<: Union{nmod, fmpz, Integer}, 2})
+function matrix(R::NmodRing, arr::AbstractArray{<: Union{nmod, fmpz, Integer}, 2})
    z = nmod_mat(size(arr, 1), size(arr, 2), R.n, arr)
    z.base_ring = R
    return z
 end
 
-function matrix(R::NmodRing, r::Int, c::Int, arr::Array{<: Union{nmod, fmpz, Integer}, 1})
+function matrix(R::NmodRing, r::Int, c::Int, arr::AbstractArray{<: Union{nmod, fmpz, Integer}, 1})
    _check_dim(r, c, arr)
    z = nmod_mat(r, c, R.n, arr)
    z.base_ring = R

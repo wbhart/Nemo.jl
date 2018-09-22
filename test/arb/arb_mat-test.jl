@@ -22,6 +22,10 @@ function test_arb_mat_constructors()
 
    k = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
 
+   @test isa(g, MatElem)
+
+   k = S(Int[2 3 5; 1 4 7; 9 6 3]')
+
    @test isa(k, MatElem)
 
    l = S(k)

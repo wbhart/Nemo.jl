@@ -88,6 +88,12 @@ function test_fq_mat_constructors()
   @test_throws ErrorConstrDimMismatch R([1, 1, 1])
   @test_throws ErrorConstrDimMismatch R([1, 1, 1, 1, 1])
 
+  ar = [ 1 1; 1 1]'
+
+  d = R(ar)
+
+  @test isa(d, fq_mat)
+
   ar = MatrixSpace(ZZ, 2, 2)([ 1 1; 1 1])
 
   e = R(ar)
