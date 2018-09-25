@@ -25,6 +25,10 @@ function test_fmpq_mat_constructors()
 
    @test isa(k, MatElem)
 
+   k = S([2 3 5; 1 4 7; 9 6 3]')
+
+   @test isa(k, MatElem)
+
    k = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
 
    @test isa(k, MatElem)

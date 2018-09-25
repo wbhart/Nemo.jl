@@ -27,7 +27,9 @@ function test_acb_mat_constructors()
       @test isa(k, MatElem)
    end
 
-   k = S(map(fmpz, [2 3 5; 1 4 7; 9 6 3]))
+   k = S(Int[2 3 5; 1 4 7; 9 6 3]')
+
+   @test isa(k, MatElem)
 
    l = S(k)
 

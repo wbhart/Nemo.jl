@@ -21,6 +21,10 @@ function test_fmpz_mat_constructors()
 
    @test isa(k, MatElem)
 
+   k = S([2 3 5; 1 4 7; 9 6 3]')
+
+   @test isa(k, MatElem)
+
    l = S(k)
 
    @test isa(l, MatElem)

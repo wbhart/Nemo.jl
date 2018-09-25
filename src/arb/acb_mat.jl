@@ -747,14 +747,14 @@ end
 
 for T in [Float64, fmpz, fmpq, BigFloat, arb, acb, String]
    @eval begin
-      function (x::AcbMatSpace)(y::Array{$T, 2})
+      function (x::AcbMatSpace)(y::AbstractArray{$T, 2})
          _check_dim(x.rows, x.cols, y)
          z = acb_mat(x.rows, x.cols, y, prec(x))
          z.base_ring = x.base_ring
          return z
       end
 
-      function (x::AcbMatSpace)(y::Array{$T, 1})
+      function (x::AcbMatSpace)(y::AbstractArray{$T, 1})
          _check_dim(x.rows, x.cols, y)
          z = acb_mat(x.rows, x.cols, y, prec(x))
          z.base_ring = x.base_ring
@@ -763,24 +763,24 @@ for T in [Float64, fmpz, fmpq, BigFloat, arb, acb, String]
    end
 end
 
-(x::AcbMatSpace)(y::Array{T, 2}) where {T <: Integer} = x(map(fmpz, y))
+(x::AcbMatSpace)(y::AbstractArray{T, 2}) where {T <: Integer} = x(map(fmpz, y))
 
-(x::AcbMatSpace)(y::Array{T, 1}) where {T <: Integer} = x(map(fmpz, y))
+(x::AcbMatSpace)(y::AbstractArray{T, 1}) where {T <: Integer} = x(map(fmpz, y))
 
-(x::AcbMatSpace)(y::Array{Rational{T}, 2}) where {T <: Integer} = x(map(fmpq, y))
+(x::AcbMatSpace)(y::AbstractArray{Rational{T}, 2}) where {T <: Integer} = x(map(fmpq, y))
 
-(x::AcbMatSpace)(y::Array{Rational{T}, 1}) where {T <: Integer} = x(map(fmpq, y))
+(x::AcbMatSpace)(y::AbstractArray{Rational{T}, 1}) where {T <: Integer} = x(map(fmpq, y))
 
 for T in [Float64, fmpz, fmpq, BigFloat, arb, String]
    @eval begin
-      function (x::AcbMatSpace)(y::Array{Tuple{$T, $T}, 2})
+      function (x::AcbMatSpace)(y::AbstractArray{Tuple{$T, $T}, 2})
          _check_dim(x.rows, x.cols, y)
          z = acb_mat(x.rows, x.cols, y, prec(x))
          z.base_ring = x.base_ring
          return z
       end
 
-      function (x::AcbMatSpace)(y::Array{Tuple{$T, $T}, 1})
+      function (x::AcbMatSpace)(y::AbstractArray{Tuple{$T, $T}, 1})
          _check_dim(x.rows, x.cols, y)
          z = acb_mat(x.rows, x.cols, y, prec(x))
          z.base_ring = x.base_ring
@@ -789,16 +789,16 @@ for T in [Float64, fmpz, fmpq, BigFloat, arb, String]
    end
 end
 
-(x::AcbMatSpace)(y::Array{Tuple{T, T}, 2}) where {T <: Integer} =
+(x::AcbMatSpace)(y::AbstractArray{Tuple{T, T}, 2}) where {T <: Integer} =
          x(map(z -> (fmpz(z[1]), fmpz(z[2])), y))
 
-(x::AcbMatSpace)(y::Array{Tuple{T, T}, 1}) where {T <: Integer} =
+(x::AcbMatSpace)(y::AbstractArray{Tuple{T, T}, 1}) where {T <: Integer} =
          x(map(z -> (fmpz(z[1]), fmpz(z[2])), y))
 
-(x::AcbMatSpace)(y::Array{Tuple{Rational{T}, Rational{T}}, 2}) where {T <: Integer} =
+(x::AcbMatSpace)(y::AbstractArray{Tuple{Rational{T}, Rational{T}}, 2}) where {T <: Integer} =
          x(map(z -> (fmpq(z[1]), fmpq(z[2])), y))
 
-(x::AcbMatSpace)(y::Array{Tuple{Rational{T}, Rational{T}}, 1}) where {T <: Integer} =
+(x::AcbMatSpace)(y::AbstractArray{Tuple{Rational{T}, Rational{T}}, 1}) where {T <: Integer} =
          x(map(z -> (fmpq(z[1]), fmpq(z[2])), y))
 
 for T in [Integer, fmpz, fmpq, Float64, BigFloat, arb, acb, String]
@@ -829,35 +829,35 @@ end
 #
 ###############################################################################
 
-function matrix(R::AcbField, arr::Array{T, 2}) where {T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, acb, AbstractString}}
+function matrix(R::AcbField, arr::AbstractArray{T, 2}) where {T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, acb, AbstractString}}
    z = acb_mat(size(arr, 1), size(arr, 2), arr, prec(R))
    z.base_ring = R
    return z
 end
 
-function matrix(R::AcbField, r::Int, c::Int, arr::Array{T, 1}) where {T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, acb, AbstractString}}
+function matrix(R::AcbField, r::Int, c::Int, arr::AbstractArray{T, 1}) where {T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, acb, AbstractString}}
    _check_dim(r, c, arr)
    z = acb_mat(r, c, arr, prec(R))
    z.base_ring = R
    return z
 end
 
-function matrix(R::AcbField, arr::Array{<: Integer, 2})
+function matrix(R::AcbField, arr::AbstractArray{<: Integer, 2})
    arr_fmpz = map(fmpz, arr)
    return matrix(R, arr_fmpz)
 end
 
-function matrix(R::AcbField, r::Int, c::Int, arr::Array{<: Integer, 1})
+function matrix(R::AcbField, r::Int, c::Int, arr::AbstractArray{<: Integer, 1})
    arr_fmpz = map(fmpz, arr)
    return matrix(R, r, c, arr_fmpz)
 end
 
-function matrix(R::AcbField, arr::Array{Rational{T}, 2}) where {T <: Integer}
+function matrix(R::AcbField, arr::AbstractArray{Rational{T}, 2}) where {T <: Integer}
    arr_fmpz = map(fmpq, arr)
    return matrix(R, arr_fmpz)
 end
 
-function matrix(R::AcbField, r::Int, c::Int, arr::Array{Rational{T}, 1}) where {T <: Integer}
+function matrix(R::AcbField, r::Int, c::Int, arr::AbstractArray{Rational{T}, 1}) where {T <: Integer}
    arr_fmpz = map(fmpq, arr)
    return matrix(R, r, c, arr_fmpz)
 end

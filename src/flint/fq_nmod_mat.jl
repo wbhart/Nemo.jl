@@ -634,36 +634,36 @@ function (a::FqNmodMatSpace)(b::fq_nmod)
    return fq_nmod_mat(a.rows, a.cols, b)
 end
 
-function (a::FqNmodMatSpace)(arr::Array{T, 2}) where {T <: Integer}
+function (a::FqNmodMatSpace)(arr::AbstractArray{T, 2}) where {T <: Integer}
   _check_dim(a.rows, a.cols, arr)
   return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
 end
 
-function (a::FqNmodMatSpace)(arr::Array{T, 1}) where {T <: Integer}
-  _check_dim(a.rows, a.cols, arr)
-  return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
-  return z
-end
-
-function (a::FqNmodMatSpace)(arr::Array{fmpz, 2})
+function (a::FqNmodMatSpace)(arr::AbstractArray{T, 1}) where {T <: Integer}
   _check_dim(a.rows, a.cols, arr)
   return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
   return z
 end
 
-function (a::FqNmodMatSpace)(arr::Array{fmpz, 1})
+function (a::FqNmodMatSpace)(arr::AbstractArray{fmpz, 2})
   _check_dim(a.rows, a.cols, arr)
   return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
   return z
 end
 
-function (a::FqNmodMatSpace)(arr::Array{fq_nmod, 2})
+function (a::FqNmodMatSpace)(arr::AbstractArray{fmpz, 1})
+  _check_dim(a.rows, a.cols, arr)
+  return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
+  return z
+end
+
+function (a::FqNmodMatSpace)(arr::AbstractArray{fq_nmod, 2})
   _check_dim(a.rows, a.cols, arr)
   (length(arr) > 0 && (base_ring(a) != parent(arr[1]))) && error("Elements must have same base ring")
   return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
 end
 
-function (a::FqNmodMatSpace)(arr::Array{fq_nmod, 1})
+function (a::FqNmodMatSpace)(arr::AbstractArray{fq_nmod, 1})
   _check_dim(a.rows, a.cols, arr)
   (length(arr) > 0 && (base_ring(a) != parent(arr[1]))) && error("Elements must have same base ring")
   return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
@@ -680,12 +680,12 @@ end
 #
 ###############################################################################
 
-function matrix(R::FqNmodFiniteField, arr::Array{<: Union{fq_nmod, fmpz, Integer}, 2})
+function matrix(R::FqNmodFiniteField, arr::AbstractArray{<: Union{fq_nmod, fmpz, Integer}, 2})
    z = fq_nmod_mat(size(arr, 1), size(arr, 2), arr, R)
    return z
 end
 
-function matrix(R::FqNmodFiniteField, r::Int, c::Int, arr::Array{<: Union{fq_nmod, fmpz, Integer}, 1})
+function matrix(R::FqNmodFiniteField, r::Int, c::Int, arr::AbstractArray{<: Union{fq_nmod, fmpz, Integer}, 1})
    _check_dim(r, c, arr)
    z = fq_nmod_mat(r, c, arr, R)
    return z
