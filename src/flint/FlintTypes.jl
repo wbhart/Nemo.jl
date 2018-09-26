@@ -427,19 +427,19 @@ mutable struct NmodPolyRing <: PolyRing{nmod}
 
   function NmodPolyRing(R::NmodRing, s::Symbol, cached::Bool = true)
     m = UInt(modulus(R))
-    if haskey(NmodPolyRingID, (m, s))
-       return NmodPolyRingID[m, s]
+    if haskey(NmodPolyRingID, (R, s))
+       return NmodPolyRingID[R, s]
     else
        z = new(R, s, m)
        if cached
-          NmodPolyRingID[m, s] = z
+          NmodPolyRingID[R, s] = z
        end
        return z
     end
   end
 end
 
-const NmodPolyRingID = Dict{Tuple{UInt, Symbol}, NmodPolyRing}()
+const NmodPolyRingID = Dict{Tuple{NmodRing, Symbol}, NmodPolyRing}()
 
 mutable struct nmod_poly <: PolyElem{nmod}
    coeffs::Ptr{Nothing}
