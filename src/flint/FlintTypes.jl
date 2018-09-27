@@ -572,19 +572,19 @@ mutable struct GFPPolyRing <: PolyRing{gfp_elem}
 
   function GFPPolyRing(R::GaloisField, s::Symbol, cached::Bool = true)
     m = UInt(modulus(R))
-    if cached && haskey(GFPPolyRingID, (m, s))
-       return GFPPolyRingID[m, s]
+    if cached && haskey(GFPPolyRingID, (R, s))
+       return GFPPolyRingID[R, s]
     else
        z = new(R, s, m)
        if cached
-          GFPPolyRingID[m, s] = z
+          GFPPolyRingID[R, s] = z
        end
        return z
     end
   end
 end
 
-const GFPPolyRingID = Dict{Tuple{UInt, Symbol}, GFPPolyRing}()
+const GFPPolyRingID = Dict{Tuple{GaloisField, Symbol}, GFPPolyRing}()
 
 mutable struct gfp_poly <: PolyElem{gfp_elem}
    coeffs::Ptr{Nothing}
@@ -853,19 +853,19 @@ mutable struct GFPFmpzPolyRing <: PolyRing{Generic.ResF{fmpz}}
 
   function GFPFmpzPolyRing(R::Generic.ResField{fmpz}, s::Symbol, cached::Bool = true)
     m = modulus(R)
-    if cached && haskey(GFPFmpzPolyRingID, (m, s))
-       return GFPFmpzPolyRingID[m, s]
+    if cached && haskey(GFPFmpzPolyRingID, (R, s))
+       return GFPFmpzPolyRingID[R, s]
     else
        z = new(R, s, m)
        if cached
-          GFPFmpzPolyRingID[m ,s] = z
+          GFPFmpzPolyRingID[R ,s] = z
        end
        return z
     end
   end
 end
 
-const GFPFmpzPolyRingID = Dict{Tuple{fmpz, Symbol}, GFPFmpzPolyRing}()
+const GFPFmpzPolyRingID = Dict{Tuple{Generic.ResField{fmpz}, Symbol}, GFPFmpzPolyRing}()
 
 const ZmodNFmpzPolyRing = Union{FmpzModPolyRing, GFPFmpzPolyRing}
 
