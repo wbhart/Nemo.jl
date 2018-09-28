@@ -4,7 +4,7 @@ oldwdir = pwd()
 
 @show M4_VERSION = "1.4.17"
 @show YASM_VERSION = "1.3.0"
-@show MPIR_VERSION = "3.0.0"
+@show MPIR_VERSION = "3.0.0-90740d8fdf03b941b55723b449831c52fd7f51ca"
 @show MPFR_VERSION = "4.0.0"
 @show ANTIC_VERSION = "96b37f6242526f95f68f1f15c925db5a4a19a21c"
 @show FLINT_VERSION = "adf1583c6bd92a454f3f92a18adf9063d14637a0"
@@ -124,7 +124,7 @@ MPIR_FILE = "mpir-" * MPIR_VERSION * ".tar.bz2"
 
 if !ispath(joinpath(wdir, "mpir-$MPIR_VERSION"))
    println("Downloading MPIR sources ... ")
-   download("http://mpir.org/$MPIR_FILE", joinpath(wdir, MPIR_FILE))
+   download("http://nemocas.org/binaries/$MPIR_FILE", joinpath(wdir, MPIR_FILE))
    println("DONE")
 end
 
