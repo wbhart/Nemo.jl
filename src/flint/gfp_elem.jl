@@ -277,7 +277,7 @@ function divexact(x::gfp_elem, y::gfp_elem)
            y.data, R.n)
    d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
              x.data, yinv, R.n, R.ninv)
-   return d
+   return gfp_elem(d, R)
 end
 
 function divides(a::gfp_elem, b::gfp_elem)
