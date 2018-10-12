@@ -224,6 +224,10 @@ end
 
 *(x::Int, y::arb_mat) = y*x
 
+*(x::arb_mat, y::fmpq) = x*base_ring(x)(y)
+
+*(x::fmpq, y::arb_mat) = y*x
+
 function *(x::arb_mat, y::fmpz)
   z = similar(x)
   ccall((:arb_mat_scalar_mul_fmpz, :libarb), Nothing,
