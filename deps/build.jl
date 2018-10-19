@@ -7,7 +7,7 @@ oldwdir = pwd()
 @show MPIR_VERSION = "3.0.0-90740d8fdf03b941b55723b449831c52fd7f51ca"
 @show MPFR_VERSION = "4.0.0"
 @show ANTIC_VERSION = "96b37f6242526f95f68f1f15c925db5a4a19a21c"
-@show FLINT_VERSION = "adf1583c6bd92a454f3f92a18adf9063d14637a0"
+@show FLINT_VERSION = "b44e31c4b456653a54d046b094491039d0cde612"
 @show ARB_VERSION = "4ddd6771d94e602462e1fc470ec9d55b248c04d7"
 
 pkgdir = dirname(dirname(@__FILE__))
@@ -221,7 +221,7 @@ if Sys.iswindows()
    if Int == Int32
       download_dll("http://nemocas.org/binaries/w32-libflint.dll", joinpath(vdir, "lib", "libflint.dll"))
    else
-      download_dll("http://nemocas.org/binaries/w64-libflint.dll", joinpath(vdir, "lib", "libflint.dll"))
+      download_dll("http://nemocas.org/binaries/w64-libflint.dll.$FLINT_VERSION", joinpath(vdir, "lib", "libflint.dll"))
    end
    try
       run(`ln -sf $vdir\\lib\\libflint.dll $vdir\\lib\\libflint-13.dll`)
