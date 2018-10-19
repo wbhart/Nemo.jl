@@ -1203,7 +1203,7 @@ mutable struct fmpq_mpoly <: MPolyElem{fmpq}
               z, a[i], b[i], ctx)
       end
 
-      ccall((:fmpq_mpoly_sort, :libflint), Nothing,
+      ccall((:fmpq_mpoly_sort_terms, :libflint), Nothing,
             (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, ctx)
       ccall((:fmpq_mpoly_combine_like_terms, :libflint), Nothing,
             (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, ctx)
@@ -1223,7 +1223,7 @@ mutable struct fmpq_mpoly <: MPolyElem{fmpq}
               z, a[i], b[i], ctx)
       end
 
-      ccall((:fmpq_mpoly_sort, :libflint), Nothing,
+      ccall((:fmpq_mpoly_sort_terms, :libflint), Nothing,
             (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, ctx)
       ccall((:fmpq_mpoly_combine_like_terms, :libflint), Nothing,
             (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, ctx)

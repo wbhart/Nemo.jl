@@ -14,10 +14,10 @@ platform:
 #   allow_failures:
 #   - julia_version: latest
 
-branches:
-  only:
-    - master
-    - /release-.*/
+#branches:
+#  only:
+#    - master
+#    - /release-.*/
 
 notifications:
   - provider: Email
