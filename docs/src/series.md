@@ -7,7 +7,7 @@ CurrentModule = Nemo
 Nemo allows the creation of capped relative and absolute power series over any computable
 ring $R$. Capped relative power series are power series of the form
 $a_jx^j + a_{j+1}x^{j+1} + \cdots + a_{k-1}x^{k-1} + O(x^k)$
-where $i \geq 0$, $a_i \in R$ and the relative precision $k - j$ is at most
+where $j \geq 0$, $a_j \in R$ and the relative precision $k - j$ is at most
 equal to some specified precision $n$.
 On the other hand capped absolute power series are power series of the form
 $a_jx^j + a_{j+1}x^{j+1} + \cdots + a_{n-1}x^{n-1} + O(x^n)$
