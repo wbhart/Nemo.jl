@@ -66,7 +66,7 @@ order(R::GaloisField) = fmpz(R.n)
     characteristic(a::GaloisField) -> fmpz
 > Return the characteristic of the given Galois field.
 """
-characterstic(R::GaloisField) = fmpz(R.n)
+characteristic(R::GaloisField) = fmpz(R.n)
 
 ###############################################################################
 #
