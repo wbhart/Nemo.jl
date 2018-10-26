@@ -44,6 +44,22 @@ function test_gfp_constructors()
       end
    end 
 
+   S = GF(17)
+   T = GF(17)
+   @test T === S
+
+   S = GF(19, cached = false)
+   T = GF(19, cached = false)
+   @test !(S === T)
+
+   S = GF(fmpz(17))
+   T = GF(fmpz(17))
+   @test T === S
+
+   S = GF(fmpz(19), cached = false)
+   T = GF(fmpz(19), cached = false)
+   @test !(S === T)
+
    println("PASS")
 end
 
