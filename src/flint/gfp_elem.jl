@@ -412,7 +412,7 @@ function GF(n::UInt; cached::Bool=true)
 end
 
 function GF(n::fmpz; cached::Bool=true)
-   return ResidueField(Nemo.ZZ, n)
+   return ResidueField(Nemo.ZZ, n, cached = cached)
 end
 
 ################################################################################
