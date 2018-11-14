@@ -1210,6 +1210,26 @@ mutable struct fmpq_mpoly <: MPolyElem{fmpq}
       return z
    end
 
+   function fmpq_mpoly(ctx::FmpqMPolyRing, a::Vector{fmpq}, b::Vector{Vector{Int}})
+      z = new()
+      ccall((:fmpq_mpoly_init, :libflint), Nothing,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      z.parent = ctx
+      finalizer(_fmpq_mpoly_clear_fn, z)
+
+      for i in 1:length(a)
+        ccall((:fmpq_mpoly_pushterm_fmpq_ui, :libflint), Nothing,
+              (Ref{fmpq_mpoly}, Ref{fmpq}, Ptr{UInt}, Ref{FmpqMPolyRing}),
+              z, a[i], UInt(b[i]), ctx)
+      end
+
+      ccall((:fmpq_mpoly_sort_terms, :libflint), Nothing,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, ctx)
+      ccall((:fmpq_mpoly_combine_like_terms, :libflint), Nothing,
+            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, ctx)
+      return z
+   end
+
    function fmpq_mpoly(ctx::FmpqMPolyRing, a::Vector{fmpq}, b::Vector{Vector{fmpz}})
       z = new()
       ccall((:fmpq_mpoly_init, :libflint), Nothing,

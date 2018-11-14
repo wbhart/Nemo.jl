@@ -93,7 +93,7 @@ function test_fmpq_mpoly_manipulation()
       f = rand(S, 1:5, 0:100, -100:100)
 
       if length(f) > 0
-        @test f == sum((coeff(f, i) * S(fmpq[1], [Nemo._get_termexp_fmpz(f, i)])  for i in 1:length(f)))
+        @test f == sum((coeff(f, i) * S(fmpq[1], [Nemo.exponent_vector_fmpz(f, i)])  for i in 1:length(f)))
       end
 
       deg = isdegree(ordering(S))
@@ -112,8 +112,14 @@ function test_fmpq_mpoly_manipulation()
       h = rand(S, 1:1, 0:100, 1:1)
       h2 = rand(S, 2:2, 1:100, 1:1)
 
-      @test ismonomial(h)
-      @test !ismonomial(h2 + 1 + gen(S, 1))
+      @test isterm(h)
+      @test !isterm(h2 + 1 + gen(S, 1))
+      
+      @test isunit(S(1))
+      @test !isunit(gen(S, 1))
+
+      @test ismonomial(gen(S, 1)*gen(S, num_vars))
+      @test !ismonomial(2*gen(S, 1)*gen(S, num_vars))
 
       monomialexp = unique([UInt[rand(1:10) for j in 1:num_vars] for k in 1:10])
       coeffs = [rand(FlintQQ, 1:10) for k in 1:length(monomialexp)]
@@ -122,6 +128,20 @@ function test_fmpq_mpoly_manipulation()
       for k in 1:length(h)
         @test coeff(h, S(fmpq[1], [monomialexp[k]])) == coeffs[k]
       end
+
+      max_degs = max.(monomialexp...)
+      for k = 1:num_vars
+         @test (degree(h, k) == max_degs[k]) || (h == 0 && degree(h, k) == -1)
+         @test degrees(h)[k] == degree(h, k)
+         @test degrees_fmpz(h)[k] == degree(h, k)
+         @test degrees_fmpz(h)[k] == degree_fmpz(h, k)
+      end
+
+      @test degrees_fit_int(h)
+
+      @test (total_degree(h) == max(sum.(monomialexp)...)) || (h == 0 && total_degree(h) == -1)
+      @test (total_degree_fmpz(h) == max(sum.(monomialexp)...)) || (h == 0 && total_degree(h) == -1)
+      @test total_degree_fits_int(h)
    end
 
    println("PASS")
@@ -543,6 +563,92 @@ function test_fmpq_mpoly_derivative_integral()
    println("PASS")
 end
 
+function test_fmpq_mpoly_combine_like_terms()
+  print("fmpq_mpoly.combine_like_terms...")
+
+  for num_vars = 1:10
+     var_names = ["x$j" for j in 1:num_vars]
+     ord = rand_ordering()
+
+     R, vars_R = PolynomialRing(FlintQQ, var_names; ordering=ord)
+
+     for iter in 1:10
+        f = R()
+        while f == 0
+           f = rand(R, 5:10, 1:10, -100:100)
+        end
+
+        lenf = length(f)
+        f = setcoeff!(f, rand(1:lenf), 0)
+        f = combine_like_terms!(f)
+
+        @test length(f) == lenf - 1
+
+        while length(f) < 2
+           f = rand(R, 5:10, 1:10, -100:100)
+        end
+
+        lenf = length(f)
+        nrand = rand(1:lenf - 1)
+        v = exponent_vector(f, nrand)
+        f = set_exponent_vector!(f, nrand + 1, v)
+        terms_cancel = coeff(f, nrand) == -coeff(f, nrand + 1)
+        f = combine_like_terms!(f)
+        @test length(f) == lenf - 1 - terms_cancel
+     end
+  end
+
+  println("PASS")
+end
+
+function test_fmpq_mpoly_exponents()
+  print("fmpq_mpoly.exponents...")
+
+  for num_vars = 1:10
+     var_names = ["x$j" for j in 1:num_vars]
+     ord = rand_ordering()
+
+     R, vars_R = PolynomialRing(FlintQQ, var_names; ordering=ord)
+
+     for iter in 1:10
+        f = R()
+        while f == 0
+           f = rand(R, 5:10, 1:10, -100:100)
+        end
+
+        nrand = rand(1:length(f))
+        v = exponent_vector(f, nrand)
+        c = coeff(f, v)
+
+        @test c == coeff(f, nrand)
+     end
+
+     for iter in 1:10
+        num_vars = nvars(R)
+
+        f = R()
+        rand_len = rand(0:10)
+
+        for i = 1:rand_len
+           f = set_exponent_vector!(f, i, [rand(0:10) for j in 1:num_vars])
+           f = setcoeff!(f, i, rand(ZZ, -10:10))
+        end
+
+        f = sort_terms!(f)
+        f = combine_like_terms!(f)
+
+        for i = 1:length(f) - 1
+           @test exponent_vector(f, i) != exponent_vector(f, i + 1)
+           @test coeff(f, i) != 0
+        end
+        if length(f) > 0
+           @test coeff(f, length(f)) != 0
+        end
+     end
+  end
+
+  println("PASS")
+end
 
 
 function test_fmpq_mpoly()
@@ -557,9 +663,11 @@ function test_fmpq_mpoly()
    test_fmpq_mpoly_euclidean_division()
    test_fmpq_mpoly_ideal_reduction()
    test_fmpq_mpoly_gcd()
-   #test_fmpq_mpoly_evaluation()
+   test_fmpq_mpoly_evaluation()
    test_fmpq_mpoly_valuation()
    test_fmpq_mpoly_derivative_integral()
+   test_fmpq_mpoly_combine_like_terms()
+   test_fmpq_mpoly_exponents()
 
    println("")
 end
