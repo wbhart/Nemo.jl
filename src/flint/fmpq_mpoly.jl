@@ -427,9 +427,10 @@ end
 function gcd(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
    z = parent(a)()
-   ccall((:fmpq_mpoly_gcd, :libflint), Cint,
+   r = Bool(ccall((:fmpq_mpoly_gcd, :libflint), Cint,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
-         z, a, b, a.parent)
+         z, a, b, a.parent))
+   r == false && error("Unable to compute gcd")
    return z
 end
 
@@ -638,6 +639,7 @@ function setcoeff!(a::fmpq_mpoly, n::Int, c::fmpq)
       ccall((:fmpq_mpoly_pushterm_fmpq_ui, :libflint), Nothing,
             (Ref{fmpq_mpoly}, Ref{fmpq}, Ptr{UInt}, Ref{FmpqMPolyRing}),
          a, c, zero_exp, a.parent)
+      return a
    end
    ccall((:fmpq_mpoly_set_termcoeff_fmpq, :libflint), Nothing,
          (Ref{fmpq_mpoly}, Int, Ref{fmpq}, Ref{FmpqMPolyRing}),
