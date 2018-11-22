@@ -986,14 +986,6 @@ const Zmodn_fmpz_poly = Union{fmpz_mod_poly, gfp_fmpz_poly}
 
 const flint_orderings = [:lex, :deglex, :degrevlex]
 
-# S is a Symbol which can take the values:
-# :lex
-# :deglex
-# :degrevlex
-#
-# T is an Int which is the number of variables
-# (plus one if ordered by total degree)
-
 mutable struct FmpzMPolyRing <: MPolyRing{fmpz}
    nvars::Int
    nfields::Cint
@@ -1161,11 +1153,6 @@ end
 #   FmpqMPolyRing / fmpq_mpoly
 #
 ###############################################################################
-
-# S is a Symbol which can take the values:
-# :lex
-# :deglex
-# :degrevlex
 
 mutable struct FmpqMPolyRing <: MPolyRing{fmpq}
    nvars::Int
@@ -1340,6 +1327,166 @@ end
 function _fmpq_mpoly_clear_fn(a::fmpq_mpoly)
   ccall((:fmpq_mpoly_clear, :libflint), Nothing,
           (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
+end
+
+###############################################################################
+#
+#   NmodMPolyRing / nmod_mpoly
+#
+###############################################################################
+
+mutable struct NmodMPolyRing <: MPolyRing{nmod}
+   n::UInt
+   ninv::UInt
+   extras::Ptr{Int}
+   nvars::Int
+   nfields::Cint
+   ord::Int
+   deg::Cint
+   rev::Cint
+   base_ring::NmodRing
+   S::Array{Symbol, 1}
+
+   function NmodMPolyRing(R::NmodRing, s::Array{Symbol, 1}, S::Symbol, cached::Bool = true)
+      if cached && haskey(NmodMPolyID, (R, s, S))
+         return NmodMPolyID[R, s, S]
+      else
+         if S == :lex
+            ord = 0
+         elseif S == :deglex
+            ord = 1
+         elseif S == :degrevlex
+            ord = 2
+         else
+            error("$S is not a valid ordering")
+         end
+
+         z = new()
+         ccall((:nmod_mpoly_ctx_init, :libflint), Nothing,
+               (Ref{NmodMPolyRing}, Int, Int, UInt),
+               z, length(s), ord, R.n)
+         z.base_ring = NmodRing
+         z.S = s
+         finalizer(_nmod_mpoly_ctx_clear_fn, z)
+         if cached
+            NmodMPolyID[R, s, S] = z
+         end
+         return z
+      end
+   end
+end
+
+function _nmod_mpoly_ctx_clear_fn(a::NmodMPolyRing)
+   ccall((:nmod_mpoly_ctx_clear, :libflint), Nothing,
+           (Ref{NmodMPolyRing},), a)
+end
+
+const NmodMPolyID = Dict{Tuple{Array{Symbol, 1}, Symbol}, NmodMPolyRing}()
+
+mutable struct nmod_mpoly <: MPolyElem{nmod}
+   coeffs::Ptr{Nothing}
+   exps::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   bits::Int
+
+   parent::NmodMPolyRing
+
+   function nmod_mpoly(ctx::NmodMPolyRing)
+      z = new()
+      ccall((:nmod_mpoly_init, :libflint), Nothing,
+            (Ref{nmod_mpoly}, Ref{NmodMPolyRing},), z, ctx)
+      z.parent = ctx
+      finalizer(_nmod_mpoly_clear_fn, z)
+      return z
+   end
+
+   function nmod_mpoly(ctx::NmodMPolyRing, a::Vector{nmod}, b::Vector{Vector{UInt}})
+      z = new()
+      ccall((:nmod_mpoly_init, :libflint), Nothing,
+            (Ref{nmod_mpoly}, Ref{NmodMPolyRing},), z, ctx)
+      z.parent = ctx
+      finalizer(_nmod_mpoly_clear_fn, z)
+
+      for i in 1:length(a)
+         ccall((:nmod_mpoly_pushterm_ui_ui, :libflint), Nothing,
+               (Ref{nmod_mpoly}, UInt, Ptr{UInt}, Ref{NmodMPolyRing}),
+               z, a[i], b[i], ctx)
+       end
+
+       ccall((:nmod_mpoly_sort_terms, :libflint), Nothing,
+             (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), z, ctx)
+       ccall((:nmod_mpoly_combine_like_terms, :libflint), Nothing,
+             (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), z, ctx)
+       return z
+   end
+
+   function nmod_mpoly(ctx::NmodMPolyRing, a::Vector{nmod}, b::Vector{Vector{Int}})
+      z = new()
+      ccall((:nmod_mpoly_init, :libflint), Nothing,
+            (Ref{nmod_mpoly}, Ref{NmodMPolyRing},), z, ctx)
+      z.parent = ctx
+      finalizer(_nmod_mpoly_clear_fn, z)
+
+      for i in 1:length(a)
+         ccall((:nmod_mpoly_pushterm_ui_ui, :libflint), Nothing,
+               (Ref{nmod_mpoly}, UInt, Ptr{Int}, Ref{NmodMPolyRing}),
+               z, a[i], b[i], ctx)
+       end
+
+       ccall((:nmod_mpoly_sort_terms, :libflint), Nothing,
+             (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), z, ctx)
+       ccall((:nmod_mpoly_combine_like_terms, :libflint), Nothing,
+             (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), z, ctx)
+       return z
+   end
+
+   function nmod_mpoly(ctx::NmodMPolyRing, a::Vector{nmod}, b::Vector{Vector{fmpz}})
+      z = new()
+      ccall((:nmod_mpoly_init, :libflint), Nothing,
+            (Ref{nmod_mpoly}, Ref{NmodMPolyRing},), z, ctx)
+      z.parent = ctx
+      finalizer(_nmod_mpoly_clear_fn, z)
+
+      for i in 1:length(a)
+         ccall((:nmod_mpoly_pushterm_ui_fmpz, :libflint), Nothing,
+               (Ref{nmod_mpoly}, UInt, Ptr{Ref{fmpz}}, Ref{NmodMPolyRing}),
+               z, a[i], b[i], ctx)
+       end
+
+       ccall((:nmod_mpoly_sort_terms, :libflint), Nothing,
+             (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), z, ctx)
+       ccall((:nmod_mpoly_combine_like_terms, :libflint), Nothing,
+             (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), z, ctx)
+       return z
+   end
+
+   function nmod_mpoly(ctx::NmodMPolyRing, a::UInt)
+      z = new()
+      ccall((:nmod_mpoly_init, :libflint), Nothing,
+            (Ref{nmod_mpoly}, Ref{NmodMPolyRing},), z, ctx)
+      ccall((:nmod_mpoly_set_ui, :libflint), Nothing,
+            (Ref{nmod_mpoly}, UInt, Ref{NmodMPolyRing}), z, a, ctx)
+      z.parent = ctx
+      finalizer(_nmod_mpoly_clear_fn, z)
+      return z
+   end
+
+   function nmod_mpoly(ctx::NmodMPolyRing, a::Int)
+      z = new()
+      ccall((:nmod_mpoly_init, :libflint), Nothing,
+            (Ref{nmod_mpoly}, Ref{NmodMPolyRing},), z, ctx)
+      ccall((:nmod_mpoly_set_si, :libflint), Nothing,
+            (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), z, a, ctx)
+      finalizer(_nmod_mpoly_clear_fn, z)
+      z.parent = ctx
+      return z
+   end
+end
+
+function _nmod_mpoly_clear_fn(a::nmod_mpoly)
+   ccall((:nmod_mpoly_clear, :libflint), Nothing,
+          (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
 end
 
 ###############################################################################
