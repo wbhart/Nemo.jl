@@ -1248,7 +1248,7 @@ end
 
 @doc Markdown.doc"""
     moebiusmu(x::fmpz)
-> Returns the Moebius mu function of $x$ as an \code{Int}. The value
+> Returns the Moebius mu function of $x$ as an `Int`. The value
 > returned is either $-1$, $0$ or $1$. If $x < 0$ we throw a `DomainError()`.
 """
 function moebiusmu(x::fmpz)
