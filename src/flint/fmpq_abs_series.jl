@@ -14,6 +14,9 @@ export fmpq_abs_series, FmpqAbsSeriesRing, tan, tanh, sin, sinh, asin, asinh,
 ###############################################################################
 
 function O(a::fmpq_abs_series)
+   if iszero(a)
+      return deepcopy(a)    # 0 + O(x^n)
+   end
    prec = length(a) - 1
    prec < 0 && throw(DomainError("Precision must be non-negative: $prec"))
    z = parent(a)()
@@ -280,9 +283,14 @@ function shift_left(x::fmpq_abs_series, len::Int)
    xlen = length(x)
    z = parent(x)()
    z.prec = x.prec + len
+   z.prec = min(z.prec, max_precision(parent(x)))
+   zlen = min(z.prec, xlen + len)
    ccall((:fmpq_poly_shift_left, :libflint), Nothing,
-                (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
+         (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, x, len)
+   ccall((:fmpq_poly_set_trunc, :libflint), Nothing,
+         (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
+               z, z, zlen)
    return z
 end
 

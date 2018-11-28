@@ -294,7 +294,7 @@ function test_fmpz_abs_series_inversion()
 end
 
 function test_fmpz_abs_series_square_root()
-   print("fmpz_abs_series.inversion...")
+   print("fmpz_abs_series.square_root...")
 
    R, x = PowerSeriesRing(ZZ, 30, "x", model=:capped_absolute)
 

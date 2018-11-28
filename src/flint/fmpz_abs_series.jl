@@ -253,9 +253,14 @@ function shift_left(x::fmpz_abs_series, len::Int)
    xlen = length(x)
    z = parent(x)()
    z.prec = x.prec + len
+   z.prec = min(z.prec, max_precision(parent(x)))
+   zlen = min(z.prec, xlen + len)
    ccall((:fmpz_poly_shift_left, :libflint), Nothing,
                 (Ref{fmpz_abs_series}, Ref{fmpz_abs_series}, Int),
                z, x, len)
+   ccall((:fmpz_poly_set_trunc, :libflint), Nothing,
+                (Ref{fmpz_abs_series}, Ref{fmpz_abs_series}, Int),
+               z, z, zlen)
    return z
 end
 

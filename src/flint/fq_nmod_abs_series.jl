@@ -238,9 +238,14 @@ function shift_left(x::fq_nmod_abs_series, len::Int)
    xlen = length(x)
    z = parent(x)()
    z.prec = x.prec + len
+   z.prec = min(z.prec, max_precision(parent(x)))
+   zlen = min(z.prec, xlen + len)
    ccall((:fq_nmod_poly_shift_left, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
                z, x, len, base_ring(x))
+   ccall((:fq_nmod_poly_set_trunc, :libflint), Nothing,
+         (Ref{fq_nmod_abs_series}, Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),
+               z, z, zlen, base_ring(x))
    return z
 end
 
