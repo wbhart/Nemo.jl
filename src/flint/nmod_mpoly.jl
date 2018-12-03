@@ -369,7 +369,7 @@ end
 
 -(a::nmod_mpoly, b::Integer) = a - base_ring(parent(a))(b)
 
--(a::Integer, b::nmod_mpoly) = base_ring(parent(b))(a) - a
+-(a::Integer, b::nmod_mpoly) = base_ring(parent(b))(a) - b
 
 *(a::nmod_mpoly, b::Integer) = a*base_ring(parent(a))(b)
 
