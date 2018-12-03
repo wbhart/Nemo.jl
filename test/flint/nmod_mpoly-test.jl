@@ -93,7 +93,7 @@ function test_nmod_mpoly_manipulation()
       f = rand(S, 1:5, 0:100)
 
       if length(f) > 0
-        @test f == sum((coeff(f, i) * S(fmpq[1], [Nemo.exponent_vector_fmpz(f, i)])  for i in 1:length(f)))
+        @test f == sum((coeff(f, i) * S([R(1)], [Nemo.exponent_vector_fmpz(f, i)])  for i in 1:length(f)))
       end
 
       deg = isdegree(ordering(S))

@@ -1248,8 +1248,8 @@ mutable struct fmpq_mpoly <: MPolyElem{fmpq}
 
       for i in 1:length(a)
         ccall((:fmpq_mpoly_push_term_fmpq_ui, :libflint), Nothing,
-              (Ref{fmpq_mpoly}, Ref{fmpq}, Ptr{UInt}, Ref{FmpqMPolyRing}),
-              z, a[i], UInt(b[i]), ctx)
+              (Ref{fmpq_mpoly}, Ref{fmpq}, Ptr{Int}, Ref{FmpqMPolyRing}),
+              z, a[i], b[i], ctx)
       end
 
       ccall((:fmpq_mpoly_sort_terms, :libflint), Nothing,
@@ -1338,10 +1338,11 @@ end
 mutable struct NmodMPolyRing <: MPolyRing{nmod}
    n::UInt
    ninv::UInt
+   norm::Int
    extras::Ptr{Int}
    nvars::Int
-   nfields::Cint
-   ord::Int
+   nfields::Int
+   ord::Cint
    deg::Cint
    rev::Cint
    base_ring::NmodRing
@@ -1363,9 +1364,9 @@ mutable struct NmodMPolyRing <: MPolyRing{nmod}
 
          z = new()
          ccall((:nmod_mpoly_ctx_init, :libflint), Nothing,
-               (Ref{NmodMPolyRing}, Int, Int, UInt),
+               (Ref{NmodMPolyRing}, Int, Cint, UInt),
                z, length(s), ord, R.n)
-         z.base_ring = NmodRing
+         z.base_ring = R
          z.S = s
          finalizer(_nmod_mpoly_ctx_clear_fn, z)
          if cached
@@ -1381,7 +1382,7 @@ function _nmod_mpoly_ctx_clear_fn(a::NmodMPolyRing)
            (Ref{NmodMPolyRing},), a)
 end
 
-const NmodMPolyID = Dict{Tuple{Array{Symbol, 1}, Symbol}, NmodMPolyRing}()
+const NmodMPolyID = Dict{Tuple{NmodRing, Array{Symbol, 1}, Symbol}, NmodMPolyRing}()
 
 mutable struct nmod_mpoly <: MPolyElem{nmod}
    coeffs::Ptr{Nothing}
@@ -1409,9 +1410,9 @@ mutable struct nmod_mpoly <: MPolyElem{nmod}
       finalizer(_nmod_mpoly_clear_fn, z)
 
       for i in 1:length(a)
-         ccall((:nmod_mpoly_pushterm_ui_ui, :libflint), Nothing,
+         ccall((:nmod_mpoly_push_term_ui_ui, :libflint), Nothing,
                (Ref{nmod_mpoly}, UInt, Ptr{UInt}, Ref{NmodMPolyRing}),
-               z, a[i], b[i], ctx)
+               z, a[i].data, b[i], ctx)
        end
 
        ccall((:nmod_mpoly_sort_terms, :libflint), Nothing,
@@ -1429,9 +1430,9 @@ mutable struct nmod_mpoly <: MPolyElem{nmod}
       finalizer(_nmod_mpoly_clear_fn, z)
 
       for i in 1:length(a)
-         ccall((:nmod_mpoly_pushterm_ui_ui, :libflint), Nothing,
+         ccall((:nmod_mpoly_push_term_ui_ui, :libflint), Nothing,
                (Ref{nmod_mpoly}, UInt, Ptr{Int}, Ref{NmodMPolyRing}),
-               z, a[i], b[i], ctx)
+               z, a[i].data, b[i], ctx)
        end
 
        ccall((:nmod_mpoly_sort_terms, :libflint), Nothing,
@@ -1449,9 +1450,9 @@ mutable struct nmod_mpoly <: MPolyElem{nmod}
       finalizer(_nmod_mpoly_clear_fn, z)
 
       for i in 1:length(a)
-         ccall((:nmod_mpoly_pushterm_ui_fmpz, :libflint), Nothing,
+         ccall((:nmod_mpoly_push_term_ui_fmpz, :libflint), Nothing,
                (Ref{nmod_mpoly}, UInt, Ptr{Ref{fmpz}}, Ref{NmodMPolyRing}),
-               z, a[i], b[i], ctx)
+               z, a[i].data, b[i], ctx)
        end
 
        ccall((:nmod_mpoly_sort_terms, :libflint), Nothing,
@@ -1472,12 +1473,12 @@ mutable struct nmod_mpoly <: MPolyElem{nmod}
       return z
    end
 
-   function nmod_mpoly(ctx::NmodMPolyRing, a::Int)
+   function nmod_mpoly(ctx::NmodMPolyRing, a::nmod)
       z = new()
       ccall((:nmod_mpoly_init, :libflint), Nothing,
             (Ref{nmod_mpoly}, Ref{NmodMPolyRing},), z, ctx)
-      ccall((:nmod_mpoly_set_si, :libflint), Nothing,
-            (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), z, a, ctx)
+      ccall((:nmod_mpoly_set_ui, :libflint), Nothing,
+            (Ref{nmod_mpoly}, UInt, Ref{NmodMPolyRing}), z, a.data, ctx)
       finalizer(_nmod_mpoly_clear_fn, z)
       z.parent = ctx
       return z
