@@ -454,7 +454,11 @@ end
 
 ==(a::nmod_mpoly, b::Integer) = a == base_ring(parent(a))(b)
 
+==(a::nmod_mpoly, b::fmpz) = a == base_ring(parent(a))(b)
+
 ==(a::Integer, b::nmod_mpoly) = b == a
+
+==(a::fmpz, b::nmod_mpoly) = b == a
 
 ###############################################################################
 #
@@ -563,13 +567,27 @@ end
 function evaluate(a::nmod_mpoly, b::Vector{nmod})
    length(b) != nvars(parent(a)) && error("Vector size incorrect in evaluate")
    b2 = [d.data for d in b]
-   z = ccall((:nmod_mpoly_evaluate_all_ui, :libflint), Nothing,
+   z = ccall((:nmod_mpoly_evaluate_all_ui, :libflint), UInt,
          (Ref{nmod_mpoly}, Ptr{UInt}, Ref{NmodMPolyRing}),
             a, b2, parent(a))
    return base_ring(parent(a))(z)
 end
 
 function evaluate(a::nmod_mpoly, b::Vector{Int})
+   length(b) != nvars(parent(a)) && error("Vector size incorrect in evaluate")
+   R = base_ring(parent(a))
+   b2 = [R(d) for d in b]
+   return evaluate(a, b2)
+end
+
+function evaluate(a::nmod_mpoly, b::Vector{T}) where T <: Integer
+   length(b) != nvars(parent(a)) && error("Vector size incorrect in evaluate")
+   R = base_ring(parent(a))
+   b2 = [R(d) for d in b]
+   return evaluate(a, b2)
+end
+
+function evaluate(a::nmod_mpoly, b::Vector{fmpz})
    length(b) != nvars(parent(a)) && error("Vector size incorrect in evaluate")
    R = base_ring(parent(a))
    b2 = [R(d) for d in b]
@@ -821,6 +839,9 @@ function (R::NmodMPolyRing)(b::Integer)
    return R(base_ring(R)(b))
 end
 
+function (R::NmodMPolyRing)(b::fmpz)
+   return R(base_ring(R)(b))
+end
 
 function (R::NmodMPolyRing)(a::nmod_mpoly)
    parent(a) != R && error("Unable to coerce polynomial")

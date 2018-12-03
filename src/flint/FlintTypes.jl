@@ -1051,8 +1051,8 @@ mutable struct fmpz_mpoly <: MPolyElem{fmpz}
 
    function fmpz_mpoly(ctx::FmpzMPolyRing, a::Vector{fmpz}, b::Vector{Vector{UInt}})
       z = new()
-      ccall((:fmpz_mpoly_init, :libflint), Nothing,
-            (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing},), z, ctx)
+      ccall((:fmpz_mpoly_init2, :libflint), Nothing,
+            (Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing},), z, length(a), ctx)
       z.parent = ctx
       finalizer(_fmpz_mpoly_clear_fn, z)
 
@@ -1071,8 +1071,8 @@ mutable struct fmpz_mpoly <: MPolyElem{fmpz}
 
    function fmpz_mpoly(ctx::FmpzMPolyRing, a::Vector{fmpz}, b::Vector{Vector{Int}})
       z = new()
-      ccall((:fmpz_mpoly_init, :libflint), Nothing,
-            (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing},), z, ctx)
+      ccall((:fmpz_mpoly_init2, :libflint), Nothing,
+            (Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing},), z, length(a), ctx)
       z.parent = ctx
       finalizer(_fmpz_mpoly_clear_fn, z)
 
@@ -1091,8 +1091,8 @@ mutable struct fmpz_mpoly <: MPolyElem{fmpz}
 
    function fmpz_mpoly(ctx::FmpzMPolyRing, a::Vector{fmpz}, b::Vector{Vector{fmpz}})
       z = new()
-      ccall((:fmpz_mpoly_init, :libflint), Nothing,
-            (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing},), z, ctx)
+      ccall((:fmpz_mpoly_init2, :libflint), Nothing,
+            (Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing},), z, length(a), ctx)
       z.parent = ctx
       finalizer(_fmpz_mpoly_clear_fn, z)
 
@@ -1221,8 +1221,8 @@ mutable struct fmpq_mpoly <: MPolyElem{fmpq}
 
    function fmpq_mpoly(ctx::FmpqMPolyRing, a::Vector{fmpq}, b::Vector{Vector{UInt}})
       z = new()
-      ccall((:fmpq_mpoly_init, :libflint), Nothing,
-            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      ccall((:fmpq_mpoly_init2, :libflint), Nothing,
+            (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing},), z, length(a), ctx)
       z.parent = ctx
       finalizer(_fmpq_mpoly_clear_fn, z)
 
@@ -1241,8 +1241,8 @@ mutable struct fmpq_mpoly <: MPolyElem{fmpq}
 
    function fmpq_mpoly(ctx::FmpqMPolyRing, a::Vector{fmpq}, b::Vector{Vector{Int}})
       z = new()
-      ccall((:fmpq_mpoly_init, :libflint), Nothing,
-            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      ccall((:fmpq_mpoly_init2, :libflint), Nothing,
+            (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing},), z, length(a), ctx)
       z.parent = ctx
       finalizer(_fmpq_mpoly_clear_fn, z)
 
@@ -1261,8 +1261,8 @@ mutable struct fmpq_mpoly <: MPolyElem{fmpq}
 
    function fmpq_mpoly(ctx::FmpqMPolyRing, a::Vector{fmpq}, b::Vector{Vector{fmpz}})
       z = new()
-      ccall((:fmpq_mpoly_init, :libflint), Nothing,
-            (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing},), z, ctx)
+      ccall((:fmpq_mpoly_init2, :libflint), Nothing,
+            (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing},), z, length(a), ctx)
       z.parent = ctx
       finalizer(_fmpq_mpoly_clear_fn, z)
 
@@ -1404,8 +1404,8 @@ mutable struct nmod_mpoly <: MPolyElem{nmod}
 
    function nmod_mpoly(ctx::NmodMPolyRing, a::Vector{nmod}, b::Vector{Vector{UInt}})
       z = new()
-      ccall((:nmod_mpoly_init, :libflint), Nothing,
-            (Ref{nmod_mpoly}, Ref{NmodMPolyRing},), z, ctx)
+      ccall((:nmod_mpoly_init2, :libflint), Nothing,
+            (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing},), z, length(a), ctx)
       z.parent = ctx
       finalizer(_nmod_mpoly_clear_fn, z)
 
@@ -1424,8 +1424,8 @@ mutable struct nmod_mpoly <: MPolyElem{nmod}
 
    function nmod_mpoly(ctx::NmodMPolyRing, a::Vector{nmod}, b::Vector{Vector{Int}})
       z = new()
-      ccall((:nmod_mpoly_init, :libflint), Nothing,
-            (Ref{nmod_mpoly}, Ref{NmodMPolyRing},), z, ctx)
+      ccall((:nmod_mpoly_init2, :libflint), Nothing,
+            (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing},), z, length(a), ctx)
       z.parent = ctx
       finalizer(_nmod_mpoly_clear_fn, z)
 
@@ -1444,8 +1444,8 @@ mutable struct nmod_mpoly <: MPolyElem{nmod}
 
    function nmod_mpoly(ctx::NmodMPolyRing, a::Vector{nmod}, b::Vector{Vector{fmpz}})
       z = new()
-      ccall((:nmod_mpoly_init, :libflint), Nothing,
-            (Ref{nmod_mpoly}, Ref{NmodMPolyRing},), z, ctx)
+      ccall((:nmod_mpoly_init2, :libflint), Nothing,
+            (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing},), z, length(a), ctx)
       z.parent = ctx
       finalizer(_nmod_mpoly_clear_fn, z)
 

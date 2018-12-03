@@ -121,7 +121,7 @@ function test_fmpz_mpoly_manipulation()
       @test ismonomial(gen(S, 1)*gen(S, num_vars))
       @test !ismonomial(2*gen(S, 1)*gen(S, num_vars))
 
-      monomialexp = unique([UInt[rand(1:10) for j in 1:num_vars] for k in 1:10])
+      monomialexp = unique([UInt[rand(0:10) for j in 1:num_vars] for k in 1:10])
       coeffs = [rand(FlintZZ, 1:10) for k in 1:length(monomialexp)]
       h = S(coeffs, monomialexp)
       @test length(h) == length(monomialexp)
