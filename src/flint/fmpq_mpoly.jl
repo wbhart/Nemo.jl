@@ -374,9 +374,17 @@ end
 
 +(a::Integer, b::fmpq_mpoly) = b + a
 
+-(a::fmpq_mpoly, b::Integer) = a - fmpz(b)
+
+-(a::Integer, b::fmpq_mpoly) = -(b - a)
+
 +(a::fmpq_mpoly, b::Rational{<:Integer}) = a + fmpq(b)
 
 +(a::Rational{<:Integer}, b::fmpq_mpoly) = b + a
+
+-(a::fmpq_mpoly, b::Rational{<:Integer}) = a - fmpq(b)
+
+-(a::Rational{<:Integer}, b::fmpq_mpoly) = -(b - a)
 
 *(a::fmpq_mpoly, b::Integer) = a * fmpz(b)
 

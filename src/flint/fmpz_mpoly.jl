@@ -366,6 +366,10 @@ end
 
 +(a::Integer, b::fmpz_mpoly) = b + a
 
+-(a::fmpz_mpoly, b::Integer) = a - fmpz(b)
+
+-(a::Integer, b::fmpz_mpoly) = -(b - a)
+
 *(a::fmpz_mpoly, b::Integer) = a * fmpz(b)
 
 *(a::Integer, b::fmpz_mpoly) = b * a
