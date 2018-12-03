@@ -638,6 +638,10 @@ end
 # must be removed with combine_like_terms!
 setcoeff!(a::nmod_mpoly, i::Int, c::Integer) = setcoeff!(a, i, base_ring(parent(a))(c))
 
+# Set the i-th coefficient of a to c. If zero coefficients are inserted, they
+# must be removed with combine_like_terms!
+setcoeff!(a::nmod_mpoly, i::Int, c::fmpz) = setcoeff!(a, i, base_ring(parent(a))(c))
+
 # Remove zero terms and combine adjacent terms if they have the same monomial
 # no sorting is performed
 function combine_like_terms!(a::nmod_mpoly)
@@ -751,7 +755,7 @@ end
 # Return the coefficient of the term with the given exponent vector
 # Return zero if there is no such term
 function coeff(a::nmod_mpoly, exps::Vector{UInt})
-   z = ccall((:nmod_mpoly_get_coeff_ui_ui, :libflint), Nothing,
+   z = ccall((:nmod_mpoly_get_coeff_ui_ui, :libflint), UInt,
          (Ref{nmod_mpoly}, Ptr{UInt}, Ref{NmodMPolyRing}),
       a, exps, parent(a))
    return base_ring(parent(a))(z)
@@ -760,7 +764,7 @@ end
 # Return the coefficient of the term with the given exponent vector
 # Return zero if there is no such term
 function coeff(a::nmod_mpoly, exps::Vector{Int})
-   z = ccall((:nmod_mpoly_get_coeff_ui_ui, :libflint), Nothing,
+   z = ccall((:nmod_mpoly_get_coeff_ui_ui, :libflint), UInt,
          (Ref{nmod_mpoly}, Ptr{Int}, Ref{NmodMPolyRing}),
       a, exps, parent(a))
    return base_ring(parent(a))(z)
