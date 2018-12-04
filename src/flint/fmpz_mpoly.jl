@@ -202,7 +202,7 @@ end
 # Return an array of the max degrees as fmpzs in each variable
 function degrees_fmpz(a::fmpz_mpoly)
    n = nvars(parent(a))
-   degs = Vector{fmpz}(undef, n)
+degs = Vector{fmpz}(undef, n)
    for i in 1:n
       degs[i] = fmpz()
    end
@@ -365,6 +365,10 @@ end
 +(a::fmpz_mpoly, b::Integer) = a + fmpz(b)
 
 +(a::Integer, b::fmpz_mpoly) = b + a
+
+-(a::fmpz_mpoly, b::Integer) = a - fmpz(b)
+
+-(a::Integer, b::fmpz_mpoly) = -(b - a)
 
 *(a::fmpz_mpoly, b::Integer) = a * fmpz(b)
 
@@ -746,7 +750,6 @@ function setcoeff!(a::fmpz_mpoly, exps::Vector{Int}, b::fmpz)
 end
 
 # Set the coefficient of the term with the given exponent vector to the
-# given integer. Removal of a zero term is performed.
 setcoeff!(a::fmpz_mpoly, exps::Vector{Int}, b::Integer) =
    setcoeff!(a, exps, fmpz(b))
 

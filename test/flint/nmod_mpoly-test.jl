@@ -1,7 +1,7 @@
-function test_fmpz_mpoly_constructors()
-   print("fmpz_mpoly.constructors...")
+function test_nmod_mpoly_constructors()
+   print("nmod_mpoly.constructors...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -20,34 +20,34 @@ function test_fmpz_mpoly_constructors()
 
       @test nvars(S) == num_vars
 
-      @test elem_type(S) == fmpz_mpoly
-      @test elem_type(FmpzMPolyRing) == fmpz_mpoly
-      @test parent_type(fmpz_mpoly) == FmpzMPolyRing
+      @test elem_type(S) == nmod_mpoly
+      @test elem_type(NmodMPolyRing) == nmod_mpoly
+      @test parent_type(nmod_mpoly) == NmodMPolyRing
 
-      @test typeof(S) <: FmpzMPolyRing
+      @test typeof(S) <: NmodMPolyRing
 
       isa(symbols(S), Array{Symbol, 1})
 
       for j = 1:num_vars
-         @test isa(varlist[j], fmpz_mpoly)
-         @test isa(gens(S)[j], fmpz_mpoly)
+         @test isa(varlist[j], nmod_mpoly)
+         @test isa(gens(S)[j], nmod_mpoly)
       end
 
-      f =  rand(S, 0:5, 0:100, -100:100)
+      f =  rand(S, 0:5, 0:100)
 
-      @test isa(f, fmpz_mpoly)
+      @test isa(f, nmod_mpoly)
 
-      @test isa(S(2), fmpz_mpoly)
+      @test isa(S(2), nmod_mpoly)
 
-      @test isa(S(R(2)), fmpz_mpoly)
+      @test isa(S(R(2)), nmod_mpoly)
 
-      @test isa(S(f), fmpz_mpoly)
+      @test isa(S(f), nmod_mpoly)
 
       V = [R(rand(-100:100)) for i in 1:5]
 
       W0 = [ UInt[rand(0:100) for i in 1:num_vars] for j in 1:5]
 
-      @test isa(S(V, W0), fmpz_mpoly)
+      @test isa(S(V, W0), nmod_mpoly)
 
       for i in 1:num_vars
         f = gen(S, i)
@@ -61,10 +61,10 @@ function test_fmpz_mpoly_constructors()
    println("PASS")
 end
 
-function test_fmpz_mpoly_manipulation()
-   print("fmpz_mpoly.manipulation...")
+function test_nmod_mpoly_manipulation()
+   print("nmod_mpoly.manipulation...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -81,7 +81,7 @@ function test_fmpz_mpoly_manipulation()
          @test !isgen(g[i] + 1)
       end
 
-      f = rand(S, 0:5, 0:100, -100:100)
+      f = rand(S, 0:5, 0:100)
 
       @test f == deepcopy(f)
 
@@ -90,10 +90,10 @@ function test_fmpz_mpoly_manipulation()
          @test isa(coeff(f, i), elem_type(R))
       end
 
-      f = rand(S, 1:5, 0:100, -100:100)
+      f = rand(S, 1:5, 0:100)
 
       if length(f) > 0
-        @test f == sum((coeff(f, i) * S(fmpz[1], [Nemo.exponent_vector_fmpz(f, i)])  for i in 1:length(f)))
+        @test f == sum((coeff(f, i) * S([R(1)], [Nemo.exponent_vector_fmpz(f, i)])  for i in 1:length(f)))
       end
 
       deg = isdegree(ordering(S))
@@ -108,9 +108,19 @@ function test_fmpz_mpoly_manipulation()
       @test isconstant(S(rand(-100:100)))
       @test isconstant(S(zero(S)))
 
-      g = rand(S, 1:1, 0:100, 1:100)
-      h = rand(S, 1:1, 0:100, 1:1)
-      h2 = rand(S, 2:2, 1:100, 1:1)
+      g = S()
+      while g == 0
+         g = rand(S, 1:1, 0:100)
+      end
+      h = S()
+      while h == 0
+         h = rand(S, 1:1, 0:100)
+      end
+      h = setcoeff!(h, 1, 1)
+      h2 = S()
+      while length(h2) < 2
+         h2 = rand(S, 2:2, 1:100)
+      end
 
       @test isterm(h)
       @test !isterm(h2 + 1 + gen(S, 1))
@@ -122,11 +132,16 @@ function test_fmpz_mpoly_manipulation()
       @test !ismonomial(2*gen(S, 1)*gen(S, num_vars))
 
       monomialexp = unique([UInt[rand(0:10) for j in 1:num_vars] for k in 1:10])
-      coeffs = [rand(FlintZZ, 1:10) for k in 1:length(monomialexp)]
+      coeffs = [rand(R) for k in 1:length(monomialexp)]
+      for i = 1:length(coeffs)
+         while coeffs[i] == 0
+            coeffs[i] = rand(R)
+         end
+      end
       h = S(coeffs, monomialexp)
       @test length(h) == length(monomialexp)
       for k in 1:length(h)
-        @test coeff(h, S(fmpz[1], [monomialexp[k]])) == coeffs[k]
+        @test coeff(h, S([R(1)], [monomialexp[k]])) == coeffs[k]
       end
 
       max_degs = max.(monomialexp...)
@@ -147,10 +162,10 @@ function test_fmpz_mpoly_manipulation()
    println("PASS")
 end
 
-function test_fmpz_mpoly_unary_ops()
-   print("fmpz_mpoly.unary_ops...")
+function test_nmod_mpoly_unary_ops()
+   print("nmod_mpoly.unary_ops...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -159,7 +174,7 @@ function test_fmpz_mpoly_unary_ops()
       S, varlist = PolynomialRing(R, var_names, ordering = ord)
 
       for iter = 1:10
-         f = rand(S, 0:5, 0:100, -100:100)
+         f = rand(S, 0:5, 0:100)
 
          @test f == -(-f)
       end
@@ -168,10 +183,10 @@ function test_fmpz_mpoly_unary_ops()
    println("PASS")
 end
 
-function test_fmpz_mpoly_binary_ops()
-   print("fmpz_mpoly.binary_ops...")
+function test_nmod_mpoly_binary_ops()
+   print("nmod_mpoly.binary_ops...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -180,9 +195,9 @@ function test_fmpz_mpoly_binary_ops()
       S, varlist = PolynomialRing(R, var_names, ordering = ord)
 
       for iter = 1:10
-         f = rand(S, 0:5, 0:100, -100:100)
-         g = rand(S, 0:5, 0:100, -100:100)
-         h = rand(S, 0:5, 0:100, -100:100)
+         f = rand(S, 0:5, 0:100)
+         g = rand(S, 0:5, 0:100)
+         h = rand(S, 0:5, 0:100)
 
          @test f + g == g + f
          @test f - g == -(g - f)
@@ -195,10 +210,10 @@ function test_fmpz_mpoly_binary_ops()
    println("PASS")
 end
 
-function test_fmpz_mpoly_adhoc_binary()
-   print("fmpz_mpoly.adhoc_binary...")
+function test_nmod_mpoly_adhoc_binary()
+   print("nmod_mpoly.adhoc_binary...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -207,7 +222,7 @@ function test_fmpz_mpoly_adhoc_binary()
       S, varlist = PolynomialRing(R, var_names, ordering = ord)
 
       for iter = 1:100
-         f = rand(S, 0:5, 0:100, -100:100)
+         f = rand(S, 0:5, 0:100)
 
          d1 = rand(-20:20)
          d2 = rand(-20:20)
@@ -235,10 +250,10 @@ function test_fmpz_mpoly_adhoc_binary()
    println("PASS")
 end
 
-function test_fmpz_mpoly_adhoc_comparison()
-   print("fmpz_mpoly.adhoc_comparison...")
+function test_nmod_mpoly_adhoc_comparison()
+   print("nmod_mpoly.adhoc_comparison...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -261,10 +276,10 @@ function test_fmpz_mpoly_adhoc_comparison()
    println("PASS")
 end
 
-function test_fmpz_mpoly_powering()
-   print("fmpz_mpoly.powering...")
+function test_nmod_mpoly_powering()
+   print("nmod_mpoly.powering...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -273,7 +288,7 @@ function test_fmpz_mpoly_powering()
       S, varlist = PolynomialRing(R, var_names, ordering = ord)
 
       for iter = 1:10
-         f = rand(S, 0:5, 0:100, -100:100)
+         f = rand(S, 0:5, 0:100)
 
          expn = rand(0:10)
 
@@ -292,10 +307,10 @@ function test_fmpz_mpoly_powering()
    println("PASS")
 end
 
-function test_fmpz_mpoly_divides()
-   print("fmpz_mpoly.divides...")
+function test_nmod_mpoly_divides()
+   print("nmod_mpoly.divides...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -304,8 +319,8 @@ function test_fmpz_mpoly_divides()
       S, varlist = PolynomialRing(R, var_names, ordering = ord)
 
       for iter = 1:10
-         f = rand(S, 0:5, 0:100, -100:100)
-         g = rand(S, 0:5, 0:100, -100:100)
+         f = rand(S, 0:5, 0:100)
+         g = rand(S, 0:5, 0:100)
 
          p = f*g
 
@@ -325,10 +340,10 @@ function test_fmpz_mpoly_divides()
    println("PASS")
 end
 
-function test_fmpz_mpoly_euclidean_division()
-   print("fmpz_mpoly.euclidean_division...")
+function test_nmod_mpoly_euclidean_division()
+   print("nmod_mpoly.euclidean_division...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -339,9 +354,9 @@ function test_fmpz_mpoly_euclidean_division()
       for iter = 1:10
          f = S(0)
          while iszero(f)
-            f = rand(S, 0:5, 0:100, -100:100)
+            f = rand(S, 0:5, 0:100)
          end
-         g = rand(S, 0:5, 0:100, -100:100)
+         g = rand(S, 0:5, 0:100)
 
          p = f*g
 
@@ -365,10 +380,10 @@ function test_fmpz_mpoly_euclidean_division()
    println("PASS")
 end
 
-function test_fmpz_mpoly_ideal_reduction()
-   print("fmpz_mpoly.ideal_reduction...")
+function test_nmod_mpoly_ideal_reduction()
+   print("nmod_mpoly.ideal_reduction...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -379,9 +394,9 @@ function test_fmpz_mpoly_ideal_reduction()
       for iter = 1:10
          f = S(0)
          while iszero(f)
-            f = rand(S, 0:5, 0:100, -100:100)
+            f = rand(S, 0:5, 0:100)
          end
-         g = rand(S, 0:5, 0:100, -100:100)
+         g = rand(S, 0:5, 0:100)
 
          p = f*g
 
@@ -399,10 +414,10 @@ function test_fmpz_mpoly_ideal_reduction()
          for i = 1:num
             V[i] = S(0)
             while iszero(V[i])
-               V[i] = rand(S, 0:5, 0:100, -100:100)
+               V[i] = rand(S, 0:5, 0:100)
             end
          end
-         g = rand(S, 0:5, 0:100, -100:100)
+         g = rand(S, 0:5, 0:100)
 
          q, r = divrem(g, V)
 
@@ -418,19 +433,21 @@ function test_fmpz_mpoly_ideal_reduction()
    println("PASS")
 end
 
-function test_fmpz_mpoly_gcd()
-   print("fmpz_mpoly.gcd...")
+function test_nmod_mpoly_gcd()
+   print("nmod_mpoly.gcd...")
+
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:4
       var_names = ["x$j" for j in 1:num_vars]
       ord = rand_ordering()
 
-      S, varlist = PolynomialRing(FlintZZ, var_names, ordering = ord)
+      S, varlist = PolynomialRing(R, var_names, ordering = ord)
 
       for iter = 1:10
-         f = rand(S, 0:4, 0:5, -10:10)
-         g = rand(S, 0:4, 0:5, -10:10)
-         h = rand(S, 0:4, 0:5, -10:10)
+         f = rand(S, 0:4, 0:5)
+         g = rand(S, 0:4, 0:5)
+         h = rand(S, 0:4, 0:5)
 
          g1 = gcd(f, g)
          g2 = gcd(f*h, g*h)
@@ -446,10 +463,10 @@ function test_fmpz_mpoly_gcd()
    println("PASS")
 end
 
-function test_fmpz_mpoly_evaluation()
-   print("fmpz_mpoly.evaluation...")
+function test_nmod_mpoly_evaluation()
+   print("nmod_mpoly.evaluation...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -458,8 +475,8 @@ function test_fmpz_mpoly_evaluation()
       S, varlist = PolynomialRing(R, var_names, ordering = ord)
 
       for iter = 1:100
-         f = rand(S, 0:5, 0:100, -100:100)
-         g = rand(S, 0:5, 0:100, -100:100)
+         f = rand(S, 0:5, 0:100)
+         g = rand(S, 0:5, 0:100)
 
          V1 = [rand(-10:10) for i in 1:num_vars]
 
@@ -490,10 +507,10 @@ function test_fmpz_mpoly_evaluation()
    println("PASS")
 end
 
-function test_fmpz_mpoly_valuation()
-   print("fmpz_mpoly.valuation...")
+function test_nmod_mpoly_valuation()
+   print("nmod_mpoly.valuation...")
 
-   R = FlintZZ
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -505,8 +522,8 @@ function test_fmpz_mpoly_valuation()
          f = S()
          g = S()
          while f == 0 || g == 0 || isconstant(g)
-            f = rand(S, 0:5, 0:100, -100:100)
-            g = rand(S, 0:5, 0:100, -100:100)
+            f = rand(S, 0:5, 0:100)
+            g = rand(S, 0:5, 0:100)
          end
 
          d1 = valuation(f, g)
@@ -532,9 +549,10 @@ function test_fmpz_mpoly_valuation()
    println("PASS")
 end
 
-function test_fmpz_mpoly_derivative()
-   print("fmpz_mpoly.derivative...")
-   R = FlintZZ
+function test_nmod_mpoly_derivative()
+   print("nmod_mpoly.derivative...")
+   
+   R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -543,8 +561,8 @@ function test_fmpz_mpoly_derivative()
       S, varlist = PolynomialRing(R, var_names, ordering = ord)
 
       for j in 1:100
-         f = rand(S, 0:5, 0:100, -100:100)
-         g = rand(S, 0:5, 0:100, -100:100)
+         f = rand(S, 0:5, 0:100)
+         g = rand(S, 0:5, 0:100)
 
          for i in 1:num_vars
             @test derivative(f*g, i) == f*derivative(g, i) + derivative(f, i)*g
@@ -555,19 +573,21 @@ function test_fmpz_mpoly_derivative()
    println("PASS")
 end
 
-function test_fmpz_mpoly_combine_like_terms()
-  print("fmpz_mpoly.combine_like_terms...")
+function test_nmod_mpoly_combine_like_terms()
+  print("nmod_mpoly.combine_like_terms...")
+
+  R23 = ResidueRing(FlintZZ, 23)
 
   for num_vars = 1:10
      var_names = ["x$j" for j in 1:num_vars]
      ord = rand_ordering()
 
-     R, vars_R = PolynomialRing(FlintZZ, var_names; ordering=ord)
+     R, vars_R = PolynomialRing(R23, var_names; ordering=ord)
 
      for iter in 1:10
         f = R()
         while f == 0
-           f = rand(R, 5:10, 1:10, -100:100)
+           f = rand(R, 5:10, 1:10)
         end
 
         lenf = length(f)
@@ -577,7 +597,7 @@ function test_fmpz_mpoly_combine_like_terms()
         @test length(f) == lenf - 1
 
         while length(f) < 2
-           f = rand(R, 5:10, 1:10, -100:100)
+           f = rand(R, 5:10, 1:10)
         end
 
         lenf = length(f)
@@ -593,19 +613,21 @@ function test_fmpz_mpoly_combine_like_terms()
   println("PASS")
 end
 
-function test_fmpz_mpoly_exponents()
-  print("fmpz_mpoly.exponents...")
+function test_nmod_mpoly_exponents()
+  print("nmod_mpoly.exponents...")
+
+  R23 = ResidueRing(FlintZZ, 23)
 
   for num_vars = 1:10
      var_names = ["x$j" for j in 1:num_vars]
      ord = rand_ordering()
 
-     R, vars_R = PolynomialRing(FlintZZ, var_names; ordering=ord)
+     R, vars_R = PolynomialRing(R23, var_names; ordering=ord)
 
      for iter in 1:10
         f = R()
         while f == 0
-           f = rand(R, 5:10, 1:10, -100:100)
+           f = rand(R, 5:10, 1:10)
         end
 
         nrand = rand(1:length(f))
@@ -643,23 +665,23 @@ function test_fmpz_mpoly_exponents()
 end
 
 
-function test_fmpz_mpoly()
-   test_fmpz_mpoly_constructors()
-   test_fmpz_mpoly_manipulation()
-   test_fmpz_mpoly_unary_ops()
-   test_fmpz_mpoly_binary_ops()
-   test_fmpz_mpoly_adhoc_binary()
-   test_fmpz_mpoly_adhoc_comparison()
-   test_fmpz_mpoly_powering()
-   test_fmpz_mpoly_divides()
-   test_fmpz_mpoly_euclidean_division()
-   test_fmpz_mpoly_ideal_reduction()
-   test_fmpz_mpoly_gcd()
-   test_fmpz_mpoly_evaluation()
-   test_fmpz_mpoly_valuation()
-   test_fmpz_mpoly_derivative()
-   test_fmpz_mpoly_combine_like_terms()
-   test_fmpz_mpoly_exponents()
+function test_nmod_mpoly()
+   test_nmod_mpoly_constructors()
+   test_nmod_mpoly_manipulation()
+   test_nmod_mpoly_unary_ops()
+   test_nmod_mpoly_binary_ops()
+   test_nmod_mpoly_adhoc_binary()
+   test_nmod_mpoly_adhoc_comparison()
+   test_nmod_mpoly_powering()
+   test_nmod_mpoly_divides()
+   test_nmod_mpoly_euclidean_division()
+   test_nmod_mpoly_ideal_reduction()
+   test_nmod_mpoly_gcd()
+   test_nmod_mpoly_evaluation()
+   test_nmod_mpoly_valuation()
+   test_nmod_mpoly_derivative()
+   test_nmod_mpoly_combine_like_terms()
+   test_nmod_mpoly_exponents()
 
    println("")
 end

@@ -35,6 +35,8 @@ include("flint/gfp_fmpz_poly.jl")
 
 include("flint/fmpz_mpoly.jl")
 
+include("flint/nmod_mpoly.jl")
+
 include("flint/fmpz_rel_series.jl")
 
 include("flint/fmpz_abs_series.jl")
