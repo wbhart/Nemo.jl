@@ -34,8 +34,8 @@ import AbstractAlgebra: nullspace
 # We don't want the QQ, ZZ, FiniteField, NumberField from AbstractAlgebra
 # as they are for parents of Julia types or naive implementations
 # We only import AbstractAlgebra, not export
-# We do not want the AbstractAlgebra version of numerator, denominator, exp and sqrt,
-# but the Base version which is the only place user friendly exp and sqrt are defined
+# We do not want the AbstractAlgebra version of certain functions as the Base version
+# is the only place user friendly versions are defined
 # AbstractAlgebra/Nemo has its own promote_rule, distinct from Base
 # Set, Module, Ring, Group and Field are too generic to pollute the users namespace with
 exclude = try
