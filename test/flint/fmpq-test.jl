@@ -41,6 +41,8 @@ function test_fmpq_constructors()
 
    @test isa(fmpq(R(2)), fmpq)
 
+   @test fmpq(3, -5) == -fmpq(3, 5)
+
    println("PASS")
 end
 
