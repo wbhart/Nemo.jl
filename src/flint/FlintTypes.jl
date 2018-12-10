@@ -128,6 +128,10 @@ mutable struct fmpq <: FracElem{fmpz}
    function fmpq(a::Int, b::Int)
       b == 0 && throw(DivideError())
       z = new()
+      if b < 0 # Flint requires positive denominator
+         b = -b
+         a = -a
+      end
       ccall((:fmpq_init, :libflint), Nothing, (Ref{fmpq},), z)
       ccall((:fmpq_set_si, :libflint), Nothing,
             (Ref{fmpq}, Int, Int), z, a, b)
