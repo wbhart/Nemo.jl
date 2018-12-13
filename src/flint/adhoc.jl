@@ -358,14 +358,22 @@ function evaluate(a::Generic.MPoly{T}, A::Array{fmpz, 1}) where {T <: RingElemen
    N = size(a.exps, 1)
    ord = parent(a).ord
    if ord == :lex
-      start_var = 1
+      start_var = N
    else
-      start_var = 2
+      start_var = N - 1
    end
-   while a.length > 1 || (a.length == 1 && !monomial_iszero(a.exps, a.length, N))
-      k = main_variable(a, start_var)
-      p = main_variable_extract(a, k)
-      a = evaluate(p, A[k - start_var + 1])
+   if ord == :degrevlex
+      while a.length > 1 || (a.length == 1 && !monomial_iszero(a.exps, a.length, N))
+         k = main_variable(a, start_var)
+         p = main_variable_extract(a, k)
+         a = evaluate(p, A[k])
+      end
+   else
+      while a.length > 1 || (a.length == 1 && !monomial_iszero(a.exps, a.length, N))
+         k = main_variable(a, start_var)
+         p = main_variable_extract(a, k)
+         a = evaluate(p, A[start_var - k + 1])
+      end
    end
    if a.length == 0
       return base_ring(a)()
