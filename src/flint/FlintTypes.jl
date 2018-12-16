@@ -1781,6 +1781,7 @@ end
 #
 ###############################################################################
 
+const flint_padic_printing_mode = [:terse, :series, :val_unit]
 
 mutable struct FlintPadicField <: Field
    p::Int
@@ -1788,15 +1789,25 @@ mutable struct FlintPadicField <: Field
    pow::Ptr{Nothing}
    minpre::Int
    maxpre::Int
-   mode::Int
+   mode::Cint
    prec_max::Int
 
-   function FlintPadicField(p::fmpz, prec::Int)
+   function FlintPadicField(p::fmpz, prec::Int; printing = :series)
       !isprime(p) && error("Prime base required in FlintPadicField")
       d = new()
+      if printing == :terse
+        pmode = 0
+      elseif printing == :series
+        pmode = 1
+      elseif printing == :val_unit
+        pmode = 2
+      else
+        error("Invalid printing mode: $printing")
+      end
+
       ccall((:padic_ctx_init, :libflint), Nothing,
            (Ref{FlintPadicField}, Ref{fmpz}, Int, Int, Cint),
-                                     d, p, 0, 0, 1)
+                                     d, p, 0, 0, pmode)
       finalizer(_padic_ctx_clear_fn, d)
       d.prec_max = prec
       return d
