@@ -4,7 +4,8 @@
 #
 ###############################################################################
 
-export FlintPadicField, padic, prime, teichmuller, log
+export FlintPadicField, padic, prime, teichmuller, log, get_printing_mode,
+       set_printing_mode
 
 ###############################################################################
 #
@@ -210,9 +211,39 @@ isunit(a::padic) = !Bool(ccall((:padic_is_zero, :libflint), Cint,
 
 ###############################################################################
 #
-#   AbstractString I/O
+#   String I/O
 #
 ###############################################################################
+
+@doc Markdown.doc"""
+    get_printing_mode(R::FlintPadicField)
+
+> Get the printing mode for the elements of the p-adic field `R`.
+"""
+function get_printing_mode(R::FlintPadicField)
+   return flint_padic_printing_mode[R.mode + 1]
+end
+
+@doc Markdown.doc"""
+    set_printing_mode(::FlintPadicField, printing::Symbol)
+
+> Set the printing mode for the elements of the p-adic field `R`. Possible values
+> are `:terse`, `:series` and `:val_unit`.
+"""
+function set_printing_mode(R::FlintPadicField, printing::Symbol)
+   if printing == :terse
+      pmode = 0
+   elseif printing == :series
+      pmode = 1
+   elseif printing == :val_unit
+      pmode = 2
+   else
+      error("Invalid printing mode: $printing")
+   end
+
+   R.mode = pmode
+   return R
+end
 
 function show(io::IO, x::padic)
    ctx = parent(x)
@@ -704,6 +735,6 @@ end
 > Returns the parent object for the $p$-adic field for given prime $p$, where
 > the default absolute precision of elements of the field is given by `prec`.
 """
-function FlintPadicField(p::Integer, prec::Int)
-   return FlintPadicField(fmpz(p), prec)
+function FlintPadicField(p::Integer, prec::Int; kw...)
+   return FlintPadicField(fmpz(p), prec; kw...)
 end
