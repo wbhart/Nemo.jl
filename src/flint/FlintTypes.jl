@@ -996,6 +996,8 @@ mutable struct FmpzMPolyRing <: MPolyRing{fmpz}
    ord::Int
    deg::Cint
    rev::Cint
+   lut::NTuple{64, Int}
+   lut1::NTuple{64, Int}
    base_ring::FlintIntegerRing
    S::Array{Symbol, 1}
 
@@ -1164,6 +1166,8 @@ mutable struct FmpqMPolyRing <: MPolyRing{fmpq}
    ord::Int
    deg::Cint
    rev::Cint
+   lut::NTuple{64, Int}
+   lut1::NTuple{64, Int}
    base_ring::FlintRationalField
    S::Array{Symbol, 1}
 
@@ -1349,6 +1353,8 @@ mutable struct NmodMPolyRing <: MPolyRing{nmod}
    ord::Cint
    deg::Cint
    rev::Cint
+   lut::NTuple{64, Int}
+   lut1::NTuple{64, Int}
    base_ring::NmodRing
    S::Array{Symbol, 1}
 
