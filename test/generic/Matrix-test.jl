@@ -16,6 +16,29 @@ function istriu(A::Generic.Mat)
    return true
 end
 
+function is_snf(A::Generic.Mat)
+   m = rows(A)
+   n = cols(A)
+   a = A[1,1]
+   for i = 2:min(m,n)
+      q, r = divrem(A[i,i], a)
+      if !iszero(r)
+         return false
+      end
+      a = A[i,i]
+   end
+   for i = 1:n
+      for j = 1:m
+         if i == j
+            continue
+         end
+         if !iszero(A[j,i])
+            return false
+         end
+      end
+   end
+   return true
+end
 function test_Matrix_binary_ops_delayed_reduction()
    print("Matrix.binary_ops_delayed_reduction...")
 
@@ -242,6 +265,27 @@ function test_Matrix_hnf_delayed_reduction()
    println("PASS")
 end
 
+function test_Matrix_snf_delayed_reduction()
+   print("Matrix.snf_delayed_reduction...")
+
+   R, x = PolynomialRing(QQ, "x")
+   K, a = NumberField(x^3 + 3x + 1, "a")
+   S = MatrixSpace(K, 6, 6)
+
+   for iter = 1:10
+      A = rand(S, -10:10)
+
+      T, U, K = Generic.snf_kb_with_trafo(A)
+
+      @test is_snf(T)
+      @test isunit(det(U))
+      @test isunit(det(K))
+      @test U*A*K == T
+   end
+
+   println("PASS")
+end
+
 #=
    TODO: Add tests for the following when there are rings that are not fields
          that have delayed reduction
@@ -262,6 +306,7 @@ function test_Matrix()
    test_Matrix_solve_triu_delayed_reduction()
    test_Matrix_charpoly_delayed_reduction()
    test_Matrix_hnf_delayed_reduction()
+   test_Matrix_snf_delayed_reduction()
 
    println("")
 end
