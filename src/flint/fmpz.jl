@@ -1010,12 +1010,6 @@ end
 ###############################################################################
 
 function _factor(a::fmpz)
-   # This is a hack around https://github.com/JuliaLang/julia/issues/19963
-   # Remove this once julia 6.0 is required
-   if a == 1 || a == -1
-     return Dict{fmpz, Int}(), a
-   end
-
    F = fmpz_factor()
    ccall((:fmpz_factor, :libflint), Nothing, (Ref{fmpz_factor}, Ref{fmpz}), F, a)
    res = Dict{fmpz, Int}()
@@ -1034,6 +1028,9 @@ end
 > factorisation in Nemo.
 """
 function factor(a::fmpz)
+   if iszero(a)
+      throw(ArgumentError("Argument is not non-zero"))
+   end
    fac, z = _factor(a)
    return Fac(z, fac)
 end

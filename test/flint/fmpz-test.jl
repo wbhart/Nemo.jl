@@ -572,6 +572,8 @@ function test_fmpz_factor()
    @test fac.fac == Dict(fmpz(2) => 1)
    @test unit(fac) == -1
 
+   @test_throws ArgumentError factor(fmpz(0))
+
    println("PASS")
 end
 
