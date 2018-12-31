@@ -1798,29 +1798,43 @@ mutable struct FlintPadicField <: Field
    mode::Cint
    prec_max::Int
 
-   function FlintPadicField(p::fmpz, prec::Int; printing = :series)
+   function FlintPadicField(p::fmpz, prec::Int; printing::Symbol = :series,
+                                                cached::Bool = true)
+      if cached
+         a = (p, prec, printing)
+         if haskey(PadicBase, a)
+            return PadicBase[a]
+         end
+      end
+
       !isprime(p) && error("Prime base required in FlintPadicField")
       d = new()
       if printing == :terse
-        pmode = 0
+         pmode = 0
       elseif printing == :series
-        pmode = 1
+         pmode = 1
       elseif printing == :val_unit
-        pmode = 2
+         pmode = 2
       else
-        error("Invalid printing mode: $printing")
+         error("Invalid printing mode: $printing")
       end
 
       ccall((:padic_ctx_init, :libflint), Nothing,
-           (Ref{FlintPadicField}, Ref{fmpz}, Int, Int, Cint),
-                                     d, p, 0, 0, pmode)
+            (Ref{FlintPadicField}, Ref{fmpz}, Int, Int, Cint),
+            d, p, 0, 0, pmode)
       finalizer(_padic_ctx_clear_fn, d)
       d.prec_max = prec
+
+      if cached
+         @assert !haskey(PadicBase, (p, prec, printing))
+         PadicBase[(p, prec, printing)] = d
+      end
+
       return d
    end
 end
 
-const PadicBase = Dict{Tuple{fmpz, Int}, FlintPadicField}()
+const PadicBase = Dict{Tuple{fmpz, Int, Symbol}, FlintPadicField}()
 
 function _padic_ctx_clear_fn(a::FlintPadicField)
    ccall((:padic_ctx_clear, :libflint), Nothing, (Ref{FlintPadicField},), a)
