@@ -43,30 +43,26 @@ function test_padic_printing()
 
    R = PadicField(7, 30)
    
-   @test get_printing_mode(R) == :series
-
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
+
+   set_printing_mode(PadicField, :series)
+   @test get_printing_mode(PadicField) == :series
 
    @test string(a) == "1 + 2*7^1 + 4*7^2 + O(7^3)"
 
-   R = PadicField(7, 30, printing = :terse)
-   @test get_printing_mode(R) == :terse
+   set_printing_mode(PadicField, :terse)
+   @test get_printing_mode(PadicField) == :terse
    
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
 
+   set_printing_mode(PadicField, :val_unit)
+   @test get_printing_mode(PadicField) == :val_unit
+
    @test string(a) == "211 + O(7^3)"
 
-   R = PadicField(7, 30, printing = :val_unit)
-   @test get_printing_mode(R) == :val_unit
-   
    a = 7 + 2*7 + 4*7^2 + O(R, 7^3)
 
    @test string(a) == "31*7 + O(7^3)"
-
-   for pmode in [:series, :val_unit, :terse]
-     set_printing_mode(R, pmode)
-     @test get_printing_mode(R) == pmode
-   end
 
    println("PASS")
 end
