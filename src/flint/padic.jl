@@ -215,47 +215,50 @@ isunit(a::padic) = !Bool(ccall((:padic_is_zero, :libflint), Cint,
 #
 ###############################################################################
 
+const PADIC_PRINTING_MODE = Ref(Cint(1))
+
 @doc Markdown.doc"""
-    get_printing_mode(R::FlintPadicField)
+    get_printing_mode(::Type{FlintPadicField})
 
 > Get the printing mode for the elements of the p-adic field `R`.
 """
-function get_printing_mode(R::FlintPadicField)
-   return flint_padic_printing_mode[R.mode + 1]
+function get_printing_mode(::Type{FlintPadicField})
+   return flint_padic_printing_mode[PADIC_PRINTING_MODE[] + 1]
 end
 
 @doc Markdown.doc"""
-    set_printing_mode(::FlintPadicField, printing::Symbol)
+    set_printing_mode(::Type{FlintPadicField}, printing::Symbol)
 
 > Set the printing mode for the elements of the p-adic field `R`. Possible values
 > are `:terse`, `:series` and `:val_unit`.
 """
-function set_printing_mode(R::FlintPadicField, printing::Symbol)
+function set_printing_mode(::Type{FlintPadicField}, printing::Symbol)
    if printing == :terse
-      pmode = 0
+      PADIC_PRINTING_MODE[] = 0
    elseif printing == :series
-      pmode = 1
+      PADIC_PRINTING_MODE[] = 1
    elseif printing == :val_unit
-      pmode = 2
+      PADIC_PRINTING_MODE[] = 2
    else
       error("Invalid printing mode: $printing")
    end
-
-   R.mode = pmode
-   return R
+   return printing
 end
 
 function show(io::IO, x::padic)
-   ctx = parent(x)
-   cstr = ccall((:padic_get_str, :libflint), Ptr{UInt8},
-               (Ptr{Nothing}, Ref{padic}, Ref{FlintPadicField}),
-                   C_NULL, x, ctx)
+   p = prime(parent(x))
+
+   pmode = PADIC_PRINTING_MODE[]
+
+   cstr = ccall((:_padic_get_str, :libflint), Ptr{UInt8},
+                (Ptr{Nothing}, Ref{padic}, Ref{fmpz}, Cint),
+                 C_NULL, x, p, pmode)
 
    print(io, unsafe_string(cstr))
 
    ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), cstr)
    print(io, " + O(")
-   print(io, prime(ctx))
+   print(io, p)
    print(io, "^$(x.N))")
 end
 
