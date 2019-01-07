@@ -838,6 +838,32 @@ function sort_terms!(a::nmod_mpoly)
    return a
 end    
 
+# Return the i-th term of the polynomial, as a polynomial
+function term(a::nmod_mpoly, i::Int)
+   z = parent(a)()
+   ccall((:nmod_mpoly_get_term, :libflint), Nothing,
+         (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
+          z, a, i - 1, a.parent)
+   return z
+end
+
+# Return the i-th monomial of the polynomial, as a polynomial
+function monomial(a::nmod_mpoly, i::Int)
+   z = parent(a)()
+   ccall((:nmod_mpoly_get_term_monomial, :libflint), Nothing,
+         (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
+          z, a, i - 1, a.parent)
+   return z
+end
+
+# Sets the given polynomial m to the i-th monomial of the polynomial
+function monomial!(m::nmod_mpoly, a::nmod_mpoly, i::Int)
+   ccall((:nmod_mpoly_get_term_monomial, :libflint), Nothing,
+         (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
+          m, a, i - 1, a.parent)
+   return m
+end
+
 ###############################################################################
 #
 #   Promotion rules

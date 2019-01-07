@@ -90,6 +90,16 @@ function test_nmod_mpoly_manipulation()
          @test isa(coeff(f, i), elem_type(R))
       end
 
+      r = S()
+      m = S()
+      for i = 1:length(f)
+         m = monomial!(m, f, i)
+         @test m == monomial(f, i)
+         @test term(f, i) == coeff(f, i)*monomial(f, i)
+         r += coeff(f, i)*monomial(f, i)
+      end
+      @test f == r
+
       f = rand(S, 1:5, 0:100)
 
       if length(f) > 0

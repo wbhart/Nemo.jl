@@ -868,7 +868,33 @@ function sort_terms!(a::fmpq_mpoly)
    ccall((:fmpq_mpoly_sort_terms, :libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
    return a
-end    
+end
+
+# Return the i-th term of the polynomial, as a polynomial
+function term(a::fmpq_mpoly, i::Int)
+   z = parent(a)()
+   ccall((:fmpq_mpoly_get_term, :libflint), Nothing,
+         (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
+          z, a, i - 1, a.parent)
+   return z
+end
+
+# Return the i-th monomial of the polynomial, as a polynomial
+function monomial(a::fmpq_mpoly, i::Int)
+   z = parent(a)()
+   ccall((:fmpq_mpoly_get_term_monomial, :libflint), Nothing,
+         (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
+          z, a, i - 1, a.parent)
+   return z
+end
+
+# Sets the given polynomial m to the i-th monomial of the polynomial
+function monomial!(m::fmpq_mpoly, a::fmpq_mpoly, i::Int)
+   ccall((:fmpq_mpoly_get_term_monomial, :libflint), Nothing,
+         (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
+          m, a, i - 1, a.parent)
+   return m
+end
 
 ###############################################################################
 #

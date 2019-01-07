@@ -96,6 +96,16 @@ function test_fmpq_mpoly_manipulation()
         @test f == sum((coeff(f, i) * S(fmpq[1], [Nemo.exponent_vector_fmpz(f, i)])  for i in 1:length(f)))
       end
 
+      r = S()
+      m = S()
+      for i = 1:length(f)
+         m = monomial!(m, f, i)
+         @test m == monomial(f, i)
+         @test term(f, i) == coeff(f, i)*monomial(f, i)
+         r += coeff(f, i)*monomial(f, i)
+      end
+      @test f == r
+
       deg = isdegree(ordering(S))
       rev = isreverse(ordering(S))
 
