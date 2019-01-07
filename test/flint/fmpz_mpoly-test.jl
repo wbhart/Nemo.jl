@@ -147,6 +147,28 @@ function test_fmpz_mpoly_manipulation()
    println("PASS")
 end
 
+function test_fmpz_mpoly_multivariate_coeff()
+   print("fmpz_mpoly.multivariate_coeff...")
+
+   R = FlintZZ
+   
+   for ord in Nemo.flint_orderings
+      S, (x, y, z) = PolynomialRing(R, ["x", "y", "z"]; ordering=ord)
+
+      f = -8*x^5*y^3*z^5+9*x^5*y^2*z^3-8*x^4*y^5*z^4-10*x^4*y^3*z^2+8*x^3*y^2*z-10*x*y^3*z^4-4*x*y-10*x*z^2+8*y^2*z^5-9*y^2*z^3
+
+      @test coeff(f, [1], [1]) == -10*y^3*z^4-4*y-10*z^2
+      @test coeff(f, [2, 3], [3, 2]) == -10*x^4
+      @test coeff(f, [1, 3], [4, 5]) == 0
+
+      @test coeff(f, [x], [1]) == -10*y^3*z^4-4*y-10*z^2
+      @test coeff(f, [y, z], [3, 2]) == -10*x^4
+      @test coeff(f, [x, z], [4, 5]) == 0
+   end
+
+   println("PASS")
+end
+
 function test_fmpz_mpoly_unary_ops()
    print("fmpz_mpoly.unary_ops...")
 
@@ -646,6 +668,7 @@ end
 function test_fmpz_mpoly()
    test_fmpz_mpoly_constructors()
    test_fmpz_mpoly_manipulation()
+   test_fmpz_mpoly_multivariate_coeff()
    test_fmpz_mpoly_unary_ops()
    test_fmpz_mpoly_binary_ops()
    test_fmpz_mpoly_adhoc_binary()

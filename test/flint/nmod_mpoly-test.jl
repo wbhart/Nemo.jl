@@ -162,6 +162,28 @@ function test_nmod_mpoly_manipulation()
    println("PASS")
 end
 
+function test_nmod_mpoly_multivariate_coeff()
+   print("nmod_mpoly.multivariate_coeff...")
+
+   R = ResidueRing(FlintZZ, 23)
+
+   for ord in Nemo.flint_orderings
+      S, (x, y, z) = PolynomialRing(R, ["x", "y", "z"]; ordering=ord)
+
+      f = 15*x^5*y^3*z^5+9*x^5*y^2*z^3+15*x^4*y^5*z^4+13*x^4*y^3*z^2+8*x^3*y^2*z+13*x*y^3*z^4+19*x*y+13*x*z^2+8*y^2*z^5+14*y^2*z^3
+
+      @test coeff(f, [1], [1]) == 13*y^3*z^4+19*y+13*z^2
+      @test coeff(f, [2, 3], [3, 2]) == 13*x^4
+      @test coeff(f, [1, 3], [4, 5]) == 0
+
+      @test coeff(f, [x], [1]) == 13*y^3*z^4+19*y+13*z^2
+      @test coeff(f, [y, z], [3, 2]) == 13*x^4
+      @test coeff(f, [x, z], [4, 5]) == 0
+   end
+
+   println("PASS")
+end
+
 function test_nmod_mpoly_unary_ops()
    print("nmod_mpoly.unary_ops...")
 
@@ -668,6 +690,7 @@ end
 function test_nmod_mpoly()
    test_nmod_mpoly_constructors()
    test_nmod_mpoly_manipulation()
+   test_nmod_mpoly_multivariate_coeff()
    test_nmod_mpoly_unary_ops()
    test_nmod_mpoly_binary_ops()
    test_nmod_mpoly_adhoc_binary()

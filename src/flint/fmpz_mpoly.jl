@@ -237,6 +237,33 @@ end
 
 ###############################################################################
 #
+#   Multivariable coefficient polynomials
+#
+###############################################################################
+
+function coeff(a::fmpz_mpoly, vars::Vector{Int}, exps::Vector{Int})
+   unique(vars) != vars && error("Variables not unique")
+   length(vars) != length(exps) &&
+       error("Number of variables does not match number of exponents")
+   z = parent(a)()
+   vars = [UInt(i) - 1 for i in vars]
+   for i = 1:length(vars)
+      if vars[i] < 0 || vars[i] >= nvars(parent(a))
+         error("Variable index not in range")
+      end
+      if exps[i] < 0
+         error("Exponent cannot be negative")
+      end
+   end
+   ccall((:fmpz_mpoly_get_coeff_vars_ui, :libflint), Nothing,
+         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ptr{Int},
+          Ptr{Int}, Int, Ref{FmpzMPolyRing}),
+          z, a, vars, exps, length(vars), a.parent)
+   return z
+end
+
+###############################################################################
+#
 #   String I/O
 #
 ###############################################################################
