@@ -100,6 +100,14 @@ function test_nmod_mpoly_manipulation()
       end
       @test f == r
 
+      for i = 1:length(f)
+         i1 = rand(1:length(f))
+         i2 = rand(1:length(f))
+         @test (i1 < i2) == (monomial(f, i1) > monomial(f, i2))
+         @test (i1 > i2) == (monomial(f, i1) < monomial(f, i2))
+         @test (i1 == i2) == (monomial(f, i1) == monomial(f, i2))
+      end
+
       f = rand(S, 1:5, 0:100)
 
       if length(f) > 0

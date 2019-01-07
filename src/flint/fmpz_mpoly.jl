@@ -456,6 +456,13 @@ function ==(a::fmpz_mpoly, b::fmpz_mpoly)
                a, b, a.parent))
 end
 
+function Base.isless(a::fmpz_mpoly, b::fmpz_mpoly)
+   (!ismonomial(a) || !ismonomial(b)) && error("Not monomials in comparison")
+   return ccall((:fmpz_mpoly_cmp, :libflint), Cint,
+               (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
+               a, b, a.parent) < 0
+end
+
 ###############################################################################
 #
 #   Ad hoc comparison
