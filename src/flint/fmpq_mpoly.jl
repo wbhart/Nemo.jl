@@ -799,6 +799,14 @@ function set_exponent_vector!(a::fmpq_mpoly, n::Int, exps::Vector{fmpz})
    return a
 end
 
+# Return j-th coordinate of i-th exponent vector
+function exponent(a::fmpq_mpoly, i::Int, j::Int)
+   (j < 1 || j > nvars(parent(a))) && error("Invalid variable index")
+   return ccall((:fmpq_mpoly_get_term_var_exp_ui, :libflint), Int,
+                (Ref{fmpq_mpoly}, Int, Int, Ref{FmpqMPolyRing}),
+                 a, i - 1, j - 1, a.parent)
+end
+
 # Return the coefficient of the term with the given exponent vector
 # Return zero if there is no such term
 function coeff(a::fmpq_mpoly, exps::Vector{UInt})

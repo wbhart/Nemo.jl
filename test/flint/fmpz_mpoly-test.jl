@@ -635,6 +635,9 @@ function test_fmpz_mpoly_exponents()
         c = coeff(f, v)
 
         @test c == coeff(f, nrand)
+        for ind = 1:length(v)
+           @test v[ind] == exponent(f, nrand, ind)
+        end
      end
 
      for iter in 1:10
