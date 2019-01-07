@@ -798,6 +798,32 @@ function sort_terms!(a::fmpz_mpoly)
    return a
 end    
 
+# Return the i-th term of the polynomial, as a polynomial
+function term(a::fmpz_mpoly, i::Int)
+   z = parent(a)()
+   ccall((:fmpz_mpoly_get_term, :libflint), Nothing,
+         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}),
+          z, a, i - 1, a.parent)
+   return z
+end
+
+# Return the i-th monomial of the polynomial, as a polynomial
+function monomial(a::fmpz_mpoly, i::Int)
+   z = parent(a)()
+   ccall((:fmpz_mpoly_get_term_monomial, :libflint), Nothing,
+         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}),
+          z, a, i - 1, a.parent)
+   return z
+end
+
+# Sets the given polynomial m to the i-th monomial of the polynomial
+function monomial!(m::fmpz_mpoly, a::fmpz_mpoly, i::Int)
+   ccall((:fmpz_mpoly_get_term_monomial, :libflint), Nothing,
+         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}),
+          m, a, i - 1, a.parent)
+   return m
+end
+
 ###############################################################################
 #
 #   Promotion rules
