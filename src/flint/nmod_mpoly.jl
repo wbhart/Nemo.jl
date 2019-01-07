@@ -457,6 +457,13 @@ function ==(a::nmod_mpoly, b::nmod_mpoly)
                a, b, a.parent))
 end
 
+function Base.isless(a::nmod_mpoly, b::nmod_mpoly)
+   (!ismonomial(a) || !ismonomial(b)) && error("Not monomials in comparison")
+   return ccall((:nmod_mpoly_cmp, :libflint), Cint,
+               (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
+               a, b, a.parent) < 0
+end
+
 ###############################################################################
 #
 #   Ad hoc comparison
