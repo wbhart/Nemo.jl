@@ -549,7 +549,7 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    FlintFiniteField(char::fmpz, deg::Int, s::AbstractString)
+    FlintFiniteField(char::fmpz, deg::Int, s::AbstractString; cached = true)
 > Returns a tuple $S, x$ consisting of a finite field parent object $S$ and
 > generator $x$ for the finite field of the given characteristic and degree.
 > The string $s$ is used to designate how the finite field generator will be
@@ -566,7 +566,7 @@ function FlintFiniteField(char::fmpz, deg::Int, s::AbstractString; cached = true
 end
 
 @doc Markdown.doc"""
-    FlintFiniteField(char::Integer, deg::Int, s::AbstractString)
+    FlintFiniteField(char::Integer, deg::Int, s::AbstractString; cached = true)
 > Returns a tuple $S, x$ consisting of a finite field parent object $S$ and
 > generator $x$ for the finite field of the given characteristic and degree.
 > The string $s$ is used to designate how the finite field generator will be
@@ -581,7 +581,7 @@ function FlintFiniteField(char::Integer, deg::Int, s::AbstractString; cached = t
 end
 
 @doc Markdown.doc"""
-    FlintFiniteField(pol::fmpz_mod_poly, s::AbstractString)
+    FlintFiniteField(pol::fmpz_mod_poly, s::AbstractString; cached = true)
 > Returns a tuple $S, x$ consisting of a finite field parent object $S$ and
 > generator $x$ for the finite field over $F_p$ defined by the given
 > polynomial, i.e. $\mathbb{F}_p[t]/(pol)$. The characteristic is specified by
