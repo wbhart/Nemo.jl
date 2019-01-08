@@ -203,7 +203,7 @@ end
 contains(x::arb, y::Integer) = contains(x, fmpz(y))
 
 @doc Markdown.doc"""
-    contains(x::arb, y::Rational{Integer})
+    contains(x::arb, y::Rational{T}) where {T <: Integer}
 > Returns `true` if the ball $x$ contains the given rational value, otherwise
 > return `false`.
 """
