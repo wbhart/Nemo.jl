@@ -756,6 +756,7 @@ end
 
 
 @doc Markdown.doc"""
+    lll_with_transform(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
 > Compute a tuple $(L, T)$ where $L$ is the LLL reduction of $a$ and $T$ is a
 > transformation matrix so that $L = Ta$. All the default parameters can be
 > overridden by supplying an optional context object.
@@ -772,7 +773,7 @@ function lll_with_transform(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
 end
 
 @doc Markdown.doc"""
-    lll(x::fmpz_mat, ctx=lll_ctx(0.99, 0.51))
+    lll(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
 > Return the LLL reduction of the matrix $x$. By default the matrix $x$ is a
 > $\mathbb{Z}$-basis and the Gram matrix is maintained throughout in
 > approximate form. The LLL is performed with reduction parameters
@@ -790,7 +791,7 @@ function lll(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
 end
 
 @doc Markdown.doc"""
-    lll!(x::fmpz_mat, ctx=lll_ctx(0.99, 0.51))
+    lll!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
 > Perform the LLL reduction of the matrix $x$ inplace. By default the matrix
 > $x$ is a > $\mathbb{Z}$-basis and the Gram matrix is maintained throughout in
 > approximate form. The LLL is performed with reduction parameters
@@ -807,7 +808,7 @@ function lll!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
 end
 
 @doc Markdown.doc"""
-    lll_gram_with_transform(x::fmpz_mat, ctx=lll_ctx(0.99, 0.51, :gram))
+    lll_gram_with_transform(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
 > Given the Gram matrix $x$ of a matrix $M$, compute a tuple $(L, T)$ where
 > $L$ is the gram matrix of the LLL reduction of the matrix and $T$ is a
 > transformation matrix so that $L = TM$.
@@ -824,7 +825,7 @@ function lll_gram_with_transform(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51,
 end
 
 @doc Markdown.doc"""
-    lll_gram(x::fmpz_mat, ctx=lll_ctx(0.99, 0.51, :gram))
+    lll_gram(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
 > Given the Gram matrix $x$ of a matrix, compute the Gram matrix of its LLL
 > reduction.
 """
@@ -836,7 +837,7 @@ function lll_gram(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
 end
 
 @doc Markdown.doc"""
-    lll_gram!(x::fmpz_mat, ctx=lll_ctx(0.99, 0.51, :gram))
+    lll_gram!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
 > Given the Gram matrix $x$ of a matrix, compute the Gram matrix of its LLL
 > reduction inplace.
 """
@@ -849,7 +850,7 @@ end
 
 
 @doc Markdown.doc"""
-    lll_with_removal_transform(x::fmpz_mat, b::fmpz, ctx=lll_ctx(0.99, 0.51))
+    lll_with_removal_transform(x::fmpz_mat, b::fmpz, ctx::lll_ctx = lll_ctx(0.99, 0.51))
 > Compute a tuple $(r, L, T)$ where the first $r$ rows of $L$ are those
 > remaining from the LLL reduction after removal of vectors with norm exceeding
 > the bound $b$ and $T$ is a transformation matrix so that $L = Tx$.
@@ -866,7 +867,7 @@ function lll_with_removal_transform(x::fmpz_mat, b::fmpz, ctx::lll_ctx = lll_ctx
 end
 
 @doc Markdown.doc"""
-    lll_with_removal(x::fmpz_mat, b::fmpz, ctx=lll_ctx(0.99, 0.51))
+    lll_with_removal(x::fmpz_mat, b::fmpz, ctx::lll_ctx = lll_ctx(0.99, 0.51))
 > Compute the LLL reduction of $x$ and throw away rows whose norm exceeds
 > the given bound $b$. Return a tuple $(r, L)$ where the first $r$ rows of $L$
 > are the rows remaining after removal.
