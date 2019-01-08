@@ -435,7 +435,7 @@ function evaluate2(x::acb_poly, y::Float64)
 end
 
 @doc Markdown.doc"""
-    evaluate2(x::acb_poly, y::fmpq)
+    evaluate2(x::acb_poly, y::fmpz)
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
 """
@@ -715,9 +715,9 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    roots_upper_bound(f::acb_poly) -> arb
+    roots_upper_bound(x::acb_poly) -> arb
 
-> Returns an upper bound for the absolute value of all complex roots of $f$.
+> Returns an upper bound for the absolute value of all complex roots of $x$.
 """
 function roots_upper_bound(x::acb_poly)
    z = ArbField(prec(base_ring(x)))()
