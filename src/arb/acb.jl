@@ -58,7 +58,7 @@ isdomain_type(::Type{acb}) = true
 isexact_type(::Type{acb}) = false
 
 @doc Markdown.doc"""
-    zero(R::AcbField)
+    zero(r::AcbField)
 > Return exact zero in the given Arb complex field.
 """
 function zero(r::AcbField)
@@ -68,7 +68,7 @@ function zero(r::AcbField)
 end
 
 @doc Markdown.doc"""
-    one(R::AcbField)
+    one(r::AcbField)
 > Return exact one in the given Arb complex field.
 """
 function one(r::AcbField)
@@ -79,7 +79,7 @@ function one(r::AcbField)
 end
 
 @doc Markdown.doc"""
-    onei(R::AcbField)
+    onei(r::AcbField)
 > Return exact one times $i$ in the given Arb complex field.
 """
 function onei(r::AcbField)
@@ -508,7 +508,7 @@ end
 contains(x::acb, y::Integer) = contains(x, fmpz(y))
 
 @doc Markdown.doc"""
-    contains(x::acb, y::Rational{Integer})
+    contains(x::acb, y::Rational{T}) where {T <: Integer}
 > Returns `true` if the box $x$ contains the given rational value, otherwise
 > return `false`.
 """
@@ -575,7 +575,7 @@ function isint(x::acb)
 end
 
 @doc Markdown.doc"""
-    isint(x::acb)
+    isreal(x::acb)
 > Return `true` if $x$ is purely real, i.e. having zero imaginary part,
 > otherwise return `false`.
 """
@@ -1418,7 +1418,7 @@ function hyperu(a::acb, b::acb, x::acb)
 end
 
 @doc Markdown.doc"""
-    hyp2f1(a::acb, b::acb, c::acb, x::acb)
+    hyp2f1(a::acb, b::acb, c::acb, x::acb; flags=0)
 > Return the Gauss hypergeometric function ${}_2F_1(a,b,c,x)$.
 """
 function hyp2f1(a::acb, b::acb, c::acb, x::acb; flags=0)
