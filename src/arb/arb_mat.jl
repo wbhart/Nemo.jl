@@ -311,7 +311,7 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    ldexp(x::acb_mat, y::Int)
+    ldexp(x::arb_mat, y::Int)
 > Return $2^yx$. Note that $y$ can be positive, zero or negative.
 """
 function ldexp(x::arb_mat, y::Int)
@@ -419,7 +419,7 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    inv(M::arb_mat)
+    inv(x::arb_mat)
 > Given a  $n\times n$ matrix of type `arb_mat`, return an
 > $n\times n$ matrix $X$ such that $AX$ contains the
 > identity matrix. If $A$ cannot be inverted numerically an exception is raised.
