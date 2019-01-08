@@ -452,8 +452,8 @@ end
 ################################################################################
 
 @doc Markdown.doc"""
-    isreal(M::acb_mat)
-> Returns whether every entry of $M$ has vanishing imaginary part.
+    isreal(x::acb_mat)
+> Returns whether every entry of $x$ has vanishing imaginary part.
 """
 isreal(x::acb_mat) =
             Bool(ccall((:acb_mat_is_real, :libarb), Cint, (Ref{acb_mat}, ), x))
@@ -465,7 +465,7 @@ isreal(x::acb_mat) =
 ###############################################################################
 
 @doc Markdown.doc"""
-    inv(M::acb_mat)
+    inv(x::acb_mat)
 > Given a $n\times n$ matrix of type `acb_mat`, return an
 > $n\times n$ matrix $X$ such that $AX$ contains the
 > identity matrix. If $A$ cannot be inverted numerically an exception is raised.
