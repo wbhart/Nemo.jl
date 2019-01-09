@@ -734,7 +734,7 @@ end
 # inner constructor is also used directly
 
 @doc Markdown.doc"""
-    FlintPadicField(p::Integer, prec::Int)
+    FlintPadicField(p::Integer, prec::Int; kw...)
 > Returns the parent object for the $p$-adic field for given prime $p$, where
 > the default absolute precision of elements of the field is given by `prec`.
 """
