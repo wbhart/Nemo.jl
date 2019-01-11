@@ -32,6 +32,8 @@ nvars(a::FmpzMPolyRing) = ccall((:fmpz_mpoly_ctx_nvars, :libflint), Int,
 
 base_ring(a::FmpzMPolyRing) = a.base_ring
 
+base_ring(f::fmpz_mpoly) = f.parent.base_ring
+
 function ordering(a::FmpzMPolyRing)
    b = ccall((:fmpz_mpoly_ctx_ord, :libflint), Cint, (Ref{FmpzMPolyRing}, ), a)
    return flint_orderings[b + 1]
