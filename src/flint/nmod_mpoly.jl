@@ -31,6 +31,8 @@ nvars(a::NmodMPolyRing) = a.nvars
 
 base_ring(a::NmodMPolyRing) = a.base_ring
 
+base_ring(f::nmod_mpoly) = f.parent.base_ring
+
 function ordering(a::NmodMPolyRing)
 b = a.ord
 #   b = ccall((:nmod_mpoly_ctx_ord, :libflint), Cint, (Ref{NmodMPolyRing}, ), a)
