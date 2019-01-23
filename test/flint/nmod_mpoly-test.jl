@@ -525,6 +525,7 @@ function test_nmod_mpoly_evaluation()
          r3 = evaluate(f + g, V1)
 
          @test r3 == r1 + r2
+         @test (f + g)(V1...) == f(V1...) + g(V1...)
 
          V2 = [BigInt(rand(-10:10)) for i in 1:num_vars]
 
@@ -533,6 +534,7 @@ function test_nmod_mpoly_evaluation()
          r3 = evaluate(f + g, V2)
 
          @test r3 == r1 + r2
+         @test (f + g)(V2...) == f(V2...) + g(V2...)
 
          V3 = [R(rand(-10:10)) for i in 1:num_vars]
 
@@ -541,8 +543,21 @@ function test_nmod_mpoly_evaluation()
          r3 = evaluate(f + g, V3)
 
          @test r3 == r1 + r2
+         @test (f + g)(V3...) == f(V3...) + g(V3...)
       end
    end
+
+   # Individual tests
+
+   S, (x, y) = PolynomialRing(R, ["x", "y"])
+   T = MatrixAlgebra(R, 2)
+
+   f = x^2*y^2+2*x+1
+
+   M1 = T([1 2; 3 4])
+   M2 = T([1 1; 2 4])
+
+   @test f(M1, M2) == T([9 12; 18 20])
 
    println("PASS")
 end
