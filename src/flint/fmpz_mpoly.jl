@@ -695,14 +695,9 @@ function exponent_vector_fmpz(a::fmpz_mpoly, i::Int)
    return z
 end
 
-# Return an array of exponent vectors, one for each term in the $a$
-function exponent_vectors(a::fmpz_mpoly)
-   return [exponent_vector(a, i) for i in 1:length(a)]
-end
-   
-# Return an array of exponent vectors, one for each term in the $a$
+# Return a generator for exponent vectors of $a$
 function exponent_vectors_fmpz(a::fmpz_mpoly)
-   return [exponent_vector_fmpz(a, i) for i in 1:length(a)]
+   return (exponent_vector_fmpz(a, i) for i in 1:length(a))
 end
    
 # Set exponent of n-th term to given vector of UInt's
