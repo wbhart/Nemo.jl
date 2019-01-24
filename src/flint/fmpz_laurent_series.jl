@@ -595,7 +595,7 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    *{T <: RingElem}(a::T, b::fmpz_laurent_series)
+    *(a::fmpz, b::fmpz_laurent_series)
 > Return $a\times b$.
 """
 function *(a::fmpz, b::fmpz_laurent_series)
@@ -612,7 +612,7 @@ function *(a::fmpz, b::fmpz_laurent_series)
 end
 
 @doc Markdown.doc"""
-    *(a::Union{Integer, Rational, AbstractFloat}, b::fmpz_laurent_series)
+    *(a::Integer, b::fmpz_laurent_series)
 > Return $a\times b$.
 """
 function *(a::Integer, b::fmpz_laurent_series)
@@ -629,13 +629,13 @@ function *(a::Integer, b::fmpz_laurent_series)
 end
 
 @doc Markdown.doc"""
-    *{T <: RingElem}(a::fmpz_laurent_series, b::T)
+    *(a::fmpz_laurent_series, b::fmpz)
 > Return $a\times b$.
 """
 *(a::fmpz_laurent_series, b::fmpz) = b*a
 
 @doc Markdown.doc"""
-    *(a::fmpz_laurent_series, b::Union{Integer, Rational, AbstractFloat})
+    *(a::fmpz_laurent_series, b::Integer)
 > Return $a\times b$.
 """
 *(a::fmpz_laurent_series, b::Integer) = b*a
@@ -648,25 +648,25 @@ end
 
 @doc Markdown.doc"""
     shift_left(x::fmpz_laurent_series, n::Int)
-> Return the power series $f$ shifted left by $n$ terms, i.e. multiplied by
+> Return the power series $x$ shifted left by $n$ terms, i.e. multiplied by
 > $x^n$.
 """
-function shift_left(x::fmpz_laurent_series, len::Int) 
+function shift_left(x::fmpz_laurent_series, n::Int) 
    z = deepcopy(x)
-   set_prec!(z, precision(x) + len)
-   set_val!(z, valuation(x) + len)
+   set_prec!(z, precision(x) + n)
+   set_val!(z, valuation(x) + n)
    return z
 end
 
 @doc Markdown.doc"""
-    shift_right(f::fmpz_laurent_series, n::Int)
-> Return the power series $f$ shifted right by $n$ terms, i.e. divided by
+    shift_right(x::fmpz_laurent_series, n::Int)
+> Return the power series $x$ shifted right by $n$ terms, i.e. divided by
 > $x^n$.
 """
-function shift_right(x::fmpz_laurent_series, len::Int) 
+function shift_right(x::fmpz_laurent_series, n::Int) 
    z = deepcopy(x)
-   set_prec!(z, precision(x) - len)
-   set_val!(z, valuation(x) - len)
+   set_prec!(z, precision(x) - n)
+   set_val!(z, valuation(x) - n)
    return z
 end
 
@@ -680,21 +680,21 @@ end
     truncate(a::fmpz_laurent_series, n::Int)
 > Return $a$ truncated to (absolute) precision $n$.
 """
-function truncate(a::fmpz_laurent_series, prec::Int) 
+function truncate(a::fmpz_laurent_series, n::Int) 
    alen = pol_length(a)
    aprec = precision(a)
    aval = valuation(a)
-   if aprec <= prec
+   if aprec <= n
       return a
    end
    z = parent(a)()
-   set_prec!(z, prec)
-   if prec <= aval
-      set_val!(z, prec)
+   set_prec!(z, n)
+   if n <= aval
+      set_val!(z, n)
       set_scale!(z, 1)
    else
       sa = scale(a)
-      zlen = div(prec - aval + sa - 1, sa)
+      zlen = div(n - aval + sa - 1, sa)
       zlen = min(zlen, alen)
       set_val!(z, aval)
       for i = 0:zlen - 1
@@ -918,7 +918,7 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    =={T <: RingElem}(x::fmpz_laurent_series, y::T)
+    ==(x::fmpz_laurent_series, y::T) where {T <: RingElem}
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::fmpz_laurent_series, y::T) where {T <: RingElem} = precision(x) == 0 ||
@@ -926,7 +926,7 @@ end
              valuation(x) == 0 && polcoeff(x, 0) == y))
 
 @doc Markdown.doc"""
-    =={T <: RingElem}(x::T, y::fmpz_laurent_series)
+    ==(x::T, y::fmpz_laurent_series) where {T <: RingElem}
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::T, y::fmpz_laurent_series) where {T <: RingElem} = y == x
@@ -1003,8 +1003,8 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    divexact(a::fmpz_laurent_series, b::Union{Integer, Rational, AbstractFloat})
-> Return $a/b$ where the quotient is expected to be exact.
+    divexact(x::fmpz_laurent_series, y::Union{Integer, Rational, AbstractFloat})
+> Return $x/y$ where the quotient is expected to be exact.
 """
 function divexact(x::fmpz_laurent_series, y::Union{Integer, Rational, AbstractFloat})
    y == 0 && throw(DivideError())
@@ -1020,8 +1020,8 @@ function divexact(x::fmpz_laurent_series, y::Union{Integer, Rational, AbstractFl
 end
 
 @doc Markdown.doc"""
-    divexact{T <: RingElem}(a::fmpz_laurent_series, b::T)
-> Return $a/b$ where the quotient is expected to be exact.
+    divexact(x::fmpz_laurent_series, y::T) where {T <: RingElem}
+> Return $x/y$ where the quotient is expected to be exact.
 """
 function divexact(x::fmpz_laurent_series, y::T) where {T <: RingElem}
    iszero(y) && throw(DivideError())

@@ -603,7 +603,7 @@ function powmod(x::T, e::Int, y::T) where {T <: Zmodn_fmpz_poly}
 end
 
 @doc Markdown.doc"""
-    powmod(x::fmpz_mod_poly, e::fmpz, y::fmpz_mod_poly)
+    powmod(x::T, e::fmpz, y::T) where {T <: Zmodn_fmpz_poly}
 > Return $x^e \pmod{y}$.
 """
 function powmod(x::T, e::fmpz, y::T) where {T <: Zmodn_fmpz_poly}

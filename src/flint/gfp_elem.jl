@@ -57,13 +57,13 @@ function deepcopy_internal(a::gfp_elem, dict::IdDict)
 end
 
 @doc Markdown.doc"""
-    order(a::GaloisField) -> fmpz
+    order(R::GaloisField) -> fmpz
 > Return the order, i.e. the number of elements in, the given Galois field.
 """
 order(R::GaloisField) = fmpz(R.n)
 
 @doc Markdown.doc"""
-    characteristic(a::GaloisField) -> fmpz
+    characteristic(R::GaloisField) -> fmpz
 > Return the characteristic of the given Galois field.
 """
 characteristic(R::GaloisField) = fmpz(R.n)
@@ -422,13 +422,13 @@ end
 ################################################################################
 
 @doc Markdown.doc"""
-    characteristic(a::ResField{fmpz}) -> fmpz
+    characteristic(F::Generic.ResField{fmpz}) -> fmpz
 > Return the characteristic of the given Galois field.
 """
 characteristic(F::Generic.ResField{fmpz}) = modulus(F)
 
 @doc Markdown.doc"""
-    order(a::ResField{fmpz}) -> fmpz
+    order(F::Generic.ResField{fmpz})-> fmpz
 > Return the order, i.e. the number of elements in, the given Galois field.
 """
 order(F::Generic.ResField{fmpz}) = modulus(F)

@@ -501,9 +501,9 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    divides(f::padic, g::padic)
-> Returns a pair consisting of a flag which is set to `true` if $g$ divides
-> $f$ and `false` otherwise, and a value $h$ such that $f = gh$ if
+    divides(a::padic, b::padic)
+> Returns a pair consisting of a flag which is set to `true` if $b$ divides
+> $a$ and `false` otherwise, and a value $h$ such that $a = bh$ if
 > such a value exists. If not, the value of $h$ is undetermined.
 """
 function divides(a::padic, b::padic)
@@ -734,7 +734,7 @@ end
 # inner constructor is also used directly
 
 @doc Markdown.doc"""
-    FlintPadicField(p::Integer, prec::Int)
+    FlintPadicField(p::Integer, prec::Int; kw...)
 > Returns the parent object for the $p$-adic field for given prime $p$, where
 > the default absolute precision of elements of the field is given by `prec`.
 """

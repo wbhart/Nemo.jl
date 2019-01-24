@@ -40,8 +40,8 @@ end
 ==(x::fmpz, y::AbsSeriesElem) = y == x
 
 @doc Markdown.doc"""
-    divexact(a::AbsSeriesElem, b::fmpz)
-> Return $a/b$ where the quotient is expected to be exact.
+    divexact(x::AbsSeriesElem, y::fmpz)
+> Return $x/y$ where the quotient is expected to be exact.
 """
 function divexact(x::AbsSeriesElem, y::fmpz)
    iszero(y) && throw(DivideError())
@@ -110,8 +110,8 @@ end
 ==(x::fmpz, y::RelSeriesElem) = y == x
 
 @doc Markdown.doc"""
-    divexact(a::RelSeriesElem, b::fmpz)
-> Return $a/b$ where the quotient is expected to be exact.
+    divexact(x::RelSeriesElem, y::fmpz)
+> Return $x/y$ where the quotient is expected to be exact.
 """
 function divexact(x::RelSeriesElem, y::fmpz)
    iszero(y) && throw(DivideError())
@@ -265,8 +265,8 @@ end
 -(a::fmpz, b::ResElem) = parent(b)(a - data(b))
 
 @doc Markdown.doc"""
-    ==(x::ResElem, y::fmpz)
-> Return `true` if $x == y$ arithmetically, otherwise return `false`.
+    ==(a::ResElem, b::fmpz)
+> Return `true` if $a == b$ arithmetically, otherwise return `false`.
 """
 function ==(a::ResElem, b::fmpz)
    z = base_ring(a)(b)
@@ -274,8 +274,8 @@ function ==(a::ResElem, b::fmpz)
 end
 
 @doc Markdown.doc"""
-    ==(x::fmpz, y::ResElem)
-> Return `true` if $x == y$ arithmetically, otherwise return `false`.
+    ==(a::fmpz, b::ResElem)
+> Return `true` if $a == b$ arithmetically, otherwise return `false`.
 """
 function ==(a::fmpz, b::ResElem)
    z = base_ring(b)(a)

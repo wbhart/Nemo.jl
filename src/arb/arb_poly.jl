@@ -601,9 +601,9 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    roots_upper_bound(f::arb_poly) -> arb
+    roots_upper_bound(x::arb_poly) -> arb
 
-> Returns an upper bound for the absolute value of all complex roots of $f$.
+> Returns an upper bound for the absolute value of all complex roots of $x$.
 """
 function roots_upper_bound(x::arb_poly)
    z = base_ring(x)()
