@@ -126,7 +126,7 @@ collection.
 addeq!(c::acb, a::acb)
 ```
 
-In-place addition. Adds $a$ to $c$ and sets $c$ to the result. This function
+In-place addition adds $a$ to $c$ and sets $c$ to the result. This function
 is provided for performance reasons as it saves allocating a new object for
 the result and eliminates associated garbage collection.
 
