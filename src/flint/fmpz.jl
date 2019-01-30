@@ -1025,7 +1025,7 @@ end
 @doc Markdown.doc"""
     factor(a::fmpz)
 > Return a factorisation of $a$ using a `Fac` struct (see the documentation on
-> factorisation in Nemo.
+> factorisation in Nemo).
 """
 function factor(a::fmpz)
    if iszero(a)
