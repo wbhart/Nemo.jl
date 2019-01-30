@@ -1075,7 +1075,7 @@ function ceil(x::arb)
 end
 
 @doc Markdown.doc"""
-    Base.sqrt(x::arb)
+    sqrt(x::arb)
 > Return the square root of $x$.
 """
 function Base.sqrt(x::arb)
