@@ -65,9 +65,9 @@ over a given ring $R$. For completeness, we list it here.
 
 Base ring                             | Library            | Element type              | Parent type
 --------------------------------------|--------------------|---------------------------|----------------------
-Generic ring $R$                      | AbstractAlgebra.jl | `Generic.LaurentSeriesRingElem{T}`| `Generic.LaurenSeriesRing{T}`
+Generic ring $R$                      | AbstractAlgebra.jl | `Generic.LaurentSeriesRingElem{T}`| `Generic.LaurentSeriesRing{T}`
 Generic field $K$                     | AbstractAlgebra.jl | `Generic.LaurentSeriesFieldElem{T}`|
-`Generic.LaurenSeriesField{T}`
+`Generic.LaurentSeriesField{T}`
 
 ## Capped relative power series
 
