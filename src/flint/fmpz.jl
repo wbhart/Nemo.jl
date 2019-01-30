@@ -1086,7 +1086,7 @@ isprime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, :libflint), Cint,
 
 @doc Markdown.doc"""
     isprobabprime(x::fmpz)
-> Return `true` if $x$ is a very probably a prime number, otherwise return
+> Return `true` if $x$ is very probably a prime number, otherwise return
 > `false`. No counterexamples are known to this test, but it is conjectured
 > that infinitely many exist.
 """
