@@ -22,7 +22,7 @@ elem_type(::Type{FqNmodMatSpace}) = fq_nmod_mat
 
 function check_parent(x::fq_nmod_mat, y::fq_nmod_mat)
    base_ring(x) != base_ring(y) && error("Residue rings must be equal")
-   (cols(x) != cols(y)) && (rows(x) != rows(y)) &&
+   (ncols(x) != ncols(y)) && (nrows(x) != nrows(y)) &&
    error("Matrices have wrong dimensions")
    return nothing
 end
@@ -34,7 +34,7 @@ end
 ###############################################################################
 
 function similar(x::fq_nmod_mat)
-   z = fq_nmod_mat(rows(x), cols(x), base_ring(x))
+   z = fq_nmod_mat(nrows(x), ncols(x), base_ring(x))
    return z
 end
 
@@ -81,17 +81,17 @@ setindex!(a::fq_nmod_mat, u::Integer, i::Int, j::Int) =
         setindex!(a, base_ring(a)(u), i, j)
 
 function deepcopy_internal(a::fq_nmod_mat, dict::IdDict)
-  z = fq_nmod_mat(rows(a), cols(a), base_ring(a))
+  z = fq_nmod_mat(nrows(a), ncols(a), base_ring(a))
   ccall((:fq_nmod_mat_set, :libflint), Nothing,
         (Ref{fq_nmod_mat}, Ref{fq_nmod_mat}, Ref{FqNmodFiniteField}), z, a, base_ring(a))
   return z
 end
 
-rows(a::fq_nmod_mat) = a.r
+nrows(a::fq_nmod_mat) = a.r
 
-cols(a::fq_nmod_mat) = a.c
+ncols(a::fq_nmod_mat) = a.c
 
-parent(a::fq_nmod_mat, cached::Bool = true) = FqNmodMatSpace(base_ring(a), rows(a), cols(a), cached)
+parent(a::fq_nmod_mat, cached::Bool = true) = FqNmodMatSpace(base_ring(a), nrows(a), ncols(a), cached)
 
 base_ring(a::FqNmodMatSpace) = a.base_ring
 
@@ -165,9 +165,9 @@ end
 ################################################################################
 
 function transpose(a::fq_nmod_mat)
-   z = fq_nmod_mat(cols(a), rows(a), base_ring(a))
-   for i in 1:rows(a)
-      for j in 1:cols(a)
+   z = fq_nmod_mat(ncols(a), nrows(a), base_ring(a))
+   for i in 1:nrows(a)
+      for j in 1:ncols(a)
          z[j, i] = a[i, j]
       end
    end
@@ -176,7 +176,7 @@ end
 
 # There is no transpose for fq_nmod_mat 
 #function transpose(a::fq_nmod_mat)
-#  z = FqNmodMatSpace(base_ring(a), cols(a), rows(a))()
+#  z = FqNmodMatSpace(base_ring(a), ncols(a), nrows(a))()
 #  ccall((:fq_nmod_mat_transpose, :libflint), Nothing,
 #        (Ref{fq_nmod_mat}, Ref{fq_nmod_mat}, Ref{FqNmodFiniteField}), z, a, base_ring(a))
 #  return z
@@ -228,8 +228,8 @@ end
 
 function *(x::fq_nmod_mat, y::fq_nmod_mat)
    (base_ring(x) != base_ring(y)) && error("Base ring must be equal")
-   (cols(x) != rows(y)) && error("Dimensions are wrong")
-   z = similar(x, rows(x), cols(y))
+   (ncols(x) != nrows(y)) && error("Dimensions are wrong")
+   z = similar(x, nrows(x), ncols(y))
    ccall((:fq_nmod_mat_mul, :libflint), Nothing,
          (Ref{fq_nmod_mat}, Ref{fq_nmod_mat}, Ref{fq_nmod_mat}, Ref{FqNmodFiniteField}), z, x, y, base_ring(x))
    return z
@@ -270,8 +270,8 @@ end
 
 function *(x::fq_nmod_mat, y::fq_nmod)
    z = similar(x)
-   for i in 1:rows(x)
-      for j in 1:cols(x)
+   for i in 1:nrows(x)
+      for j in 1:ncols(x)
          z[i, j] = y * x[i, j]
       end
    end
@@ -327,9 +327,9 @@ end
 
 function tr(a::fq_nmod_mat)
    !issquare(a) && error("Non-square matrix")
-   n = rows(a)
+   n = nrows(a)
    t = zero(base_ring(a))
-   for i in 1:rows(a)
+   for i in 1:nrows(a)
       add!(t, t, a[i, i])
    end
    return t
@@ -343,7 +343,7 @@ end
 
 function det(a::fq_nmod_mat)
    !issquare(a) && error("Non-square matrix")
-   n = rows(a)
+   n = nrows(a)
    R = base_ring(a)
    if n == 0
       return zero(R)
@@ -353,7 +353,7 @@ function det(a::fq_nmod_mat)
       return zero(R)
    else
       d = one(R)
-      for i in 1:rows(u)
+      for i in 1:nrows(u)
          mul!(d, d, u[i, i])
       end
       return (parity(p) == 0 ? d : -d)
@@ -367,7 +367,7 @@ end
 ################################################################################
 
 function rank(a::fq_nmod_mat)
-   n = rows(a)
+   n = nrows(a)
    if n == 0
       return 0
    end
@@ -399,7 +399,7 @@ end
 function solve(x::fq_nmod_mat, y::fq_nmod_mat)
    (base_ring(x) != base_ring(y)) && error("Matrices must have same base ring")
    !issquare(x)&& error("First argument not a square matrix in solve")
-   (rows(y) != rows(x)) || cols(y) != 1 && ("Not a column vector in solve")
+   (nrows(y) != nrows(x)) || ncols(y) != 1 && ("Not a column vector in solve")
    z = similar(y)
    r = ccall((:fq_nmod_mat_solve, :libflint), Int,
              (Ref{fq_nmod_mat}, Ref{fq_nmod_mat}, Ref{fq_nmod_mat}, Ref{FqNmodFiniteField}),
@@ -429,9 +429,9 @@ function lu!(P::Generic.perm, x::fq_nmod_mat)
   return rank
 end
 
-function lu(x::fq_nmod_mat, P = PermGroup(rows(x)))
-   m = rows(x)
-   n = cols(x)
+function lu(x::fq_nmod_mat, P = PermGroup(nrows(x)))
+   m = nrows(x)
+   n = ncols(x)
    P.n != m && error("Permutation does not match matrix")
    p = P()
    R = base_ring(x)
@@ -504,7 +504,7 @@ getindex(x::fq_nmod_mat, r::UnitRange{Int}, c::UnitRange{Int}) = sub(x, r, c)
 function hcat(x::fq_nmod_mat, y::fq_nmod_mat)
    (base_ring(x) != base_ring(y)) && error("Matrices must have same base ring")
    (x.r != y.r) && error("Matrices must have same number of rows")
-   z = similar(x, rows(x), cols(x) + cols(y))
+   z = similar(x, nrows(x), ncols(x) + ncols(y))
    ccall((:fq_nmod_mat_concat_horizontal, :libflint), Nothing,
          (Ref{fq_nmod_mat}, Ref{fq_nmod_mat}, Ref{fq_nmod_mat}, Ref{FqNmodFiniteField}),
          z, x, y, base_ring(x))
@@ -514,7 +514,7 @@ end
 function vcat(x::fq_nmod_mat, y::fq_nmod_mat)
    (base_ring(x) != base_ring(y)) && error("Matrices must have same base ring")
    (x.c != y.c) && error("Matrices must have same number of columns")
-   z = similar(x, rows(x) + rows(y), cols(x))
+   z = similar(x, nrows(x) + nrows(y), ncols(x))
    ccall((:fq_nmod_mat_concat_vertical, :libflint), Nothing,
          (Ref{fq_nmod_mat}, Ref{fq_nmod_mat}, Ref{fq_nmod_mat}, Ref{FqNmodFiniteField}),
          z, x, y, base_ring(x))
@@ -529,8 +529,8 @@ end
 
 function Array(b::fq_nmod_mat)
   a = Array{fq_nmod}(undef, b.r, b.c)
-  for i = 1:rows(b)
-    for j = 1:cols(b)
+  for i = 1:nrows(b)
+    for j = 1:ncols(b)
       a[i, j] = b[i, j]
     end
   end

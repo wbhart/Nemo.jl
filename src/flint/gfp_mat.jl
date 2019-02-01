@@ -23,7 +23,7 @@ elem_type(::Type{GFPMatSpace}) = gfp_mat
 ###############################################################################
 
 function similar(x::gfp_mat)
-   z = gfp_mat(rows(x), cols(x), x.n)
+   z = gfp_mat(nrows(x), ncols(x), x.n)
    z.base_ring = x.base_ring
    return z
 end
@@ -50,7 +50,7 @@ set_entry!(a::gfp_mat, i::Int, j::Int, u::gfp_elem) =
 end
 
 function deepcopy_internal(a::gfp_mat, dict::IdDict)
-  z = gfp_mat(rows(a), cols(a), a.n)
+  z = gfp_mat(nrows(a), ncols(a), a.n)
   if isdefined(a, :base_ring)
     z.base_ring = a.base_ring
   end
@@ -124,12 +124,12 @@ end
 > many rows as columns.
 """
 function strong_echelon_form(a::gfp_mat)
-  (rows(a) < cols(a)) &&
+  (nrows(a) < ncols(a)) &&
               error("Matrix must have at least as many rows as columns")
   r, z = rref(a)
   j_new =  1
   for i in 1:r
-    for j in j_new:cols(a)
+    for j in j_new:ncols(a)
       if isone(a[i, j]) && i != j
         z[i, j] = 0
         z[j, j] = 1
@@ -147,7 +147,7 @@ end
 > many rows as columns.
 """
 function howell_form(a::gfp_mat)
-  (rows(a) < cols(a)) &&
+  (nrows(a) < ncols(a)) &&
               error("Matrix must have at least as many rows as columns")
   return rref(a)[2]
 end
@@ -216,7 +216,7 @@ end
 > entries of the returned matrix are those of $a$ lifted to $\mathbb{Z}$.
 """
 function lift(a::gfp_mat)
-  z = fmpz_mat(rows(a), cols(a))
+  z = fmpz_mat(nrows(a), ncols(a))
   z.base_ring = FlintIntegerRing()
   ccall((:fmpz_mat_set_nmod_mat, :libflint), Nothing,
           (Ref{fmpz_mat}, Ref{gfp_mat}), z, a)

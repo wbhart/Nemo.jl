@@ -4007,8 +4007,8 @@ mutable struct fq_mat <: MatElem{fq}
 
    function fq_mat(m::fmpz_mat, ctx::FqFiniteField)
       z = new()
-      r = rows(m)
-      c = cols(m)
+      r = nrows(m)
+      c = ncols(m)
       ccall((:fq_mat_init, :libflint), Nothing,
             (Ref{fq_mat}, Int, Int, Ref{FqFiniteField}), z, r, c, ctx)
       GC.@preserve z for i = 1:r
@@ -4195,8 +4195,8 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
 
    function fq_nmod_mat(m::fmpz_mat, ctx::FqNmodFiniteField)
       z = new()
-      r = rows(m)
-      c = cols(m)
+      r = nrows(m)
+      c = ncols(m)
       ccall((:fq_nmod_mat_init, :libflint), Nothing,
             (Ref{fq_nmod_mat}, Int, Int, Ref{FqNmodFiniteField}), z, r, c, ctx)
       GC.@preserve z for i = 1:r

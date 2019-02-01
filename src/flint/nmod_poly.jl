@@ -868,7 +868,7 @@ end
 ################################################################################
 
 function det(M::Generic.Mat{nmod_poly})
-   rows(M) != cols(M) && error("Not a square matrix in det")
+   nrows(M) != ncols(M) && error("Not a square matrix in det")
 
    if is_prime(modulus(base_ring(M)))
      return det_popov(M)

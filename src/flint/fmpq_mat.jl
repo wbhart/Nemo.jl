@@ -21,10 +21,10 @@ base_ring(a::FmpqMatSpace) = a.base_ring
 base_ring(a::fmpq_mat) = a.base_ring
 
 parent(a::fmpq_mat, cached::Bool = true) =
-      FmpqMatSpace(rows(a), cols(a), cached)
+      FmpqMatSpace(nrows(a), ncols(a), cached)
 
 function check_parent(a::fmpq_mat, b::fmpq_mat)
-   (rows(a) != rows(b) || cols(a) != cols(b) || base_ring(a) != base_ring(b)) &&
+   (nrows(a) != nrows(b) || ncols(a) != ncols(b) || base_ring(a) != base_ring(b)) &&
       error("Incompatible matrices")
 end
 
@@ -35,7 +35,7 @@ end
 ###############################################################################
 
 function similar(x::fmpq_mat)
-   z = fmpq_mat(rows(x), cols(x))
+   z = fmpq_mat(nrows(x), ncols(x))
    z.base_ring = x.base_ring
    return z
 end
@@ -148,9 +148,9 @@ Base.@propagate_inbounds setindex!(a::fmpq_mat, d::Rational,
                                  r::Int, c::Int) =
          setindex!(a, fmpq(d), r, c)
 
-rows(a::fmpq_mat) = a.r
+nrows(a::fmpq_mat) = a.r
 
-cols(a::fmpq_mat) = a.c
+ncols(a::fmpq_mat) = a.c
 
 zero(a::FmpqMatSpace) = a()
 
@@ -189,8 +189,8 @@ function show(io::IO, a::FmpqMatSpace)
 end
 
 function show(io::IO, a::fmpq_mat)
-   r = rows(a)
-   c = cols(a)
+   r = nrows(a)
+   c = ncols(a)
    if r*c == 0
       print(io, "$r by $c matrix")
    end
@@ -231,7 +231,7 @@ end
 ###############################################################################
 
 function transpose(x::fmpq_mat)
-   z = similar(x, cols(x), rows(x))
+   z = similar(x, ncols(x), nrows(x))
    ccall((:fmpq_mat_transpose, :libflint), Nothing,
          (Ref{fmpq_mat}, Ref{fmpq_mat}), z, x)
    return z
@@ -262,8 +262,8 @@ function -(x::fmpq_mat, y::fmpq_mat)
 end
 
 function *(x::fmpq_mat, y::fmpq_mat)
-   cols(x) != rows(y) && error("Incompatible matrix dimensions")
-   z = similar(x, rows(x), cols(y))
+   ncols(x) != nrows(y) && error("Incompatible matrix dimensions")
+   z = similar(x, nrows(x), ncols(y))
    ccall((:fmpq_mat_mul, :libflint), Nothing,
                 (Ref{fmpq_mat}, Ref{fmpq_mat},  Ref{fmpq_mat}),
                z, x, y)
@@ -308,7 +308,7 @@ for T in [Integer, fmpz, fmpq]
    @eval begin
       function +(x::fmpq_mat, y::$T)
          z = deepcopy(x)
-         for i = 1:min(rows(x), cols(x))
+         for i = 1:min(nrows(x), ncols(x))
             z[i, i] += y
          end
          return z
@@ -318,7 +318,7 @@ for T in [Integer, fmpz, fmpq]
 
       function -(x::fmpq_mat, y::$T)
          z = deepcopy(x)
-         for i = 1:min(rows(x), cols(x))
+         for i = 1:min(nrows(x), ncols(x))
             z[i, i] -= y
          end
          return z
@@ -326,7 +326,7 @@ for T in [Integer, fmpz, fmpq]
 
       function -(x::$T, y::fmpq_mat)
          z = -y
-         for i = 1:min(rows(y), cols(y))
+         for i = 1:min(nrows(y), ncols(y))
             z[i, i] += x
          end
          return z
@@ -336,7 +336,7 @@ end
 
 function +(x::fmpq_mat, y::Rational)
    z = deepcopy(x)
-   for i = 1:min(rows(x), cols(x))
+   for i = 1:min(nrows(x), ncols(x))
       z[i, i] += y
    end
    return z
@@ -346,7 +346,7 @@ end
 
 function -(x::fmpq_mat, y::Rational)
    z = deepcopy(x)
-   for i = 1:min(rows(x), cols(x))
+   for i = 1:min(nrows(x), ncols(x))
       z[i, i] -= y
    end
    return z
@@ -354,7 +354,7 @@ end
 
 function -(x::Rational, y::fmpq_mat)
    z = -y
-   for i = 1:min(rows(y), cols(y))
+   for i = 1:min(nrows(y), ncols(y))
       z[i, i] += x
    end
    return z
@@ -379,13 +379,13 @@ end
 ###############################################################################
 
 function ==(x::fmpq_mat, y::Integer)
-   for i = 1:min(rows(x), cols(x))
+   for i = 1:min(nrows(x), ncols(x))
       if x[i, i] != y
          return false
       end
    end
-   for i = 1:rows(x)
-      for j = 1:cols(x)
+   for i = 1:nrows(x)
+      for j = 1:ncols(x)
          if i != j && x[i, j] != 0
             return false
          end
@@ -421,7 +421,7 @@ end
 ###############################################################################
 
 function divexact(x::fmpq_mat, y::fmpq_mat)
-   cols(x) != cols(y) && error("Incompatible matrix dimensions")
+   ncols(x) != ncols(y) && error("Incompatible matrix dimensions")
    x*inv(y)
 end
 
@@ -459,7 +459,7 @@ divexact(x::fmpq_mat, y::Rational{T}) where T <: Union{Int, BigInt} = divexact(x
 
 function kronecker_product(x::fmpq_mat, y::fmpq_mat)
    base_ring(x) == base_ring(y) || error("Incompatible matrices")
-   z = similar(x, rows(x)*rows(y), cols(x)*cols(y))
+   z = similar(x, nrows(x)*nrows(y), ncols(x)*ncols(y))
    ccall((:fmpq_mat_kronecker_product, :libflint), Nothing,
                 (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpq_mat}), z, x, y)
    return z
@@ -472,7 +472,7 @@ end
 ###############################################################################
 
 function charpoly(R::FmpqPolyRing, x::fmpq_mat)
-   rows(x) != cols(x) && error("Non-square")
+   nrows(x) != ncols(x) && error("Non-square")
    z = R()
    ccall((:fmpq_mat_charpoly, :libflint), Nothing,
                 (Ref{fmpq_poly}, Ref{fmpq_mat}), z, x)
@@ -486,7 +486,7 @@ end
 ###############################################################################
 
 function minpoly(R::FmpqPolyRing, x::fmpq_mat)
-   rows(x) != cols(x) && error("Non-square")
+   nrows(x) != ncols(x) && error("Non-square")
    z = R()
    ccall((:fmpq_mat_minpoly, :libflint), Nothing,
                 (Ref{fmpq_poly}, Ref{fmpq_mat}), z, x)
@@ -500,7 +500,7 @@ end
 ###############################################################################
 
 function det(x::fmpq_mat)
-   rows(x) != cols(x) && error("Non-square matrix")
+   nrows(x) != ncols(x) && error("Non-square matrix")
    z = fmpq()
    ccall((:fmpq_mat_det, :libflint), Nothing,
                 (Ref{fmpq}, Ref{fmpq_mat}), z, x)
@@ -575,8 +575,8 @@ end
 ###############################################################################
 
 function solve(a::fmpq_mat, b::fmpq_mat)
-   rows(a) != cols(a) && error("Not a square matrix in solve")
-   rows(b) != rows(a) && error("Incompatible dimensions in solve")
+   nrows(a) != ncols(a) && error("Not a square matrix in solve")
+   nrows(b) != nrows(a) && error("Incompatible dimensions in solve")
    z = similar(b)
    nonsing = ccall((:fmpq_mat_solve_fraction_free, :libflint), Bool,
       (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpq_mat}), z, a, b)
@@ -590,8 +590,8 @@ end
 > usually faster for large systems.
 """
 function solve_dixon(a::fmpq_mat, b::fmpq_mat)
-   rows(a) != cols(a) && error("Not a square matrix in solve")
-   rows(b) != rows(a) && error("Incompatible dimensions in solve")
+   nrows(a) != ncols(a) && error("Not a square matrix in solve")
+   nrows(b) != nrows(a) && error("Incompatible dimensions in solve")
    z = similar(b)
    nonsing = ccall((:fmpq_mat_solve_dixon, :libflint), Bool,
       (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpq_mat}), z, a, b)
@@ -606,7 +606,7 @@ end
 ###############################################################################
 
 function tr(x::fmpq_mat)
-   rows(x) != cols(x) && error("Not a square matrix in trace")
+   nrows(x) != ncols(x) && error("Not a square matrix in trace")
    d = fmpq()
    ccall((:fmpq_mat_trace, :libflint), Nothing,
                 (Ref{fmpq}, Ref{fmpq_mat}), d, x)
@@ -620,16 +620,16 @@ end
 ###############################################################################
 
 function hcat(a::fmpq_mat, b::fmpq_mat)
-  rows(a) != rows(b) && error("Incompatible number of rows in hcat")
-  c = similar(a, rows(a), cols(a) + cols(b))
+  nrows(a) != nrows(b) && error("Incompatible number of rows in hcat")
+  c = similar(a, nrows(a), ncols(a) + ncols(b))
   ccall((:fmpq_mat_concat_horizontal, :libflint), Nothing,
         (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpq_mat}), c, a, b)
   return c
 end
 
 function vcat(a::fmpq_mat, b::fmpq_mat)
-  cols(a) != cols(b) && error("Incompatible number of columns in vcat")
-  c = similar(a, rows(a) + rows(b), cols(a))
+  ncols(a) != ncols(b) && error("Incompatible number of columns in vcat")
+  c = similar(a, nrows(a) + nrows(b), ncols(a))
   ccall((:fmpq_mat_concat_vertical, :libflint), Nothing,
         (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpq_mat}), c, a, b)
   return c
@@ -772,7 +772,7 @@ end
 (a::FmpqMatSpace)(d::Rational) = a(fmpq(d))
 
 function (a::FmpqMatSpace)(M::fmpz_mat)
-   (a.cols == cols(M) && a.rows == rows(M)) || error("wrong matrix dimension")
+   (a.cols == ncols(M) && a.rows == nrows(M)) || error("wrong matrix dimension")
    z = a()
    ccall((:fmpq_mat_set_fmpz_mat, :libflint), Nothing, (Ref{fmpq_mat}, Ref{fmpz_mat}), z, M)
    return z

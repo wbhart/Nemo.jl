@@ -438,7 +438,7 @@ end
 ################################################################################
 
 function det(M::Generic.Mat{gfp_poly})
-   rows(M) != cols(M) && error("Not a square matrix in det")
+   nrows(M) != ncols(M) && error("Not a square matrix in det")
    return det_popov(M)
 end
 
