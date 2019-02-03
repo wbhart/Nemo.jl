@@ -432,8 +432,8 @@ end
 """
 function *(x::fmpz, y::MatElem)
    z = similar(y)
-   for i = 1:rows(y)
-      for j = 1:cols(y)
+   for i = 1:nrows(y)
+      for j = 1:ncols(y)
          z[i, j] = x*y[i, j]
       end
    end
@@ -453,8 +453,8 @@ end
 function +(x::fmpz, y::MatElem)
    z = similar(y)
    R = base_ring(y)
-   for i = 1:rows(y)
-      for j = 1:cols(y)
+   for i = 1:nrows(y)
+      for j = 1:ncols(y)
          if i != j
             z[i, j] = deepcopy(y[i, j])
          else
@@ -478,8 +478,8 @@ end
 function -(x::fmpz, y::MatElem)
    z = similar(y)
    R = base_ring(y)
-   for i = 1:rows(y)
-      for j = 1:cols(y)
+   for i = 1:nrows(y)
+      for j = 1:ncols(y)
          if i != j
             z[i, j] = -y[i, j]
          else
@@ -497,8 +497,8 @@ end
 function -(x::MatElem, y::fmpz) 
    z = similar(x)
    R = base_ring(x)
-   for i = 1:rows(x)
-      for j = 1:cols(x)
+   for i = 1:nrows(x)
+      for j = 1:ncols(x)
          if i != j
             z[i, j] = deepcopy(x[i, j])
          else
@@ -515,13 +515,13 @@ end
 > otherwise return `false`.
 """
 function ==(x::MatElem, y::fmpz) 
-   for i = 1:min(rows(x), cols(x))
+   for i = 1:min(nrows(x), ncols(x))
       if x[i, i] != y
          return false
       end
    end
-   for i = 1:rows(x)
-      for j = 1:cols(x)
+   for i = 1:nrows(x)
+      for j = 1:ncols(x)
          if i != j && !iszero(x[i, j])
             return false
          end
@@ -544,8 +544,8 @@ end
 """
 function divexact(x::MatElem, y::fmpz)
    z = similar(x)
-   for i = 1:rows(x)
-      for j = 1:cols(x)
+   for i = 1:nrows(x)
+      for j = 1:ncols(x)
          z[i, j] = divexact(x[i, j], y)
       end
    end
@@ -553,7 +553,7 @@ function divexact(x::MatElem, y::fmpz)
 end
 
 function (a::Generic.MatSpace{T})(b::fmpz_mat) where {T <: RingElement}
-  if a.rows != rows(b) || a.cols != cols(b)
+  if a.rows != nrows(b) || a.cols != ncols(b)
     error("incompatible matrix dimensions")
   end
   A = a()

@@ -1,6 +1,6 @@
 function istriu(A::Generic.Mat)
-   m = rows(A)
-   n = cols(A)
+   m = nrows(A)
+   n = ncols(A)
    d = 0
    for c = 1:n
       for r = m:-1:1
@@ -17,8 +17,8 @@ function istriu(A::Generic.Mat)
 end
 
 function is_snf(A::Generic.Mat)
-   m = rows(A)
-   n = cols(A)
+   m = nrows(A)
+   n = ncols(A)
    a = A[1,1]
    for i = 2:min(m,n)
       q, r = divrem(A[i,i], a)
