@@ -553,13 +553,13 @@ function divexact(x::MatElem, y::fmpz)
 end
 
 function (a::Generic.MatSpace{T})(b::fmpz_mat) where {T <: RingElement}
-  if a.rows != nrows(b) || a.cols != ncols(b)
+  if a.nrows != nrows(b) || a.ncols != ncols(b)
     error("incompatible matrix dimensions")
   end
   A = a()
   R = base_ring(a)
-  for i=1:a.rows
-    for j=1:a.cols
+  for i=1:a.nrows
+    for j=1:a.ncols
       A[i,j] = R(b[i,j])
     end
   end
