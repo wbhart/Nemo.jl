@@ -7,7 +7,7 @@ oldwdir = pwd()
 @show MPIR_VERSION = "3.0.0-90740d8fdf03b941b55723b449831c52fd7f51ca"
 @show MPFR_VERSION = "4.0.0"
 @show ANTIC_VERSION = "ede86094503380648ce51fa56cd3ff16217cffed"
-@show FLINT_VERSION = "f088d6c89d80b6b90a5653e1ada24dbe36964bd7"
+@show FLINT_VERSION = "34adb7359da4ca2ad2a86635e374bf711e520056"
 @show ARB_VERSION = "fe53e3f306380b5a65b30dcec776e10428601790"
 
 pkgdir = dirname(dirname(@__FILE__))
