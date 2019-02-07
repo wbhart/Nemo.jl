@@ -1099,7 +1099,7 @@ end
 function rand(K::AnticNumberField, r::UnitRange{Int64})
    R = parent(K.pol)
    n = degree(K.pol)
-   return K(rand(R, n:n, r)) 
+   return K(rand(R, (n-1):(n-1), r)) 
 end
 
 ###############################################################################
