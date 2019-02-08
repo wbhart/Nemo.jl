@@ -106,6 +106,7 @@ function Base.deepcopy_internal(a::padic, dict::IdDict)
    z = parent(a)()
    ccall((:padic_set, :libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, parent(a))
+   z.N = a.N      # set does not transfer N - neither should it.
    return z
 end
 
