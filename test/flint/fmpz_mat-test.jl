@@ -49,8 +49,8 @@ function test_fmpz_mat_constructors()
       M2 = matrix(FlintZZ, 2, 3, map(T, arr2))
       @test isa(M2, fmpz_mat)
       @test M2.base_ring == FlintZZ
-      @test rows(M2) == 2
-      @test cols(M2) == 3
+      @test nrows(M2) == 2
+      @test ncols(M2) == 3
       @test_throws ErrorConstrDimMismatch matrix(FlintZZ, 2, 2, map(T, arr2))
       @test_throws ErrorConstrDimMismatch matrix(FlintZZ, 2, 4, map(T, arr2))
    end
@@ -112,8 +112,8 @@ function test_fmpz_mat_manipulation()
 
    @test B[1, 1] == fmpz(3)
 
-   @test rows(B) == 3
-   @test cols(B) == 3
+   @test nrows(B) == 3
+   @test ncols(B) == 3
 
    @test deepcopy(A) == A
 

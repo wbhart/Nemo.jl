@@ -16,7 +16,7 @@ export rows, cols, zero, one, deepcopy, -, transpose, +, *, &, ==, !=,
 ###############################################################################
 
 function similar(x::acb_mat)
-   z = acb_mat(rows(x), cols(x))
+   z = acb_mat(nrows(x), ncols(x))
    z.base_ring = x.base_ring
    return z
 end
@@ -38,7 +38,7 @@ parent_type(::Type{acb_mat}) = AcbMatSpace
 elem_type(::Type{AcbMatSpace}) = acb_mat
 
 parent(x::acb_mat, cached::Bool = true) =
-      MatrixSpace(base_ring(x), rows(x), cols(x))
+      MatrixSpace(base_ring(x), nrows(x), ncols(x))
 
 prec(x::AcbMatSpace) = prec(x.base_ring)
 
@@ -110,9 +110,9 @@ function one(x::AcbMatSpace)
   return z
 end
 
-rows(a::acb_mat) = a.r
+nrows(a::acb_mat) = a.r
 
-cols(a::acb_mat) = a.c
+ncols(a::acb_mat) = a.c
 
 function deepcopy_internal(x::acb_mat, dict::IdDict)
   z = similar(x)
@@ -133,8 +133,8 @@ function show(io::IO, a::AcbMatSpace)
 end
 
 function show(io::IO, a::acb_mat)
-   r = rows(a)
-   c = cols(a)
+   r = nrows(a)
+   c = ncols(a)
    if r*c == 0
      print(io, "$r by $c matrix")
    end
@@ -172,7 +172,7 @@ end
 ################################################################################
 
 function transpose(x::acb_mat)
-  z = similar(x, cols(x), rows(x))
+  z = similar(x, ncols(x), nrows(x))
   ccall((:acb_mat_transpose, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}), z, x)
   return z
@@ -203,8 +203,8 @@ function -(x::acb_mat, y::acb_mat)
 end
 
 function *(x::acb_mat, y::acb_mat)
-  cols(x) != rows(y) && error("Matrices have wrong dimensions")
-  z = similar(x, rows(x), cols(y))
+  ncols(x) != nrows(y) && error("Matrices have wrong dimensions")
+  z = similar(x, nrows(x), ncols(y))
   ccall((:acb_mat_mul, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{acb_mat}, Int),
               z, x, y, prec(base_ring(x)))
@@ -218,7 +218,7 @@ end
 ################################################################################
 
 function ^(x::acb_mat, y::UInt)
-  rows(x) != cols(x) && error("Matrix must be square")
+  nrows(x) != ncols(x) && error("Matrix must be square")
   z = similar(x)
   ccall((:acb_mat_pow_ui, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, UInt, Int),
@@ -290,7 +290,7 @@ for T in [Integer, fmpz, fmpq, arb, acb]
    @eval begin
       function +(x::acb_mat, y::$T)
          z = deepcopy(x)
-         for i = 1:min(rows(x), cols(x))
+         for i = 1:min(nrows(x), ncols(x))
             z[i, i] += y
          end
          return z
@@ -300,7 +300,7 @@ for T in [Integer, fmpz, fmpq, arb, acb]
 
       function -(x::acb_mat, y::$T)
          z = deepcopy(x)
-         for i = 1:min(rows(x), cols(x))
+         for i = 1:min(nrows(x), ncols(x))
             z[i, i] -= y
          end
          return z
@@ -308,7 +308,7 @@ for T in [Integer, fmpz, fmpq, arb, acb]
 
       function -(x::$T, y::acb_mat)
          z = -y
-         for i = 1:min(rows(y), cols(y))
+         for i = 1:min(nrows(y), ncols(y))
             z[i, i] += x
          end
          return z
@@ -318,7 +318,7 @@ end
 
 function +(x::acb_mat, y::Rational{T}) where T <: Union{Int, BigInt}
    z = deepcopy(x)
-   for i = 1:min(rows(x), cols(x))
+   for i = 1:min(nrows(x), ncols(x))
       z[i, i] += y
    end
    return z
@@ -328,7 +328,7 @@ end
 
 function -(x::acb_mat, y::Rational{T}) where T <: Union{Int, BigInt}
    z = deepcopy(x)
-   for i = 1:min(rows(x), cols(x))
+   for i = 1:min(nrows(x), ncols(x))
       z[i, i] -= y
    end
    return z
@@ -336,7 +336,7 @@ end
 
 function -(x::Rational{T}, y::acb_mat) where T <: Union{Int, BigInt}
    z = -y
-   for i = 1:min(rows(y), cols(y))
+   for i = 1:min(nrows(y), ncols(y))
       z[i, i] += x
    end
    return z
@@ -452,8 +452,8 @@ end
 ################################################################################
 
 @doc Markdown.doc"""
-    isreal(M::acb_mat)
-> Returns whether every entry of $M$ has vanishing imaginary part.
+    isreal(x::acb_mat)
+> Returns whether every entry of $x$ has vanishing imaginary part.
 """
 isreal(x::acb_mat) =
             Bool(ccall((:acb_mat_is_real, :libarb), Cint, (Ref{acb_mat}, ), x))
@@ -465,13 +465,13 @@ isreal(x::acb_mat) =
 ###############################################################################
 
 @doc Markdown.doc"""
-    inv(M::acb_mat)
+    inv(x::acb_mat)
 > Given a $n\times n$ matrix of type `acb_mat`, return an
 > $n\times n$ matrix $X$ such that $AX$ contains the
 > identity matrix. If $A$ cannot be inverted numerically an exception is raised.
 """
 function inv(x::acb_mat)
-  cols(x) != rows(x) && error("Matrix must be square")
+  ncols(x) != nrows(x) && error("Matrix must be square")
   z = similar(x)
   r = ccall((:acb_mat_inv, :libarb), Cint,
               (Ref{acb_mat}, Ref{acb_mat}, Int), z, x, prec(base_ring(x)))
@@ -485,7 +485,7 @@ end
 ###############################################################################
 
 function divexact(x::acb_mat, y::acb_mat)
-   cols(x) != cols(y) && error("Incompatible matrix dimensions")
+   ncols(x) != ncols(y) && error("Incompatible matrix dimensions")
    x*inv(y)
 end
 
@@ -557,7 +557,7 @@ end
 ################################################################################
 
 function det(x::acb_mat)
-  cols(x) != rows(x) && error("Matrix must be square")
+  ncols(x) != nrows(x) && error("Matrix must be square")
   z = base_ring(x)()
   ccall((:acb_mat_det, :libarb), Nothing,
               (Ref{acb}, Ref{acb_mat}, Int), z, x, prec(base_ring(x)))
@@ -575,7 +575,7 @@ end
 > Returns the exponential of the matrix $x$.
 """
 function Base.exp(x::acb_mat)
-  cols(x) != rows(x) && error("Matrix must be square")
+  ncols(x) != nrows(x) && error("Matrix must be square")
   z = similar(x)
   ccall((:acb_mat_exp, :libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Int), z, x, prec(base_ring(x)))
@@ -593,19 +593,19 @@ function lu!(P::Generic.perm, x::acb_mat)
   r = ccall((:acb_mat_lu, :libarb), Cint,
               (Ptr{Int}, Ref{acb_mat}, Ref{acb_mat}, Int),
               P.d, x, x, prec(base_ring(x)))
-  r == 0 && error("Could not find $(rows(x)) invertible pivot elements")
+  r == 0 && error("Could not find $(nrows(x)) invertible pivot elements")
   P.d .+= 1
   inv!(P)
-  return rows(x)
+  return nrows(x)
 end
 
 function lu(P::Generic.perm, x::acb_mat)
-  cols(x) != rows(x) && error("Matrix must be square")
-  parent(P).n != rows(x) && error("Permutation does not match matrix")
+  ncols(x) != nrows(x) && error("Matrix must be square")
+  parent(P).n != nrows(x) && error("Permutation does not match matrix")
   R = base_ring(x)
   L = similar(x)
   U = deepcopy(x)
-  n = cols(x)
+  n = ncols(x)
   lu!(P, U)
   for i = 1:n
     for j = 1:n
@@ -631,8 +631,8 @@ function solve!(z::acb_mat, x::acb_mat, y::acb_mat)
 end
 
 function solve(x::acb_mat, y::acb_mat)
-  cols(x) != rows(x) && error("First argument must be square")
-  cols(x) != rows(y) && error("Matrix dimensions are wrong")
+  ncols(x) != nrows(x) && error("First argument must be square")
+  ncols(x) != nrows(y) && error("Matrix dimensions are wrong")
   z = similar(y)
   solve!(z, x, y)
   return z
@@ -647,7 +647,7 @@ function solve_lu_precomp!(z::acb_mat, P::Generic.perm, LU::acb_mat, y::acb_mat)
 end
 
 function solve_lu_precomp(P::Generic.perm, LU::acb_mat, y::acb_mat)
-  cols(LU) != rows(y) && error("Matrix dimensions are wrong")
+  ncols(LU) != nrows(y) && error("Matrix dimensions are wrong")
   z = similar(y)
   solve_lu_precomp!(z, P, LU, y)
   return z
@@ -660,8 +660,8 @@ end
 ################################################################################
 
 function swap_rows(x::acb_mat, i::Int, j::Int)
-  Generic._checkbounds(rows(x), i) || throw(BoundsError())
-  Generic._checkbounds(rows(x), j) || throw(BoundsError())
+  Generic._checkbounds(nrows(x), i) || throw(BoundsError())
+  Generic._checkbounds(nrows(x), j) || throw(BoundsError())
   z = deepcopy(x)
   swap_rows!(z, i, j)
   return z
@@ -730,7 +730,7 @@ function (x::AcbMatSpace)()
 end
 
 function (x::AcbMatSpace)(y::fmpz_mat)
-  (x.cols != cols(y) || x.rows != rows(y)) &&
+  (x.cols != ncols(y) || x.rows != nrows(y)) &&
       error("Dimensions are wrong")
   z = acb_mat(y, prec(x))
   z.base_ring = x.base_ring
@@ -738,7 +738,7 @@ function (x::AcbMatSpace)(y::fmpz_mat)
 end
 
 function (x::AcbMatSpace)(y::arb_mat)
-  (x.cols != cols(y) || x.rows != rows(y)) &&
+  (x.cols != ncols(y) || x.rows != nrows(y)) &&
       error("Dimensions are wrong")
   z = acb_mat(y, prec(x))
   z.base_ring = x.base_ring
@@ -805,8 +805,8 @@ for T in [Integer, fmpz, fmpq, Float64, BigFloat, arb, acb, String]
    @eval begin
       function (x::AcbMatSpace)(y::$T)
          z = x()
-         for i in 1:rows(z)
-            for j = 1:cols(z)
+         for i in 1:nrows(z)
+            for j = 1:ncols(z)
                if i != j
                   z[i, j] = zero(base_ring(x))
                else

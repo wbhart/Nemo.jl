@@ -22,7 +22,7 @@ elem_type(::Type{NmodMatSpace}) = nmod_mat
 
 function check_parent(x::T, y::T) where T <: Zmodn_mat
   base_ring(x) != base_ring(y) && error("Residue rings must be equal")
-  (cols(x) != cols(y)) && (rows(x) != rows(y)) &&
+  (ncols(x) != ncols(y)) && (nrows(x) != nrows(y)) &&
           error("Matrices have wrong dimensions")
   return nothing
 end
@@ -34,7 +34,7 @@ end
 ###############################################################################
 
 function similar(x::nmod_mat)
-   z = nmod_mat(rows(x), cols(x), x.n)
+   z = nmod_mat(nrows(x), ncols(x), x.n)
    z.base_ring = x.base_ring
    return z
 end
@@ -106,7 +106,7 @@ set_entry_t!(a::T, i::Int, j::Int, u::V) where {V <: Union{RingElem, Integer}, T
   set_entry!(a, j, i, u)
  
 function deepcopy_internal(a::nmod_mat, dict::IdDict)
-  z = nmod_mat(rows(a), cols(a), a.n)
+  z = nmod_mat(nrows(a), ncols(a), a.n)
   if isdefined(a, :base_ring)
     z.base_ring = a.base_ring
   end
@@ -115,12 +115,12 @@ function deepcopy_internal(a::nmod_mat, dict::IdDict)
   return z
 end
 
-rows(a::T) where T <: Zmodn_mat = a.r
+nrows(a::T) where T <: Zmodn_mat = a.r
 
-cols(a::T) where T <: Zmodn_mat = a.c
+ncols(a::T) where T <: Zmodn_mat = a.c
 
 function parent(a::T, cached::Bool = true) where T <: Zmodn_mat
-   MatrixSpace(base_ring(a), rows(a), cols(a), cached)
+   MatrixSpace(base_ring(a), nrows(a), ncols(a), cached)
 end
 
 base_ring(a::NmodMatSpace) = a.base_ring
@@ -191,7 +191,7 @@ end
 ################################################################################
 
 function transpose(a::T) where T <: Zmodn_mat
-  z = similar(a, cols(a), rows(a))
+  z = similar(a, ncols(a), nrows(a))
   ccall((:nmod_mat_transpose, :libflint), Nothing,
           (Ref{T}, Ref{T}), z, a)
   return z
@@ -240,8 +240,8 @@ end
 
 function *(x::T, y::T) where T <: Zmodn_mat
   (base_ring(x) != base_ring(y)) && error("Base ring must be equal")
-  (cols(x) != rows(y)) && error("Dimensions are wrong")
-  z = similar(x, rows(x), cols(y))
+  (ncols(x) != nrows(y)) && error("Dimensions are wrong")
+  z = similar(x, nrows(x), ncols(y))
   ccall((:nmod_mat_mul, :libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   return z
@@ -348,7 +348,7 @@ end
 > many rows as columns.
 """
 function strong_echelon_form(a::nmod_mat)
-  (rows(a) < cols(a)) &&
+  (nrows(a) < ncols(a)) &&
               error("Matrix must have at least as many rows as columns")
   z = deepcopy(a)
   strong_echelon_form!(z)
@@ -365,7 +365,7 @@ end
 > many rows as columns.
 """
 function howell_form(a::nmod_mat)
-  (rows(a) < cols(a)) &&
+  (nrows(a) < ncols(a)) &&
               error("Matrix must have at least as many rows as columns")
 
   z = deepcopy(a)
@@ -468,9 +468,9 @@ function lu!(P::Generic.perm, x::T) where T <: Zmodn_mat
   return rank
 end
 
-function lu(x::T, P = PermGroup(rows(x))) where T <: Zmodn_mat
-  m = rows(x)
-  n = cols(x)
+function lu(x::T, P = PermGroup(nrows(x))) where T <: Zmodn_mat
+  m = nrows(x)
+  n = ncols(x)
   P.n != m && error("Permutation does not match matrix")
   p = P()
   R = base_ring(x)
@@ -502,7 +502,7 @@ end
 ################################################################################
 
 function swap_rows(x::T, i::Int, j::Int) where T <: Zmodn_mat
-   n = rows(x)
+   n = nrows(x)
    (i < 1 || i > n) && error("Index $i must be between 1 and $n")
    (j < 1 || j > n) && error("Index $j must be between 1 and $n")
    z = deepcopy(x)
@@ -565,7 +565,7 @@ end
 function hcat(x::T, y::T) where T <: Zmodn_mat
   (base_ring(x) != base_ring(y)) && error("Matrices must have same base ring")
   (x.r != y.r) && error("Matrices must have same number of rows")
-  z = similar(x, rows(x), cols(x) + cols(y))
+  z = similar(x, nrows(x), ncols(x) + ncols(y))
   ccall((:nmod_mat_concat_horizontal, :libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   return z
@@ -574,7 +574,7 @@ end
 function vcat(x::T, y::T) where T <: Zmodn_mat
   (base_ring(x) != base_ring(y)) && error("Matrices must have same base ring")
   (x.c != y.c) && error("Matrices must have same number of columns")
-  z = similar(x, rows(x) + rows(y), cols(x))
+  z = similar(x, nrows(x) + nrows(y), ncols(x))
   ccall((:nmod_mat_concat_vertical, :libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   return z
@@ -603,12 +603,12 @@ end
 ################################################################################
 
 @doc Markdown.doc"""
-    lift(a::Zmodn_mat)
+    lift(a::T) where {T <: Zmodn_mat}
 > Return a lift of the matrix $a$ to a matrix over $\mathbb{Z}$, i.e. where the
 > entries of the returned matrix are those of $a$ lifted to $\mathbb{Z}$.
 """
 function lift(a::T) where {T <: Zmodn_mat}
-  z = fmpz_mat(rows(a), cols(a))
+  z = fmpz_mat(nrows(a), ncols(a))
   z.base_ring = FlintIntegerRing()
   ccall((:fmpz_mat_set_nmod_mat, :libflint), Nothing,
           (Ref{fmpz_mat}, Ref{T}), z, a)

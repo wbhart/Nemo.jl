@@ -40,8 +40,8 @@ end
 ==(x::fmpz, y::AbsSeriesElem) = y == x
 
 @doc Markdown.doc"""
-    divexact(a::AbsSeriesElem, b::fmpz)
-> Return $a/b$ where the quotient is expected to be exact.
+    divexact(x::AbsSeriesElem, y::fmpz)
+> Return $x/y$ where the quotient is expected to be exact.
 """
 function divexact(x::AbsSeriesElem, y::fmpz)
    iszero(y) && throw(DivideError())
@@ -110,8 +110,8 @@ end
 ==(x::fmpz, y::RelSeriesElem) = y == x
 
 @doc Markdown.doc"""
-    divexact(a::RelSeriesElem, b::fmpz)
-> Return $a/b$ where the quotient is expected to be exact.
+    divexact(x::RelSeriesElem, y::fmpz)
+> Return $x/y$ where the quotient is expected to be exact.
 """
 function divexact(x::RelSeriesElem, y::fmpz)
    iszero(y) && throw(DivideError())
@@ -265,8 +265,8 @@ end
 -(a::fmpz, b::ResElem) = parent(b)(a - data(b))
 
 @doc Markdown.doc"""
-    ==(x::ResElem, y::fmpz)
-> Return `true` if $x == y$ arithmetically, otherwise return `false`.
+    ==(a::ResElem, b::fmpz)
+> Return `true` if $a == b$ arithmetically, otherwise return `false`.
 """
 function ==(a::ResElem, b::fmpz)
    z = base_ring(a)(b)
@@ -274,8 +274,8 @@ function ==(a::ResElem, b::fmpz)
 end
 
 @doc Markdown.doc"""
-    ==(x::fmpz, y::ResElem)
-> Return `true` if $x == y$ arithmetically, otherwise return `false`.
+    ==(a::fmpz, b::ResElem)
+> Return `true` if $a == b$ arithmetically, otherwise return `false`.
 """
 function ==(a::fmpz, b::ResElem)
    z = base_ring(b)(a)
@@ -432,8 +432,8 @@ end
 """
 function *(x::fmpz, y::MatElem)
    z = similar(y)
-   for i = 1:rows(y)
-      for j = 1:cols(y)
+   for i = 1:nrows(y)
+      for j = 1:ncols(y)
          z[i, j] = x*y[i, j]
       end
    end
@@ -453,8 +453,8 @@ end
 function +(x::fmpz, y::MatElem)
    z = similar(y)
    R = base_ring(y)
-   for i = 1:rows(y)
-      for j = 1:cols(y)
+   for i = 1:nrows(y)
+      for j = 1:ncols(y)
          if i != j
             z[i, j] = deepcopy(y[i, j])
          else
@@ -478,8 +478,8 @@ end
 function -(x::fmpz, y::MatElem)
    z = similar(y)
    R = base_ring(y)
-   for i = 1:rows(y)
-      for j = 1:cols(y)
+   for i = 1:nrows(y)
+      for j = 1:ncols(y)
          if i != j
             z[i, j] = -y[i, j]
          else
@@ -497,8 +497,8 @@ end
 function -(x::MatElem, y::fmpz) 
    z = similar(x)
    R = base_ring(x)
-   for i = 1:rows(x)
-      for j = 1:cols(x)
+   for i = 1:nrows(x)
+      for j = 1:ncols(x)
          if i != j
             z[i, j] = deepcopy(x[i, j])
          else
@@ -515,13 +515,13 @@ end
 > otherwise return `false`.
 """
 function ==(x::MatElem, y::fmpz) 
-   for i = 1:min(rows(x), cols(x))
+   for i = 1:min(nrows(x), ncols(x))
       if x[i, i] != y
          return false
       end
    end
-   for i = 1:rows(x)
-      for j = 1:cols(x)
+   for i = 1:nrows(x)
+      for j = 1:ncols(x)
          if i != j && !iszero(x[i, j])
             return false
          end
@@ -544,8 +544,8 @@ end
 """
 function divexact(x::MatElem, y::fmpz)
    z = similar(x)
-   for i = 1:rows(x)
-      for j = 1:cols(x)
+   for i = 1:nrows(x)
+      for j = 1:ncols(x)
          z[i, j] = divexact(x[i, j], y)
       end
    end
@@ -553,13 +553,13 @@ function divexact(x::MatElem, y::fmpz)
 end
 
 function (a::Generic.MatSpace{T})(b::fmpz_mat) where {T <: RingElement}
-  if a.rows != rows(b) || a.cols != cols(b)
+  if a.nrows != nrows(b) || a.ncols != ncols(b)
     error("incompatible matrix dimensions")
   end
   A = a()
   R = base_ring(a)
-  for i=1:a.rows
-    for j=1:a.cols
+  for i=1:a.nrows
+    for j=1:a.ncols
       A[i,j] = R(b[i,j])
     end
   end

@@ -203,7 +203,7 @@ end
 contains(x::arb, y::Integer) = contains(x, fmpz(y))
 
 @doc Markdown.doc"""
-    contains(x::arb, y::Rational{Integer})
+    contains(x::arb, y::Rational{T}) where {T <: Integer}
 > Returns `true` if the ball $x$ contains the given rational value, otherwise
 > return `false`.
 """
@@ -1075,7 +1075,7 @@ function ceil(x::arb)
 end
 
 @doc Markdown.doc"""
-    Base.sqrt(x::arb)
+    sqrt(x::arb)
 > Return the square root of $x$.
 """
 function Base.sqrt(x::arb)
@@ -1781,7 +1781,7 @@ numpart(n::Int, r::ArbField) = numpart(fmpz(n), r)
 @doc Markdown.doc"""
     lindep(A::Array{arb, 1}, bits::Int)
 > Find a small linear combination of the entries of the array $A$ that is small
-> *using LLL). The entries are first scaled by the given number of bits before
+> (using LLL). The entries are first scaled by the given number of bits before
 > truncating to integers for use in LLL. This function can be used to find linear
 > dependence between a list of real numbers. The algorithm is heuristic only and
 > returns an array of Nemo integers representing the linear combination.  

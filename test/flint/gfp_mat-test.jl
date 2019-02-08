@@ -55,7 +55,7 @@ function test_gfp_mat_constructors()
 
   @test isa(b, gfp_mat)
   @test parent(b) == R
-  @test rows(b) == 2 && cols(b) == 2
+  @test nrows(b) == 2 && ncols(b) == 2
   @test_throws ErrorConstrDimMismatch R(reshape(ar,1,4))
   @test b == R([BigInt(1), BigInt(1), BigInt(1), BigInt(1)])
   @test_throws ErrorConstrDimMismatch R([BigInt(1) BigInt(1)])
@@ -70,7 +70,7 @@ function test_gfp_mat_constructors()
   c = R(ar)
   @test isa(c, gfp_mat)
   @test parent(c) == R
-  @test rows(c) == 2 && cols(c) == 2
+  @test nrows(c) == 2 && ncols(c) == 2
   @test_throws ErrorConstrDimMismatch R(reshape(ar,4,1))
   @test c == R([ ZZ(1), ZZ(1), ZZ(1), ZZ(1)])
   @test_throws ErrorConstrDimMismatch R([ZZ(1) ZZ(1)])
@@ -84,7 +84,7 @@ function test_gfp_mat_constructors()
 
   @test isa(d, gfp_mat)
   @test parent(d) == R
-  @test rows(d) == 2 && cols(d) == 2
+  @test nrows(d) == 2 && ncols(d) == 2
   @test_throws ErrorConstrDimMismatch R(reshape(ar,1,4))
   @test d == R([1,1,1,1])
   @test_throws ErrorConstrDimMismatch R([1 1 ])
@@ -104,7 +104,7 @@ function test_gfp_mat_constructors()
 
   @test isa(e, gfp_mat)
   @test parent(e) == R
-  @test rows(e) == 2 && cols(e) == 2
+  @test nrows(e) == 2 && ncols(e) == 2
 
   ar = MatrixSpace(ZZ, 3, 3)([ 1 1 1 ; 1 1 1; 1 1 1])
 
@@ -116,7 +116,7 @@ function test_gfp_mat_constructors()
 
   @test isa(f, gfp_mat)
   @test parent(f) == R
-  @test rows(f) == 2 && cols(f) == 2
+  @test nrows(f) == 2 && ncols(f) == 2
   @test_throws ErrorConstrDimMismatch R(reshape(ar,4,1))
   @test f == R([Z2(1), Z2(1), Z2(1), Z2(1)])
   @test_throws ErrorConstrDimMismatch R([Z2(1) Z2(1) ])
@@ -149,8 +149,8 @@ function test_gfp_mat_constructors()
       M2 = matrix(Z3, 2, 3, map(T, arr2))
       @test isa(M2, gfp_mat)
       @test M2.base_ring == Z3
-      @test rows(M2) == 2
-      @test cols(M2) == 3
+      @test nrows(M2) == 2
+      @test ncols(M2) == 3
       @test_throws ErrorConstrDimMismatch matrix(Z3, 2, 2, map(T, arr2))
       @test_throws ErrorConstrDimMismatch matrix(Z3, 2, 4, map(T, arr2))
    end
@@ -193,8 +193,8 @@ function test_gfp_mat_manipulation()
   a = R(ar)
   aa = S(ar)
 
-  @test rows(a) == 2
-  @test cols(a) == 2
+  @test nrows(a) == 2
+  @test ncols(a) == 2
 
   b = deepcopy(a)
 

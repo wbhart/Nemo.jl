@@ -65,14 +65,14 @@ function test_acb_mat_constructors()
       M = matrix(CC, map(T, arr))
       @test isa(M, acb_mat)
       @test M.base_ring == CC
-      @test rows(M) == 2
-      @test cols(M) == 2
+      @test nrows(M) == 2
+      @test ncols(M) == 2
 
       M2 = matrix(CC, 2, 3, map(T, arr2))
       @test isa(M2, acb_mat)
       @test M2.base_ring == CC
-      @test rows(M2) == 2
-      @test cols(M2) == 3
+      @test nrows(M2) == 2
+      @test ncols(M2) == 3
       @test_throws ErrorConstrDimMismatch matrix(CC, 2, 2, map(T, arr2))
       @test_throws ErrorConstrDimMismatch matrix(CC, 2, 4, map(T, arr2))
    end
@@ -115,8 +115,8 @@ function test_acb_mat_manipulation()
 
    @test B[1, 1] == CC(3)
 
-   @test rows(B) == 3
-   @test cols(B) == 3
+   @test nrows(B) == 3
+   @test ncols(B) == 3
 
    @test deepcopy(A) == A
 

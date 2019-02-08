@@ -93,8 +93,8 @@ function test_fmpq_mat_constructors()
       M2 = matrix(FlintQQ, 2, 3, map(T, arr2))
       @test isa(M2, fmpq_mat)
       @test M2.base_ring == FlintQQ
-      @test rows(M2) == 2
-      @test cols(M2) == 3
+      @test nrows(M2) == 2
+      @test ncols(M2) == 3
       @test_throws ErrorConstrDimMismatch matrix(FlintQQ, 2, 2, map(T, arr2))
       @test_throws ErrorConstrDimMismatch matrix(FlintQQ, 2, 4, map(T, arr2))
    end
@@ -152,8 +152,8 @@ function test_fmpq_mat_manipulation()
 
    @test B[1, 1] == BigInt(5)//1
 
-   @test rows(B) == 3
-   @test cols(B) == 3
+   @test nrows(B) == 3
+   @test ncols(B) == 3
 
    @test deepcopy(A) == A
 

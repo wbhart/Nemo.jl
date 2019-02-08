@@ -476,6 +476,13 @@ end
 #
 ###############################################################################
 
+function zero!(z::fmpz_abs_series)
+   ccall((:fmpz_poly_zero, :libflint), Nothing,
+                (Ref{fmpz_abs_series},), z)
+   z.prec = parent(z).prec_max
+   return z
+end
+
 function setcoeff!(z::fmpz_abs_series, n::Int, x::fmpz)
    ccall((:fmpz_poly_set_coeff_fmpz, :libflint), Nothing,
                 (Ref{fmpz_abs_series}, Int, Ref{fmpz}),

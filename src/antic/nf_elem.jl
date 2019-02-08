@@ -211,8 +211,8 @@ function denominator(a::nf_elem)
 end
 
 function elem_from_mat_row(a::AnticNumberField, b::fmpz_mat, i::Int, d::fmpz)
-   Generic._checkbounds(rows(b), i) || throw(BoundsError())
-   cols(b) == degree(a) || error("Wrong number of columns")
+   Generic._checkbounds(nrows(b), i) || throw(BoundsError())
+   ncols(b) == degree(a) || error("Wrong number of columns")
    z = a()
    ccall((:nf_elem_set_fmpz_mat_row, :libantic), Nothing,
         (Ref{nf_elem}, Ref{fmpz_mat}, Int, Ref{fmpz}, Ref{AnticNumberField}),
@@ -638,9 +638,9 @@ divexact(a::fmpq, b::nf_elem) = inv(b)*a
 ###############################################################################
 
 @doc Markdown.doc"""
-    divides(f::nf_elem, g::nf_elem)
-> Returns a pair consisting of a flag which is set to `true` if $g$ divides
-> $f$ and `false` otherwise, and a number field element $h$ such that $f = gh$
+    divides(a::nf_elem, b::nf_elem)
+> Returns a pair consisting of a flag which is set to `true` if $b$ divides
+> $a$ and `false` otherwise, and a number field element $h$ such that $a = bh$
 > if such exists. If not, the value of $h$ is undetermined.
 """
 function divides(a::nf_elem, b::nf_elem)
@@ -1099,7 +1099,7 @@ end
 function rand(K::AnticNumberField, r::UnitRange{Int64})
    R = parent(K.pol)
    n = degree(K.pol)
-   return K(rand(R, n:n, r)) 
+   return K(rand(R, (n-1):(n-1), r)) 
 end
 
 ###############################################################################
@@ -1109,7 +1109,7 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    NumberField(f::fmpq_poly, s::AbstractString)
+    NumberField(f::fmpq_poly, s::AbstractString; cached::Bool = true, check::Bool = true)
 > Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
 > of the number field $\mathbb{Q}/(f)$ where $f$ is the supplied polynomial.
 > The supplied string `s` specifies how the generator of the number field
@@ -1123,7 +1123,7 @@ function NumberField(f::fmpq_poly, s::AbstractString; cached::Bool = true, check
 end
 
 @doc Markdown.doc"""
-    CyclotomicField(n::Int, s::AbstractString, t = "\$")
+    CyclotomicField(n::Int, s::AbstractString, t = "\$"; cached = true)
 > Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
 > of the $n$-th cyclotomic field, $\mathbb{Q}(\zeta_n)$. The supplied string
 > `s` specifies how the generator of the number field should be printed. If
@@ -1139,7 +1139,7 @@ function CyclotomicField(n::Int, s::AbstractString, t = "\$"; cached = true)
 end
 
 @doc Markdown.doc"""
-    MaximalRealSubfield(n::Int, s::AbstractString, t = "\$")
+    MaximalRealSubfield(n::Int, s::AbstractString, t = "\$"; cached = true)
 > Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
 > of the totally real subfield of the $n$-th cyclotomic field,
 > $\mathbb{Q}(\zeta_n)$. The supplied string `s` specifies how the generator of

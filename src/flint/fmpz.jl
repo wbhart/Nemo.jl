@@ -1025,7 +1025,7 @@ end
 @doc Markdown.doc"""
     factor(a::fmpz)
 > Return a factorisation of $a$ using a `Fac` struct (see the documentation on
-> factorisation in Nemo.
+> factorisation in Nemo).
 """
 function factor(a::fmpz)
    if iszero(a)
@@ -1086,7 +1086,7 @@ isprime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, :libflint), Cint,
 
 @doc Markdown.doc"""
     isprobabprime(x::fmpz)
-> Return `true` if $x$ is a very probably a prime number, otherwise return
+> Return `true` if $x$ is very probably a prime number, otherwise return
 > `false`. No counterexamples are known to this test, but it is conjectured
 > that infinitely many exist.
 """
@@ -1192,8 +1192,8 @@ end
 
 @doc Markdown.doc"""
     primorial(x::Int)
->  Return the primorial of $n$, i.e. the product of all primes less than or
-> equal to $n$. If $n < 0$ we throw a `DomainError()`.
+>  Return the primorial of $x$, i.e. the product of all primes less than or
+> equal to $x$. If $x < 0$ we throw a `DomainError()`.
 """
 function primorial(x::Int)
     x < 0 && throw(DomainError("Argument must be non-negative: $x"))
@@ -1205,7 +1205,7 @@ end
 
 @doc Markdown.doc"""
     fib(x::Int)
->  Return the $n$-th Fibonacci number $F_n$. We define $F_1 = 1$, $F_2 = 1$ and
+>  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
 > $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. We require $n \geq 0$. For
 > convenience, we define $F_0 = 0$.
 """
@@ -1219,7 +1219,7 @@ end
 
 @doc Markdown.doc"""
     bell(x::Int)
-> Return the Bell number $B_n$.
+> Return the Bell number $B_x$.
 """
 function bell(x::Int)
     x < 0 && throw(DomainError("Argument must be non-negative: $x"))

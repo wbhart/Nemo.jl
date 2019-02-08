@@ -31,6 +31,8 @@ nvars(a::NmodMPolyRing) = a.nvars
 
 base_ring(a::NmodMPolyRing) = a.base_ring
 
+base_ring(f::nmod_mpoly) = f.parent.base_ring
+
 function ordering(a::NmodMPolyRing)
 b = a.ord
 #   b = ccall((:nmod_mpoly_ctx_ord, :libflint), Cint, (Ref{NmodMPolyRing}, ), a)
@@ -238,6 +240,33 @@ end
 
 ###############################################################################
 #
+#   Multivariable coefficient polynomials
+#
+###############################################################################
+
+function coeff(a::nmod_mpoly, vars::Vector{Int}, exps::Vector{Int})
+   unique(vars) != vars && error("Variables not unique")
+   length(vars) != length(exps) &&
+       error("Number of variables does not match number of exponents")
+   z = parent(a)()
+   vars = [UInt(i) - 1 for i in vars]
+   for i = 1:length(vars)
+      if vars[i] < 0 || vars[i] >= nvars(parent(a))
+         error("Variable index not in range")
+      end
+      if exps[i] < 0
+         error("Exponent cannot be negative")
+      end
+   end
+   ccall((:nmod_mpoly_get_coeff_vars_ui, :libflint), Nothing,
+         (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ptr{Int},
+          Ptr{Int}, Int, Ref{NmodMPolyRing}),
+          z, a, vars, exps, length(vars), a.parent)
+   return z
+end
+
+###############################################################################
+#
 #   String I/O
 #
 ###############################################################################
@@ -430,6 +459,13 @@ function ==(a::nmod_mpoly, b::nmod_mpoly)
                a, b, a.parent))
 end
 
+function Base.isless(a::nmod_mpoly, b::nmod_mpoly)
+   (!ismonomial(a) || !ismonomial(b)) && error("Not monomials in comparison")
+   return ccall((:nmod_mpoly_cmp, :libflint), Cint,
+               (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
+               a, b, a.parent) < 0
+end
+
 ###############################################################################
 #
 #   Ad hoc comparison
@@ -600,6 +636,59 @@ function evaluate(a::nmod_mpoly, b::Vector{UInt})
    b2 = [R(d) for d in b]
    return evaluate(a, b2)
 end
+
+function (a::nmod_mpoly)(vals::nmod...)
+   length(vals) != nvars(parent(a)) && error("Number of variables does not match number o
+f values")
+   return evaluate(a, [vals...])
+end
+
+function (a::nmod_mpoly)(vals::Integer...)
+   length(vals) != nvars(parent(a)) && error("Number of variables does not match number o
+f values")
+   return evaluate(a, [vals...])
+end
+
+function (a::nmod_mpoly)(vals::Union{NCRingElem, RingElement}...)
+   length(vals) != nvars(parent(a)) && error("Number of variables does not match number o
+f values")
+   R = base_ring(a)
+   # The best we can do here is to cache previously used powers of the values
+   # being substituted, as we cannot assume anything about the relative
+   # performance of powering vs multiplication. The function should not try
+   # to optimise computing new powers in any way.
+   # Note that this function accepts values in a non-commutative ring, so operations
+   # must be done in a certain order.
+   powers = [Dict{Int, Any}() for i in 1:length(vals)]
+   # First work out types of products
+   r = R()
+   c = zero(R)
+   U = Array{Any, 1}(undef, length(vals))
+   for j = 1:length(vals)
+      W = typeof(vals[j])
+      if ((W <: Integer && W != BigInt) ||
+          (W <: Rational && W != Rational{BigInt}))
+         c = c*zero(W)
+         U[j] = parent(c)
+      else
+         U[j] = parent(vals[j])
+         c = c*zero(parent(vals[j]))
+      end
+   end
+   for i = 1:length(a)
+      v = exponent_vector(a, i)
+      t = coeff(a, i)
+      for j = 1:length(vals)
+         exp = v[j]
+         if !haskey(powers[j], exp)
+            powers[j][exp] = (U[j](vals[j]))^exp
+         end
+         t = t*powers[j][exp]
+      end
+      r += t
+   end
+   return r
+end
    
 ###############################################################################
 #
@@ -701,14 +790,9 @@ function exponent_vector_fmpz(a::nmod_mpoly, i::Int)
    return z
 end
 
-# Return an array of exponent vectors, one for each term in the $a$
-function exponent_vectors(a::nmod_mpoly)
-   return [exponent_vector(a, i) for i in 1:length(a)]
-end
-   
-# Return an array of exponent vectors, one for each term in the $a$
+# Return a generator for exponent vectors of $a$
 function exponent_vectors_fmpz(a::nmod_mpoly)
-   return [exponent_vector_fmpz(a, i) for i in 1:length(a)]
+   return (exponent_vector_fmpz(a, i) for i in 1:length(a))
 end
    
 # Set exponent of n-th term to given vector of UInt's
@@ -750,6 +834,14 @@ function set_exponent_vector!(a::nmod_mpoly, n::Int, exps::Vector{fmpz})
          (Ref{nmod_mpoly}, Int, Ptr{fmpz}, Ref{NmodMPolyRing}),
       a, n - 1, exps, parent(a))
    return a
+end
+
+# Return j-th coordinate of i-th exponent vector
+function exponent(a::nmod_mpoly, i::Int, j::Int)
+   (j < 1 || j > nvars(parent(a))) && error("Invalid variable index")
+   return ccall((:nmod_mpoly_get_term_var_exp_ui, :libflint), Int,
+                (Ref{nmod_mpoly}, Int, Int, Ref{NmodMPolyRing}),
+                 a, i - 1, j - 1, a.parent)
 end
 
 # Return the coefficient of the term with the given exponent vector
@@ -802,6 +894,32 @@ function sort_terms!(a::nmod_mpoly)
          (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
    return a
 end    
+
+# Return the i-th term of the polynomial, as a polynomial
+function term(a::nmod_mpoly, i::Int)
+   z = parent(a)()
+   ccall((:nmod_mpoly_get_term, :libflint), Nothing,
+         (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
+          z, a, i - 1, a.parent)
+   return z
+end
+
+# Return the i-th monomial of the polynomial, as a polynomial
+function monomial(a::nmod_mpoly, i::Int)
+   z = parent(a)()
+   ccall((:nmod_mpoly_get_term_monomial, :libflint), Nothing,
+         (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
+          z, a, i - 1, a.parent)
+   return z
+end
+
+# Sets the given polynomial m to the i-th monomial of the polynomial
+function monomial!(m::nmod_mpoly, a::nmod_mpoly, i::Int)
+   ccall((:nmod_mpoly_get_term_monomial, :libflint), Nothing,
+         (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
+          m, a, i - 1, a.parent)
+   return m
+end
 
 ###############################################################################
 #

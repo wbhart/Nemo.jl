@@ -453,6 +453,13 @@ end
 #
 ###############################################################################
 
+function zero!(z::fq_nmod_abs_series)
+   ccall((:fq_nmod_poly_zero, :libflint), Nothing,
+                (Ref{fq_nmod_abs_series}, Ref{FqNmodFiniteField}), z, base_ring(z))
+   z.prec = parent(z).prec_max
+   return z
+end
+
 function fit!(z::fq_nmod_abs_series, n::Int)
    ccall((:fq_nmod_poly_fit_length, :libflint), Nothing,
          (Ref{fq_nmod_abs_series}, Int, Ref{FqNmodFiniteField}),

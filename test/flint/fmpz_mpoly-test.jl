@@ -96,6 +96,24 @@ function test_fmpz_mpoly_manipulation()
         @test f == sum((coeff(f, i) * S(fmpz[1], [Nemo.exponent_vector_fmpz(f, i)])  for i in 1:length(f)))
       end
 
+      r = S()
+      m = S()
+      for i = 1:length(f)
+         m = monomial!(m, f, i)
+         @test m == monomial(f, i)
+         @test term(f, i) == coeff(f, i)*monomial(f, i)
+         r += coeff(f, i)*monomial(f, i)
+      end
+      @test f == r
+
+      for i = 1:length(f)
+         i1 = rand(1:length(f))
+         i2 = rand(1:length(f))
+         @test (i1 < i2) == (monomial(f, i1) > monomial(f, i2))
+         @test (i1 > i2) == (monomial(f, i1) < monomial(f, i2))
+         @test (i1 == i2) == (monomial(f, i1) == monomial(f, i2))
+      end
+
       deg = isdegree(ordering(S))
       rev = isreverse(ordering(S))
 
@@ -142,6 +160,28 @@ function test_fmpz_mpoly_manipulation()
       @test (total_degree(h) == max(sum.(monomialexp)...)) || (h == 0 && total_degree(h) == -1)
       @test (total_degree_fmpz(h) == max(sum.(monomialexp)...)) || (h == 0 && total_degree(h) == -1)
       @test total_degree_fits_int(h)
+   end
+
+   println("PASS")
+end
+
+function test_fmpz_mpoly_multivariate_coeff()
+   print("fmpz_mpoly.multivariate_coeff...")
+
+   R = FlintZZ
+   
+   for ord in Nemo.flint_orderings
+      S, (x, y, z) = PolynomialRing(R, ["x", "y", "z"]; ordering=ord)
+
+      f = -8*x^5*y^3*z^5+9*x^5*y^2*z^3-8*x^4*y^5*z^4-10*x^4*y^3*z^2+8*x^3*y^2*z-10*x*y^3*z^4-4*x*y-10*x*z^2+8*y^2*z^5-9*y^2*z^3
+
+      @test coeff(f, [1], [1]) == -10*y^3*z^4-4*y-10*z^2
+      @test coeff(f, [2, 3], [3, 2]) == -10*x^4
+      @test coeff(f, [1, 3], [4, 5]) == 0
+
+      @test coeff(f, [x], [1]) == -10*y^3*z^4-4*y-10*z^2
+      @test coeff(f, [y, z], [3, 2]) == -10*x^4
+      @test coeff(f, [x, z], [4, 5]) == 0
    end
 
    println("PASS")
@@ -468,6 +508,7 @@ function test_fmpz_mpoly_evaluation()
          r3 = evaluate(f + g, V1)
 
          @test r3 == r1 + r2
+         @test (f + g)(V1...) == f(V1...) + g(V1...)
 
          V2 = [BigInt(rand(-10:10)) for i in 1:num_vars]
 
@@ -476,16 +517,30 @@ function test_fmpz_mpoly_evaluation()
          r3 = evaluate(f + g, V2)
 
          @test r3 == r1 + r2
+         @test (f + g)(V2...) == f(V2...) + g(V2...)
 
          V3 = [R(rand(-10:10)) for i in 1:num_vars]
 
          r1 = evaluate(f, V3)
          r2 = evaluate(g, V3)
          r3 = evaluate(f + g, V3)
+         @test (f + g)(V3...) == f(V3...) + g(V3...)
 
          @test r3 == r1 + r2
       end
    end
+
+   # Individual tests
+
+   S, (x, y) = PolynomialRing(R, ["x", "y"])
+   T = MatrixAlgebra(R, 2)
+
+   f = x^2*y^2+2*x+1
+
+   M1 = T([1 2; 3 4])
+   M2 = T([1 1; 2 4])
+
+   @test f(M1, M2) == T([124 219; 271 480])
 
    println("PASS")
 end
@@ -613,6 +668,9 @@ function test_fmpz_mpoly_exponents()
         c = coeff(f, v)
 
         @test c == coeff(f, nrand)
+        for ind = 1:length(v)
+           @test v[ind] == exponent(f, nrand, ind)
+        end
      end
 
      for iter in 1:10
@@ -646,6 +704,7 @@ end
 function test_fmpz_mpoly()
    test_fmpz_mpoly_constructors()
    test_fmpz_mpoly_manipulation()
+   test_fmpz_mpoly_multivariate_coeff()
    test_fmpz_mpoly_unary_ops()
    test_fmpz_mpoly_binary_ops()
    test_fmpz_mpoly_adhoc_binary()
