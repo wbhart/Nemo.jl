@@ -16,6 +16,7 @@ parent objects of the given rings and structures.
      - `fq_nmod` (`FqNmodFiniteField`)
      - `fq` (`FqFiniteField`)
      - `padic` (`FlintPadicField`)
+     - `qadic` (`FlintQadicField`)
      - `fmpz_poly` (`FmpzPolyRing`)
      - `fmpq_poly` (`FmpqPolyRing`)
      - `nmod_poly` (`NmodPolyRing`)

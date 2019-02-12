@@ -23,7 +23,8 @@ makedocs(
                            "gfp.md",
                            "finitefield.md",
                            "numberfield.md",
-                           "padic.md"],
+                           "padic.md",
+                           "qadic.md"],
              "matrix.md",
              "factor.md"
          ]

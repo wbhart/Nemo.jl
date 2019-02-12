@@ -19,6 +19,7 @@ pages:
 - Rationals:                    rational.md
 - Finite fields:                finitefield.md
 - P-adic fields:                padic.md
+- Q-adic fields:                qadic.md
 - Real balls:                   arb.md
 - Complex boxes:                acb.md
 - Number fields:                numberfield.md
