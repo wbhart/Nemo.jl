@@ -489,8 +489,8 @@ base_ring(a::AcbPolyRing) = a.base_ring
 ################################################################################
 
 mutable struct ArbMatSpace <: MatSpace{arb}
-  rows::Int
-  cols::Int
+  nrows::Int
+  ncols::Int
   base_ring::ArbField
 
   function ArbMatSpace(R::ArbField, r::Int, c::Int, cached::Bool = true)
@@ -624,8 +624,8 @@ end
 ################################################################################
 
 mutable struct AcbMatSpace <: MatSpace{acb}
-  rows::Int
-  cols::Int
+  nrows::Int
+  ncols::Int
   base_ring::AcbField
 
   function AcbMatSpace(R::AcbField, r::Int, c::Int, cached::Bool = true)

@@ -1,6 +1,6 @@
 function randmat(R::FqMatSpace)
-   m = R.rows
-   n = R.cols
+   m = nrows(R)
+   n = ncols(R)
    r = R()
    for i = 1:m
       for j = 1:n
@@ -21,6 +21,8 @@ function test_fq_mat_constructors()
   @test elem_type(R) == fq_mat
   @test elem_type(FqMatSpace) == fq_mat
   @test parent_type(fq_mat) == FqMatSpace
+  @test nrows(R) == 2
+  @test ncols(R) == 2
 
   @test isa(R, FqMatSpace)
 

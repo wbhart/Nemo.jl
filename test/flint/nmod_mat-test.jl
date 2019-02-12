@@ -3,8 +3,8 @@ function randelem(R::Nemo.NmodRing, n)
 end
 
 function randmat(R::NmodMatSpace, d::Int)
-   m = R.rows
-   n = R.cols
+   m = nrows(R)
+   n = ncols(R)
    r = R()
    for i = 1:m
       for j = 1:n
@@ -25,6 +25,8 @@ function test_nmod_mat_constructors()
   @test elem_type(R) == nmod_mat
   @test elem_type(NmodMatSpace) == nmod_mat
   @test parent_type(nmod_mat) == NmodMatSpace
+  @test nrows(R) == 2
+  @test ncols(R) == 2
 
   @test isa(R, NmodMatSpace)
 

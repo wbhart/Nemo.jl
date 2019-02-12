@@ -3,8 +3,8 @@ function randelem(R::Nemo.GaloisField, n)
 end
 
 function randmat(R::GFPMatSpace, d::Int)
-   m = R.rows
-   n = R.cols
+   m = nrows(R)
+   n = ncols(R)
    r = R()
    for i = 1:m
       for j = 1:n
@@ -25,6 +25,8 @@ function test_gfp_mat_constructors()
   @test elem_type(R) == gfp_mat
   @test elem_type(GFPMatSpace) == gfp_mat
   @test parent_type(gfp_mat) == GFPMatSpace
+  @test nrows(R) == 2
+  @test ncols(R) == 2
 
   @test isa(R, GFPMatSpace)
 

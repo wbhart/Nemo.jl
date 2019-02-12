@@ -4,10 +4,10 @@
 #
 ###############################################################################
 
-export rows, cols, zero, one, deepcopy, -, transpose, +, *, &, ==, !=,
-       strongequal, overlaps, contains, inv, divexact, charpoly, det,
-       lu, lu!, solve, solve!, solve_lu_precomp, solve_lu_precomp!,
-       swap_rows, swap_rows!, bound_inf_norm, isreal
+export zero, one, deepcopy, -, transpose, +, *, &, ==, !=, strongequal,
+       overlaps, contains, inv, divexact, charpoly, det, lu, lu!, solve,
+       solve!, solve_lu_precomp, solve_lu_precomp!, swap_rows, swap_rows!,
+       bound_inf_norm, isreal
 
 ###############################################################################
 #
@@ -114,6 +114,10 @@ nrows(a::acb_mat) = a.r
 
 ncols(a::acb_mat) = a.c
 
+nrows(a::AcbMatSpace) = a.nrows
+
+ncols(a::AcbMatSpace) = a.ncols
+
 function deepcopy_internal(x::acb_mat, dict::IdDict)
   z = similar(x)
   ccall((:acb_mat_set, :libarb), Nothing, (Ref{acb_mat}, Ref{acb_mat}), z, x)
@@ -128,7 +132,7 @@ end
 
 function show(io::IO, a::AcbMatSpace)
    print(io, "Matrix Space of ")
-   print(io, a.rows, " rows and ", a.cols, " columns over ")
+   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
    print(io, base_ring(a))
 end
 
@@ -724,13 +728,13 @@ end
 ###############################################################################
 
 function (x::AcbMatSpace)()
-  z = acb_mat(x.rows, x.cols)
+  z = acb_mat(nrows(x), ncols(x))
   z.base_ring = x.base_ring
   return z
 end
 
 function (x::AcbMatSpace)(y::fmpz_mat)
-  (x.cols != ncols(y) || x.rows != nrows(y)) &&
+  (ncols(x) != ncols(y) || nrows(x) != nrows(y)) &&
       error("Dimensions are wrong")
   z = acb_mat(y, prec(x))
   z.base_ring = x.base_ring
@@ -738,7 +742,7 @@ function (x::AcbMatSpace)(y::fmpz_mat)
 end
 
 function (x::AcbMatSpace)(y::arb_mat)
-  (x.cols != ncols(y) || x.rows != nrows(y)) &&
+  (ncols(x) != ncols(y) || nrows(x) != nrows(y)) &&
       error("Dimensions are wrong")
   z = acb_mat(y, prec(x))
   z.base_ring = x.base_ring
@@ -748,15 +752,15 @@ end
 for T in [Float64, fmpz, fmpq, BigFloat, arb, acb, String]
    @eval begin
       function (x::AcbMatSpace)(y::AbstractArray{$T, 2})
-         _check_dim(x.rows, x.cols, y)
-         z = acb_mat(x.rows, x.cols, y, prec(x))
+         _check_dim(nrows(x), ncols(x), y)
+         z = acb_mat(nrows(x), ncols(x), y, prec(x))
          z.base_ring = x.base_ring
          return z
       end
 
       function (x::AcbMatSpace)(y::AbstractArray{$T, 1})
-         _check_dim(x.rows, x.cols, y)
-         z = acb_mat(x.rows, x.cols, y, prec(x))
+         _check_dim(nrows(x), ncols(x), y)
+         z = acb_mat(nrows(x), ncols(x), y, prec(x))
          z.base_ring = x.base_ring
          return z
       end
@@ -774,15 +778,15 @@ end
 for T in [Float64, fmpz, fmpq, BigFloat, arb, String]
    @eval begin
       function (x::AcbMatSpace)(y::AbstractArray{Tuple{$T, $T}, 2})
-         _check_dim(x.rows, x.cols, y)
-         z = acb_mat(x.rows, x.cols, y, prec(x))
+         _check_dim(nrows(x), ncols(x), y)
+         z = acb_mat(nrows(x), ncols(x), y, prec(x))
          z.base_ring = x.base_ring
          return z
       end
 
       function (x::AcbMatSpace)(y::AbstractArray{Tuple{$T, $T}, 1})
-         _check_dim(x.rows, x.cols, y)
-         z = acb_mat(x.rows, x.cols, y, prec(x))
+         _check_dim(nrows(x), ncols(x), y)
+         z = acb_mat(nrows(x), ncols(x), y, prec(x))
          z.base_ring = x.base_ring
          return z
       end

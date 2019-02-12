@@ -4,10 +4,10 @@
 #
 ###############################################################################
 
-export rows, cols, zero, one, deepcopy, -, transpose, +, *, &, ==, !=,
-       strongequal, overlaps, contains, inv, divexact, charpoly, det,
-       lu, lu!, solve, solve!, solve_lu_precomp, solve_lu_precomp!,
-       swap_rows, swap_rows!, bound_inf_norm
+export zero, one, deepcopy, -, transpose, +, *, &, ==, !=, strongequal,
+       overlaps, contains, inv, divexact, charpoly, det, lu, lu!, solve,
+       solve!, solve_lu_precomp, solve_lu_precomp!, swap_rows, swap_rows!,
+       bound_inf_norm
 
 ###############################################################################
 #
@@ -101,6 +101,10 @@ nrows(a::arb_mat) = a.r
 
 ncols(a::arb_mat) = a.c
 
+nrows(a::ArbMatSpace) = a.nrows
+
+ncols(a::ArbMatSpace) = a.ncols
+
 function deepcopy_internal(x::arb_mat, dict::IdDict)
   z = arb_mat(nrows(x), ncols(x))
   ccall((:arb_mat_set, :libarb), Nothing, (Ref{arb_mat}, Ref{arb_mat}), z, x)
@@ -116,7 +120,7 @@ end
 
 function show(io::IO, a::ArbMatSpace)
    print(io, "Matrix Space of ")
-   print(io, a.rows, " rows and ", a.cols, " columns over ")
+   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
    print(io, base_ring(a))
 end
 
@@ -663,13 +667,13 @@ end
 ###############################################################################
 
 function (x::ArbMatSpace)()
-  z = arb_mat(x.rows, x.cols)
+  z = arb_mat(nrows(x), ncols(x))
   z.base_ring = x.base_ring
   return z
 end
 
 function (x::ArbMatSpace)(y::fmpz_mat)
-  (x.cols != ncols(y) || x.rows != nrows(y)) &&
+  (ncols(x) != ncols(y) || nrows(x) != nrows(y)) &&
       error("Dimensions are wrong")
   z = arb_mat(y, prec(x))
   z.base_ring = x.base_ring
@@ -677,15 +681,15 @@ function (x::ArbMatSpace)(y::fmpz_mat)
 end
 
 function (x::ArbMatSpace)(y::AbstractArray{T, 2}) where {T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, AbstractString}}
-  _check_dim(x.rows, x.cols, y)
-  z = arb_mat(x.rows, x.cols, y, prec(x))
+  _check_dim(nrows(x), ncols(x), y)
+  z = arb_mat(nrows(x), ncols(x), y, prec(x))
   z.base_ring = x.base_ring
   return z
 end
 
 function (x::ArbMatSpace)(y::AbstractArray{T, 1}) where {T <: Union{Int, UInt, fmpz, fmpq, Float64, BigFloat, arb, AbstractString}}
-  _check_dim(x.rows, x.cols, y)
-  z = arb_mat(x.rows, x.cols, y, prec(x))
+  _check_dim(nrows(x), ncols(x), y)
+  z = arb_mat(nrows(x), ncols(x), y, prec(x))
   z.base_ring = x.base_ring
   return z
 end
