@@ -183,6 +183,8 @@ end
 
 needs_parentheses(x::acb) = true
 
+show_minus_one(::Type{acb}) = true
+
 ################################################################################
 #
 #  Unary operations
