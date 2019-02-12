@@ -9,6 +9,8 @@ function test_arb_mat_constructors()
    @test elem_type(S) == arb_mat
    @test elem_type(ArbMatSpace) == arb_mat
    @test parent_type(arb_mat) == ArbMatSpace
+   @test nrows(S) == 3
+   @test ncols(S) == 3
 
    @test isa(S, ArbMatSpace)
 

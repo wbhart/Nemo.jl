@@ -6,6 +6,9 @@ function test_fmpq_mat_constructors()
    @test elem_type(S) == fmpq_mat
    @test elem_type(FmpqMatSpace) == fmpq_mat
    @test parent_type(fmpq_mat) == FmpqMatSpace
+   @test base_ring(S) == FlintQQ
+   @test nrows(S) == 3
+   @test ncols(S) == 3
 
    @test isa(S, FmpqMatSpace)
 

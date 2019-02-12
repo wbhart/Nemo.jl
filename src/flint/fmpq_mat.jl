@@ -152,6 +152,10 @@ nrows(a::fmpq_mat) = a.r
 
 ncols(a::fmpq_mat) = a.c
 
+nrows(a::FmpqMatSpace) = a.nrows
+
+ncols(a::FmpqMatSpace) = a.ncols
+
 zero(a::FmpqMatSpace) = a()
 
 one(a::FmpqMatSpace) = a(1)
@@ -184,7 +188,7 @@ canonical_unit(a::fmpq_mat) = canonical_unit(a[1, 1])
 
 function show(io::IO, a::FmpqMatSpace)
    print(io, "Matrix Space of ")
-   print(io, a.rows, " rows and ", a.cols, " columns over ")
+   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
    print(io, "Rational Field")
 end
 
@@ -689,82 +693,82 @@ end
 ###############################################################################
 
 function (a::FmpqMatSpace)()
-   z = fmpq_mat(a.rows, a.cols)
+   z = fmpq_mat(nrows(a), ncols(a))
    z.base_ring = a.base_ring
    return z
 end
 
 function (a::FmpqMatSpace)(arr::AbstractArray{fmpq, 2})
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpq_mat(a.rows, a.cols, arr)
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpq_mat(nrows(a), ncols(a), arr)
    z.base_ring = a.base_ring
    return z
 end
 
 function (a::FmpqMatSpace)(arr::AbstractArray{fmpz, 2})
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpq_mat(a.rows, a.cols, arr)
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpq_mat(nrows(a), ncols(a), arr)
    z.base_ring = a.base_ring
    return z
 end
 
 
 function (a::FmpqMatSpace)(arr::AbstractArray{T, 2}) where {T <: Integer}
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpq_mat(a.rows, a.cols, arr)
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpq_mat(nrows(a), ncols(a), arr)
    z.base_ring = a.base_ring
    return z
 end
 
 function (a::FmpqMatSpace)(arr::AbstractArray{Rational{T}, 2}) where {T <: Integer}
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpq_mat(a.rows, a.cols, map(fmpq, arr))
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpq_mat(nrows(a), ncols(a), map(fmpq, arr))
    z.base_ring = a.base_ring
    return z
 end
 
 function (a::FmpqMatSpace)(arr::AbstractArray{fmpq, 1})
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpq_mat(a.rows, a.cols, arr)
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpq_mat(nrows(a), ncols(a), arr)
    z.base_ring = a.base_ring
    return z
 end
 
 function (a::FmpqMatSpace)(arr::AbstractArray{fmpz, 1})
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpq_mat(a.rows, a.cols, arr)
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpq_mat(nrows(a), ncols(a), arr)
    z.base_ring = a.base_ring
    return z
 end
 
 function (a::FmpqMatSpace)(arr::AbstractArray{T, 1}) where {T <: Integer}
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpq_mat(a.rows, a.cols, arr)
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpq_mat(nrows(a), ncols(a), arr)
    z.base_ring = a.base_ring
    return z
 end
 
 function (a::FmpqMatSpace)(arr::AbstractArray{Rational{T}, 1}) where {T <: Integer}
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpq_mat(a.rows, a.cols, map(fmpq, arr))
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpq_mat(nrows(a), ncols(a), map(fmpq, arr))
    z.base_ring = a.base_ring
    return z
 end
 
 function (a::FmpqMatSpace)(d::fmpq)
-   z = fmpq_mat(a.rows, a.cols, d)
+   z = fmpq_mat(nrows(a), ncols(a), d)
    z.base_ring = a.base_ring
    return z
 end
 
 function (a::FmpqMatSpace)(d::fmpz)
-   z = fmpq_mat(a.rows, a.cols, fmpq(d))
+   z = fmpq_mat(nrows(a), ncols(a), fmpq(d))
    z.base_ring = a.base_ring
    return z
 end
 
 function (a::FmpqMatSpace)(d::Integer)
-   z = fmpq_mat(a.rows, a.cols, fmpq(d))
+   z = fmpq_mat(nrows(a), ncols(a), fmpq(d))
    z.base_ring = a.base_ring
    return z
 end
@@ -772,7 +776,7 @@ end
 (a::FmpqMatSpace)(d::Rational) = a(fmpq(d))
 
 function (a::FmpqMatSpace)(M::fmpz_mat)
-   (a.cols == ncols(M) && a.rows == nrows(M)) || error("wrong matrix dimension")
+   (ncols(a) == ncols(M) && nrows(a) == nrows(M)) || error("wrong matrix dimension")
    z = a()
    ccall((:fmpq_mat_set_fmpz_mat, :libflint), Nothing, (Ref{fmpq_mat}, Ref{fmpz_mat}), z, M)
    return z

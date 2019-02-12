@@ -10,6 +10,8 @@ function test_acb_mat_constructors()
    @test elem_type(S) == acb_mat
    @test elem_type(AcbMatSpace) == acb_mat
    @test parent_type(acb_mat) == AcbMatSpace
+   @test nrows(S) == 3
+   @test ncols(S) == 3
 
    @test isa(S, AcbMatSpace)
 

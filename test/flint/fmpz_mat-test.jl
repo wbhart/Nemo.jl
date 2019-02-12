@@ -6,6 +6,9 @@ function test_fmpz_mat_constructors()
    @test elem_type(S) == fmpz_mat
    @test elem_type(FmpzMatSpace) == fmpz_mat
    @test parent_type(fmpz_mat) == FmpzMatSpace
+   @test base_ring(S) == FlintZZ
+   @test nrows(S) == 3
+   @test ncols(S) == 3
 
    @test isa(S, FmpzMatSpace)
 

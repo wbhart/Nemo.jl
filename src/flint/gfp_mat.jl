@@ -59,12 +59,16 @@ function deepcopy_internal(a::gfp_mat, dict::IdDict)
   return z
 end
 
+nrows(a::GFPMatSpace) = a.nrows
+
+ncols(a::GFPMatSpace) = a.ncols
+
 base_ring(a::GFPMatSpace) = a.base_ring
 
 zero(a::GFPMatSpace) = a()
 
 function one(a::GFPMatSpace)
-  (a.rows != a.cols) && error("Matrices must be quadratic")
+  (nrows(a) != ncols(a)) && error("Matrices must be quadratic")
   z = a()
   ccall((:nmod_mat_one, :libflint), Nothing, (Ref{gfp_mat}, ), z)
   return z
@@ -78,7 +82,7 @@ end
 
 function show(io::IO, a::GFPMatSpace)
    print(io, "Matrix Space of ")
-   print(io, a.rows, " rows and ", a.cols, " columns over ")
+   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
    print(io, a.base_ring)
 end
 
@@ -269,15 +273,15 @@ promote_rule(::Type{gfp_mat}, ::Type{fmpz}) = gfp_mat
 ################################################################################
 
 function (a::GFPMatSpace)()
-  z = gfp_mat(a.rows, a.cols, a.n)
+  z = gfp_mat(nrows(a), ncols(a), a.n)
   z.base_ring = a.base_ring
   return z
 end
 
 function (a::GFPMatSpace)(b::Integer)
    M = a()
-   for i = 1:a.rows
-      for j = 1:a.cols
+   for i = 1:nrows(a)
+      for j = 1:ncols(a)
          if i != j
             M[i, j] = zero(base_ring(a))
          else
@@ -290,8 +294,8 @@ end
 
 function (a::GFPMatSpace)(b::fmpz)
    M = a()
-   for i = 1:a.rows
-      for j = 1:a.cols
+   for i = 1:nrows(a)
+      for j = 1:ncols(a)
          if i != j
             M[i, j] = zero(base_ring(a))
          else
@@ -305,8 +309,8 @@ end
 function (a::GFPMatSpace)(b::gfp_elem)
    parent(b) != base_ring(a) && error("Unable to coerce to matrix")
    M = a()
-   for i = 1:a.rows
-      for j = 1:a.cols
+   for i = 1:nrows(a)
+      for j = 1:ncols(a)
          if i != j
             M[i, j] = zero(base_ring(a))
          else
@@ -318,65 +322,65 @@ function (a::GFPMatSpace)(b::gfp_elem)
 end
 
 function (a::GFPMatSpace)(arr::AbstractArray{BigInt, 2}, transpose::Bool = false)
-  _check_dim(a.rows, a.cols, arr, transpose)
-  z = gfp_mat(a.rows, a.cols, a.n, arr, transpose)
+  _check_dim(nrows(a), ncols(a), arr, transpose)
+  z = gfp_mat(nrows(a), ncols(a), a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
 function (a::GFPMatSpace)(arr::AbstractArray{BigInt, 1}, transpose::Bool = false)
-  _check_dim(a.rows, a.cols, arr)
-  z = gfp_mat(a.rows, a.cols, a.n, arr, transpose)
+  _check_dim(nrows(a), ncols(a), arr)
+  z = gfp_mat(nrows(a), ncols(a), a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
 function (a::GFPMatSpace)(arr::AbstractArray{fmpz, 2}, transpose::Bool = false)
-  _check_dim(a.rows, a.cols, arr, transpose)
-  z = gfp_mat(a.rows, a.cols, a.n, arr, transpose)
+  _check_dim(nrows(a), ncols(a), arr, transpose)
+  z = gfp_mat(nrows(a), ncols(a), a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
 function (a::GFPMatSpace)(arr::AbstractArray{fmpz, 1}, transpose::Bool = false)
-  _check_dim(a.rows, a.cols, arr)
-  z = gfp_mat(a.rows, a.cols, a.n, arr, transpose)
+  _check_dim(nrows(a), ncols(a), arr)
+  z = gfp_mat(nrows(a), ncols(a), a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
 function (a::GFPMatSpace)(arr::AbstractArray{Int, 2}, transpose::Bool = false)
-  _check_dim(a.rows, a.cols, arr, transpose)
-  z = gfp_mat(a.rows, a.cols, a.n, arr, transpose)
+  _check_dim(nrows(a), ncols(a), arr, transpose)
+  z = gfp_mat(nrows(a), ncols(a), a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
 function (a::GFPMatSpace)(arr::AbstractArray{Int, 1}, transpose::Bool = false)
-  _check_dim(a.rows, a.cols, arr)
-  z = gfp_mat(a.rows, a.cols, a.n, arr, transpose)
+  _check_dim(nrows(a), ncols(a), arr)
+  z = gfp_mat(nrows(a), ncols(a), a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
 function (a::GFPMatSpace)(arr::AbstractArray{gfp_elem, 2}, transpose::Bool = false)
-  _check_dim(a.rows, a.cols, arr, transpose)
+  _check_dim(nrows(a), ncols(a), arr, transpose)
   (length(arr) > 0 && (base_ring(a) != parent(arr[1]))) && error("Elements must have same base ring")
-  z = gfp_mat(a.rows, a.cols, a.n, arr, transpose)
+  z = gfp_mat(nrows(a), ncols(a), a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
 function (a::GFPMatSpace)(arr::AbstractArray{gfp_elem, 1}, transpose::Bool = false)
-  _check_dim(a.rows, a.cols, arr)
+  _check_dim(nrows(a), ncols(a), arr)
   (length(arr) > 0 && (base_ring(a) != parent(arr[1]))) && error("Elements must have same base ring")
-  z = gfp_mat(a.rows, a.cols, a.n, arr, transpose)
+  z = gfp_mat(nrows(a), ncols(a), a.n, arr, transpose)
   z.base_ring = a.base_ring
   return z
 end
 
 function (a::GFPMatSpace)(b::fmpz_mat)
-  (a.cols != b.c || a.rows != b.r) && error("Dimensions do not fit")
+  (ncols(a) != b.c || nrows(a) != b.r) && error("Dimensions do not fit")
   z = gfp_mat(a.n, b)
   z.base_ring = a.base_ring
   return z

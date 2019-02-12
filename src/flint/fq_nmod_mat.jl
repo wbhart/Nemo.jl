@@ -91,6 +91,10 @@ nrows(a::fq_nmod_mat) = a.r
 
 ncols(a::fq_nmod_mat) = a.c
 
+nrows(a::FqNmodMatSpace) = a.nrows
+
+ncols(a::FqNmodMatSpace) = a.ncols
+
 parent(a::fq_nmod_mat, cached::Bool = true) = FqNmodMatSpace(base_ring(a), nrows(a), ncols(a), cached)
 
 base_ring(a::FqNmodMatSpace) = a.base_ring
@@ -100,7 +104,7 @@ base_ring(a::fq_nmod_mat) = a.base_ring
 zero(a::FqNmodMatSpace) = a()
 
 function one(a::FqNmodMatSpace)
-  (a.rows != a.cols) && error("Matrices must be quadratic")
+  (nrows(a) != ncols(a)) && error("Matrices must be quadratic")
   return a(one(base_ring(a)))
 end
 
@@ -118,7 +122,7 @@ end
 
 function show(io::IO, a::FqNmodMatSpace)
    print(io, "Matrix Space of ")
-   print(io, a.rows, " rows and ", a.cols, " columns over ")
+   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
    print(io, a.base_ring)
 end
 
@@ -597,14 +601,14 @@ promote_rule(::Type{fq_nmod_mat}, ::Type{fmpz}) = fq_nmod_mat
 ################################################################################
 
 function (a::FqNmodMatSpace)()
-  z = fq_nmod_mat(a.rows, a.cols, base_ring(a))
+  z = fq_nmod_mat(nrows(a), ncols(a), base_ring(a))
   return z
 end
 
 function (a::FqNmodMatSpace)(b::Integer)
    M = a()
-   for i = 1:a.rows
-      for j = 1:a.cols
+   for i = 1:nrows(a)
+      for j = 1:ncols(a)
          if i != j
             M[i, j] = zero(base_ring(a))
          else
@@ -617,8 +621,8 @@ end
 
 function (a::FqNmodMatSpace)(b::fmpz)
    M = a()
-   for i = 1:a.rows
-      for j = 1:a.cols
+   for i = 1:nrows(a)
+      for j = 1:ncols(a)
          if i != j
             M[i, j] = zero(base_ring(a))
          else
@@ -631,46 +635,46 @@ end
 
 function (a::FqNmodMatSpace)(b::fq_nmod)
    parent(b) != base_ring(a) && error("Unable to coerce to matrix")
-   return fq_nmod_mat(a.rows, a.cols, b)
+   return fq_nmod_mat(nrows(a), ncols(a), b)
 end
 
 function (a::FqNmodMatSpace)(arr::AbstractArray{T, 2}) where {T <: Integer}
-  _check_dim(a.rows, a.cols, arr)
-  return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
+  _check_dim(nrows(a), ncols(a), arr)
+  return fq_nmod_mat(nrows(a), ncols(a), arr, base_ring(a))
 end
 
 function (a::FqNmodMatSpace)(arr::AbstractArray{T, 1}) where {T <: Integer}
-  _check_dim(a.rows, a.cols, arr)
-  return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
+  _check_dim(nrows(a), ncols(a), arr)
+  return fq_nmod_mat(nrows(a), ncols(a), arr, base_ring(a))
   return z
 end
 
 function (a::FqNmodMatSpace)(arr::AbstractArray{fmpz, 2})
-  _check_dim(a.rows, a.cols, arr)
-  return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
+  _check_dim(nrows(a), ncols(a), arr)
+  return fq_nmod_mat(nrows(a), ncols(a), arr, base_ring(a))
   return z
 end
 
 function (a::FqNmodMatSpace)(arr::AbstractArray{fmpz, 1})
-  _check_dim(a.rows, a.cols, arr)
-  return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
+  _check_dim(nrows(a), ncols(a), arr)
+  return fq_nmod_mat(nrows(a), ncols(a), arr, base_ring(a))
   return z
 end
 
 function (a::FqNmodMatSpace)(arr::AbstractArray{fq_nmod, 2})
-  _check_dim(a.rows, a.cols, arr)
+  _check_dim(nrows(a), ncols(a), arr)
   (length(arr) > 0 && (base_ring(a) != parent(arr[1]))) && error("Elements must have same base ring")
-  return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
+  return fq_nmod_mat(nrows(a), ncols(a), arr, base_ring(a))
 end
 
 function (a::FqNmodMatSpace)(arr::AbstractArray{fq_nmod, 1})
-  _check_dim(a.rows, a.cols, arr)
+  _check_dim(nrows(a), ncols(a), arr)
   (length(arr) > 0 && (base_ring(a) != parent(arr[1]))) && error("Elements must have same base ring")
-  return fq_nmod_mat(a.rows, a.cols, arr, base_ring(a))
+  return fq_nmod_mat(nrows(a), ncols(a), arr, base_ring(a))
 end
 
 function (a::FqNmodMatSpace)(b::fmpz_mat)
-  (a.cols != b.c || a.rows != b.r) && error("Dimensions do not fit")
+  (ncols(a) != b.c || nrows(a) != b.r) && error("Dimensions do not fit")
   return fq_nmod_mat(b, base_ring(a))
 end
 

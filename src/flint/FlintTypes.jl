@@ -2854,8 +2854,8 @@ end
 
 # not really a mathematical ring
 mutable struct FmpqMatSpace <: MatSpace{fmpq}
-   rows::Int
-   cols::Int
+   nrows::Int
+   ncols::Int
    base_ring::FlintRationalField
 
    function FmpqMatSpace(r::Int, c::Int, cached::Bool = true)
@@ -3029,8 +3029,8 @@ end
 
 # not really a mathematical ring
 mutable struct FmpzMatSpace <: MatSpace{fmpz}
-   rows::Int
-   cols::Int
+   nrows::Int
+   ncols::Int
    base_ring::FlintIntegerRing
 
    function FmpzMatSpace(r::Int, c::Int, cached::Bool = true)
@@ -3169,8 +3169,8 @@ end
 mutable struct NmodMatSpace <: MatSpace{nmod}
   base_ring::NmodRing
   n::UInt
-  rows::Int
-  cols::Int
+  nrows::Int
+  ncols::Int
 
   function NmodMatSpace(R::NmodRing, r::Int, c::Int,
                         cached::Bool = true)
@@ -3374,8 +3374,8 @@ end
 mutable struct GFPMatSpace <: MatSpace{gfp_elem}
   base_ring::GaloisField
   n::UInt
-  rows::Int
-  cols::Int
+  nrows::Int
+  ncols::Int
 
   function GFPMatSpace(R::GaloisField, r::Int, c::Int,
                         cached::Bool = true)
@@ -3852,8 +3852,8 @@ end
 
 mutable struct FqMatSpace <: MatSpace{fq}
   base_ring::FqFiniteField
-  rows::Int
-  cols::Int
+  nrows::Int
+  ncols::Int
 
   function FqMatSpace(R::FqFiniteField, r::Int, c::Int, cached::Bool = true)
     (r < 0 || c < 0) && throw(error_dim_negative)
@@ -4040,8 +4040,8 @@ end
 
 mutable struct FqNmodMatSpace <: MatSpace{fq_nmod}
   base_ring::FqNmodFiniteField
-  rows::Int
-  cols::Int
+  nrows::Int
+  ncols::Int
 
   function FqNmodMatSpace(R::FqNmodFiniteField, r::Int, c::Int, cached::Bool = true)
     (r < 0 || c < 0) && throw(error_dim_negative)

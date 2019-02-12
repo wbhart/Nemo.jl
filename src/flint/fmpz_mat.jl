@@ -157,6 +157,10 @@ end
 
 @inline ncols(a::fmpz_mat) = a.c
 
+nrows(a::FmpzMatSpace) = a.nrows
+
+ncols(a::FmpzMatSpace) = a.ncols
+
 zero(a::FmpzMatSpace) = a()
 
 one(a::FmpzMatSpace) = a(1)
@@ -189,7 +193,7 @@ canonical_unit(a::fmpz_mat) = canonical_unit(a[1, 1])
 
 function show(io::IO, a::FmpzMatSpace)
    print(io, "Matrix Space of ")
-   print(io, a.rows, " rows and ", a.cols, " columns over ")
+   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
    print(io, "Integer Ring")
 end
 
@@ -651,7 +655,7 @@ end
 > columns must be equal.
 """
 function hadamard(R::FmpzMatSpace)
-   R.rows != R.cols && error("Unable to create Hadamard matrix")
+   nrows(R) != ncols(R) && error("Unable to create Hadamard matrix")
    z = R()
    success = ccall((:fmpz_mat_hadamard, :libflint), Bool,
                    (Ref{fmpz_mat},), z)
@@ -1233,47 +1237,47 @@ end
 ###############################################################################
 
 function (a::FmpzMatSpace)()
-   z = fmpz_mat(a.rows, a.cols)
+   z = fmpz_mat(nrows(a), ncols(a))
    z.base_ring = FlintZZ
    return z
 end
 
 function (a::FmpzMatSpace)(arr::AbstractArray{fmpz, 2})
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpz_mat(a.rows, a.cols, arr)
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpz_mat(nrows(a), ncols(a), arr)
    z.base_ring = FlintZZ
    return z
 end
 
 function (a::FmpzMatSpace)(arr::AbstractArray{T, 2}) where {T <: Integer}
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpz_mat(a.rows, a.cols, arr)
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpz_mat(nrows(a), ncols(a), arr)
    z.base_ring = FlintZZ
    return z
 end
 
 function (a::FmpzMatSpace)(arr::AbstractArray{fmpz, 1})
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpz_mat(a.rows, a.cols, arr)
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpz_mat(nrows(a), ncols(a), arr)
    z.base_ring = FlintZZ
    return z
 end
 
 function (a::FmpzMatSpace)(arr::AbstractArray{T, 1}) where {T <: Integer}
-   _check_dim(a.rows, a.cols, arr)
-   z = fmpz_mat(a.rows, a.cols, arr)
+   _check_dim(nrows(a), ncols(a), arr)
+   z = fmpz_mat(nrows(a), ncols(a), arr)
    z.base_ring = FlintZZ
    return z
 end
 
 function (a::FmpzMatSpace)(d::fmpz)
-   z = fmpz_mat(a.rows, a.cols, d)
+   z = fmpz_mat(nrows(a), ncols(a), d)
    z.base_ring = FlintZZ
    return z
 end
 
 function (a::FmpzMatSpace)(d::Integer)
-   z = fmpz_mat(a.rows, a.cols, fmpz(d))
+   z = fmpz_mat(nrows(a), ncols(a), fmpz(d))
    z.base_ring = FlintZZ
    return z
 end
