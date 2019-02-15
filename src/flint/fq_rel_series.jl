@@ -651,6 +651,7 @@ function (a::FqRelSeriesRing)(b::Integer)
    if b == 0
       z = fq_rel_series(ctx)
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fq_rel_series(ctx, [ctx(b)], 1, a.prec_max, 0)
    end
@@ -663,6 +664,7 @@ function (a::FqRelSeriesRing)(b::fmpz)
    if iszero(b)
       z = fq_rel_series(ctx)
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fq_rel_series(ctx, [ctx(b)], 1, a.prec_max, 0)
    end
@@ -675,6 +677,7 @@ function (a::FqRelSeriesRing)(b::fq)
    if iszero(b)
       z = fq_rel_series(ctx)
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fq_rel_series(ctx, [b], 1, a.prec_max, 0)
    end

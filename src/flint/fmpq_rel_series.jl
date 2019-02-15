@@ -1026,6 +1026,7 @@ function (a::FmpqRelSeriesRing)(b::Integer)
    if b == 0
       z = fmpq_rel_series()
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fmpq_rel_series([fmpq(b)], 1, a.prec_max, 0)
    end
@@ -1037,6 +1038,7 @@ function (a::FmpqRelSeriesRing)(b::fmpz)
    if iszero(b)
       z = fmpq_rel_series()
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fmpq_rel_series([fmpq(b)], 1, a.prec_max, 0)
    end
@@ -1048,6 +1050,7 @@ function (a::FmpqRelSeriesRing)(b::fmpq)
    if iszero(b)
       z = fmpq_rel_series()
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fmpq_rel_series([b], 1, a.prec_max, 0)
    end
