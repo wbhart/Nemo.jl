@@ -673,6 +673,7 @@ function (a::FmpzRelSeriesRing)(b::Integer)
    if b == 0
       z = fmpz_rel_series()
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fmpz_rel_series([fmpz(b)], 1, a.prec_max, 0)
    end
@@ -684,6 +685,7 @@ function (a::FmpzRelSeriesRing)(b::fmpz)
    if b == 0
       z = fmpz_rel_series()
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fmpz_rel_series([b], 1, a.prec_max, 0)
    end

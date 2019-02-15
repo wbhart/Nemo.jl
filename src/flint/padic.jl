@@ -138,7 +138,7 @@ precision(a::padic) = a.N
 > element is divisible by $p^n$ but not a higher power of $p$ then the function
 > will return $n$.
 """
-valuation(a::padic) = a.v
+valuation(a::padic) = iszero(a) ? a.N : a.v
 
 @doc Markdown.doc"""
     lift(R::FlintRationalField, a::padic)

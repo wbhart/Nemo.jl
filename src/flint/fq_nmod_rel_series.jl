@@ -651,6 +651,7 @@ function (a::FqNmodRelSeriesRing)(b::Integer)
    if b == 0
       z = fq_nmod_rel_series(ctx)
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fq_nmod_rel_series(ctx, [ctx(b)], 1, a.prec_max, 0)
    end
@@ -663,6 +664,7 @@ function (a::FqNmodRelSeriesRing)(b::fmpz)
    if iszero(b)
       z = fq_nmod_rel_series(ctx)
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fq_nmod_rel_series(ctx, [ctx(b)], 1, a.prec_max, 0)
    end
@@ -675,6 +677,7 @@ function (a::FqNmodRelSeriesRing)(b::fq_nmod)
    if iszero(b)
       z = fq_nmod_rel_series(ctx)
       z.prec = a.prec_max
+      z.val = a.prec_max
    else
       z = fq_nmod_rel_series(ctx, [b], 1, a.prec_max, 0)
    end
