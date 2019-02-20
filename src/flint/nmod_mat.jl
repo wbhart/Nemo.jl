@@ -459,8 +459,8 @@ end
 ################################################################################
 
 function lu!(P::Generic.perm, x::T) where T <: Zmodn_mat
-  rank = ccall((:nmod_mat_lu, :libflint), Cint, (Ptr{Int}, Ref{T}, Cint),
-           P.d, x, 0)
+  rank = Int(ccall((:nmod_mat_lu, :libflint), Cint, (Ptr{Int}, Ref{T}, Cint),
+           P.d, x, 0))
 
   for i in 1:length(P.d)
     P.d[i] += 1
