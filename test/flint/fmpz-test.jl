@@ -256,6 +256,12 @@ function test_fmpz_adhoc_division()
 
    @test div(a, 3) == -4
 
+   @test div(-12, fmpz(3)) == -4
+
+   @test mod(-12, fmpz(3)) == 0
+
+   @test rem(-12, fmpz(3)) == 0
+
    println("PASS")
 end
 

@@ -475,6 +475,12 @@ function cdiv(x::fmpz, c::Int)
     return z
 end
 
+rem(x::Integer, y::fmpz) = rem(fmpz(x), y)
+
+mod(x::Integer, y::fmpz) = mod(fmpz(x), y)
+
+div(x::Integer, y::fmpz) = div(fmpz(x), y)
+
 ###############################################################################
 #
 #   Division with remainder
