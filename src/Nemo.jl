@@ -88,23 +88,29 @@ end
 
 iswindows64() = (Sys.iswindows() ? true : false) && (Int == Int64)
 
-const pkgdir = realpath(joinpath(dirname(@__FILE__), ".."))
-const libdir = joinpath(pkgdir, "local", "lib")
+const pkgdir = realpath(joinpath(dirname(@__DIR__)))
+const libdir = joinpath(pkgdir, "deps", "usr", "lib")
+const bindir = joinpath(pkgdir, "deps", "usr", "bin")
 if Sys.iswindows()
-   const libgmp = joinpath(pkgdir, "local", "lib", "libgmp-16")
+   const libgmp = joinpath(pkgdir, "deps", "usr", "bin", "libgmp-10")
+   const libmpfr = joinpath(pkgdir, "deps", "usr", "bin", "libmpfr-6")
+   const libflint = joinpath(pkgdir, "deps", "usr", "bin", "libflint")
+   const libarb = joinpath(pkgdir, "deps", "usr", "bin", "libarb")
+   const libantic = joinpath(pkgdir, "deps", "usr", "bin", "libantic")
+
 else
-   const libgmp = joinpath(pkgdir, "local", "lib", "libgmp")
+   const libgmp = joinpath(pkgdir, "deps", "usr", "lib", "libgmp")
+   const libmpfr = joinpath(pkgdir, "deps", "usr", "lib", "libmpfr")
+   const libflint = joinpath(pkgdir, "deps", "usr", "lib", "libflint")
+   const libarb = joinpath(pkgdir, "deps", "usr", "lib", "libarb")
+   const libantic = joinpath(pkgdir, "deps", "usr", "lib", "libantic")
 end
-const libmpfr = joinpath(pkgdir, "local", "lib", "libmpfr")
-const libflint = joinpath(pkgdir, "local", "lib", "libflint")
-const libarb = joinpath(pkgdir, "local", "lib", "libarb")
-const libantic = joinpath(pkgdir, "local", "lib", "libantic")
 
 function flint_abort()
   error("Problem in the Flint-Subsystem")
 end
 
-active_mem=Dict{UInt, Tuple{Symbol, UInt, Any}}()
+active_mem = Dict{UInt, Tuple{Symbol, UInt, Any}}()
 
 function trace_malloc(n::UInt)
   u = ccall(:jl_malloc, UInt, (UInt, ), n)
@@ -205,7 +211,6 @@ function trace_memory(b::Bool)
 end
 
 function __init__()
-
    if "HOSTNAME" in keys(ENV) && ENV["HOSTNAME"] == "juliabox"
        push!(Libdl.DL_LOAD_PATH, "/usr/local/lib")
    elseif Sys.islinux()
@@ -217,6 +222,7 @@ function __init__()
        Libdl.dlopen(libantic)
    else
       push!(Libdl.DL_LOAD_PATH, libdir)
+      push!(Libdl.DL_LOAD_PATH, bindir)
    end
 
    if !Sys.iswindows()
