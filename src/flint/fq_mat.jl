@@ -421,9 +421,9 @@ end
 ################################################################################
 
 function lu!(P::Generic.perm, x::fq_mat)
-   rank = ccall((:fq_mat_lu, :libflint), Cint,
+   rank = Int(ccall((:fq_mat_lu, :libflint), Cint,
                 (Ptr{Int}, Ref{fq_mat}, Cint, Ref{FqFiniteField}),
-                P.d, x, 0, base_ring(x))
+                P.d, x, 0, base_ring(x)))
 
   for i in 1:length(P.d)
     P.d[i] += 1
