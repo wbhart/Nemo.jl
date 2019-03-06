@@ -75,7 +75,7 @@ function canonical_unit(x::nmod)
   end
   g = gcd(modulus(x), data(x))
   u = divexact(data(x), g)
-  a, b = ppio(modulus(x), u) 
+  a, b = ppio(modulus(x), u)
   if isone(a)
     r = u
   elseif isone(b)
@@ -254,7 +254,7 @@ end
 
 function inv(x::nmod)
    R = parent(x)
-   (x == 0 && R.n != 1) && throw(DivideError())
+   (iszero(x) && R.n != 1) && throw(DivideError())
    if R.n == 1
       return deepcopy(x)
    end

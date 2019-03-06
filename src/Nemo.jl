@@ -10,9 +10,9 @@ if VERSION >= v"0.7.0-"
    using Libdl
 end
 
-import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh, 
+import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh,
              bin, ceil, checkbounds, conj, convert, cmp, cos, cosh,
-             cospi, cot, coth, dec, deepcopy, deepcopy_internal, denominator, 
+             cospi, cot, coth, dec, deepcopy, deepcopy_internal, denominator,
              div, divrem, expm1, exp, floor, gcd, gcdx, getindex,
              hash, hcat, hex, hypot, intersect, inv, invmod, isequal,
              isfinite, isinteger, isless, isqrt, isreal, iszero, lcm, ldexp, length,
@@ -42,7 +42,7 @@ exclude = try
    AbstractAlgebra.import_exclude
 catch
    [:import_exclude, :QQ, :ZZ, :RR, :RealField, :FiniteField, :NumberField,
-           :AbstractAlgebra, 
+           :AbstractAlgebra,
            :exp, :sqrt,
            :promote_rule,
            :Set, :Module, :Ring, :Group, :Field]
@@ -188,7 +188,7 @@ function trace_memory(b::Bool)
        cfunction(trace_calloc, UInt, (UInt, UInt)),
        cfunction(trace_realloc, UInt, (UInt, UInt)),
        cfunction(trace_free, Nothing, (UInt, )))
-  else    
+  else
     ccall((:__gmp_set_memory_functions, libgmp), Nothing,
        (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
        cglobal(:jl_gc_counted_malloc),

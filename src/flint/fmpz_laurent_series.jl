@@ -303,7 +303,7 @@ end
 """
 isunit(a::fmpz_laurent_series) = valuation(a) == 0 && isunit(polcoeff(a, 0))
 
-function deepcopy_internal(a::fmpz_laurent_series, dict::IdDict) 
+function deepcopy_internal(a::fmpz_laurent_series, dict::IdDict)
    d = fmpz_laurent_series(a)
    set_prec!(d, precision(a))
    set_val!(d, valuation(a))
@@ -433,7 +433,7 @@ end
     +(a::fmpz_laurent_series, b::fmpz_laurent_series)
 > Return $a + b$.
 """
-function +(a::fmpz_laurent_series, b::fmpz_laurent_series) 
+function +(a::fmpz_laurent_series, b::fmpz_laurent_series)
    check_parent(a, b)
    lena = pol_length(a)
    lenb = pol_length(b)
@@ -466,7 +466,7 @@ function +(a::fmpz_laurent_series, b::fmpz_laurent_series)
       pi = valz + sz*i
       if pi == pa && pi < mina
          if pi == pb && pi < minb
-            z = setcoeff!(z, i, polcoeff(a, j) + polcoeff(b, k)) 
+            z = setcoeff!(z, i, polcoeff(a, j) + polcoeff(b, k))
             pb += sb
             k += 1
          else
@@ -489,7 +489,7 @@ end
     -(a::fmpz_laurent_series, b::fmpz_laurent_series)
 > Return $a - b$.
 """
-function -(a::fmpz_laurent_series, b::fmpz_laurent_series) 
+function -(a::fmpz_laurent_series, b::fmpz_laurent_series)
    check_parent(a, b)
    lena = pol_length(a)
    lenb = pol_length(b)
@@ -545,7 +545,7 @@ end
     *(a::fmpz_laurent_series, b::fmpz_laurent_series)
 > Return $a\times b$.
 """
-function *(a::fmpz_laurent_series, b::fmpz_laurent_series) 
+function *(a::fmpz_laurent_series, b::fmpz_laurent_series)
    check_parent(a, b)
    lena = pol_length(a)
    lenb = pol_length(b)
@@ -651,7 +651,7 @@ end
 > Return the power series $x$ shifted left by $n$ terms, i.e. multiplied by
 > $x^n$.
 """
-function shift_left(x::fmpz_laurent_series, n::Int) 
+function shift_left(x::fmpz_laurent_series, n::Int)
    z = deepcopy(x)
    set_prec!(z, precision(x) + n)
    set_val!(z, valuation(x) + n)
@@ -663,7 +663,7 @@ end
 > Return the power series $x$ shifted right by $n$ terms, i.e. divided by
 > $x^n$.
 """
-function shift_right(x::fmpz_laurent_series, n::Int) 
+function shift_right(x::fmpz_laurent_series, n::Int)
    z = deepcopy(x)
    set_prec!(z, precision(x) - n)
    set_val!(z, valuation(x) - n)
@@ -680,7 +680,7 @@ end
     truncate(a::fmpz_laurent_series, n::Int)
 > Return $a$ truncated to (absolute) precision $n$.
 """
-function truncate(a::fmpz_laurent_series, n::Int) 
+function truncate(a::fmpz_laurent_series, n::Int)
    alen = pol_length(a)
    aprec = precision(a)
    aval = valuation(a)
@@ -708,7 +708,7 @@ end
 
 # Intended only for internal use, does not renormalize or rescale, assumes n >= 0
 # Requires valuation(a) == valuation(b) == 0 and scale(a) == scale(b)
-function mullow(a::fmpz_laurent_series, b::fmpz_laurent_series, n::Int) 
+function mullow(a::fmpz_laurent_series, b::fmpz_laurent_series, n::Int)
    lena = pol_length(a)
    lenb = pol_length(b)
    if lena == 0 || lenb == 0
@@ -738,7 +738,7 @@ end
 #
 ###############################################################################
 
-function inflate(a::fmpz_laurent_series, b::Int) 
+function inflate(a::fmpz_laurent_series, b::Int)
     d = fmpz_laurent_series(a)
     set_prec!(d, b*precision(a))
     set_val!(d, b*valuation(a))
@@ -766,7 +766,7 @@ end
     ^(a::fmpz_laurent_series, b::Int)
 > Return $a^b$. We require $b \geq 0$.
 """
-function ^(a::fmpz_laurent_series, b::Int) 
+function ^(a::fmpz_laurent_series, b::Int)
    # special case powers of x for constructing power series efficiently
    if pol_length(a) == 0
       z = parent(a)()
@@ -840,7 +840,7 @@ end
 > that power series to different precisions may still be arithmetically
 > equal to the minimum of the two precisions.
 """
-function ==(x::fmpz_laurent_series, y::fmpz_laurent_series) 
+function ==(x::fmpz_laurent_series, y::fmpz_laurent_series)
    check_parent(x, y)
    xval = valuation(x)
    xprec = precision(x)
@@ -860,10 +860,10 @@ function ==(x::fmpz_laurent_series, y::fmpz_laurent_series)
    i = 0
    j = 0
    while i < xlen && j < ylen
-      while polcoeff(x, i) == 0 && i < xlen
+      while iszero(polcoeff(x, i)) && i < xlen
          i += 1
       end
-      while polcoeff(y, j) == 0 && j < ylen
+      while iszero(polcoeff(y, j)) && j < ylen
          j += 1
       end
       if i < xlen && j < ylen
@@ -895,7 +895,7 @@ end
 > power series are precisely the same, to the same precision, are they declared
 > equal by this function.
 """
-function isequal(x::fmpz_laurent_series, y::fmpz_laurent_series) 
+function isequal(x::fmpz_laurent_series, y::fmpz_laurent_series)
    if parent(x) != parent(y)
       return false
    end
@@ -1174,14 +1174,14 @@ function zero!(a::fmpz_laurent_series)
    return a
 end
 
-function setcoeff!(c::fmpz_laurent_series, n::Int, a::fmpz) 
+function setcoeff!(c::fmpz_laurent_series, n::Int, a::fmpz)
    ccall((:fmpz_poly_set_coeff_fmpz, :libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Int, Ref{fmpz}),
                c, n, a)
    return c
 end
 
-function mul!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_series) 
+function mul!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_series)
    lena = pol_length(a)
    lenb = pol_length(b)
    if lena > lenb
@@ -1227,12 +1227,12 @@ function mul!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_se
    return c
 end
 
-function addeq!(c::fmpz_laurent_series, a::fmpz_laurent_series) 
+function addeq!(c::fmpz_laurent_series, a::fmpz_laurent_series)
    b = deepcopy(c)
    return add!(c, b, a)
 end
 
-function add!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_series) 
+function add!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_series)
    if c === a
       return addeq!(c, b)
    elseif c === b
@@ -1309,7 +1309,7 @@ function eta_qexp(x::fmpz_laurent_series)
    z = parent(x)()
    zscale = valuation(x)
    prec = max_precision(parent(x))
-   ccall((:fmpz_poly_eta_qexp, :libflint), Nothing, 
+   ccall((:fmpz_poly_eta_qexp, :libflint), Nothing,
                                           (Ref{fmpz_laurent_series}, Int, Int), z, 1, div(prec + zscale - 1, zscale))
    set_scale!(z, zscale)
    set_val!(z, 0)
@@ -1349,13 +1349,13 @@ promote_rule(::Type{fmpz_laurent_series}, ::Type{fmpz}) = fmpz_laurent_series
 #
 ###############################################################################
 
-function (R::FmpzLaurentSeriesRing)() 
+function (R::FmpzLaurentSeriesRing)()
    z = fmpz_laurent_series(Vector{fmpz}(undef, 0), 0, R.prec_max, R.prec_max, 1)
    z.parent = R
    return z
 end
 
-function (R::FmpzLaurentSeriesRing)(b::Integer) 
+function (R::FmpzLaurentSeriesRing)(b::Integer)
    if b == 0
       z = fmpz_laurent_series(Vector{fmpz}(undef, 0), 0, R.prec_max, R.prec_max, 1)
    else
@@ -1375,11 +1375,11 @@ function (R::FmpzLaurentSeriesRing)(b::fmpz)
    return z
 end
 
-function (R::FmpzLaurentSeriesRing)(b::fmpz_laurent_series) 
+function (R::FmpzLaurentSeriesRing)(b::fmpz_laurent_series)
    return b
 end
 
-function (R::FmpzLaurentSeriesRing)(b::Array{fmpz, 1}, len::Int, prec::Int, val::Int, scale::Int, rescale::Bool = true) 
+function (R::FmpzLaurentSeriesRing)(b::Array{fmpz, 1}, len::Int, prec::Int, val::Int, scale::Int, rescale::Bool = true)
    z = fmpz_laurent_series(b, len, prec, val, scale)
    z.parent = R
    if rescale
@@ -1412,4 +1412,3 @@ function LaurentSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; ca
 
    return parent_obj, gen(parent_obj)
 end
-

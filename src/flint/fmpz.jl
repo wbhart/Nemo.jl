@@ -918,7 +918,7 @@ end
 > and $b$ and integers $s$ and $t$ such that $g = as + bt$.
 """
 function gcdx(a::fmpz, b::fmpz)
-    if b == 0 # shortcut this to ensure consistent results with gcdx(a,b)
+    if iszero(b) # shortcut this to ensure consistent results with gcdx(a,b)
         return a < 0 ? (-a, -one(FlintZZ), zero(FlintZZ)) : (a, one(FlintZZ), zero(FlintZZ))
     end
     g = fmpz()

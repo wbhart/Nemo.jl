@@ -8,7 +8,7 @@
     *(a::fmpz, b::AbsSeriesElem)
 > Return $a\times b$.
 """
-function *(a::fmpz, b::AbsSeriesElem) 
+function *(a::fmpz, b::AbsSeriesElem)
    len = length(b)
    z = parent(b)()
    fit!(z, len)
@@ -56,7 +56,7 @@ function divexact(x::AbsSeriesElem, y::fmpz)
 end
 
 function (a::Generic.AbsSeriesRing{T})(b::fmpz) where {T <: RingElement}
-   if b == 0
+   if iszero(b)
       z = Generic.AbsSeries{T}(Array{T}(undef, 0), 0, a.prec_max)
    else
       z = Generic.AbsSeries{T}([base_ring(a)(b)], 1, a.prec_max)
@@ -100,7 +100,7 @@ end
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::RelSeriesElem, y::fmpz) = precision(x) == 0 ||
-                  ((pol_length(x) == 0 && iszero(y)) || (pol_length(x) == 1 && 
+                  ((pol_length(x) == 0 && iszero(y)) || (pol_length(x) == 1 &&
                     valuation(x) == 0 && polcoeff(x, 0) == y))
 
 @doc Markdown.doc"""
@@ -126,7 +126,7 @@ function divexact(x::RelSeriesElem, y::fmpz)
    return z
 end
 
-function (a::Generic.RelSeriesRing{T})(b::fmpz) where {T <: RingElement} 
+function (a::Generic.RelSeriesRing{T})(b::fmpz) where {T <: RingElement}
    if iszero(b)
       z = Generic.RelSeries{T}(Array{T}(undef, 0), 0, a.prec_max, a.prec_max)
    else
@@ -329,7 +329,7 @@ function *(a::Generic.MPoly{T}, n::fmpz) where T <: RingElem
    for i = 1:length(a)
       c = a.coeffs[i]*n
       if c != 0
-         r.coeffs[j] = c 
+         r.coeffs[j] = c
          monomial_set!(r.exps, j, a.exps, i, N)
          j += 1
       end
@@ -343,7 +343,7 @@ end
 
 function ==(a::Generic.MPoly{T}, n::fmpz) where T <: RingElem
    N = size(a.exps, 1)
-   if n == 0
+   if iszero(n)
       return a.length == 0
    elseif a.length == 1
       return a.coeffs[1] == n && monomial_iszero(a.exps, 1, N)
@@ -395,7 +395,7 @@ function *(a::Generic.SparsePoly{T}, n::fmpz) where T <: RingElem
    for i = 1:length(a)
       c = a.coeffs[i]*n
       if c != 0
-         r.coeffs[j] = c 
+         r.coeffs[j] = c
          r.exps[j] = a.exps[i]
          j += 1
       end
@@ -406,8 +406,8 @@ end
 
 *(n::fmpz, a::Generic.SparsePoly{T}) where T <: RingElem = a*n
 
-function ==(a::Generic.SparsePoly{T}, b::fmpz) where T <: RingElem 
-   return length(a) == 0 ? b == 0 : a.length == 1 &
+function ==(a::Generic.SparsePoly{T}, b::fmpz) where T <: RingElem
+   return length(a) == 0 ? iszero(b) : a.length == 1 &
           a.exps[1] == 0 && a.coeffs[1] == b
 end
 
@@ -483,7 +483,7 @@ function -(x::fmpz, y::MatElem)
          if i != j
             z[i, j] = -y[i, j]
          else
-            z[i, j] = x - y[i, j] 
+            z[i, j] = x - y[i, j]
          end
       end
    end
@@ -494,7 +494,7 @@ end
     -(x::MatElem, y::fmpz)
 > Return $x - S(y)$, where $S$ is the parent of $x$
 """
-function -(x::MatElem, y::fmpz) 
+function -(x::MatElem, y::fmpz)
    z = similar(x)
    R = base_ring(x)
    for i = 1:nrows(x)
@@ -514,7 +514,7 @@ end
 > Return `true` if $x == S(y)$ arithmetically, where $S$ is the parent of $x$,
 > otherwise return `false`.
 """
-function ==(x::MatElem, y::fmpz) 
+function ==(x::MatElem, y::fmpz)
    for i = 1:min(nrows(x), ncols(x))
       if x[i, i] != y
          return false
@@ -579,7 +579,7 @@ end
 ###############################################################################
 
 //(x::T, y::fmpz) where {T <: RingElem} = x//parent(x)(y)
-                                          
+
 //(x::fmpz, y::T) where {T <: RingElem} = parent(y)(x)//y
 
 @doc Markdown.doc"""
@@ -690,5 +690,3 @@ function (a::Generic.FracField{T})(b::fmpz) where {T <: RingElement}
    z.parent = a
    return z
 end
-
-

@@ -437,7 +437,7 @@ end
 ###############################################################################
 
 function inv(a::fq_abs_series)
-   a == 0 && throw(DivideError())
+   iszero(a) && throw(DivideError())
    !isunit(a) && error("Unable to invert power series")
    ainv = parent(a)()
    ainv.prec = a.prec
@@ -550,7 +550,7 @@ end
 
 function (a::FqAbsSeriesRing)(b::fmpz)
    ctx = base_ring(a)
-   if b == 0
+   if iszero(b)
       z = fq_abs_series(ctx)
       z.prec = a.prec_max
    else
@@ -562,7 +562,7 @@ end
 
 function (a::FqAbsSeriesRing)(b::fq)
    ctx = base_ring(a)
-   if b == 0
+   if iszero(b) 
       z = fq_abs_series(ctx)
       z.prec = a.prec_max
    else

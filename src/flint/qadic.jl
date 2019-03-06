@@ -223,7 +223,7 @@ isunit(a::qadic) = !Bool(ccall((:qadic_is_zero, :libflint), Cint,
 
 function show(io::IO, x::qadic)
    R = FlintPadicField(prime(parent(x)), parent(x).prec_max)
-   if x == 0
+   if iszero(x) 
      print(io, "0")
    end
    len = degree(parent(x)) + 1
@@ -234,7 +234,7 @@ function show(io::IO, x::qadic)
      ccall((:padic_poly_get_coeff_padic, :libflint), Nothing, (Ref{padic}, Ref{qadic}, Int, Ref{FlintQadicField}), c, x, len, parent(x))
    end
 
-   for i = 1:len 
+   for i = 1:len
      ccall((:padic_poly_get_coeff_padic, :libflint), Nothing, (Ref{padic}, Ref{qadic}, Int, Ref{FlintQadicField}), c, x, len - i + 1, parent(x))
      bracket = true
      if !iszero(c)

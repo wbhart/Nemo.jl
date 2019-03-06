@@ -91,7 +91,7 @@ function renormalize!(z::fmpz_rel_series)
    zlen = pol_length(z)
    zval = valuation(z)
    zprec = precision(z)
-   while i < zlen && polcoeff(z, i) == 0
+   while i < zlen && iszero(polcoeff(z, i)) 
       i += 1
    end
    z.prec = zprec
@@ -545,7 +545,7 @@ function Base.sqrt(a::fmpz_rel_series)
     flag == false && error("Not a square in sqrt")
     return asqrt
 end
-   
+
 ###############################################################################
 #
 #   Unsafe functions

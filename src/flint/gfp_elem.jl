@@ -258,7 +258,7 @@ end
 
 function inv(x::gfp_elem)
    R = parent(x)
-   x == 0 && throw(DivideError())
+   iszero(x) && throw(DivideError())
    xinv = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
             x.data, R.n)
    return gfp_elem(xinv, R)
