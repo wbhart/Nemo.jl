@@ -674,9 +674,7 @@ function test_gfp_mat_view()
   @test view(a, 2, 2, 3, 2) == sub(a, 2, 2, 3, 2)
   @test view(a, 2, 2, 3, 2) == sub(a, 2:3, 2:2)
 
-  @test_throws BoundsError view(a, 4, 4, 1, 1)
-
-  @test_throws ErrorException view(a, 2, 2, 1, 1)
+  @test_throws BoundsError view(a, 2, 2, 5, 5)
 
   S = MatrixSpace(Z17, 3, 3)
 

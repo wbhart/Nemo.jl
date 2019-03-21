@@ -527,9 +527,22 @@ end
 ################################################################################
 
 function Base.view(x::nmod_mat, r1::Int, c1::Int, r2::Int, c2::Int)
-  Generic._checkbounds(x, r1, c1)
-  Generic._checkbounds(x, r2, c2)
-  (r1 > r2 || c1 > c2) && error("Invalid parameters")
+
+   _checkrange_or_empty(nrows(x), r1, r2) ||
+      Base.throw_boundserror(x, (r1:r2, c1:c2))
+
+   _checkrange_or_empty(ncols(x), c1, c2) ||
+      Base.throw_boundserror(x, (r1:r2, c1:c2))
+
+   if (r1 > r2)
+     r1 = 1
+     r2 = 0
+   end
+   if (c1 > c2)
+     c1 = 1
+     c2 = 0
+   end
+
   z = nmod_mat()
   z.base_ring = x.base_ring
   z.view_parent = x
