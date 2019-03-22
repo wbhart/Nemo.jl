@@ -249,11 +249,51 @@ end
 
 ###############################################################################
 #
+#   Deal with "Special"
+#
+###############################################################################
+function set_special(K::AnticNumberField, P::Pair{Symbol, <: Any}...)
+  d = _get_Special_of_nf(K, false)
+  if d === nothing
+    d = Dict{Symbol, Any}()
+    _set_Special_of_nf(K, d)
+  end
+  for (S, V) in P
+    d[S] = V
+  end
+end
+
+function get_special(K::AnticNumberField, S::Symbol)
+  d = _get_Special_of_nf(K, false)
+  if d === nothing
+    return nothing
+  end
+  if haskey(d, S)
+    return d[S]
+  else
+    return nothing
+  end
+end
+
+function iscyclo_type(K::AnticNumberField)
+  return !(get_special(K, :cyclo) === nothing) ::Bool
+end
+
+function ismaxreal_type(K::AnticNumberField)
+  return get_special(K, :maxreal)::Bool
+end
+
+###############################################################################
+#
 #   AbstractString I/O
 #
 ###############################################################################
 
 function show(io::IO, a::AnticNumberField)
+   s = get_special(a, :show)
+   if !(s === nothing)
+     return s(io, a)
+   end
    print(io, "Number field over Rational Field")
    print(io, " with defining polynomial ", a.pol)
 end
@@ -1131,12 +1171,20 @@ end
 > from which the number field is constructed, should be printed. If it is not
 > supplied, a default dollar sign will be used to represent the variable.
 """
-function CyclotomicField(n::Int, s::AbstractString, t = "\$"; cached = true)
+function CyclotomicField(n::Int, s::AbstractString = "z_$n", t = "_\$"; cached = true)
    Zx, x = PolynomialRing(FlintZZ, string(gensym()); cached = cached)
    Qx, = PolynomialRing(FlintQQ, t; cached = cached)
    f = cyclotomic(n, x)
-   return NumberField(Qx(f), s; cached = cached, check = false)
+   C, g = NumberField(Qx(f), s; cached = cached, check = false)
+   set_special(C, :show => show_cyclo, :cyclo => n)
+   return C, g
 end
+
+function show_cyclo(io::IO, a::AnticNumberField)
+  @assert iscyclo_type(a)
+  print(io, "Cyclotomic field of order $(get_special(a, :cyclo))")
+end
+
 
 @doc Markdown.doc"""
     MaximalRealSubfield(n::Int, s::AbstractString, t = "\$"; cached = true)
@@ -1148,9 +1196,16 @@ end
 > constructed, should be printed. If it is not supplied, a default dollar sign
 > will be used to represent the variable.
 """
-function MaximalRealSubfield(n::Int, s::AbstractString, t = "\$"; cached = true)
+function MaximalRealSubfield(n::Int, s::AbstractString = "(z_$n + 1/z_$n)", t = "\$"; cached = true)
    Zx, x = PolynomialRing(FlintZZ, string(gensym()); cached = cached)
    Qx, = PolynomialRing(FlintQQ, t; cached = cached)
    f = cos_minpoly(n, x)
-   return NumberField(Qx(f), s; cached = cached, check = false)
+   R, a =  NumberField(Qx(f), s; cached = cached, check = false)
+   set_special(R, :show => show_maxreal, :maxreal => n)
+   return R, a
 end
+
+function show_maxreal(io::IO, a::AnticNumberField)
+  print(io, "Maximal real subfield of cyclotomic field of order $(get_special(a, :maxreal))")
+end
+

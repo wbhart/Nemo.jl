@@ -248,6 +248,11 @@ function __init__()
    println("")
    println("Nemo comes with absolutely no warranty whatsoever")
    println("")
+
+  t = create_accessors(AnticNumberField, Dict, get_handle())
+
+  global _get_Special_of_nf = t[1]
+  global _set_Special_of_nf = t[2]
 end
 
 function flint_set_num_threads(a::Int)
