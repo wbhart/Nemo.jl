@@ -668,7 +668,7 @@ function addeq!(x::qadic, y::qadic)
    return x
 end
 
-function addeq!(z::qadic, x::qadic, y::qadic)
+function add!(z::qadic, x::qadic, y::qadic)
    z.N = min(x.N, y.N)
    ctx = parent(x)
    ccall((:qadic_add, :libflint), Nothing,
