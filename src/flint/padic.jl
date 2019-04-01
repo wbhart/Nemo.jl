@@ -654,7 +654,7 @@ function addeq!(x::padic, y::padic)
    return x
 end
 
-function addeq!(z::padic, x::padic, y::padic)
+function add!(z::padic, x::padic, y::padic)
    z.N = min(x.N, y.N)
    ctx = parent(x)
    ccall((:padic_add, :libflint), Nothing,
