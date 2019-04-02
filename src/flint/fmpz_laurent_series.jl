@@ -953,7 +953,7 @@ end
 
 @doc Markdown.doc"""
     divexact(a::fmpz_laurent_series, b::fmpz_laurent_series)
-> Return $a/b$. Requires $b$ to be invertible.
+> Return $a/b$.
 """
 function divexact(a::fmpz_laurent_series, b::fmpz_laurent_series)
    check_parent(a, b)
