@@ -396,9 +396,10 @@ function divexact(x::fmpz_abs_series, y::fmpz_abs_series)
       if v1 >= v2
          x = shift_right(x, v2)
          y = shift_right(y, v2)
+      else
+         error("Not an exact division")
       end
    end
-   !isunit(y) && error("Unable to invert power series")
    prec = min(x.prec, y.prec - v2 + v1)
    z = parent(x)()
    z.prec = prec
