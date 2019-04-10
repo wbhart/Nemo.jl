@@ -39,6 +39,16 @@ if !issource_build
       m = @eval module $(gensym()); include($build_file); end
       append!(products, m.products)
   end
+
+  filenames = ["libgmp.la", "libgmpxx.la", "libmpfr.la"]
+  for filename in filenames
+    fpath = joinpath(prefixpath, "lib", filename)
+    txt = read(fpath, String)
+    open(fpath, "w") do f
+      write(f, replace(txt, "/workspace/destdir" => prefixpath))
+    end
+  end
+
 else
   println("Doing a source build for C dependencies...")
 
