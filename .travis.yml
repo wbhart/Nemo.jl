@@ -11,11 +11,12 @@ matrix:
     - julia: nightly
 notifications:
   - email: false
-script:
-  - julia -e 'using Pkg; Pkg.clone(pwd());'
-  - while sleep 30; do echo "still alive"; done &
-  - julia -e 'using Pkg; Pkg.build("Nemo");'
-  - julia -e 'using Pkg; Pkg.test("Nemo");'
+# Use the default script
+#script:
+#  - julia -e 'using Pkg; Pkg.clone(pwd());'
+#  - while sleep 30; do echo "still alive"; done &
+#  - julia -e 'using Pkg; Pkg.build("Nemo");'
+#  - julia -e 'using Pkg; Pkg.test("Nemo");'
 
 env:
    global:
