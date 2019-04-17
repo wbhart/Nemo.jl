@@ -723,6 +723,12 @@ function mul!(z::fmpq_mat, x::fmpq_mat, y::fmpq_mat)
    return z
 end
 
+function add!(z::fmpq_mat, x::fmpq_mat, y::fmpq_mat)
+   ccall((:fmpq_mat_add, :libflint), Nothing,
+                (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpq_mat}), z, x, y)
+   return z
+end
+
 function mul!(y::fmpq_mat, x::Int)
    ccall((:fmpq_mat_scalar_mul_fmpz, :libflint), Nothing,
                 (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpq}), y, y, fmpz(x))
