@@ -1238,6 +1238,12 @@ end
 #
 ###############################################################################
 
+function add!(z::fmpz_mat, x::fmpz_mat, y::fmpz_mat)
+   ccall((:fmpz_mat_add, :libflint), Nothing,
+                (Ref{fmpz_mat}, Ref{fmpz_mat}, Ref{fmpz_mat}), z, x, y)
+   return z
+end
+
 function mul!(z::fmpz_mat, x::fmpz_mat, y::fmpz_mat)
    ccall((:fmpz_mat_mul, :libflint), Nothing,
                 (Ref{fmpz_mat}, Ref{fmpz_mat}, Ref{fmpz_mat}), z, x, y)
