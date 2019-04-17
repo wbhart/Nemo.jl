@@ -1798,7 +1798,9 @@ mutable struct FlintPadicField <: Field
    mode::Cint
    prec_max::Int
 
-   function FlintPadicField(p::fmpz, prec::Int; cached::Bool = true)
+   function FlintPadicField(p::fmpz, prec::Int; cached::Bool = true, check::Bool = true)
+      check && !isprime(p) && throw(DomainError("Characteristic must be prime: $p"))
+
       if cached
          a = (p, prec)
          if haskey(PadicBase, a)
@@ -1862,21 +1864,37 @@ mutable struct FlintQadicField <: Field
    mode::Cint
    a::Int         # fmpz
    j::Ptr{Nothing}   # slong*
-   len::Int 
+   len::Int
    var::Cstring   # char*
    prec_max::Int
 
-   function FlintQadicField(p::fmpz, d::Int, prec::Int)
-      !isprime(p) && error("Prime base required in FlintPadicField")
+   function FlintQadicField(p::fmpz, d::Int, prec::Int; cached::Bool = true, check::Bool = true)
+      check && !isprime(p) && throw(DomainError("Characteristic must be prime: $p"))
+
+      if cached
+         a = (p, d, prec)
+         if haskey(QadicBase, a)
+            return QadicBase[a]
+         end
+      end
+
       z = new()
       ccall((:qadic_ctx_init_conway, :libflint), Nothing,
            (Ref{FlintQadicField}, Ref{fmpz}, Int, Int, Int, Cstring, Cint),
                                      z, p, d, 0, 0, "a", 0)
       finalizer(_qadic_ctx_clear_fn, z)
       z.prec_max = prec
+
+      if cached
+         @assert !haskey(QadicBase, (p, d, prec))
+         QadicBase[(p, d, prec)] = z
+      end
+
       return z
    end
 end
+
+const QadicBase = Dict{Tuple{fmpz, Int, Int}, FlintQadicField}()
 
 function _qadic_ctx_clear_fn(a::FlintQadicField)
    ccall((:qadic_ctx_clear, :libflint), Nothing, (Ref{FlintQadicField},), a)
@@ -1885,9 +1903,9 @@ end
 mutable struct qadic <: FieldElem
    coeffs::Int
    alloc::Int
-   length::Int 
+   length::Int
    val::Int
-   N::Int 
+   N::Int
    parent::FlintQadicField
 
    function qadic(prec::Int)
