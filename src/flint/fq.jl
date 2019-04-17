@@ -49,7 +49,7 @@ end
 
 function Base.hash(a::fq, h::UInt)
    b = 0xb310fb6ea97e1f1a%UInt
-   for i in 1:degree(parent(a)) + 1
+   for i in 0:degree(parent(a)) - 1
       b = xor(b, xor(hash(coeff(a, i), h), h))
       b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
    end
