@@ -399,7 +399,7 @@ end
 ###############################################################################
 
 function GF(n::Int; cached::Bool=true)
-   (n < 0) && throw(DomainError("Characteristic must be prime: $n"))
+   (n <= 0) && throw(DomainError("Characteristic must be positive: $n"))
    un = UInt(n)
    !is_prime(un) && throw(DomainError("Characteristic must be prime: $n"))
    return GaloisField(un, cached)

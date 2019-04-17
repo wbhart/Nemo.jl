@@ -575,7 +575,7 @@ end
 > exception is thrown.
 """
 function Base.exp(a::qadic)
-   !iszero(a) && valuation(a) <= 0 && throw(DomainError())
+   !iszero(a) && valuation(a) <= 0 && throw(DomainError("Valuation must be positive"))
    ctx = parent(a)
    z = qadic(a.N)
    z.parent = ctx
@@ -594,7 +594,7 @@ end
 """
 function log(a::qadic)
    av = valuation(a)
-   (av > 0 || av < 0 || iszero(a)) && throw(DomainError())
+   (av > 0 || av < 0 || iszero(a)) && throw(DomainError("Valuation must be zero"))
    ctx = parent(a)
    z = qadic(a.N)
    z.parent = ctx
@@ -613,7 +613,7 @@ end
 > thrown.
 """
 function teichmuller(a::qadic)
-   valuation(a) < 0 && throw(DomainError())
+   valuation(a) < 0 && throw(DomainError("Valuation must be non-negative"))
    ctx = parent(a)
    z = qadic(a.N)
    z.parent = ctx
