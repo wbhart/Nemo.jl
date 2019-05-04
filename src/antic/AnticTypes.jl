@@ -12,7 +12,7 @@
 
 const AnticNumberFieldID = Dict{Tuple{FmpqPolyRing, fmpq_poly, Symbol}, Field}()
 
-mutable struct AnticNumberField <: Field
+mutable struct AnticNumberField <: SimpleNumField{fmpq}
    pol_coeffs::Ptr{Nothing}
    pol_den::Int
    pol_alloc::Int
@@ -66,7 +66,7 @@ function _AnticNumberField_clear_fn(a::AnticNumberField)
    ccall((:nf_clear, :libantic), Nothing, (Ref{AnticNumberField},), a)
 end
 
-mutable struct nf_elem <: FieldElem
+mutable struct nf_elem <: SimpleNumFieldElem{fmpq}
    elem_coeffs::Ptr{Nothing}
    elem_den::Int
    elem_alloc::Int
