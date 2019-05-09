@@ -26,6 +26,8 @@ parent_type(::Type{fmpz_mat}) = FmpzMatSpace
 
 base_ring(a::FmpzMatSpace) = a.base_ring
 
+dense_matrix_type(::Type{fmpz}) = fmpz_mat
+
 parent(a::fmpz_mat, cached::Bool = true) =
     FmpzMatSpace(nrows(a), ncols(a), cached)
 

@@ -20,6 +20,8 @@ parent_type(::Type{nmod_mat}) = NmodMatSpace
 
 elem_type(::Type{NmodMatSpace}) = nmod_mat
 
+dense_matrix_type(::Type{nmod}) = nmod_mat
+
 function check_parent(x::T, y::T, throw::Bool = true) where T <: Zmodn_mat
    fl = base_ring(x) != base_ring(y)
    fl && throw && error("Residue rings must be equal")

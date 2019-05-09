@@ -44,6 +44,8 @@ base_ring(a::arb_mat) = a.base_ring
 parent(x::arb_mat, cached::Bool = true) =
       MatrixSpace(base_ring(x), nrows(x), ncols(x))
 
+dense_matrix_type(::Type{arb}) = arb_mat
+
 prec(x::ArbMatSpace) = prec(x.base_ring)
 
 function check_parent(x::arb_mat, y::arb_mat, throw::Bool = true)
