@@ -20,6 +20,8 @@ base_ring(a::FmpqMatSpace) = a.base_ring
 
 base_ring(a::fmpq_mat) = a.base_ring
 
+dense_matrix_type(::Type{fmpq}) = fmpq_mat
+
 parent(a::fmpq_mat, cached::Bool = true) =
       FmpqMatSpace(nrows(a), ncols(a), cached)
 

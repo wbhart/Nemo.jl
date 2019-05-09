@@ -16,6 +16,8 @@ parent_type(::Type{gfp_mat}) = GFPMatSpace
 
 elem_type(::Type{GFPMatSpace}) = gfp_mat
 
+dense_matrix_type(::Type{gfp_elem}) = gfp_mat
+
 ###############################################################################
 #
 #   Similar

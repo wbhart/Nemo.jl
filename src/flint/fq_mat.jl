@@ -20,6 +20,8 @@ parent_type(::Type{fq_mat}) = FqMatSpace
 
 elem_type(::Type{FqMatSpace}) = fq_mat
 
+dense_matrix_type(::Type{fq}) = fq_mat
+
 function check_parent(x::fq_mat, y::fq_mat, throw::Bool = true)
    fl = base_ring(x) != base_ring(y)
    fl && throw && error("Residue rings must be equal")
