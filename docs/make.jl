@@ -13,6 +13,7 @@ makedocs(
              "constructors.md",
              "Rings" => [ "integer.md",
                           "polynomial.md",
+                          "mpolynomial.md",
                           "series.md",
                           "puiseux.md",
                           "residue.md"],

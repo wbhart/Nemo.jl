@@ -15,7 +15,7 @@ The features of Nemo so far include:
   - Finite fields (prime and non-prime order)
   - Number field arithmetic
   - Arbitrary precision real and complex balls
-  - Univariate polynomials and matrices over the above
+  - Univariate and multivariate polynomials and matrices over the above
 
 Nemo depends on AbstractAlgebra.jl which provides Nemo with generic routines for:
 
