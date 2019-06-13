@@ -490,3 +490,16 @@ Matrix{BigInt}(A)
 
 In case the matrix cannot be converted without loss, an `InexactError` is thrown: in this case, cast to a matrix of `BigInt`s rather than `Int`s. 
 
+### Eigenvalues and Eigenvectors (experimental)
+
+```@docs
+eigvals(::acb_mat)
+eigvals_simple(a::acb_mat)
+```
+
+```julia
+A = CC[1 2 3; 0 4 5; 0 0 6]
+eigvals_simple(A)
+A = CC[2 2 3; 0 2 5; 0 0 2])
+eigvals(A)
+```

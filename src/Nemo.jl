@@ -27,7 +27,8 @@ if VERSION <= v"0.7.0"
    import Base: atan2, base, contains, nextpow2, prevpow2
 end
 
-import LinearAlgebra: det, norm, nullspace, rank, transpose!, hessenberg, tr, lu, lu!
+import LinearAlgebra: det, norm, nullspace, rank, transpose!, hessenberg, tr,
+                      lu, lu!, eigvals
 
 import AbstractAlgebra: nullspace
 
