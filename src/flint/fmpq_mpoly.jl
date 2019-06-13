@@ -138,6 +138,20 @@ function isconstant(a::fmpq_mpoly)
    return Bool(b)
 end
 
+function content(a::fmpq_mpoly)
+  c = fmpq()
+  ccall((:fmpq_mpoly_content, :libflint), Nothing,
+        (Ref{fmpq}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), c, a, parent(a))
+  return c
+end
+
+function denominator(a::fmpq_mpoly)
+  c = fmpz()
+  ccall((:fmpq_mpoly_get_denominator, :libflint), Nothing,
+        (Ref{fmpz}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), c, a, parent(a))
+  return c
+end
+
 ################################################################################
 #
 #  Getting coefficients
