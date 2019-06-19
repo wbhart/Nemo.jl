@@ -265,6 +265,13 @@ function test_arb_misc_ops()
    @test contains(setunion(RR(3), RR(4)), 3)
    @test contains(setunion(RR(3), RR(4)), 4)
 
+   # Issue #499
+   RRR = ArbField(1000)
+   b, i = unique_integer(RRR(2)^1000);
+   b, i = unique_integer(RRR(2)^1000);
+   b, i = unique_integer(RRR(2)^1000);
+   b, i = unique_integer(RRR(2)^1000);
+
    println("PASS")
 end
 
