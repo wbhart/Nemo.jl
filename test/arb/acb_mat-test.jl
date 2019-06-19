@@ -476,6 +476,40 @@ function test_acb_mat_bound_inf_norm()
    println("PASS")
 end
 
+function test_acb_mat_eigvals()
+   print("acb_mat.eigvals...")
+
+   A = matrix(CC, 3, 3, [1, 2, 3, 0, 4, 5, 0, 0, 6])
+
+   E = eigvals(A)
+   @test length(E) == 3
+   @test E[1][2] == 1
+   @test E[2][2] == 1
+   @test E[3][2] == 1
+   @test contains(E[1][1], 1)
+   @test contains(E[2][1], 4)
+   @test contains(E[3][1], 6)
+
+   EE = eigvals_simple(A)
+   @test length(EE) == 3
+   @test contains(EE[1], 1)
+   @test contains(EE[2], 4)
+   @test contains(EE[3], 6)
+
+   A = matrix(CC, 3, 3, [2, 2, 3, 0, 2, 5, 0, 0, 2])
+
+   E = eigvals(A)
+   @test length(E) == 1
+   @test E[1][2] == 3
+   @test contains(E[1][1], 2)
+
+   @test_throws ErrorException eigvals_simple(A)
+
+   println("PASS")
+end
+
+
+
 function test_acb_mat()
    test_acb_mat_constructors()
    test_acb_mat_printing()
@@ -496,6 +530,7 @@ function test_acb_mat()
    test_acb_mat_exp()
    test_acb_mat_linear_solving()
    test_acb_mat_bound_inf_norm()
+   test_acb_mat_eigvals()
 
    println("")
 end
