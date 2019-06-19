@@ -14,9 +14,10 @@ const wdir = joinpath(@__DIR__)
 if !issource_build
   # Dependencies that must be installed before this package can be built
   dependencies = [
+    # This has to be in sync with the corresponding commit in the source build below (for flint, arb, antic)
     "https://github.com/JuliaMath/GMPBuilder/releases/download/v6.1.2-2/build_GMP.v6.1.2.jl",
     "https://github.com/JuliaMath/MPFRBuilder/releases/download/v4.0.1-3/build_MPFR.v4.0.1.jl",
-    "https://github.com/thofma/Flint2Builder/releases/download/reentrant2/build_libflint.v0.0.0-5451b53703a529ff76123b7418fe2d624e122db6.jl",
+    "https://github.com/thofma/Flint2Builder/releases/download/16e79c/build_libflint.v0.0.0-16e79cb66bc9605d9a0507a4a5b5e7460770b651.jl",
     "https://github.com/thofma/ArbBuilder/releases/download/56ce68/build_libarb.v0.0.0-56ce687ea1ff9a279dc3c8d20f31a4dd09bae6d1.jl",
     "https://github.com/thofma/AnticBuilder/releases/download/e2788/build_libantic.v0.0.0-e2788d9be58dc9850b7557689a6eb05f5cdb746b.jl"
    ]
@@ -57,7 +58,7 @@ else
   @show MPIR_VERSION = "3.0.0-90740d8fdf03b941b55723b449831c52fd7f51ca"
   @show MPFR_VERSION = "4.0.0"
   @show ANTIC_VERSION = "e2788d9be58dc9850b7557689a6eb05f5cdb746b"
-  @show FLINT_VERSION = "5451b53703a529ff76123b7418fe2d624e122db6"
+  @show FLINT_VERSION = "16e79cb66bc9605d9a0507a4a5b5e7460770b651"
   @show ARB_VERSION = "56ce687ea1ff9a279dc3c8d20f31a4dd09bae6d1"
 
   if Sys.iswindows()
