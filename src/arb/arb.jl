@@ -18,7 +18,7 @@ export ball, radius, midpoint, contains, contains_zero,
        accuracy_bits, trim, ldexp, setunion, setintersection,
        const_pi, const_e, const_log2, const_log10, const_euler,
        const_catalan, const_khinchin, const_glaisher,
-       floor, ceil, hypot, rsqrt, sqrt1pm1, root,
+       floor, ceil, hypot, rsqrt, sqrt1pm1, sqrtpos, root,
        log, log1p, expm1, sin, cos, sinpi, cospi, tan, cot,
        tanpi, cotpi, sinh, cosh, tanh, coth, atan, asin, acos,
        atanh, asinh, acosh, gamma, lgamma, rgamma, digamma, zeta,
@@ -1103,6 +1103,18 @@ function sqrt1pm1(x::arb)
    ccall((:arb_sqrt1pm1, :libarb), Nothing, (Ref{arb}, Ref{arb}, Int), z, x, parent(x).prec)
    return z
 end
+
+@doc Markdown.doc"""
+    sqrtpos(x::arb)
+> Return the sqrt root of $x$, assuming that $x$ represents a nonnegative
+> number. Thus any negative number in the input interval is discarded.
+"""
+function sqrtpos(x::arb)
+   z = parent(x)()
+   ccall((:arb_sqrtpos, :libarb), Nothing, (Ref{arb}, Ref{arb}, Int), z, x, parent(x).prec)
+   return z
+end
+
 
 @doc Markdown.doc"""
     log(x::arb)

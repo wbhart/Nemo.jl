@@ -321,6 +321,10 @@ function test_arb_functions()
    @test rsqrt(RR(4)) == 0.5
    @test sqrt1pm1(RR(15)) == 3
 
+   x = sqrtpos(sqrt(RR(2)) - sqrt(RR(2)))
+   @test isfinite(x)
+   @test contains(x, 0)
+
    x = sqrt(RR(2)) - 1
    y = sqrt(RR(3)) - 1
 
