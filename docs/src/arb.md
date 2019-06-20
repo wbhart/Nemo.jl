@@ -406,6 +406,10 @@ sqrt1pm1(::arb)
 ```
 
 ```@docs
+sqrtpos(::arb)
+```
+
+```@docs
 log(::arb)
 ```
 
