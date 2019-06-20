@@ -97,7 +97,11 @@ function test_fmpq_mpoly_manipulation()
       end
 
       c = @inferred content(f)
-      @test abs(reduce(gcd, (coeff(f, i) for i in 1:length(f)))) == c
+      if length(f) > 0
+        @test abs(reduce(gcd, (coeff(f, i) for i in 1:length(f)))) == c
+      else
+        @test iszero(c)
+      end
 
       c = @inferred denominator(f)
       g = c * f
