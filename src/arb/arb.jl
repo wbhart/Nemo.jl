@@ -958,6 +958,18 @@ function setintersection(x::arb, y::arb)
   return z
 end
 
+doc"""
+    setintersection(x::arb, y::arb)
+> Return an `arb` containing the intersection of the intervals represented by
+> $x$ and $y$.
+"""
+function setintersection(x::arb, y::arb)
+  z = parent(x)()
+  ccall((:arb_intersection, :libarb), Void,
+              (Ref{arb}, Ref{arb}, Ref{arb}, Int), z, x, y, parent(x).prec)
+  return z
+end
+
 ################################################################################
 #
 #  Constants
