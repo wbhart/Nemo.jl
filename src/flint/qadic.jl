@@ -225,6 +225,7 @@ function show(io::IO, x::qadic)
    R = FlintPadicField(prime(parent(x)), parent(x).prec_max)
    if iszero(x) 
      print(io, "0")
+     return
    end
    len = degree(parent(x)) + 1
    c = R()
