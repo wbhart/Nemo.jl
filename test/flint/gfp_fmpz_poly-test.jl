@@ -10,7 +10,7 @@ function test_gfp_fmpz_poly_constructors()
 
    @test typeof(S) <: GFPFmpzPolyRing
 
-   @test isa(x, PolyElem)
+   @test isa(x, PolyElem{Generic.ResF{fmpz}})
 
    f = x^3 + 2x^2 + x + 1
 

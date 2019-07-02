@@ -873,7 +873,7 @@ const GFPFmpzPolyRingID = Dict{Tuple{Generic.ResField{fmpz}, Symbol}, GFPFmpzPol
 
 const ZmodNFmpzPolyRing = Union{FmpzModPolyRing, GFPFmpzPolyRing}
 
-mutable struct gfp_fmpz_poly <: PolyElem{Generic.Res{fmpz}}
+mutable struct gfp_fmpz_poly <: PolyElem{Generic.ResF{fmpz}}
    coeffs::Ptr{Nothing}
    alloc::Int
    length::Int
