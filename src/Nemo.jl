@@ -107,6 +107,8 @@ else
    const libantic = joinpath(pkgdir, "deps", "usr", "lib", "libantic")
 end
 
+const __isthreaded =  "NEMO_THREADED" in keys(ENV) && ENV["NEMO_THREADED"] == "1"
+
 function flint_abort()
   error("Problem in the Flint-Subsystem")
 end
@@ -212,6 +214,14 @@ function trace_memory(b::Bool)
 end
 
 function __init__()
+
+   # In case libgmp picks up the wrong libgmp later on, we "unset" the jl_*
+   # functions from the julia :libgmp.
+   if __isthreaded
+      ccall((:__gmp_set_memory_functions, :libgmp), Nothing,
+            (Int, Int, Int), 0, 0, 0)
+   end
+
    if "HOSTNAME" in keys(ENV) && ENV["HOSTNAME"] == "juliabox"
        push!(Libdl.DL_LOAD_PATH, "/usr/local/lib")
    elseif Sys.islinux()
@@ -227,18 +237,20 @@ function __init__()
    end
 
    if !Sys.iswindows()
-      ccall((:__gmp_set_memory_functions, libgmp), Nothing,
-         (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
-         cglobal(:jl_gc_counted_malloc),
-         cglobal(:jl_gc_counted_realloc_with_old_size),
-         cglobal(:jl_gc_counted_free))
+     if !__isthreaded
+         ccall((:__gmp_set_memory_functions, libgmp), Nothing,
+            (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
+            cglobal(:jl_gc_counted_malloc),
+            cglobal(:jl_gc_counted_realloc_with_old_size),
+            cglobal(:jl_gc_counted_free))
 
-      ccall((:__flint_set_memory_functions, libflint), Nothing,
-         (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
-         cglobal(:jl_malloc),
-         cglobal(:jl_calloc),
-         cglobal(:jl_realloc),
-         cglobal(:jl_free))
+         ccall((:__flint_set_memory_functions, libflint), Nothing,
+            (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
+            cglobal(:jl_malloc),
+            cglobal(:jl_calloc),
+            cglobal(:jl_realloc),
+            cglobal(:jl_free))
+      end
    end
 
    ccall((:flint_set_abort, libflint), Nothing,
@@ -254,10 +266,15 @@ function __init__()
 
   global _get_Special_of_nf = t[1]
   global _set_Special_of_nf = t[2]
+
 end
 
 function flint_set_num_threads(a::Int)
-   ccall((:flint_set_num_threads, libflint), Nothing, (Int,), a)
+   if !__isthreaded
+     error("To use threaded flint, julia has to be started with NEMO_THREADED=1")
+   else
+     ccall((:flint_set_num_threads, libflint), Nothing, (Int,), a)
+   end
 end
 
 function flint_cleanup()
