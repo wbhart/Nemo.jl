@@ -104,10 +104,11 @@ else
   if !ispath(joinpath(wdir, "yasm-$YASM_VERSION"))
      println("Building yasm ... ")
      YASM_FILE = "yasm-" * YASM_VERSION * ".tar.gz"
-     download("http://www.tortall.net/projects/yasm/releases/$YASM_FILE", YASM_FILE)
+     download("https://github.com/yasm/yasm/archive/v$(YASM_VERSION).tar.gz", YASM_FILE)
      run(`tar -xvf $YASM_FILE`)
      run(`rm $YASM_FILE`)
      cd(joinpath("$wdir","yasm-$YASM_VERSION"))
+     run(`./autogen.sh`)
      run(`./configure`)
      run(`make`)
      println("DONE")
