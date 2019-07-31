@@ -52,6 +52,13 @@ if !issource_build
 
 else
   println("Doing a source build for C dependencies...")
+  if "NEMO_BUILD_THREADS" in keys(ENV)
+     build_threads = ENV["NEMO_BUILD_THREADS"]
+     println("Using $build_threads threads for building as specified by NEMO_BUILD_THREADS.")
+  else
+     build_threads = Sys.CPU_THREADS
+     println("Using $build_threads threads (detected that many CPU threads).")
+  end
 
   @show M4_VERSION = "1.4.17"
   @show YASM_VERSION = "1.3.0"
@@ -138,7 +145,7 @@ else
   catch
      run(`./configure --with-yasm=$wdir/yasm-$YASM_VERSION/yasm --prefix=$prefixpath M4=$prefixpath/bin/m4 --enable-gmpcompat --disable-static --enable-shared`)
   end
-  run(`make -j4`)
+  run(`make -j$build_threads`)
   run(`make install`)
   cd(wdir)
   run(`rm -rf bin`)
@@ -165,7 +172,7 @@ else
   cd("$wdir/mpfr-$MPFR_VERSION")
   withenv("LD_LIBRARY_PATH"=>"$prefixpath/lib", "LDFLAGS"=>LDFLAGS) do
     run(`./configure --prefix=$prefixpath --with-gmp=$prefixpath --disable-static --enable-shared`)
-    run(`make -j4`)
+    run(`make -j$build_threads`)
     run(`make install`)
   end
   println("DONE")
@@ -196,7 +203,7 @@ else
   cd(joinpath("$wdir", "flint2"))
   withenv("LD_LIBRARY_PATH"=>"$prefixpath/lib", "LDFLAGS"=>LDFLAGS) do
     run(`./configure --prefix=$prefixpath --disable-static --enable-shared --with-mpir=$prefixpath --with-mpfr=$prefixpath`)
-    run(`make -j4`)
+    run(`make -j$build_threads`)
     run(`make install`)
   end
 
@@ -227,7 +234,7 @@ else
   cd(joinpath("$wdir", "arb"))
   withenv("LD_LIBRARY_PATH"=>"$prefixpath/lib", "LDFLAGS"=>LDFLAGS) do
     run(`./configure --prefix=$prefixpath --disable-static --enable-shared --with-mpir=$prefixpath --with-mpfr=$prefixpath --with-flint=$prefixpath`)
-    run(`make -j4`)
+    run(`make -j$build_threads`)
     run(`make install`)
   end
   println("DONE")
@@ -257,7 +264,7 @@ else
   cd(joinpath("$wdir", "antic"))
   withenv("LD_LIBRARY_PATH"=>"$prefixpath/lib", "LDFLAGS"=>LDFLAGS) do
     run(`./configure --prefix=$prefixpath --disable-static --enable-shared --with-mpir=$prefixpath --with-mpfr=$prefixpath --with-flint=$prefixpath`)
-    run(`make -j4`)
+    run(`make -j$build_threads`)
     run(`make install`)
   end
   println("DONE")
