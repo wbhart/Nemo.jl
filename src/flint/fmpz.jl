@@ -1028,6 +1028,69 @@ function _factor(a::fmpz)
    return res, canonical_unit(a)
 end
 
+################################################################################
+#
+#   ECM
+#
+################################################################################
+
+function _ecm(a::fmpz, B1::UInt, B2::UInt, ncrv::UInt,
+             rnd = _flint_rand_states[Threads.threadid()])
+  f = fmpz()
+  r = ccall((:fmpz_factor_ecm, :libflint), Int32,
+            (Ref{fmpz}, UInt, UInt, UInt, Ptr{Cvoid}, Ref{fmpz}),
+            f, ncrv, B1, B2, rnd.ptr, a)
+  return r, f
+end
+
+function _ecm(a::fmpz, B1::Int, B2::Int, ncrv::Int,
+             rnd = _flint_rand_states[Threads.threadid()])
+  return _ecm(a, UInt(B1), UInt(B2), UInt(ncrv), rnd)
+end
+
+function ecm(a::fmpz, max_digits::Int = div(ndigits(a), 2) + 1,
+             rnd = _flint_rand_states[Threads.threadid()],
+             B1 = _ecm_B1s[Threads.threadid()],
+             nC = _ecm_nCs[Threads.threadid()])
+  n = ndigits(a, 10)
+  B1s = 15
+
+  i = 1
+  s = div(max_digits-15, 5) + 2
+  s = max(i, s)
+  while i <= s
+    e, f = _ecm(a, B1[i]*1000, B1[i]*1000*100, nC[i], rnd)
+    if e != 0
+      return (e,f)
+    end
+    i += 1
+    if i > length(B1)
+      return (e, f)
+    end
+  end
+  return (Int32(0), a)
+end
+
+################################################################################
+#
+#   Factor trial range
+#
+################################################################################
+
+function _factor_trial_range(N::fmpz, start::Int = 0, np::Int = 10^5)
+   F = fmpz_factor()
+   ccall((:fmpz_factor_trial_range, :libflint), Nothing,
+         (Ref{Nemo.fmpz_factor}, Ref{fmpz}, UInt, UInt), F, N, start, np)
+   res = Dict{fmpz, Int}()
+   for i in 1:F.num
+     z = fmpz()
+     ccall((:fmpz_factor_get_fmpz, :libflint), Nothing,
+           (Ref{fmpz}, Ref{Nemo.fmpz_factor}, Int), z, F, i - 1)
+     res[z] = unsafe_load(F.exp, i)
+   end
+   return res, canonical_unit(N)
+end
+
 @doc Markdown.doc"""
     factor(a::fmpz)
 > Return a factorisation of $a$ using a `Fac` struct (see the documentation on

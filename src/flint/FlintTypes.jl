@@ -4293,3 +4293,26 @@ function _fq_nmod_mat_clear_fn(a::fq_nmod_mat)
    ccall((:fq_nmod_mat_clear, :libflint), Nothing, (Ref{fq_nmod_mat}, Ref{FqNmodFiniteField}), a, base_ring(a))
 end
 
+################################################################################
+#
+#   Rand state
+#
+################################################################################
+
+mutable struct rand_ctx
+   ptr::Ptr{Cvoid}
+
+   function rand_ctx()
+      z = new()
+      z.ptr = ccall((:flint_rand_alloc, libflint), Ptr{Cvoid}, ( ))
+      ccall((:flint_randinit, libflint), Cvoid, (Ptr{Cvoid}, ), z.ptr)
+      finalizer(_rand_ctx_clear_fn, z)
+      return z
+   end
+end
+
+function _rand_ctx_clear_fn(a::rand_ctx)
+   ccall((:flint_randclear, libflint), Cvoid, (Ptr{Cvoid}, ), a.ptr)
+   ccall((:flint_rand_free, libflint), Cvoid, (Ptr{Cvoid}, ), a.ptr)
+   nothing
+end

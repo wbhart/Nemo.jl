@@ -549,36 +549,45 @@ end
 function test_fmpz_factor()
    print("fmpz.factor...")
 
-   a = fmpz(fmpz(-3*5*7*11*13^10))
+   a = fmpz(-3*5*7*11*13^10)
 
-   fac = factor(a)
+   fact = factor(a)
 
-   b = unit(fac)
+   b = unit(fact)
 
-   for (p, e) in fac
+   for (p, e) in fact
       b = b*p^e
    end
 
    @test b == a
 
-   @test fac[fmpz(3)] == 1
-   @test fac[fmpz(5)] == 1
-   @test fac[fmpz(7)] == 1
-   @test fac[fmpz(11)] == 1
-   @test fac[fmpz(13)] == 10
-   @test 3 in fac
-   @test !(2 in fac)
+   @test fact[fmpz(3)] == 1
+   @test fact[fmpz(5)] == 1
+   @test fact[fmpz(7)] == 1
+   @test fact[fmpz(11)] == 1
+   @test fact[fmpz(13)] == 10
+   @test 3 in fact
+   @test !(2 in fact)
 
-   fac = factor(fmpz(-1))
+   fact = factor(fmpz(-1))
 
-   @test fac.fac == Dict{fmpz, Int}()
+   @test fact.fac == Dict{fmpz, Int}()
 
-   fac = factor(fmpz(-2))
+   fact = factor(fmpz(-2))
 
-   @test fac.fac == Dict(fmpz(2) => 1)
-   @test unit(fac) == -1
+   @test fact.fac == Dict(fmpz(2) => 1)
+   @test unit(fact) == -1
 
    @test_throws ArgumentError factor(fmpz(0))
+
+   n = fmpz(2 * 1125899906842679)
+   b, f = Nemo.ecm(n)
+   @test mod(n, f) == 0
+
+   n = fac(50)
+   d, u = Nemo._factor_trial_range(n, 0, 50)
+   @test isone(u)
+   @test prod(p^e for (p, e) in d) == n
 
    println("PASS")
 end

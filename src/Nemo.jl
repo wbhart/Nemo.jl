@@ -113,6 +113,12 @@ function flint_abort()
   error("Problem in the Flint-Subsystem")
 end
 
+################################################################################
+#
+#  Debugging tools for allocation tracking
+#
+################################################################################
+
 active_mem = Dict{UInt, Tuple{Symbol, UInt, Any}}()
 
 function trace_malloc(n::UInt)
@@ -128,7 +134,6 @@ function trace_calloc(n::UInt, s::UInt)
   active_mem[u] = (:calloc, n*s, backtrace())
   return u
 end
-
 
 function trace_free(n::UInt)
   global active_mem
@@ -213,8 +218,13 @@ function trace_memory(b::Bool)
   end
 end
 
-function __init__()
+################################################################################
+#
+#  Initialization function
+#
+################################################################################
 
+function __init__()
    # In case libgmp picks up the wrong libgmp later on, we "unset" the jl_*
    # functions from the julia :libgmp.
    if __isthreaded
@@ -267,6 +277,15 @@ function __init__()
   global _get_Special_of_nf = t[1]
   global _set_Special_of_nf = t[2]
 
+  # Initialize the thread local random state
+  resize!(_flint_rand_states, Threads.nthreads())
+  for i in 1:Threads.nthreads()
+     _flint_rand_states[i] = rand_ctx()
+  end
+
+  # Initialize the thread local ECM parameters
+  Threads.resize_nthreads!(_ecm_B1s)
+  Threads.resize_nthreads!(_ecm_nCs)
 end
 
 function flint_set_num_threads(a::Int)
@@ -356,6 +375,21 @@ include("arb/ArbTypes.jl")
 include("flint/adhoc.jl")
 
 include("Rings.jl")
+
+################################################################################
+#
+#  Thread local storages
+#
+################################################################################
+
+const _flint_rand_states = rand_ctx[]
+
+# Data from http://www.mersennewiki.org/index.php/Elliptic_Curve_Method
+const _ecm_B1 = Int[2, 11, 50, 250, 1000, 3000, 11000, 43000, 110000, 260000, 850000, 2900000];
+const _ecm_nC = Int[25, 90, 300, 700, 1800, 5100, 10600, 19300, 49000, 124000, 210000, 340000];
+
+const _ecm_B1s = Vector{Int}[_ecm_B1]
+const _ecm_nCs = Vector{Int}[_ecm_nC]
 
 ###############################################################################
 #
