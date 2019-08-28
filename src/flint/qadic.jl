@@ -715,7 +715,13 @@ function gen(R::FlintQadicField)
 end
 
 function (R::FlintQadicField)(a::UInt)
-   z = qadic(R.prec_max)
+   if a == 0
+     z = qadic(R.prec_max)
+     z.parent = R
+     return z
+   end
+   v = valuation(a, prime(R))
+   z = qadic(R.prec_max + v)
    ccall((:qadic_set_ui, :libflint), Nothing,
          (Ref{qadic}, UInt, Ref{FlintQadicField}), z, a, R)
    z.parent = R
@@ -723,7 +729,13 @@ function (R::FlintQadicField)(a::UInt)
 end
 
 function (R::FlintQadicField)(a::Int)
-   z = qadic(R.prec_max)
+   if a == 0
+     z = qadic(R.prec_max)
+     z.parent = R
+     return z
+   end
+   v = valuation(a, prime(R))
+   z = qadic(R.prec_max + v)
    ccall((:padic_poly_set_si, :libflint), Nothing,
          (Ref{qadic}, Int, Ref{FlintQadicField}), z,a, R)
    z.parent = R
@@ -735,7 +747,7 @@ function (R::FlintQadicField)(n::fmpz)
       N = 0
    else
       p = prime(R)
-      N, = remove(n, p)
+      N = valuation(n, p)
    end
    z = qadic(N + R.prec_max)
    ccall((:padic_poly_set_fmpz, :libflint), Nothing,
