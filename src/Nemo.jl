@@ -267,7 +267,7 @@ function __init__()
          (Ptr{Nothing},), @cfunction(flint_abort, Nothing, ()))
 
    println("")
-   println("Welcome to Nemo version 0.14.2")
+   println("Welcome to Nemo version $(version())")
    println("")
    println("Nemo comes with absolutely no warranty whatsoever")
    println("")
@@ -306,8 +306,10 @@ end
 #
 ################################################################################
 
+version() = v"0.14.3"
+
 function versioninfo()
-  print("Nemo version 0.14.2\n")
+  print("Nemo version $(version())\n")
   nemorepo = dirname(dirname(@__FILE__))
 
   print("Nemo: ")
