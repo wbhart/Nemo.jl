@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-export fq_mat, FqMatSpace, getindex, setindex!, set_entry!, deepcopy, rows, 
-       cols, parent, base_ring, zero, one, show, transpose,
+export fq_mat, FqMatSpace, getindex, setindex!, set_entry!, deepcopy, rows,
+       cols, parent, base_ring, zero, one, transpose,
        transpose!, rref, rref!, tr, det, rank, inv, solve, lu,
        sub, hcat, vcat, Array, lift, lift!, MatrixSpace, check_parent,
        howell_form, howell_form!, strong_echelon_form, strong_echelon_form!
@@ -120,41 +120,6 @@ end
 
 ################################################################################
 #
-#  AbstractString I/O
-#
-################################################################################
-
-function show(io::IO, a::FqMatSpace)
-   print(io, "Matrix Space of ")
-   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
-   print(io, a.base_ring)
-end
-
-function show(io::IO, a::fq_mat)
-   rows = a.r
-   cols = a.c
-
-   if rows*cols == 0
-      print(io, "$rows by $cols matrix")
-   end
-
-   for i = 1:rows
-      print(io, "[")
-      for j = 1:cols
-         print(io, a[i, j])
-         if j != cols
-            print(io, " ")
-         end
-      end
-      print(io, "]")
-      if i != rows
-         println(io, "")
-      end
-   end
-end
-
-################################################################################
-#
 #  Comparison
 #
 ################################################################################
@@ -186,7 +151,7 @@ function transpose(a::fq_mat)
    return z
 end
 
-# There is no transpose for fq_mat 
+# There is no transpose for fq_mat
 #function transpose(a::fq_mat)
 #  z = FqMatSpace(base_ring(a), ncols(a), nrows(a))()
 #  ccall((:fq_mat_transpose, :libflint), Nothing,
@@ -341,7 +306,7 @@ end
 *(x::fq, y::fq_mat) = y * x
 
 function *(x::fq_mat, y::fmpz)
-   return base_ring(x)(y) * x 
+   return base_ring(x)(y) * x
 end
 
 *(x::fmpz, y::fq_mat) = y * x
@@ -538,7 +503,7 @@ function Base.view(x::fq_mat, r1::Int, c1::Int, r2::Int, c2::Int)
      c1 = 1
      c2 = 0
    end
-  
+
    z = fq_mat()
    z.base_ring = x.base_ring
    z.view_parent = x
@@ -567,7 +532,7 @@ function sub(x::fq_mat, r::UnitRange{Int}, c::UnitRange{Int})
 end
 
 getindex(x::fq_mat, r::UnitRange{Int}, c::UnitRange{Int}) = sub(x, r, c)
- 
+
 ################################################################################
 #
 #  Concatenation

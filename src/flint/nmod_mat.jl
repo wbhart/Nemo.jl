@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-export nmod_mat, NmodMatSpace, getindex, setindex!, set_entry!, deepcopy, rows, 
-       cols, parent, base_ring, zero, one, show, transpose,
+export nmod_mat, NmodMatSpace, getindex, setindex!, set_entry!, deepcopy, rows,
+       cols, parent, base_ring, zero, one, transpose,
        transpose!, rref, rref!, tr, det, rank, inv, solve, lu,
        sub, hcat, vcat, Array, lift, lift!, MatrixSpace, check_parent,
        howell_form, howell_form!, strong_echelon_form, strong_echelon_form!
@@ -80,7 +80,7 @@ end
 
 @inline function setindex!(a::nmod_mat, u::nmod, i::Int, j::Int)
   @boundscheck Generic._checkbounds(a, i, j)
-  (base_ring(a) != parent(u)) && error("Parent objects must coincide") 
+  (base_ring(a) != parent(u)) && error("Parent objects must coincide")
   set_entry!(a, i, j, u.data)
 end
 
@@ -108,7 +108,7 @@ set_entry!(a::nmod_mat, i::Int, j::Int, u::nmod) =
 
 set_entry_t!(a::T, i::Int, j::Int, u::V) where {V <: Union{RingElem, Integer}, T <: Zmodn_mat} =
   set_entry!(a, j, i, u)
- 
+
 function deepcopy_internal(a::nmod_mat, dict::IdDict)
   z = nmod_mat(nrows(a), ncols(a), a.n)
   if isdefined(a, :base_ring)
@@ -147,39 +147,6 @@ end
 function iszero(a::T) where T <: Zmodn_mat
   r = ccall((:nmod_mat_is_zero, :libflint), Cint, (Ref{T}, ), a)
   return Bool(r)
-end
-
-################################################################################
-#
-#  AbstractString I/O
-#
-################################################################################
-
-function show(io::IO, a::NmodMatSpace)
-   print(io, "Matrix Space of ")
-   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
-   print(io, a.base_ring)
-end
-
-function show(io::IO, a::T) where T <: Zmodn_mat
-   rows = a.r
-   cols = a.c
-   if rows * cols == 0
-      print(io, "$rows by $cols matrix")
-   end
-   for i = 1:rows
-      print(io, "[")
-      for j = 1:cols
-         print(io, a[i, j])
-         if j != cols
-            print(io, " ")
-         end
-      end
-      print(io, "]")
-      if i != rows
-         println(io, "")
-      end
-   end
 end
 
 ################################################################################
@@ -660,13 +627,13 @@ function lift(a::T) where {T <: Zmodn_mat}
   z.base_ring = FlintZZ
   ccall((:fmpz_mat_set_nmod_mat, :libflint), Nothing,
           (Ref{fmpz_mat}, Ref{T}), z, a)
-  return z 
+  return z
 end
 
 function lift!(z::fmpz_mat, a::T) where T <: Zmodn_mat
   ccall((:fmpz_mat_set_nmod_mat, :libflint), Nothing,
           (Ref{fmpz_mat}, Ref{T}), z, a)
-  return z 
+  return z
 end
 
 ################################################################################
@@ -891,4 +858,3 @@ function MatrixSpace(R::Generic.ResRing{fmpz}, r::Int, c::Int, cached::Bool = tr
   T = elem_type(R)
   return Generic.MatSpace{T}(R, r, c, cached)
 end
-

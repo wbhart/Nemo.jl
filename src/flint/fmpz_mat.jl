@@ -6,7 +6,7 @@
 
 export fmpz_mat, FmpzMatSpace, getindex, getindex!, setindex!, rows, cols,
        charpoly, det, det_divisor, det_given_divisor, gram, hadamard,
-       ishadamard, hnf, ishnf, hnf_with_transform, hnf_modular, lll, lll!, 
+       ishadamard, hnf, ishnf, hnf_with_transform, hnf_modular, lll, lll!,
        lll_ctx, lll_gram, lll_gram!, lll_with_transform,
        lll_gram_with_transform, lll_with_removal, lll_with_removal_transform,
        nullspace, rank, rref, reduce_mod, similar, snf, snf_diagonal, issnf,
@@ -62,20 +62,20 @@ end
 ###############################################################################
 
 function _checkrange_or_empty(l::Int, start::Int, stop::Int)
-   (stop < start) || 
+   (stop < start) ||
    (Generic._checkbounds(l, start) &&
-    Generic._checkbounds(l, stop)) 
+    Generic._checkbounds(l, stop))
 end
 
 function Base.view(x::fmpz_mat, r1::Int, c1::Int, r2::Int, c2::Int)
-   
+
    _checkrange_or_empty(nrows(x), r1, r2) ||
       Base.throw_boundserror(x, (r1:r2, c1:c2))
 
    _checkrange_or_empty(ncols(x), c1, c2) ||
       Base.throw_boundserror(x, (r1:r2, c1:c2))
 
-   if (r1 > r2) 
+   if (r1 > r2)
      r1 = 1
      r2 = 0
    end
@@ -83,7 +83,7 @@ function Base.view(x::fmpz_mat, r1::Int, c1::Int, r2::Int, c2::Int)
      c1 = 1
      c2 = 0
    end
-       
+
    b = fmpz_mat()
    b.base_ring = FlintZZ
    b.view_parent = x
@@ -194,33 +194,6 @@ canonical_unit(a::fmpz_mat) = canonical_unit(a[1, 1])
 #   AbstractString I/O
 #
 ###############################################################################
-
-function show(io::IO, a::FmpzMatSpace)
-   print(io, "Matrix Space of ")
-   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
-   print(io, "Integer Ring")
-end
-
-function show(io::IO, a::fmpz_mat)
-   r = nrows(a)
-   c = ncols(a)
-   if r*c == 0
-      print(io, "$r by $c matrix")
-   end
-   for i = 1:r
-      print(io, "[")
-      for j = 1:c
-         print(io, a[i, j])
-         if j != c
-            print(io, " ")
-         end
-      end
-      print(io, "]")
-      if i != r
-         println(io, "")
-      end
-   end
-end
 
 show_minus_one(::Type{fmpz_mat}) = show_minus_one(fmpz)
 
