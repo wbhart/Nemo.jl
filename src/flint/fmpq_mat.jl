@@ -201,33 +201,6 @@ canonical_unit(a::fmpq_mat) = canonical_unit(a[1, 1])
 #
 ###############################################################################
 
-function show(io::IO, a::FmpqMatSpace)
-   print(io, "Matrix Space of ")
-   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
-   print(io, "Rational Field")
-end
-
-function show(io::IO, a::fmpq_mat)
-   r = nrows(a)
-   c = ncols(a)
-   if r*c == 0
-      print(io, "$r by $c matrix")
-   end
-   for i = 1:r
-      print(io, "[")
-      for j = 1:c
-         print(io, a[i, j])
-         if j != c
-            print(io, " ")
-         end
-      end
-      print(io, "]")
-      if i != r
-         println(io, "")
-      end
-   end
-end
-
 show_minus_one(::Type{fmpq_mat}) = show_minus_one(fmpq)
 
 ###############################################################################
@@ -709,7 +682,7 @@ end
 ###############################################################################
 
 function similarity!(z::fmpq_mat, r::Int, d::fmpq)
-   ccall((:fmpq_mat_similarity, :libflint), Nothing, 
+   ccall((:fmpq_mat_similarity, :libflint), Nothing,
          (Ref{fmpq_mat}, Int, Ref{fmpq}), z, r - 1, d)
 end
 

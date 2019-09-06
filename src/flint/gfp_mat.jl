@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-export gfp_mat, GFPMatSpace 
+export gfp_mat, GFPMatSpace
 
 ################################################################################
 #
@@ -74,18 +74,6 @@ function one(a::GFPMatSpace)
   z = a()
   ccall((:nmod_mat_one, :libflint), Nothing, (Ref{gfp_mat}, ), z)
   return z
-end
-
-################################################################################
-#
-#  AbstractString I/O
-#
-################################################################################
-
-function show(io::IO, a::GFPMatSpace)
-   print(io, "Matrix Space of ")
-   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
-   print(io, a.base_ring)
 end
 
 ################################################################################
@@ -239,7 +227,7 @@ function lift(a::gfp_mat)
   z.base_ring = FlintZZ
   ccall((:fmpz_mat_set_nmod_mat, :libflint), Nothing,
           (Ref{fmpz_mat}, Ref{gfp_mat}), z, a)
-  return z 
+  return z
 end
 
 ################################################################################
@@ -459,4 +447,3 @@ end
 function MatrixSpace(R::GaloisField, r::Int, c::Int, cached::Bool = true)
   GFPMatSpace(R, r, c, cached)
 end
-

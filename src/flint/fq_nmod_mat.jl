@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-export fq_nmod_mat, FqNmodMatSpace, getindex, setindex!, set_entry!, deepcopy, rows, 
+export fq_nmod_mat, FqNmodMatSpace, getindex, setindex!, set_entry!, deepcopy, rows,
        cols, parent, base_ring, zero, one, show, transpose,
-       transpose!, rref, rref!, tr, det, rank, inv, solve, 
+       transpose!, rref, rref!, tr, det, rank, inv, solve,
        sub, hcat, vcat, Array, lift, lift!, MatrixSpace, check_parent,
        howell_form, howell_form!, strong_echelon_form, strong_echelon_form!
 
@@ -120,39 +120,6 @@ end
 
 ################################################################################
 #
-#  AbstractString I/O
-#
-################################################################################
-
-function show(io::IO, a::FqNmodMatSpace)
-   print(io, "Matrix Space of ")
-   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
-   print(io, a.base_ring)
-end
-
-function show(io::IO, a::fq_nmod_mat)
-   rows = a.r
-   cols = a.c
-   if rows*cols == 0
-      print(io, "$rows by $cols matrix")
-   end
-   for i = 1:rows
-      print(io, "[")
-      for j = 1:cols
-         print(io, a[i, j])
-         if j != cols
-            print(io, " ")
-         end
-      end
-      print(io, "]")
-      if i != rows
-         println(io, "")
-      end
-   end
-end
-
-################################################################################
-#
 #  Comparison
 #
 ################################################################################
@@ -184,7 +151,7 @@ function transpose(a::fq_nmod_mat)
    return z
 end
 
-# There is no transpose for fq_nmod_mat 
+# There is no transpose for fq_nmod_mat
 #function transpose(a::fq_nmod_mat)
 #  z = FqNmodMatSpace(base_ring(a), ncols(a), nrows(a))()
 #  ccall((:fq_nmod_mat_transpose, :libflint), Nothing,
@@ -339,7 +306,7 @@ end
 *(x::fq_nmod, y::fq_nmod_mat) = y * x
 
 function *(x::fq_nmod_mat, y::fmpz)
-   return base_ring(x)(y) * x 
+   return base_ring(x)(y) * x
 end
 
 *(x::fmpz, y::fq_nmod_mat) = y * x
@@ -565,7 +532,7 @@ function sub(x::fq_nmod_mat, r::UnitRange{Int}, c::UnitRange{Int})
 end
 
 getindex(x::fq_nmod_mat, r::UnitRange{Int}, c::UnitRange{Int}) = sub(x, r, c)
- 
+
 ################################################################################
 #
 #  Concatenation

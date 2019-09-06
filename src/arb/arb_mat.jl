@@ -120,39 +120,6 @@ function deepcopy_internal(x::arb_mat, dict::IdDict)
   return z
 end
 
-###############################################################################
-#
-#   String I/O
-#
-###############################################################################
-
-function show(io::IO, a::ArbMatSpace)
-   print(io, "Matrix Space of ")
-   print(io, nrows(a), " rows and ", ncols(a), " columns over ")
-   print(io, base_ring(a))
-end
-
-function show(io::IO, a::arb_mat)
-   r = nrows(a)
-   c = ncols(a)
-   if r*c == 0
-      print(io, "$r by $c matrix")
-   end
-   for i = 1:r
-      print(io, "[")
-      for j = 1:c
-         print(io, a[i, j])
-         if j != c
-            print(io, " ")
-         end
-      end
-      print(io, "]")
-      if i != r
-         println(io, "")
-      end
-   end
-end
-
 ################################################################################
 #
 #  Unary operations
