@@ -6,9 +6,9 @@ using Markdown
 
 using InteractiveUtils
 
-if VERSION >= v"0.7.0-"
-   using Libdl
-end
+using Libdl
+
+using Random
 
 import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh,
              bin, ceil, checkbounds, conj, convert, cmp, cos, cosh,
@@ -22,10 +22,6 @@ import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh,
              tan, tanh, trailing_zeros, transpose, truncate,
              typed_hvcat, typed_hcat, vcat, xor, zero, zeros, +, -, *, ==, ^,
              &, |, <<, >>, ~, <=, >=, <, >, //, /, !=
-
-if VERSION <= v"0.7.0"
-   import Base: atan2, base, contains, nextpow2, prevpow2
-end
 
 import LinearAlgebra: det, norm, nullspace, rank, transpose!, hessenberg, tr,
                       lu, lu!, eigvals

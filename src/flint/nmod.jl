@@ -362,15 +362,16 @@ end
 #
 ###############################################################################
 
-function rand(R::NmodRing)
-   n = rand(UInt(0):R.n - 1)
+function rand(r::Random.AbstractRNG, R::NmodRing)
+   n = rand(r, UInt(0):R.n - 1)
    return nmod(n, R)
 end
 
-function rand(R::NmodRing, b::UnitRange{Int64})
-   n = rand(b)
+function rand(r::Random.AbstractRNG, R::NmodRing, b::UnitRange{Int64})
+   n = rand(r, b)
    return R(n)
 end
+rand(R::NmodRing, b::UnitRange{Int64}) = rand(Random.GLOBAL_RNG, R, b)
 
 ###############################################################################
 #
