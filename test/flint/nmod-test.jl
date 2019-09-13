@@ -35,7 +35,9 @@ function test_nmod_constructors()
       d = a.data
 
       @test a.data < R.n
-   end 
+   end
+
+   @test isa(rand(Random.GLOBAL_RNG, R), Nemo.nmod)
 
    println("PASS")
 end
