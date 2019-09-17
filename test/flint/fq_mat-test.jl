@@ -14,7 +14,7 @@ function test_fq_mat_constructors()
   print("fq_mat.constructors...")
 
   F4, a = FiniteField(fmpz(2), 2, "a")
-  F9, b = FiniteField(fmpz(3), 2, "b") 
+  F9, b = FiniteField(fmpz(3), 2, "b")
 
   R = FqMatSpace(F4, 2, 2)
 
@@ -190,7 +190,8 @@ function test_fq_mat_printing()
 
   a = R(1)
 
-  @test string(a) == "[1 0]\n[0 1]"
+  # test that default Julia printing is not used
+  @test !occursin(string(typeof(a)), string(a))
 
   println("PASS")
 end
@@ -475,7 +476,7 @@ function test_fq_mat_row_echelon_form()
   c = a*transpose(a)
 
   r, d = rref(a)
-  
+
   @test d == R([ 1 0 0 8; 0 1 0 15; 0 0 1 16])
   @test r == 3
 
