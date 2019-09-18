@@ -3,7 +3,7 @@ RR = ArbField(64)
 
 function test_acb_mat_constructors()
    print("acb_mat.constructors...")
- 
+
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -100,11 +100,12 @@ end
 
 function test_acb_mat_printing()
    print("acb_mat.printing...")
- 
+
    S = MatrixSpace(CC, 3, 3)
    f = S(fmpz(3))
 
-   @test string(f) == "[3.0000000000000000000 + i*0 0 + i*0 0 + i*0]\n[0 + i*0 3.0000000000000000000 + i*0 0 + i*0]\n[0 + i*0 0 + i*0 3.0000000000000000000 + i*0]"
+   # test that default Julia printing is not used
+   @test !occursin(string(typeof(f)), string(f))
 
    println("PASS")
 end
@@ -269,11 +270,11 @@ function test_acb_mat_comparison()
    @test A == A
 
    @test A != B
-   
+
    @test overlaps(A, C)
 
    @test contains(C, A)
-   
+
    println("PASS")
 end
 
@@ -290,7 +291,7 @@ function test_acb_mat_adhoc_comparison()
 
    @test contains(A, B)
    @test contains(A, C)
-   
+
    @test S(12) == 12
    @test 12 == S(12)
    @test S(5) == fmpz(5)
@@ -313,7 +314,7 @@ function test_acb_mat_predicates()
    A = onei(CC) * A
 
    @test !isreal(A)
-   
+
    println("PASS")
 end
 

@@ -1,6 +1,6 @@
 function test_fmpq_mat_constructors()
    print("fmpq_mat.constructors...")
- 
+
    S = MatrixSpace(QQ, 3, 3)
 
    @test elem_type(S) == fmpq_mat
@@ -19,9 +19,9 @@ function test_fmpq_mat_constructors()
    g = S(2)
 
    @test isa(g, MatElem)
-   
+
    h = S(fmpz(5))
-   
+
    @test isa(h, MatElem)
 
    k = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -101,7 +101,7 @@ function test_fmpq_mat_constructors()
       @test_throws ErrorConstrDimMismatch matrix(FlintQQ, 2, 2, map(T, arr2))
       @test_throws ErrorConstrDimMismatch matrix(FlintQQ, 2, 4, map(T, arr2))
    end
-   
+
    M3 = zero_matrix(FlintQQ, 2, 3)
 
    @test isa(M3, fmpq_mat)
@@ -125,10 +125,11 @@ end
 
 function test_fmpq_mat_printing()
    print("fmpq_mat.printing...")
- 
+
    a = MatrixSpace(QQ, 2, 2)(1)
-   
-   @test string(a) == "[1 0]\n[0 1]"
+
+  # test that default Julia printing is not used
+  @test !occursin(string(typeof(a)), string(a))
 
    println("PASS")
 end
@@ -285,7 +286,7 @@ function test_fmpq_mat_adhoc_binary()
    @test fmpq(3)*A == A*fmpq(3)
    @test (3//1)*A == A*fmpq(3)
    @test (BigInt(3)//1)*A == A*fmpq(3)
-  
+
    println("PASS")
 end
 
@@ -373,7 +374,7 @@ function test_fmpq_mat_adhoc_exact_division()
    @test divexact(3*A, BigInt(3)) == A
    @test divexact(3*A, 3//1) == A
    @test divexact(3*A, BigInt(3)//1) == A
-   
+
    println("PASS")
 end
 
@@ -397,7 +398,7 @@ function test_fmpq_mat_tr()
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
- 
+
    @test tr(A) == 9
 
    println("PASS")
@@ -470,15 +471,15 @@ function test_fmpq_mat_inversion()
    A = S([fmpq(2) 3 5; 1 4 7; 9 2 2])
    B = S([-6 4 1; 61 (-41) (-9); -34 23 5])
    C = S([fmpq(3) 1 2; 1 5 1; 4 8 0])
-   
+
    @test inv(inv(A)) == A
 
    @test inv(A) == B
 
    @test inv(A)*A == one(S)
-   
+
    @test inv(C)*C == one(S)
-   
+
    @test C*inv(C) == one(S)
 
    println("PASS")
@@ -491,7 +492,7 @@ function test_fmpq_mat_exact_division()
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 2 2])
    B = S([2 3 4; 7 9 1; 5 4 5])
- 
+
    @test divexact(B*A, A) == B
 
    println("PASS")
@@ -503,7 +504,7 @@ function test_fmpq_mat_det()
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 19 3 7])
-   
+
    @test det(A) == 27
 
    println("PASS")
@@ -515,9 +516,9 @@ function test_fmpq_mat_hilbert()
    S = MatrixSpace(QQ, 4, 4)
 
    c4 = fmpz(2)^2*fmpz(3)
-   
+
    c8 = fmpz(2)^6*fmpz(3)^5*fmpz(4)^4*fmpz(5)^3*fmpz(6)^2*fmpz(7)
-   
+
    @test det(hilbert(S)) == c4^4//c8
 
    println("PASS")
@@ -530,7 +531,7 @@ function test_fmpq_mat_nullspace()
    T = MatrixSpace(QQ, 3, 1)
 
    A = S([fmpq(2) 3 5; 1 4 7; 4 1 1])
-   
+
    @test nullspace(A) == (1, T([fmpq(1, 5); fmpq(-9, 5); fmpq(1)]))
 
    r, N = nullspace(A)
@@ -546,7 +547,7 @@ function test_fmpq_mat_rank()
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 4 1 1])
-   
+
    @test rank(A) == 2
 
    println("PASS")
@@ -558,7 +559,7 @@ function test_fmpq_mat_rref()
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 4 1 1])
-   
+
    @test rref(A) == (2, S([1 0 fmpq(-1, 5); 0 1 fmpq(9, 5); 0 0 0]))
 
    println("PASS")
@@ -570,7 +571,7 @@ function test_fmpq_mat_solve()
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 2 2])
-   
+
    T = MatrixSpace(QQ, 3, 1)
 
    B = T([fmpq(4), 5, 7])
@@ -584,7 +585,7 @@ function test_fmpq_mat_solve()
    Y = solve_dixon(A, B)
 
    @test X == Y
-   
+
    println("PASS")
 end
 
@@ -610,9 +611,9 @@ function test_fmpq_mat_charpoly()
 
    S = MatrixSpace(QQ, 3, 3)
    R, x = PolynomialRing(QQ, "x")
-   
+
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
-   
+
    @test charpoly(R, A) == x^3 - 9*x^2 - 64*x + 30
 
    println("PASS")
@@ -624,7 +625,7 @@ function test_fmpq_mat_minpoly()
    S = MatrixSpace(QQ, 10, 10)
    R, x = PolynomialRing(QQ, "x")
    M = S()
-   
+
    for i in 1:5
       for j in 1:5
          r = rand(-10:10)
@@ -632,13 +633,13 @@ function test_fmpq_mat_minpoly()
          M[5 + i, 5 + j] = r
       end
    end
-   
+
    for i in 1:5
       similarity!(M, rand(1:10), fmpq(rand(-3:3)))
    end
-   
+
    @test degree(minpoly(R, M)) == 5
-   
+
    println("PASS")
 end
 

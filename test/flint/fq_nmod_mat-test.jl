@@ -14,7 +14,7 @@ function test_fq_nmod_mat_constructors()
   print("fq_nmod_mat.constructors...")
 
   F4, a = FlintFiniteField(2, 2, "a")
-  F9, b = FlintFiniteField(3, 2, "b") 
+  F9, b = FlintFiniteField(3, 2, "b")
 
   R = FqNmodMatSpace(F4, 2, 2)
 
@@ -190,7 +190,8 @@ function test_fq_nmod_mat_printing()
 
   a = R(1)
 
-  @test string(a) == "[1 0]\n[0 1]"
+  # test that default Julia printing is not used
+  @test !occursin(string(typeof(a)), string(a))
 
   println("PASS")
 end

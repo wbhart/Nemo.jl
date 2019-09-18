@@ -194,7 +194,8 @@ function test_nmod_mat_printing()
 
   a = R(1)
 
-  @test string(a) == "[1 0]\n[0 1]"
+  # test that default Julia printing is not used
+  @test !occursin(string(typeof(a)), string(a))
 
   println("PASS")
 end

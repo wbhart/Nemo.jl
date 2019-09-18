@@ -85,7 +85,8 @@ function test_fmpz_mat_printing()
    S = MatrixSpace(FlintZZ, 3, 3)
    f = S(fmpz(3))
 
-   @test string(f) == "[3 0 0]\n[0 3 0]\n[0 0 3]"
+   # test that default Julia printing is not used
+   @test !occursin(string(typeof(f)), string(f))
 
    println("PASS")
 end

@@ -2,7 +2,7 @@ RR = ArbField(64)
 
 function test_arb_mat_constructors()
    print("arb_mat.constructors...")
- 
+
    S = MatrixSpace(RR, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -41,7 +41,7 @@ function test_arb_mat_constructors()
    o = S([1.0 2.0 3.0; 1.0 1.0 1.0; 2.0 3.1 4.1])
 
    @test isa(o, MatElem)
-   
+
    p = S(BigFloat[1.0 2.0 3.0; 1.0 1.0 1.0; 2.0 3.1 4.1])
 
    @test isa(p, MatElem)
@@ -99,11 +99,12 @@ end
 
 function test_arb_mat_printing()
    print("arb_mat.printing...")
- 
+
    S = MatrixSpace(RR, 3, 3)
    f = S(fmpz(3))
 
-   @test string(f) == "[3.0000000000000000000 0 0]\n[0 3.0000000000000000000 0]\n[0 0 3.0000000000000000000]"
+   # test that default Julia printing is not used
+   @test !occursin(string(typeof(f)), string(f))
 
    println("PASS")
 end
@@ -223,7 +224,7 @@ function test_arb_mat_adhoc_binary()
 
    @test contains(q*A, C*q)
    @test contains(A*q, C*q)
- 
+
    println("PASS")
 end
 
@@ -262,11 +263,11 @@ function test_arb_mat_comparison()
    @test A == A
 
    @test A != B
-   
+
    @test overlaps(A, C)
 
    @test contains(C, A)
-   
+
    println("PASS")
 end
 
@@ -283,7 +284,7 @@ function test_arb_mat_adhoc_comparison()
 
    @test contains(A, B)
    @test contains(A, C)
-   
+
    @test S(12) == 12
    @test 12 == S(12)
    @test S(5) == fmpz(5)
