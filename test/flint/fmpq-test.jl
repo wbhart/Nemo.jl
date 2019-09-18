@@ -295,6 +295,8 @@ function test_fmpq_inversion()
 
    @test inv(a) == fmpz(-3)//2
 
+   @test_throws ErrorException inv(fmpq(0))
+
    println("PASS")
 end
 

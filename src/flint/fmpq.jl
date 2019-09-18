@@ -416,13 +416,17 @@ function Base.sqrt(a::fmpq)
     return fmpq(snum, sden)
  end
  
- ###############################################################################
+###############################################################################
 #
 #   Inversion
 #
 ###############################################################################
 
+
 function inv(a::fmpq)
+    if iszero(a)
+      throw(error("Element not invertible"))
+    end
     z = fmpq()
     ccall((:fmpq_inv, :libflint), Nothing, (Ref{fmpq}, Ref{fmpq}), z, a)
     return z
