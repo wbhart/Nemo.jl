@@ -1,12 +1,12 @@
 function test_padic_constructors()
-   print("padic.constructors...")  
+   print("padic.constructors...")
 
    R = PadicField(7, 30)
 
    @test elem_type(R) == padic
    @test elem_type(FlintPadicField) == padic
    @test parent_type(padic) == FlintPadicField
-   
+
    @test isa(R, FlintPadicField)
 
    S = PadicField(fmpz(65537), 30)
@@ -39,10 +39,10 @@ function test_padic_constructors()
 end
 
 function test_padic_printing()
-   print("padic.constructors...")  
+   print("padic.printing...")
 
    R = PadicField(7, 30)
-   
+
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
 
    set_printing_mode(PadicField, :series)
@@ -52,7 +52,7 @@ function test_padic_printing()
 
    set_printing_mode(PadicField, :terse)
    @test get_printing_mode(PadicField) == :terse
-   
+
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
 
    set_printing_mode(PadicField, :val_unit)
@@ -68,7 +68,7 @@ function test_padic_printing()
 end
 
 function test_padic_manipulation()
-   print("padic.manipulation...")  
+   print("padic.manipulation...")
 
    R = PadicField(7, 30)
 
@@ -94,7 +94,7 @@ function test_padic_manipulation()
 end
 
 function test_padic_unary_ops()
-   print("padic.unary_ops...")  
+   print("padic.unary_ops...")
 
    R = PadicField(7, 30)
 
@@ -102,14 +102,14 @@ function test_padic_unary_ops()
    b = R(0)
 
    @test -a == 6 + 4*7^1 + 2*7^2 + O(R, 7^3)
-   
+
    @test iszero(-b)
 
    println("PASS")
 end
 
 function test_padic_binary_ops()
-   print("padic.binary_ops...")  
+   print("padic.binary_ops...")
 
    R = PadicField(7, 30)
 
@@ -132,7 +132,7 @@ function test_padic_binary_ops()
 end
 
 function test_padic_adhoc_binary()
-   print("padic.adhoc_binary...")  
+   print("padic.adhoc_binary...")
 
    R = PadicField(7, 30)
 
@@ -165,7 +165,7 @@ function test_padic_adhoc_binary()
 end
 
 function test_padic_comparison()
-   print("padic.comparison...")  
+   print("padic.comparison...")
 
    R = PadicField(7, 30)
 
@@ -186,7 +186,7 @@ function test_padic_comparison()
 end
 
 function test_padic_adhoc_comparison()
-   print("padic.adhoc_comparison...")  
+   print("padic.adhoc_comparison...")
 
    R = PadicField(7, 30)
 
@@ -208,7 +208,7 @@ function test_padic_adhoc_comparison()
 end
 
 function test_padic_powering()
-   print("padic.powering...")  
+   print("padic.powering...")
 
    R = PadicField(7, 30)
 
@@ -226,7 +226,7 @@ function test_padic_powering()
 end
 
 function test_padic_inversion()
-   print("padic.inversion...")  
+   print("padic.inversion...")
 
    R = PadicField(7, 30)
 
@@ -249,7 +249,7 @@ function test_padic_inversion()
 end
 
 function test_padic_exact_division()
-   print("padic.exact_division...")  
+   print("padic.exact_division...")
 
    R = PadicField(7, 30)
 
@@ -270,7 +270,7 @@ function test_padic_exact_division()
 end
 
 function test_padic_adhoc_exact_division()
-   print("padic.adhoc_exact_division...")  
+   print("padic.adhoc_exact_division...")
 
    R = PadicField(7, 30)
 
@@ -295,13 +295,13 @@ function test_padic_adhoc_exact_division()
 end
 
 function test_padic_divides()
-   print("padic.divides...")  
+   print("padic.divides...")
 
    R = PadicField(7, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
    b = 2 + 3*7 + O(R, 7^5)
-   
+
    flag, q = divides(a, b)
 
    @test flag
@@ -311,22 +311,22 @@ function test_padic_divides()
 end
 
 function test_padic_gcd()
-   print("padic.adhoc_gcd...")  
+   print("padic.adhoc_gcd...")
 
    R = PadicField(7, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
    b = 2 + 3*7 + O(R, 7^5)
-   
+
    @test gcd(a, b) == 1
 
    @test gcd(zero(R), zero(R)) == 0
-   
+
    println("PASS")
 end
 
 function test_padic_square_root()
-   print("padic.square_root...")  
+   print("padic.square_root...")
 
    R = PadicField(7, 30)
 
@@ -346,7 +346,7 @@ function test_padic_square_root()
 end
 
 function test_padic_special_functions()
-   print("padic.special_functions...")  
+   print("padic.special_functions...")
 
    R = PadicField(7, 30)
 

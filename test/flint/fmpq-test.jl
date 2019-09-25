@@ -47,7 +47,7 @@ function test_fmpq_constructors()
 end
 
 function test_fmpq_printing()
-   print("fmpq.constructors...")
+   print("fmpq.printing...")
 
    a = FlintQQ(1, 2)
 
