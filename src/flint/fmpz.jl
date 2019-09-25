@@ -672,11 +672,15 @@ end
 function mod(x::fmpz, c::Int)
     c == 0 && throw(DivideError())
     if c > 0
-        return ccall((:fmpz_fdiv_ui, :libflint), Int, (Ref{fmpz}, Int), x, c)
+        return Int(ccall((:fmpz_fdiv_ui, :libflint), Culong, (Ref{fmpz}, Culong), x, c))
     else
-        r = ccall((:fmpz_fdiv_ui, :libflint), Int, (Ref{fmpz}, Int), x, -c)
+        r = ccall((:fmpz_fdiv_ui, :libflint), Culong, (Ref{fmpz}, Culong), x, -c)
         return r == 0 ? 0 : r + c
     end
+end
+function mod(x::fmpz, c::UInt)
+    c == 0 && throw(DivideError())
+    ccall((:fmpz_fdiv_ui, :libflint), Culong, (Ref{fmpz}, Culong), x, c)
 end
 
 @doc Markdown.doc"""
