@@ -56,7 +56,7 @@ function test_nf_elem_constructors()
 end
 
 function test_nf_elem_printing()
-   print("nf_elem.constructors...")
+   print("nf_elem.printing...")
 
    R, x = PolynomialRing(QQ, "x")
    K, a = NumberField(x^3 + 3x + 1, "a")

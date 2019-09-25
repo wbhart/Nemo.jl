@@ -459,7 +459,7 @@ function test_gfp_mat_comparison()
 end
 
 function test_gfp_mat_adhoc_comparison()
-  print("gfp_mat.comparison...")
+  print("gfp_mat.adhoc_comparison...")
 
   Z17 = GF(17)
 

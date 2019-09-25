@@ -449,7 +449,7 @@ function test_fq_mat_comparison()
 end
 
 function test_fq_mat_adhoc_comparison()
-  print("fq_mat.comparison...")
+  print("fq_mat.adhoc_comparison...")
 
   F17, _ = FiniteField(fmpz(17), 1, "a")
 

@@ -459,7 +459,7 @@ function test_nmod_mat_comparison()
 end
 
 function test_nmod_mat_adhoc_comparison()
-  print("nmod_mat.comparison...")
+  print("nmod_mat.adhoc_comparison...")
 
   Z17 = ResidueRing(ZZ,17)
 
