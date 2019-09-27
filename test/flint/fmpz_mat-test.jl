@@ -82,16 +82,34 @@ end
    t = similar(s)
    @test t isa fmpz_mat
    @test size(t) == size(s)
-   t = similar(s, FlintZZ)
-   @test t isa fmpz_mat
-   @test size(t) == size(s)
 
    t = similar(s, 2, 3)
    @test t isa fmpz_mat
    @test size(t) == (2, 3)
-   t = similar(s, FlintZZ, 2, 3)
-   @test t isa fmpz_mat
-   @test size(t) == (2, 3)
+
+   for (R, M) in ring_to_mat
+      t = similar(s, R)
+      @test t isa M
+      @test size(t) == size(s)
+
+      t = similar(s, R, 2, 3)
+      @test t isa M
+      @test size(t) == (2, 3)
+   end
+
+   # test that similar also creates Nemo matrices when the input is not
+   for s in (matrix(Nemo.AbstractAlgebra.ZZ, zeros(Int, 3, 3)),
+             matrix(Nemo.AbstractAlgebra.QQ, zeros(Int, 3, 3)))
+      for (R, M) in ring_to_mat
+         t = similar(s, R)
+         @test t isa M
+         @test size(t) == size(s)
+
+         t = similar(s, R, 2, 3)
+         @test t isa M
+         @test size(t) == (2, 3)
+      end
+   end
 end
 
 @testset "fmpz_mat.printing..." begin
