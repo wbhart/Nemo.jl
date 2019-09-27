@@ -765,7 +765,7 @@ function (R::FlintQadicField)(n::fmpq)
    if m == p
       N = -1
    else
-     N = -flog(m, p)
+     N = -remove(m, p)[1]
    end
    z = qadic(N + R.prec_max)
    ccall((:padic_poly_set_fmpq, :libflint), Nothing,
@@ -783,12 +783,17 @@ function (R::FlintQadicField)(n::fmpz_poly)
 end
 
 function (R::FlintQadicField)(n::fmpq_poly)
+
+   if degree(n) > degree(R)+1
+       error("Constructor is broken when degree of the input polynomial is "*
+             "larger than the degree of the q-adic field.")
+   end
    m = denominator(n)
    p = prime(R)
    if m == p
       N = -1
    else
-     N = -flog(m, p)
+     N = -remove(m, p)[1]
    end
    z = qadic(N + R.prec_max)
    ccall((:padic_poly_set_fmpq_poly, :libflint), Nothing,
