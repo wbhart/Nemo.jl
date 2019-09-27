@@ -1,3 +1,13 @@
+const ring_to_mat = Dict(FlintZZ                         => fmpz_mat,
+                         FlintQQ                         => fmpq_mat,
+                         ResidueRing(ZZ, 9)              => nmod_mat,
+                         GF(5)                           => gfp_mat,
+                         FiniteField(3, 2, "b")[1]       => fq_nmod_mat,
+                         FiniteField(fmpz(3), 2, "b")[1] => fq_mat,
+                         ArbField(64)                    => arb_mat,
+                         AcbField(64)                    => acb_mat,
+                         )
+
 include("flint/fmpz-test.jl")
 include("flint/fmpz_poly-test.jl")
 include("flint/fmpz_mod_poly-test.jl")
@@ -37,46 +47,3 @@ include("arb/acb_mat-test.jl")
 include("flint/fmpz_mpoly-test.jl")
 include("flint/fmpq_mpoly-test.jl")
 include("flint/nmod_mpoly-test.jl")
-
-function test_rings()
-   test_fmpz()
-   test_fmpz_poly()
-   test_fmpz_mod_poly()
-   test_gfp_fmpz_poly()
-   test_nmod()
-   test_fmpz_mod()
-   test_nmod_poly()
-   test_gfp_poly()
-   test_fmpq_poly()
-   test_fq_poly()
-   test_fq_nmod_poly()
-   test_fmpz_abs_series()
-   test_fmpz_rel_series()
-   test_fmpz_laurent_series()
-   test_fmpz_puiseux_series()
-   test_fmpq_abs_series()
-   test_fmpq_rel_series()
-   test_fmpz_mod_abs_series()
-   test_nmod_rel_series()
-   test_fmpz_mod_rel_series()
-   test_fq_abs_series()
-   test_fq_rel_series()
-   test_fq_nmod_rel_series()
-   test_fq_nmod_abs_series()
-
-   test_arb_poly()
-   test_acb_poly()
-
-   test_nmod_mat()
-   test_gfp_mat()
-   test_fq_mat()
-   test_fq_nmod_mat()
-   test_fmpz_mat()
-   test_fmpq_mat()
-   test_arb_mat()
-   test_acb_mat()
-
-   test_fmpz_mpoly()
-   test_fmpq_mpoly()
-   test_nmod_mpoly()
-end
