@@ -27,7 +27,7 @@ function test_padic_constructors()
 
    @test isa(fmpz(1)//7^2 + fmpz(2)//7 + 3 + 4*7 + O(R, 7^2), padic)
 
-   @test iszero( R(fmpq(2//3)^100) - R(fmpq(2//3))^100 )
+   @test precision( R(fmpq(2//3)^100) ) == precision( R(fmpq(2//3))^100 )
     
    s = R()
 
