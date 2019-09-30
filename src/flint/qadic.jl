@@ -784,9 +784,8 @@ end
 
 function (R::FlintQadicField)(n::fmpq_poly)
 
-   if degree(n) > degree(R)+1
-       error("Constructor is broken when degree of the input polynomial is "*
-             "larger than the degree of the q-adic field.")
+   if degree(n) > degree(R) + 1
+       error("Polynomial degree larger than degree of qadic field.")
    end
    m = denominator(n)
    p = prime(R)
