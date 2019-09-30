@@ -1,5 +1,7 @@
 @testset "qadic.constructors..." begin
-   R = QadicField(7, 1, 30)
+   R     = QadicField(7, 1, 30)
+   K     = QadicField(7, 3, 30) 
+   QX, x = PolynomialRing(FlintQQ, "x") 
 
    @test elem_type(R) == qadic
    @test elem_type(FlintQadicField) == qadic
@@ -25,6 +27,10 @@
 
    @test isa(fmpz(1)//7^2 + fmpz(2)//7 + 3 + 4*7 + O(R, 7^2), qadic)
 
+   @test precision( R(fmpq(2//3)^100) ) == precision( R(fmpq(2//3))^100 )
+
+   @test precision( K(fmpq(2//3)^100*(x+1)) ) == precision( K( QX(fmpq(2//3))^100 )*K(x+1) )
+    
    s = R()
 
    t = deepcopy(s)

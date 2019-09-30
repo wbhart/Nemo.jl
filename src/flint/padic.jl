@@ -710,7 +710,7 @@ function (R::FlintPadicField)(n::fmpq)
    if m == p
       N = -1
    else
-     N = -flog(m, p)
+     N = -remove(m, p)[1]
    end
    z = padic(N + R.prec_max)
    ccall((:padic_set_fmpq, :libflint), Nothing,
