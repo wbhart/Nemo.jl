@@ -142,7 +142,9 @@ precision(a::qadic) = a.N
 > element is divisible by $p^n$ but not a higher power of $q$ then the function
 > will return $n$.
 """
-valuation(a::qadic) = ccall((:qadic_val, :libflint), Int, (Ref{qadic}, ), a)
+function valuation(a::qadic)
+    iszero(a) ? precision(a) : ccall((:qadic_val, :libflint), Int, (Ref{qadic}, ), a)
+end
 
 @doc Markdown.doc"""
     lift(R::FmpqPolyRing, a::qadic)

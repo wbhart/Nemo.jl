@@ -1781,6 +1781,26 @@ function _fq_clear_fn(a::fq)
          (Ref{fq}, Ref{FqFiniteField}), a, a.parent)
 end
 
+
+###############################################################################
+#
+#   FlintLocalField / Local field type heirarchy
+#
+###############################################################################
+
+# Abstract types
+abstract type NonArchLocalField     <: Field end
+abstract type NonArchLocalFieldElem <: FieldElem end
+
+abstract type FlintLocalField     <: NonArchLocalField end
+abstract type FlintLocalFieldElem <: NonArchLocalFieldElem end
+
+
+# Alias
+const NALocalField     = NonArchLocalField
+const NALocalFieldElem = NonArchLocalFieldElem
+
+
 ###############################################################################
 #
 #   FlintPadicField / padic
@@ -1789,7 +1809,7 @@ end
 
 const flint_padic_printing_mode = [:terse, :series, :val_unit]
 
-mutable struct FlintPadicField <: Field
+mutable struct FlintPadicField <: FlintLocalField
    p::Int
    pinv::Float64
    pow::Ptr{Nothing}
@@ -1831,7 +1851,7 @@ function _padic_ctx_clear_fn(a::FlintPadicField)
    ccall((:padic_ctx_clear, :libflint), Nothing, (Ref{FlintPadicField},), a)
 end
 
-mutable struct padic <: FieldElem
+mutable struct padic <: FlintLocalFieldElem
    u :: Int
    v :: Int
    N :: Int
@@ -1855,7 +1875,7 @@ end
 #
 ###############################################################################
 
-mutable struct FlintQadicField <: Field
+mutable struct FlintQadicField <: FlintLocalField
    p::Int
    pinv::Float64
    pow::Ptr{Nothing}
@@ -1900,7 +1920,7 @@ function _qadic_ctx_clear_fn(a::FlintQadicField)
    ccall((:qadic_ctx_clear, :libflint), Nothing, (Ref{FlintQadicField},), a)
 end
 
-mutable struct qadic <: FieldElem
+mutable struct qadic <: FlintLocalFieldElem
    coeffs::Int
    alloc::Int
    length::Int

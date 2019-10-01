@@ -75,6 +75,8 @@ include("flint/padic.jl")
 
 include("flint/qadic.jl")
 
+include("flint/local_field.jl")
+
 include("flint/fmpq_rel_series.jl")
 
 include("flint/fmpq_abs_series.jl")

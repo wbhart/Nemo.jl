@@ -66,6 +66,8 @@ end
    @test prime(R) == 7
 
    @test valuation(b) == 2
+
+   @test valuation(R(0)) == precision(R(0)) 
 end
 
 @testset "qadic.unary_ops..." begin
