@@ -395,11 +395,11 @@ const _ecm_nCs = Vector{Int}[_ecm_nC]
 #
 ###############################################################################
 
-ZZ = FlintZZ
-QQ = FlintQQ
-PadicField = FlintPadicField
-QadicField = FlintQadicField
-FiniteField = FlintFiniteField
+const ZZ = FlintZZ
+const QQ = FlintQQ
+const PadicField = FlintPadicField
+const QadicField = FlintQadicField
+const FiniteField = FlintFiniteField
 
 ###############################################################################
 #
@@ -407,8 +407,8 @@ FiniteField = FlintFiniteField
 #
 ###############################################################################
 
-RealField = ArbField
-ComplexField = AcbField
+const RealField = ArbField
+const ComplexField = AcbField
 
 ###############################################################################
 #
