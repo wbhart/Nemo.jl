@@ -16,7 +16,7 @@ if !issource_build
   dependencies = [
     # This has to be in sync with the corresponding commit in the source build below (for flint, arb, antic)
     "https://github.com/JuliaPackaging/Yggdrasil/releases/download/GMP-v6.1.2-1/build_GMP.v6.1.2.jl",
-    "https://github.com/JuliaPackaging/Yggdrasil/releases/download/MPFR-v4.0.2-1/build_MPFR.v4.0.2.jl"
+    "https://github.com/JuliaPackaging/Yggdrasil/releases/download/MPFR-v4.0.2-1/build_MPFR.v4.0.2.jl",
     "https://github.com/thofma/Flint2Builder/releases/download/16514/build_libflint.v0.0.0-165143e3e4cc54e00471ddab1a9573a8e28477ff.jl",
     "https://github.com/thofma/ArbBuilder/releases/download/ef5ab3/build_libarb.v0.0.0-ef5ab30492a8810746dba91a3ad95afafe5171bd.jl",
     "https://github.com/thofma/AnticBuilder/releases/download/a69c142-v2/build_libantic.v0.0.0-a69c142a972e4566e01f5b1d76415b0208405ecb.jl"
