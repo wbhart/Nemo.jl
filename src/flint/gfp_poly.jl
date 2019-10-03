@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-export GFPPolyRing, gfp_poly 
+export GFPPolyRing, gfp_poly
 
 ################################################################################
 #
@@ -116,13 +116,13 @@ function ==(x::gfp_poly, y::gfp_elem)
   base_ring(x) != parent(y) && error("Incompatible base rings in comparison")
   if length(x) > 1
     return false
-  elseif length(x) == 1 
-    u = ccall((:nmod_poly_get_coeff_ui, :libflint), UInt, 
+  elseif length(x) == 1
+    u = ccall((:nmod_poly_get_coeff_ui, :libflint), UInt,
             (Ref{gfp_poly}, Int), x, 0)
     return u == y
   else
     return iszero(y)
-  end 
+  end
 end
 
 ==(x::gfp_elem, y::gfp_poly) = y == x
@@ -137,7 +137,7 @@ function divexact(x::gfp_poly, y::gfp_poly)
   check_parent(x, y)
   iszero(y) && throw(DivideError())
   z = parent(x)()
-  ccall((:nmod_poly_div, :libflint), Nothing, 
+  ccall((:nmod_poly_div, :libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}), z, x, y)
   return z
 end
@@ -189,7 +189,7 @@ end
 
 function rem(x::gfp_poly, y::gfp_poly)
   check_parent(x,y)
-  iszero(y) && throw(DivideError()) 
+  iszero(y) && throw(DivideError())
   z = parent(x)()
   ccall((:nmod_poly_rem, :libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}), z, x, y)
@@ -198,7 +198,7 @@ end
 
 ################################################################################
 #
-#  GCD 
+#  GCD
 #
 ################################################################################
 
@@ -208,7 +208,7 @@ function gcd(x::gfp_poly, y::gfp_poly)
   ccall((:nmod_poly_gcd, :libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}), z, x, y)
   return z
-end 
+end
 
 function gcdx(x::gfp_poly, y::gfp_poly)
   check_parent(x,y)
@@ -230,7 +230,7 @@ function gcdinv(x::gfp_poly, y::gfp_poly)
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}),
           g, s, x, y)
   return g,s
-end 
+end
 
 ################################################################################
 #
@@ -433,17 +433,6 @@ end
 
 ################################################################################
 #
-#  Speedups for rings over gfp_poly
-#
-################################################################################
-
-function det(M::Generic.Mat{gfp_poly})
-   nrows(M) != ncols(M) && error("Not a square matrix in det")
-   return det_popov(M)
-end
-
-################################################################################
-#
 #  Unsafe functions
 #
 ################################################################################
@@ -555,6 +544,6 @@ end
 
 function PolynomialRing(R::GaloisField, s::AbstractString; cached=true)
    parent_obj = GFPPolyRing(R, Symbol(s), cached)
-   
+
    return parent_obj, parent_obj([R(0), R(1)])
 end
