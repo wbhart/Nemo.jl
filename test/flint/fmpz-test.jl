@@ -497,7 +497,9 @@ end
 @testset "fmpz.number_theoretic..." begin
    @test isprime(fmpz(13))
 
-   @test isprobabprime(fmpz(13))
+   @test isprime(13)
+
+   @test isprobable_prime(fmpz(13))
 
    @test divisible(fmpz(12), fmpz(6))
 

@@ -37,7 +37,7 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash, fac, bell,
        bin, oct, hex, base, one, zero, divexact, fits, sign, nbits, deepcopy,
        tdivpow2, fdivpow2, cdivpow2, flog, clog, cmpabs, clrbit!, setbit!,
        combit!, crt, divisible, divisor_lenstra, fdivrem, tdivrem, fmodpow2,
-       gcdinv, isprobabprime, issquare, jacobi, remove, root, size, isqrtrem,
+       gcdinv, isprobable_prime, issquare, jacobi, remove, root, size, isqrtrem,
        sqrtmod, trailing_zeros, sigma, eulerphi, fib, moebiusmu, primorial,
        risingfac, numpart, canonical_unit, needs_parentheses, displayed_with_minus_in_front,
        show_minus_one, addeq!, mul!, isunit, isequal,
@@ -1139,28 +1139,36 @@ end
 issquare(x::fmpz) = Bool(ccall((:fmpz_is_square, :libflint), Cint,
                                (Ref{fmpz},), x))
 
-@doc Markdown.doc"""
-    is_prime(x::UInt)
-> Return `true` if $x$ is a prime number, otherwise return `false`.
-"""
-is_prime(x::UInt) = Bool(ccall((:n_is_prime, :libflint), Cint, (UInt,), x))
+isprime(x::UInt) = Bool(ccall((:n_is_prime, :libflint), Cint, (UInt,), x))
 
-# flint's fmpz_is_prime doesn't work yet
 @doc Markdown.doc"""
     isprime(x::fmpz)
 > Return `true` if $x$ is a prime number, otherwise return `false`.
 """
-isprime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, :libflint), Cint,
-                              (Ref{fmpz},), x))
+function isprime(x::fmpz)
+  !isprobable_prime(x) && return false
+  return Bool(ccall((:fmpz_is_prime, :libflint), Cint, (Ref{fmpz},), x))
+end
 
 @doc Markdown.doc"""
-    isprobabprime(x::fmpz)
+    isprime(x::Int)
+> Return `true` if $x$ is a prime number, otherwise return `false`.
+"""
+function isprime(n::Int)
+  if n < 0
+    return false
+  end
+  return isprime(n % UInt)
+end
+
+@doc Markdown.doc"""
+    isprobable_prime(x::fmpz)
 > Return `true` if $x$ is very probably a prime number, otherwise return
 > `false`. No counterexamples are known to this test, but it is conjectured
 > that infinitely many exist.
 """
-isprobabprime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, :libflint), Cint,
-                                    (Ref{fmpz},), x))
+isprobable_prime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, :libflint), Cint,
+                                      (Ref{fmpz},), x))
 
 @doc Markdown.doc"""
     remove(x::fmpz, y::fmpz)

@@ -401,13 +401,13 @@ end
 function GF(n::Int; cached::Bool=true)
    (n <= 0) && throw(DomainError("Characteristic must be positive: $n"))
    un = UInt(n)
-   !is_prime(un) && throw(DomainError("Characteristic must be prime: $n"))
+   !isprime(un) && throw(DomainError("Characteristic must be prime: $n"))
    return GaloisField(un, cached)
 end
 
 function GF(n::UInt; cached::Bool=true)
    un = UInt(n)
-   !is_prime(un) && throw(DomainError("Characteristic must be prime: $n"))
+   !isprime(un) && throw(DomainError("Characteristic must be prime: $n"))
    return GaloisField(un, cached)
 end
 
