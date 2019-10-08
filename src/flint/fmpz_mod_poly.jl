@@ -632,7 +632,7 @@ end
 function resultant(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   check_parent(x,y)
   z = parent(x)()
-  !isprobabprime(modulus(x)) && error("Modulus not prime in resultant")
+  !isprobable_prime(modulus(x)) && error("Modulus not prime in resultant")
   r = fmpz()
   ccall((:fmpz_mod_poly_resultant, :libflint), Nothing,
           (Ref{fmpz}, Ref{T}, Ref{T}), r, x, y)
@@ -728,7 +728,7 @@ end
 > Return `true` if $x$ is irreducible, otherwise return `false`.
 """
 function isirreducible(x::fmpz_mod_poly)
-  !isprobabprime(modulus(x)) && error("Modulus not prime in isirreducible")
+  !isprobable_prime(modulus(x)) && error("Modulus not prime in isirreducible")
   return Bool(ccall((:fmpz_mod_poly_is_irreducible, :libflint), Int32,
           (Ref{fmpz_mod_poly}, ), x))
 end
@@ -744,7 +744,7 @@ end
 > Return `true` if $x$ is squarefree, otherwise return `false`.
 """
 function issquarefree(x::fmpz_mod_poly)
-   !isprobabprime(modulus(x)) && error("Modulus not prime in issquarefree")
+   !isprobable_prime(modulus(x)) && error("Modulus not prime in issquarefree")
    return Bool(ccall((:fmpz_mod_poly_is_squarefree, :libflint), Int32,
       (Ref{fmpz_mod_poly}, ), x))
 end
@@ -760,7 +760,7 @@ end
 > Return the factorisation of $x$.
 """
 function factor(x::fmpz_mod_poly)
-  !isprobabprime(modulus(x)) && error("Modulus not prime in factor")
+  !isprobable_prime(modulus(x)) && error("Modulus not prime in factor")
   fac = _factor(x)
   return Fac(parent(x)(lead(x)), fac)
 end
@@ -785,7 +785,7 @@ end
 > Return the squarefree factorisation of $x$.
 """
 function factor_squarefree(x::fmpz_mod_poly)
-  !isprobabprime(modulus(x)) && error("Modulus not prime in factor_squarefree")
+  !isprobable_prime(modulus(x)) && error("Modulus not prime in factor_squarefree")
   fac = _factor_squarefree(x)
   return Fac(parent(x)(lead(x)), fac)
 end
@@ -811,7 +811,7 @@ end
 """
 function factor_distinct_deg(x::fmpz_mod_poly)
   !issquarefree(x) && error("Polynomial must be squarefree")
-  !isprobabprime(modulus(x)) && error("Modulus not prime in factor_distinct_deg")
+  !isprobable_prime(modulus(x)) && error("Modulus not prime in factor_distinct_deg")
   degs = Vector{Int}(undef, degree(x))
   degss = [ pointer(degs) ]
   fac = fmpz_mod_poly_factor(parent(x).n)

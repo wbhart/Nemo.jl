@@ -410,7 +410,7 @@ end
 
 function det(a::nmod_mat)
   !issquare(a) && error("Matrix must be a square matrix")
-  if is_prime(a.n)
+  if isprime(a.n)
      r = ccall((:nmod_mat_det, :libflint), UInt, (Ref{nmod_mat}, ), a)
      return base_ring(a)(r)
   else
