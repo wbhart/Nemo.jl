@@ -672,11 +672,21 @@ end
 function mod(x::fmpz, c::Int)
     c == 0 && throw(DivideError())
     if c > 0
-        return ccall((:fmpz_fdiv_ui, :libflint), Int, (Ref{fmpz}, Int), x, c)
+        return Int(ccall((:fmpz_fdiv_ui, :libflint), Base.GMP.Limb, (Ref{fmpz}, Base.GMP.Limb), x, c))
     else
-        r = ccall((:fmpz_fdiv_ui, :libflint), Int, (Ref{fmpz}, Int), x, -c)
+        r = ccall((:fmpz_fdiv_ui, :libflint), Base.GMP.Limb, (Ref{fmpz}, Base.GMP.Limb), x, -c)
         return r == 0 ? 0 : r + c
     end
+end
+
+@doc Markdown.doc"""
+    mod(x::fmpz, y::UInt)
+> Return the remainder after division of $x$ by $y$. The remainder will be the
+> least nonnegative remainder.
+"""
+function mod(x::fmpz, c::UInt)
+    c == 0 && throw(DivideError())
+    ccall((:fmpz_fdiv_ui, :libflint), Base.GMP.Limb, (Ref{fmpz}, Base.GMP.Limb), x, c)
 end
 
 @doc Markdown.doc"""
