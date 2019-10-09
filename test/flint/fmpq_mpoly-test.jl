@@ -1,6 +1,4 @@
-function test_fmpq_mpoly_constructors()
-   print("fmpq_mpoly.constructors...")
-
+@testset "fmpq_mpoly.constructors..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -26,7 +24,7 @@ function test_fmpq_mpoly_constructors()
 
       @test typeof(S) <: FmpqMPolyRing
 
-      isa(vars(S), Array{Symbol, 1})
+      isa(symbols(S), Array{Symbol, 1})
 
       for j = 1:num_vars
          @test isa(varlist[j], fmpq_mpoly)
@@ -57,13 +55,9 @@ function test_fmpq_mpoly_constructors()
         @test !isgen(f + 1)
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_manipulation()
-   print("fmpq_mpoly.manipulation...")
-
+@testset "fmpq_mpoly.manipulation..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -92,7 +86,38 @@ function test_fmpq_mpoly_manipulation()
 
       f = rand(S, 1:5, 0:100, -100:100)
 
-      @test f == sum((coeff(f, i) * S(fmpq[1], [Nemo._get_termexp_fmpz(f, i)])  for i in 1:length(f)))
+      if length(f) > 0
+        @test f == sum((coeff(f, i) * S(fmpq[1], [Nemo.exponent_vector_fmpz(f, i)])  for i in 1:length(f)))
+      end
+
+      c = @inferred content(f)
+      if length(f) > 0
+        @test abs(reduce(gcd, (coeff(f, i) for i in 1:length(f)))) == c
+      else
+        @test iszero(c)
+      end
+
+      c = @inferred denominator(f)
+      g = c * f
+      @test isone(denominator(g))
+
+      r = S()
+      m = S()
+      for i = 1:length(f)
+         m = monomial!(m, f, i)
+         @test m == monomial(f, i)
+         @test term(f, i) == coeff(f, i)*monomial(f, i)
+         r += coeff(f, i)*monomial(f, i)
+      end
+      @test f == r
+
+      for i = 1:length(f)
+         i1 = rand(1:length(f))
+         i2 = rand(1:length(f))
+         @test (i1 < i2) == (monomial(f, i1) > monomial(f, i2))
+         @test (i1 > i2) == (monomial(f, i1) < monomial(f, i2))
+         @test (i1 == i2) == (monomial(f, i1) == monomial(f, i2))
+      end
 
       deg = isdegree(ordering(S))
       rev = isreverse(ordering(S))
@@ -110,24 +135,59 @@ function test_fmpq_mpoly_manipulation()
       h = rand(S, 1:1, 0:100, 1:1)
       h2 = rand(S, 2:2, 1:100, 1:1)
 
-      @test ismonomial(h)
-      @test !ismonomial(h2 + 1 + gen(S, 1))
+      @test isterm(h)
+      @test !isterm(h2 + 1 + gen(S, 1))
 
-      monomialexp = unique([UInt[rand(1:10) for j in 1:num_vars] for k in 1:10])
+      @test isunit(S(1))
+      @test !isunit(gen(S, 1))
+
+      @test ismonomial(gen(S, 1)*gen(S, num_vars))
+      @test !ismonomial(2*gen(S, 1)*gen(S, num_vars))
+
+      monomialexp = unique([UInt[rand(0:10) for j in 1:num_vars] for k in 1:10])
       coeffs = [rand(FlintQQ, 1:10) for k in 1:length(monomialexp)]
       h = S(coeffs, monomialexp)
       @test length(h) == length(monomialexp)
       for k in 1:length(h)
         @test coeff(h, S(fmpq[1], [monomialexp[k]])) == coeffs[k]
       end
-   end
 
-   println("PASS")
+      max_degs = max.(monomialexp...)
+      for k = 1:num_vars
+         @test (degree(h, k) == max_degs[k]) || (h == 0 && degree(h, k) == -1)
+         @test degrees(h)[k] == degree(h, k)
+         @test degrees_fmpz(h)[k] == degree(h, k)
+         @test degrees_fmpz(h)[k] == degree_fmpz(h, k)
+      end
+
+      @test degrees_fit_int(h)
+
+      @test (total_degree(h) == max(sum.(monomialexp)...)) || (h == 0 && total_degree(h) == -1)
+      @test (total_degree_fmpz(h) == max(sum.(monomialexp)...)) || (h == 0 && total_degree(h) == -1)
+      @test total_degree_fits_int(h)
+   end
 end
 
-function test_fmpq_mpoly_unary_ops()
-   print("fmpq_mpoly.unary_ops...")
+@testset "fmpq_mpoly.multivariate_coeff..." begin
+   R = FlintQQ
 
+   for ord in Nemo.flint_orderings
+      S, (x, y, z) = PolynomialRing(R, ["x", "y", "z"]; ordering=ord)
+
+      f = -8*x^5*y^3*z^5+9*x^5*y^2*z^3-8*x^4*y^5*z^4-10*x^4*y^3*z^2+8*x^3*y^2*z-10*x*y^3*
+z^4-4*x*y-10*x*z^2+8*y^2*z^5-9*y^2*z^3
+
+      @test coeff(f, [1], [1]) == -10*y^3*z^4-4*y-10*z^2
+      @test coeff(f, [2, 3], [3, 2]) == -10*x^4
+      @test coeff(f, [1, 3], [4, 5]) == 0
+
+      @test coeff(f, [x], [1]) == -10*y^3*z^4-4*y-10*z^2
+      @test coeff(f, [y, z], [3, 2]) == -10*x^4
+      @test coeff(f, [x, z], [4, 5]) == 0
+   end
+end
+
+@testset "fmpq_mpoly.unary_ops..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -142,13 +202,9 @@ function test_fmpq_mpoly_unary_ops()
          @test f == -(-f)
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_binary_ops()
-   print("fmpq_mpoly.binary_ops...")
-
+@testset "fmpq_mpoly.binary_ops..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -169,13 +225,9 @@ function test_fmpq_mpoly_binary_ops()
          @test f*g - f*h == f*(g - h)
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_adhoc_binary()
-   print("fmpq_mpoly.adhoc_binary...")
-
+@testset "fmpq_mpoly.adhoc_binary..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -213,13 +265,9 @@ function test_fmpq_mpoly_adhoc_binary()
          @test f + g1 - g1 == f
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_adhoc_comparison()
-   print("fmpq_mpoly.adhoc_comparison...")
-
+@testset "fmpq_mpoly.adhoc_comparison..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -243,13 +291,9 @@ function test_fmpq_mpoly_adhoc_comparison()
          @test Rational{Int}(d) == S(d)
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_powering()
-   print("fmpq_mpoly.powering...")
-
+@testset "fmpq_mpoly.powering..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -269,15 +313,14 @@ function test_fmpq_mpoly_powering()
          end
 
          @test (f == 0 && expn == 0 && f^expn == 0) || f^expn == r
+
+         @test_throws DomainError f^-1
+         @test_throws DomainError f^fmpz(-1)
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_divides()
-   print("fmpq_mpoly.divides...")
-
+@testset "fmpq_mpoly.divides..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -287,31 +330,26 @@ function test_fmpq_mpoly_divides()
       S, varlist = PolynomialRing(R, var_names, ordering = ord)
 
       for iter = 1:10
-         f = S(0)
-         while iszero(f)
-            f = rand(S, 0:5, 0:100, -100:100)
-         end
+         f = rand(S, 0:5, 0:100, -100:100)
          g = rand(S, 0:5, 0:100, -100:100)
 
          p = f*g
 
          flag, q = divides(p, f)
 
-         @test flag == true
-         @test q == g
+         if flag
+           @test q * f == p
+         end
 
-         q = divexact(p, f)
-
-         @test q == g
+         if !iszero(f)
+           q = divexact(p, f)
+           @test q == g
+         end
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_euclidean_division()
-   print("fmpq_mpoly.euclidean_division...")
-
+@testset "fmpq_mpoly.euclidean_division..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -345,13 +383,9 @@ function test_fmpq_mpoly_euclidean_division()
          @test (r3 == 0 && flag == true && q5 == q3) || (r3 != 0 && flag == false)
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_ideal_reduction()
-   print("fmpq_mpoly.ideal_reduction...")
-
+@testset "fmpq_mpoly.ideal_reduction..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -378,7 +412,7 @@ function test_fmpq_mpoly_ideal_reduction()
       for iter = 1:10
          num = rand(1:5)
 
-         V = Array{elem_type(S)}(num)
+         V = Vector{elem_type(S)}(undef, num)
 
          for i = 1:num
             V[i] = S(0)
@@ -398,13 +432,9 @@ function test_fmpq_mpoly_ideal_reduction()
          @test p == g
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_gcd()
-   print("fmpq_mpoly.gcd...")
-
+@testset "fmpq_mpoly.gcd..." begin
    for num_vars = 1:4
       var_names = ["x$j" for j in 1:num_vars]
       ord = rand_ordering()
@@ -426,13 +456,9 @@ function test_fmpq_mpoly_gcd()
          end
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_evaluation()
-   print("fmpq_mpoly.evaluation...")
-
+@testset "fmpq_mpoly.evaluation..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -452,6 +478,7 @@ function test_fmpq_mpoly_evaluation()
          r3 = evaluate(f + g, V1)
 
          @test r3 == r1 + r2
+         @test (f + g)(V1...) == f(V1...) + g(V1...)
 
          V2 = [BigInt(rand(-10:10)) for i in 1:num_vars]
 
@@ -460,6 +487,7 @@ function test_fmpq_mpoly_evaluation()
          r3 = evaluate(f + g, V2)
 
          @test r3 == r1 + r2
+         @test (f + g)(V2...) == f(V2...) + g(V2...)
 
          V3 = [R(rand(-10:10)) for i in 1:num_vars]
 
@@ -468,15 +496,24 @@ function test_fmpq_mpoly_evaluation()
          r3 = evaluate(f + g, V3)
 
          @test r3 == r1 + r2
+         @test (f + g)(V3...) == f(V3...) + g(V3...)
       end
    end
 
-   println("PASS")
+   # Individual tests
+
+   S, (x, y) = PolynomialRing(R, ["x", "y"])
+   T = MatrixAlgebra(R, 2)
+
+   f = x^2*y^2+2*x+1
+
+   M1 = T([1 2; 3 4])
+   M2 = T([1 1; 2 4])
+
+   @test f(M1, M2) == T([124 219; 271 480])
 end
 
-function test_fmpq_mpoly_valuation()
-   print("fmpq_mpoly.valuation...")
-
+@testset "fmpq_mpoly.valuation..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -512,12 +549,9 @@ function test_fmpq_mpoly_valuation()
          @test q4 == q3
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpq_mpoly_derivative_integral()
-   print("fmpq_mpoly.derivative_integral...")
+@testset "fmpq_mpoly.derivative_integral..." begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -530,32 +564,91 @@ function test_fmpq_mpoly_derivative_integral()
          f = rand(S, 0:5, 0:100, -100:100)
 
          for i in 1:num_vars
-            @test degree((integral(derivative(f, i), i) - f), i) <= 0 # Constant or zero 
+            @test degree((integral(derivative(f, i), i) - f), i) <= 0 # Constant or zero
             @test derivative(integral(f, i), i) == f
          end
       end
    end
-
-   println("PASS")
 end
 
+@testset "fmpq_mpoly.combine_like_terms..." begin
+  for num_vars = 1:10
+     var_names = ["x$j" for j in 1:num_vars]
+     ord = rand_ordering()
 
+     R, vars_R = PolynomialRing(FlintQQ, var_names; ordering=ord)
 
-function test_fmpq_mpoly()
-   test_fmpq_mpoly_constructors()
-   test_fmpq_mpoly_manipulation()
-   test_fmpq_mpoly_unary_ops()
-   test_fmpq_mpoly_binary_ops()
-   test_fmpq_mpoly_adhoc_binary()
-   test_fmpq_mpoly_adhoc_comparison()
-   test_fmpq_mpoly_powering()
-   test_fmpq_mpoly_divides()
-   test_fmpq_mpoly_euclidean_division()
-   test_fmpq_mpoly_ideal_reduction()
-   test_fmpq_mpoly_gcd()
-   #test_fmpq_mpoly_evaluation()
-   test_fmpq_mpoly_valuation()
-   test_fmpq_mpoly_derivative_integral()
+     for iter in 1:10
+        f = R()
+        while f == 0
+           f = rand(R, 5:10, 1:10, -100:100)
+        end
 
-   println("")
+        lenf = length(f)
+        f = setcoeff!(f, rand(1:lenf), 0)
+        f = combine_like_terms!(f)
+
+        @test length(f) == lenf - 1
+
+        while length(f) < 2
+           f = rand(R, 5:10, 1:10, -100:100)
+        end
+
+        lenf = length(f)
+        nrand = rand(1:lenf - 1)
+        v = exponent_vector(f, nrand)
+        f = set_exponent_vector!(f, nrand + 1, v)
+        terms_cancel = coeff(f, nrand) == -coeff(f, nrand + 1)
+        f = combine_like_terms!(f)
+        @test length(f) == lenf - 1 - terms_cancel
+     end
+  end
+end
+
+@testset "fmpq_mpoly.exponents..." begin
+  for num_vars = 1:10
+     var_names = ["x$j" for j in 1:num_vars]
+     ord = rand_ordering()
+
+     R, vars_R = PolynomialRing(FlintQQ, var_names; ordering=ord)
+
+     for iter in 1:10
+        f = R()
+        while f == 0
+           f = rand(R, 5:10, 1:10, -100:100)
+        end
+
+        nrand = rand(1:length(f))
+        v = exponent_vector(f, nrand)
+        c = coeff(f, v)
+
+        @test c == coeff(f, nrand)
+        for ind = 1:length(v)
+           @test v[ind] == exponent(f, nrand, ind)
+        end
+     end
+
+     for iter in 1:10
+        num_vars = nvars(R)
+
+        f = R()
+        rand_len = rand(0:10)
+
+        for i = 1:rand_len
+           f = set_exponent_vector!(f, i, [rand(0:10) for j in 1:num_vars])
+           f = setcoeff!(f, i, rand(ZZ, -10:10))
+        end
+
+        f = sort_terms!(f)
+        f = combine_like_terms!(f)
+
+        for i = 1:length(f) - 1
+           @test exponent_vector(f, i) != exponent_vector(f, i + 1)
+           @test coeff(f, i) != 0
+        end
+        if length(f) > 0
+           @test coeff(f, length(f)) != 0
+        end
+     end
+  end
 end

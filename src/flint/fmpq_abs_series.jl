@@ -14,8 +14,11 @@ export fmpq_abs_series, FmpqAbsSeriesRing, tan, tanh, sin, sinh, asin, asinh,
 ###############################################################################
 
 function O(a::fmpq_abs_series)
+   if iszero(a)
+      return deepcopy(a)    # 0 + O(x^n)
+   end
    prec = length(a) - 1
-   prec < 0 && throw(DomainError())
+   prec < 0 && throw(DomainError("Precision must be non-negative: $prec"))
    z = parent(a)()
    z.prec = prec
    z.parent = parent(a)
@@ -41,13 +44,13 @@ max_precision(R::FmpqAbsSeriesRing) = R.prec_max
 function normalise(a::fmpq_abs_series, len::Int)
    if len > 0
       c = fmpq()
-      ccall((:fmpq_poly_get_coeff_fmpq, :libflint), Void,
+      ccall((:fmpq_poly_get_coeff_fmpq, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq_abs_series}, Int), c, a, len - 1)
    end
    while len > 0 && iszero(c)
       len -= 1
       if len > 0
-         ccall((:fmpq_poly_get_coeff_fmpq, :libflint), Void,
+         ccall((:fmpq_poly_get_coeff_fmpq, :libflint), Nothing,
             (Ref{fmpq}, Ref{fmpq_abs_series}, Int), c, a, len - 1)
       end
    end
@@ -60,7 +63,7 @@ function coeff(x::fmpq_abs_series, n::Int)
       return fmpq(0)
    end
    z = fmpq()
-   ccall((:fmpq_poly_get_coeff_fmpq, :libflint), Void,
+   ccall((:fmpq_poly_get_coeff_fmpq, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq_abs_series}, Int), z, x, n)
    return z
 end
@@ -81,7 +84,7 @@ function gen(R::FmpqAbsSeriesRing)
    return z
 end
 
-function deepcopy_internal(a::fmpq_abs_series, dict::ObjectIdDict)
+function deepcopy_internal(a::fmpq_abs_series, dict::IdDict)
    z = fmpq_abs_series(a)
    z.prec = a.prec
    z.parent = parent(a)
@@ -133,7 +136,7 @@ show_minus_one(::Type{fmpq_abs_series}) = show_minus_one(fmpq)
 
 function -(x::fmpq_abs_series)
    z = parent(x)()
-   ccall((:fmpq_poly_neg, :libflint), Void,
+   ccall((:fmpq_poly_neg, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}),
                z, x)
    z.prec = x.prec
@@ -159,7 +162,7 @@ function +(a::fmpq_abs_series, b::fmpq_abs_series)
    lenz = max(lena, lenb)
    z = parent(a)()
    z.prec = prec
-   ccall((:fmpq_poly_add_series, :libflint), Void,
+   ccall((:fmpq_poly_add_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, b, lenz)
    return z
@@ -178,7 +181,7 @@ function -(a::fmpq_abs_series, b::fmpq_abs_series)
    lenz = max(lena, lenb)
    z = parent(a)()
    z.prec = prec
-   ccall((:fmpq_poly_sub_series, :libflint), Void,
+   ccall((:fmpq_poly_sub_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, b, lenz)
    return z
@@ -207,7 +210,7 @@ function *(a::fmpq_abs_series, b::fmpq_abs_series)
 
    lenz = min(lena + lenb - 1, prec)
 
-   ccall((:fmpq_poly_mullow, :libflint), Void,
+   ccall((:fmpq_poly_mullow, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, b, lenz)
    return z
@@ -223,7 +226,7 @@ end
 function *(x::Int, y::fmpq_abs_series)
    z = parent(y)()
    z.prec = y.prec
-   ccall((:fmpq_poly_scalar_mul_si, :libflint), Void,
+   ccall((:fmpq_poly_scalar_mul_si, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, y, x)
    return z
@@ -232,7 +235,7 @@ end
 function *(x::fmpz, y::fmpq_abs_series)
    z = parent(y)()
    z.prec = y.prec
-   ccall((:fmpq_poly_scalar_mul_fmpz, :libflint), Void,
+   ccall((:fmpq_poly_scalar_mul_fmpz, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpz}),
                z, y, x)
    return z
@@ -241,7 +244,7 @@ end
 function *(x::fmpq, y::fmpq_abs_series)
    z = parent(y)()
    z.prec = y.prec
-   ccall((:fmpq_poly_scalar_mul_fmpq, :libflint), Void,
+   ccall((:fmpq_poly_scalar_mul_fmpq, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpq}),
                z, y, x)
    return z
@@ -276,25 +279,30 @@ end
 ###############################################################################
 
 function shift_left(x::fmpq_abs_series, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    xlen = length(x)
    z = parent(x)()
    z.prec = x.prec + len
-   ccall((:fmpq_poly_shift_left, :libflint), Void,
-                (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
+   z.prec = min(z.prec, max_precision(parent(x)))
+   zlen = min(z.prec, xlen + len)
+   ccall((:fmpq_poly_shift_left, :libflint), Nothing,
+         (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, x, len)
+   ccall((:fmpq_poly_set_trunc, :libflint), Nothing,
+         (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
+               z, z, zlen)
    return z
 end
 
 function shift_right(x::fmpq_abs_series, len::Int)
-   len < 0 && throw(DomainError())
+   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
    xlen = length(x)
    z = parent(x)()
    if len >= xlen
       z.prec = max(0, x.prec - len)
    else
       z.prec = x.prec - len
-      ccall((:fmpq_poly_shift_right, :libflint), Void,
+      ccall((:fmpq_poly_shift_right, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, x, len)
    end
@@ -308,13 +316,13 @@ end
 ###############################################################################
 
 function truncate(x::fmpq_abs_series, prec::Int)
-   prec < 0 && throw(DomainError())
+   prec < 0 && throw(DomainError("Precision must be non-negative: $prec"))
    if x.prec <= prec
       return x
    end
    z = parent(x)()
    z.prec = prec
-   ccall((:fmpq_poly_set_trunc, :libflint), Void,
+   ccall((:fmpq_poly_set_trunc, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, x, prec)
    return z
@@ -327,7 +335,7 @@ end
 ###############################################################################
 
 function ^(a::fmpq_abs_series, b::Int)
-   b < 0 && throw(DomainError())
+   b < 0 && throw(DomainError("Exponent must be non-negative: $b"))
    # special case powers of x for constructing power series efficiently
    if precision(a) > 0 && isgen(a) && b > 0
       return shift_left(a, b - 1)
@@ -422,7 +430,7 @@ function divexact(x::fmpq_abs_series, y::fmpq_abs_series)
    prec = min(x.prec, y.prec - v2 + v1)
    z = parent(x)()
    z.prec = prec
-   ccall((:fmpq_poly_div_series, :libflint), Void,
+   ccall((:fmpq_poly_div_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, x, y, prec)
    return z
@@ -438,7 +446,7 @@ function divexact(x::fmpq_abs_series, y::Int)
    y == 0 && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
-   ccall((:fmpq_poly_scalar_div_si, :libflint), Void,
+   ccall((:fmpq_poly_scalar_div_si, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, x, y)
    return z
@@ -448,7 +456,7 @@ function divexact(x::fmpq_abs_series, y::fmpz)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
-   ccall((:fmpq_poly_scalar_div_fmpz, :libflint), Void,
+   ccall((:fmpq_poly_scalar_div_fmpz, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpz}),
                z, x, y)
    return z
@@ -458,7 +466,7 @@ function divexact(x::fmpq_abs_series, y::fmpq)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
-   ccall((:fmpq_poly_scalar_div_fmpq, :libflint), Void,
+   ccall((:fmpq_poly_scalar_div_fmpq, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpq}),
                z, x, y)
    return z
@@ -479,7 +487,7 @@ function inv(a::fmpq_abs_series)
    !isunit(a) && error("Unable to invert power series")
    ainv = parent(a)()
    ainv.prec = a.prec
-   ccall((:fmpq_poly_inv_series, :libflint), Void,
+   ccall((:fmpq_poly_inv_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                ainv, a, a.prec)
    return ainv
@@ -498,13 +506,13 @@ function Base.exp(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_exp_series, :libflint), Void,
+   ccall((:fmpq_poly_exp_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    log(a::fmpq_abs_series)
 > Return log$(a)$. Requires the constant term to be one.
 """
@@ -515,13 +523,13 @@ function log(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_log_series, :libflint), Void,
+   ccall((:fmpq_poly_log_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    tan(a::fmpq_abs_series)
 > Return tan$(a)$. Requires a zero constant term.
 """
@@ -532,13 +540,13 @@ function tan(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_tan_series, :libflint), Void,
+   ccall((:fmpq_poly_tan_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    tanh(a::fmpq_abs_series)
 > Return tanh$(a)$. Requires a zero constant term.
 """
@@ -549,13 +557,13 @@ function tanh(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_tanh_series, :libflint), Void,
+   ccall((:fmpq_poly_tanh_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    sin(a::fmpq_abs_series)
 > Return sin$(a)$. Requires a zero constant term.
 """
@@ -566,13 +574,13 @@ function sin(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_sin_series, :libflint), Void,
+   ccall((:fmpq_poly_sin_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    sinh(a::fmpq_abs_series)
 > Return sinh$(a)$. Requires a zero constant term.
 """
@@ -583,13 +591,13 @@ function sinh(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_sinh_series, :libflint), Void,
+   ccall((:fmpq_poly_sinh_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    cos(a::fmpq_abs_series)
 > Return cos$(a)$. Requires a zero constant term.
 """
@@ -600,13 +608,13 @@ function cos(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_cos_series, :libflint), Void,
+   ccall((:fmpq_poly_cos_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    cosh(a::fmpq_abs_series)
 > Return cosh$(a)$. Requires a zero constant term.
 """
@@ -617,13 +625,13 @@ function cosh(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_cosh_series, :libflint), Void,
+   ccall((:fmpq_poly_cosh_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    asin(a::fmpq_abs_series)
 > Return asin$(a)$. Requires a zero constant term.
 """
@@ -634,13 +642,13 @@ function asin(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_asin_series, :libflint), Void,
+   ccall((:fmpq_poly_asin_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    asinh(a::fmpq_abs_series)
 > Return asinh$(a)$. Requires a zero constant term.
 """
@@ -651,13 +659,13 @@ function asinh(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_asinh_series, :libflint), Void,
+   ccall((:fmpq_poly_asinh_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    atan(a::fmpq_abs_series)
 > Return atan$(a)$. Requires a zero constant term.
 """
@@ -668,13 +676,13 @@ function atan(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_atan_series, :libflint), Void,
+   ccall((:fmpq_poly_atan_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    atanh(a::fmpq_abs_series)
 > Return atanh$(a)$. Requires a zero constant term.
 """
@@ -685,13 +693,13 @@ function atanh(a::fmpq_abs_series)
    end
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_atanh_series, :libflint), Void,
+   ccall((:fmpq_poly_atanh_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
    sqrt(a::fmpq_abs_series)
 > Return the power series square root of $a$. Requires a constant term equal to
 > one.
@@ -700,7 +708,7 @@ function Base.sqrt(a::fmpq_abs_series)
    !isone(coeff(a, 0)) && error("Constant term not one in sqrt")
    z = parent(a)()
    z.prec = a.prec
-   ccall((:fmpq_poly_sqrt_series, :libflint), Void,
+   ccall((:fmpq_poly_sqrt_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
    return z
@@ -712,8 +720,15 @@ end
 #
 ###############################################################################
 
+function zero!(z::fmpq_abs_series)
+   ccall((:fmpq_poly_zero, :libflint), Nothing,
+                (Ref{fmpq_abs_series},), z)
+   z.prec = parent(z).prec_max
+   return z
+end
+
 function setcoeff!(z::fmpq_abs_series, n::Int, x::fmpq)
-   ccall((:fmpq_poly_set_coeff_fmpq, :libflint), Void,
+   ccall((:fmpq_poly_set_coeff_fmpq, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Int, Ref{fmpq}),
                z, n, x)
    return z
@@ -738,7 +753,7 @@ function mul!(z::fmpq_abs_series, a::fmpq_abs_series, b::fmpq_abs_series)
    end
 
    z.prec = prec
-   ccall((:fmpq_poly_mullow, :libflint), Void,
+   ccall((:fmpq_poly_mullow, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, b, lenz)
    return z
@@ -755,7 +770,7 @@ function addeq!(a::fmpq_abs_series, b::fmpq_abs_series)
 
    lenz = max(lena, lenb)
    a.prec = prec
-   ccall((:fmpq_poly_add_series, :libflint), Void,
+   ccall((:fmpq_poly_add_series, :libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                a, a, b, lenz)
    return a

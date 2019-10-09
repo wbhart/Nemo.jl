@@ -63,6 +63,7 @@ FlintFiniteField(::Integer, ::Int, ::AbstractString)
 
 ```@docs
 FlintFiniteField(::fmpz_mod_poly, ::AbstractString)
+FlintFiniteField(::gfp_fmpz_poly, ::AbstractString)
 ```
 
 Here are some examples of creating finite fields and making use of the
@@ -101,6 +102,10 @@ degree(::FqFiniteField)
 ```
 
 ```@docs
+characteristic(::FqFiniteField)
+```
+
+```@docs
 order(::FqFiniteField)
 ```
 
@@ -121,7 +126,7 @@ n = isgen(x)
 Various special functions with finite field specific behaviour are defined.
 
 ```@docs
-trace(::fq)
+tr(::fq)
 ```
 
 ```@docs
@@ -143,7 +148,7 @@ R, x = FiniteField(ZZ(7), 5, "x")
 
 a = x^4 + 3x^2 + 6x + 1
 
-b = trace(a)
+b = tr(a)
 c = norm(a)
 d = frobenius(a)
 f = frobenius(a, 3)

@@ -1,6 +1,4 @@
-function test_fmpz_laurent_series_constructors()
-   print("fmpz_laurent_series.constructors...")
-
+@testset "fmpz_laurent_series.constructors..." begin
    R, x = LaurentSeriesRing(ZZ, 30, "x")
 
    @test elem_type(R) == fmpz_laurent_series
@@ -28,13 +26,19 @@ function test_fmpz_laurent_series_constructors()
    @test isa(g1, fmpz_laurent_series)
    @test isa(h1, fmpz_laurent_series)
    @test isa(k1, fmpz_laurent_series)
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_manipulation()
-   print("fmpz_laurent_series.manipulation...")
+@testset "fmpz_laurent_series.rand..." begin
+   R, x = LaurentSeriesRing(ZZ, 10, "x")
+   @test rand(R, -12:12, -10:10) isa fmpz_laurent_series
+   Random.seed!(rng, 0)
+   t = rand(rng, R, -12:12, -10:10)
+   @test t isa fmpz_laurent_series
+   Random.seed!(rng, 0)
+   @test t == rand(rng, R, -12:12, -10:10)
+end
 
+@testset "fmpz_laurent_series.manipulation..." begin
    R, t = PolynomialRing(ZZ, "t")
    S, x = LaurentSeriesRing(R, 30, "x")
 
@@ -67,13 +71,9 @@ function test_fmpz_laurent_series_manipulation()
 
    @test coeff(a, 1) == 2
    @test coeff(b, 7) == 0
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_unary_ops()
-   print("fmpz_laurent_series.unary_ops...")
-
+@testset "fmpz_laurent_series.unary_ops..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = rand(R, -12:12, -10:10)
@@ -81,13 +81,9 @@ function test_fmpz_laurent_series_unary_ops()
       @test isequal(-(-f), f)
       @test iszero(f + (-f))
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_binary_ops()
-   print("fmpz_laurent_series.binary_ops...")
-
+@testset "fmpz_laurent_series.binary_ops..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:100
       f = rand(R, -12:12, -10:10)
@@ -102,13 +98,9 @@ function test_fmpz_laurent_series_binary_ops()
       @test f*(g + h) == f*g + f*h
       @test f*(g - h) == f*g - f*h
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_adhoc_binary_ops()
-   print("fmpz_laurent_series.adhoc_binary_ops...")
-
+@testset "fmpz_laurent_series.adhoc_binary_ops..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:500
       f = rand(R, -12:12, -10:10)
@@ -127,13 +119,9 @@ function test_fmpz_laurent_series_adhoc_binary_ops()
       @test isequal(f*d1 - f*d2, f*(d1 - d2))
       @test isequal(f*d1 + f*d2, f*(d1 + d2))
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_comparison()
-   print("fmpz_laurent_series.comparison...")
-
+@testset "fmpz_laurent_series.comparison..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:500
       f = rand(R, -12:12, -10:10)
@@ -148,13 +136,9 @@ function test_fmpz_laurent_series_comparison()
       @test (precision(h) > min(precision(f), precision(g)) || f != g + h)
       @test (precision(h) > min(precision(f), precision(g)) || !isequal(f, g + h))
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_adhoc_comparison()
-   print("fmpz_laurent_series.adhoc_comparison...")
-
+@testset "fmpz_laurent_series.adhoc_comparison..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:500
       f = R()
@@ -175,13 +159,9 @@ function test_fmpz_laurent_series_adhoc_comparison()
       @test R(d1) != d1 + f
       @test d1 != R(d1) + f
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_powering()
-   print("fmpz_laurent_series.powering...")
-
+@testset "fmpz_laurent_series.powering..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
 
    for iter = 1:100
@@ -196,13 +176,9 @@ function test_fmpz_laurent_series_powering()
          r2 *= f
       end
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_shift()
-   print("fmpz_laurent_series.shift...")
-
+@testset "fmpz_laurent_series.shift..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = rand(R, -12:12, -10:10)
@@ -212,13 +188,9 @@ function test_fmpz_laurent_series_shift()
       @test isequal(shift_left(f, s), x^s*f)
       @test precision(shift_right(f, s)) == precision(f) - s
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_truncation()
-   print("fmpz_laurent_series.truncation...")
-
+@testset "fmpz_laurent_series.truncation..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = rand(R, -12:12, -10:10)
@@ -228,13 +200,9 @@ function test_fmpz_laurent_series_truncation()
       @test isequal(truncate(f, s), f + O(x^s))
       @test precision(truncate(f, s)) == min(precision(f), s)
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_inversion()
-   print("fmpz_laurent_series.inversion...")
-
+@testset "fmpz_laurent_series.inversion..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = R()
@@ -244,27 +212,19 @@ function test_fmpz_laurent_series_inversion()
 
       @test f*inv(f) == 1
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_square_root()
-   print("fmpz_laurent_series.square_root...")
- 
+@testset "fmpz_laurent_series.square_root..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = rand(R, -12:12, -10:10)
       g = f^2
- 
+
       @test isequal(sqrt(g)^2, g)
    end
- 
-   println("PASS")
 end
- 
-function test_fmpz_laurent_series_exact_division()
-   print("fmpz_laurent_series.exact_division...")
 
+@testset "fmpz_laurent_series.exact_division..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = rand(R, -12:12, -10:10)
@@ -275,13 +235,9 @@ function test_fmpz_laurent_series_exact_division()
 
       @test divexact(f, g)*g == f
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_adhoc_exact_division()
-   print("fmpz_laurent_series.adhoc_exact_division...")
-
+@testset "fmpz_laurent_series.adhoc_exact_division..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = rand(R, -12:12, -10:10)
@@ -292,36 +248,10 @@ function test_fmpz_laurent_series_adhoc_exact_division()
 
       @test isequal(divexact(f*c, c), f)
    end
-
-   println("PASS")
 end
 
-function test_fmpz_laurent_series_special_functions()
-   print("fmpz_laurent_series.special_functions...")
-
+@testset "fmpz_laurent_series.special_functions..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
-    
+
    @test isequal(exp(2x + x^2 + O(x^3)), 1 + 2*x + 3*x^2 + O(x^3))
-
-   println("PASS")
-end
-
-function test_fmpz_laurent_series()
-   test_fmpz_laurent_series_constructors()
-   test_fmpz_laurent_series_manipulation()
-   test_fmpz_laurent_series_unary_ops()
-   test_fmpz_laurent_series_binary_ops()
-   test_fmpz_laurent_series_adhoc_binary_ops()
-   test_fmpz_laurent_series_comparison()
-   test_fmpz_laurent_series_adhoc_comparison()
-   test_fmpz_laurent_series_powering()
-   test_fmpz_laurent_series_shift()
-   test_fmpz_laurent_series_truncation()
-   test_fmpz_laurent_series_exact_division()
-   test_fmpz_laurent_series_adhoc_exact_division()
-   test_fmpz_laurent_series_inversion()
-   test_fmpz_laurent_series_square_root()
-   test_fmpz_laurent_series_special_functions()
-
-   println("")
 end

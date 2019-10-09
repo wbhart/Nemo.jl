@@ -1,6 +1,4 @@
-function test_fmpz_abstract_types()
-   print("fmpz.abstract_types...")
-
+@testset "fmpz.abstract_types..." begin
    @test fmpz <: RingElem
 
    @test FlintIntegerRing <: Nemo.Ring
@@ -8,13 +6,9 @@ function test_fmpz_abstract_types()
    @test elem_type(FlintIntegerRing()) == fmpz
    @test elem_type(FlintIntegerRing) == fmpz
    @test parent_type(fmpz) == FlintIntegerRing
-
-   println("PASS")
 end
 
-function test_fmpz_constructors()
-   print("fmpz.constructors...")
-
+@testset "fmpz.constructors..." begin
    a = fmpz(-123)
    @test isa(a, RingElem)
 
@@ -35,23 +29,24 @@ function test_fmpz_constructors()
 
    g = fmpz()
    @test isa(f, RingElem)
-
-   println("PASS")
 end
 
-function test_fmpz_printing()
-   print("fmpz.printing...")
+@testset "fmpz.rand..." begin
+   @test rand(FlintZZ, 1:9) isa fmpz
+   Random.seed!(rng, 0)
+   t = rand(rng, FlintZZ, 1:9)
+   @test t isa fmpz
+   Random.seed!(rng, 0)
+   @test t == rand(rng, FlintZZ, 1:9)
+end
 
+@testset "fmpz.printing..." begin
    a = fmpz(-123)
 
    @test string(a) == "-123"
-
-   println("PASS")
 end
 
-function test_fmpz_convert()
-   print("fmpz.convert...")
-
+@testset "fmpz.convert..." begin
    a = fmpz(-123)
    b = fmpz(12)
 
@@ -62,13 +57,9 @@ function test_fmpz_convert()
    @test Float32(a) == Float32(-123)
    @test Float16(a) == Float16(-123)
    @test BigFloat(a) == BigFloat(-123)
-
-   println("PASS")
 end
 
-function test_fmpz_manipulation()
-   print("fmpz.manipulation...")
-
+@testset "fmpz.manipulation..." begin
    a = one(FlintIntegerRing())
    b = zero(FlintIntegerRing())
 
@@ -95,13 +86,9 @@ function test_fmpz_manipulation()
    @test numerator(fmpz(12)) == fmpz(12)
 
    @test denominator(fmpz(12)) == fmpz(1)
-
-   println("PASS")
 end
 
-function test_fmpz_binary_ops()
-   print("fmpz.binary_ops...")
-
+@testset "fmpz.binary_ops..." begin
    a = fmpz(12)
    b = fmpz(26)
 
@@ -118,13 +105,9 @@ function test_fmpz_binary_ops()
    @test b|a == 30
 
    @test xor(b, a) == 22
-
-   println("PASS")
 end
 
-function test_fmpz_division()
-   print("fmpz.division...")
-
+@testset "fmpz.division..." begin
    a = fmpz(12)
    b = fmpz(26)
 
@@ -135,13 +118,9 @@ function test_fmpz_division()
    @test tdiv(b, a) == 2
 
    @test div(b, a) == 2
-
-   println("PASS")
 end
 
-function test_fmpz_remainder()
-   print("fmpz.remainder...")
-
+@testset "fmpz.remainder..." begin
    a = fmpz(12)
    b = fmpz(26)
 
@@ -152,21 +131,13 @@ function test_fmpz_remainder()
    @test mod(b, 12) == 2
 
    @test rem(b, 12) == 2
-
-   println("PASS")
 end
 
-function test_fmpz_exact_division()
-   print("fmpz.exact_division...")
-
+@testset "fmpz.exact_division..." begin
    @test divexact(fmpz(24), fmpz(12)) == 2
-
-   println("PASS")
 end
 
-function test_fmpz_gcd_lcm()
-   print("fmpz.gcd_lcm...")
-
+@testset "fmpz.gcd_lcm..." begin
    a = fmpz(12)
    b = fmpz(26)
 
@@ -193,29 +164,30 @@ function test_fmpz_gcd_lcm()
    @test lcm(fmpz[2, 2, 2]) == 2
 
    @test lcm(fmpz[2, 3, 2]) == 6
-   println("PASS")
 end
 
-function test_fmpz_logarithm()
-   print("fmpz.logarithm...")
-
+@testset "fmpz.logarithm..." begin
    a = fmpz(12)
    b = fmpz(26)
 
    @test flog(b, a) == 1
 
+   @test_throws DomainError flog(b, -a)
+
    @test flog(b, 12) == 1
+
+   @test_throws DomainError flog(b, -12)
 
    @test clog(b, a) == 2
 
+   @test_throws DomainError clog(b, -a)
+
    @test clog(b, 12) == 2
 
-   println("PASS")
+   @test_throws DomainError clog(b, -12)
 end
 
-function test_fmpz_adhoc_binary()
-   print("fmpz.adhoc_binary...")
-
+@testset "fmpz.adhoc_binary..." begin
    a = fmpz(-12)
 
    @test 3 + a == -9
@@ -231,13 +203,9 @@ function test_fmpz_adhoc_binary()
    @test 5*a == -60
 
    @test a%5 == -2
-
-   println("PASS")
 end
 
-function test_fmpz_adhoc_division()
-   print("fmpz.adhoc_division...")
-
+@testset "fmpz.adhoc_division..." begin
    a = fmpz(-12)
 
    @test fdiv(a, 5) == -3
@@ -248,42 +216,40 @@ function test_fmpz_adhoc_division()
 
    @test div(a, 3) == -4
 
-   println("PASS")
+   @test div(-12, fmpz(3)) == -4
+
+   @test mod(-12, fmpz(3)) == 0
+
+   @test rem(-12, fmpz(3)) == 0
 end
 
-function test_fmpz_shift()
-   print("fmpz.shift..")
-
+@testset "fmpz.shift.." begin
    a = fmpz(-12)
 
    @test a >> 3 == -2
 
    @test fdivpow2(a, 2) == -3
 
+   @test_throws DomainError fdivpow2(a, -1)
+
    @test cdivpow2(a, 2) == -3
+
+   @test_throws DomainError cdivpow2(a, -1)
 
    @test tdivpow2(a, 2) == -3
 
-   @test a << 4 == -192
+   @test_throws DomainError tdivpow2(a, -1)
 
-   println("PASS")
+   @test a << 4 == -192
 end
 
-function test_fmpz_powering()
-   print("fmpz.powering...")
-
+@testset "fmpz.powering..." begin
    a = fmpz(-12)
 
    @test a^5 == -248832
-
-   @test a^UInt(5) == -248832
-
-   println("PASS")
 end
 
-function test_fmpz_comparison()
-   print("fmpz.comparison...")
-
+@testset "fmpz.comparison..." begin
    a = fmpz(-12)
    b = fmpz(5)
 
@@ -304,13 +270,9 @@ function test_fmpz_comparison()
    @test cmpabs(a, b) == 1
 
    @test cmp(a, b) == -1
-
-   println("PASS")
 end
 
-function test_fmpz_adhoc_comparison()
-   print("fmpz.adhoc_comparison...")
-
+@testset "fmpz.adhoc_comparison..." begin
    a = fmpz(-12)
 
    @test a < 7
@@ -362,65 +324,53 @@ function test_fmpz_adhoc_comparison()
    @test UInt(2) == a
 
    @test UInt(4) != a
-
-   println("PASS")
 end
 
-function test_fmpz_unary_ops()
-   print("fmpz.unary_ops...")
-
+@testset "fmpz.unary_ops..." begin
    @test -fmpz(12) == -12
 
    @test ~fmpz(-5) == 4
-
-   println("PASS")
 end
 
-function test_fmpz_abs()
-   print("fmpz.abs...")
-
+@testset "fmpz.abs..." begin
    @test abs(fmpz(-12)) == 12
-
-   println("PASS")
 end
 
-function test_fmpz_divrem()
-   print("fmpz.divrem...")
-
+@testset "fmpz.divrem..." begin
    @test fdivrem(fmpz(12), fmpz(5)) == (fmpz(2), fmpz(2))
 
    @test tdivrem(fmpz(12), fmpz(5)) == (fmpz(2), fmpz(2))
 
    @test divrem(fmpz(12), fmpz(5)) == (fmpz(2), fmpz(2))
-
-   println("PASS")
 end
 
-function test_fmpz_roots()
-   print("fmpz.roots...")
-
+@testset "fmpz.roots..." begin
    @test isqrt(fmpz(12)) == 3
+
+   @test_throws DomainError isqrt(-fmpz(12))
 
    @test isqrtrem(fmpz(12)) == (3, 3)
 
+   @test_throws DomainError isqrtrem(-fmpz(12))
+
    @test root(fmpz(1000), 3) == 10
 
-   println("PASS")
+   @test_throws DomainError root(-fmpz(1000), 4)
+
+   @test_throws DomainError root(fmpz(1000), -3)
 end
 
-function test_fmpz_extended_gcd()
-   print("fmpz.extended_gcd...")
-
+@testset "fmpz.extended_gcd..." begin
    @test gcdx(fmpz(12), fmpz(5)) == (1, -2, 5)
 
    @test gcdinv(fmpz(5), fmpz(12)) == (1, 5)
 
-   println("PASS")
+   @test_throws DomainError gcdinv(-fmpz(5), fmpz(12))
+
+   @test_throws DomainError gcdinv(fmpz(13), fmpz(12))
 end
 
-function test_fmpz_bit_twiddling()
-   print("fmpz.bit_twiddling...")
-
+@testset "fmpz.bit_twiddling..." begin
    a = fmpz(12)
 
    @test popcount(a) == 2
@@ -435,20 +385,22 @@ function test_fmpz_bit_twiddling()
 
    @test a == 8
 
+   @test_throws DomainError combit!(a, -1)
+
    setbit!(a, 0)
 
    @test a == 9
+
+   @test_throws DomainError setbit!(a, -1)
 
    clrbit!(a, 0)
 
    @test a == 8
 
-   println("PASS")
+   @test_throws DomainError clrbit!(a, -1)
 end
 
-function test_fmpz_bases()
-   print("fmpz.bases...")
-
+@testset "fmpz.bases..." begin
    a = fmpz(12)
 
    @test bin(a) == "1100"
@@ -464,79 +416,90 @@ function test_fmpz_bases()
    @test nbits(a) == 4
 
    @test ndigits(a, 3) == 3
-
-   println("PASS")
 end
 
-function test_fmpz_string_io()
-   print("fmpz.string_io...")
-
+@testset "fmpz.string_io..." begin
    a = fmpz(12)
 
    @test string(a) == "12"
-
-   println("PASS")
 end
 
-function test_fmpz_modular_arithmetic()
-   print("fmpz.modular_arithmetic...")
-
+@testset "fmpz.modular_arithmetic..." begin
    @test powmod(fmpz(12), fmpz(110), fmpz(13)) == 1
+
+   @test_throws DomainError powmod(fmpz(12), fmpz(110), fmpz(-1))
 
    @test powmod(fmpz(12), 110, fmpz(13)) == 1
 
+   @test_throws DomainError powmod(fmpz(12), 110, fmpz(-1))
+
    @test invmod(fmpz(12), fmpz(13)) == 12
 
+   @test_throws DomainError invmod(fmpz(12), fmpz(-13))
+
    @test sqrtmod(fmpz(12), fmpz(13)) == 5
+
+   @test_throws DomainError sqrtmod(fmpz(12), fmpz(-13))
 
    @test crt(fmpz(5), fmpz(13), fmpz(7), fmpz(37), true) == 44
 
    @test crt(fmpz(5), fmpz(13), 7, 37, false) == 44
 
-   println("PASS")
+   @test_throws DomainError crt(fmpz(5), fmpz(13), -7, 37, true)
+
+   @test_throws DomainError crt(fmpz(5), fmpz(13), 7, -37, true)
+
+   @test_throws DomainError crt(fmpz(5), fmpz(13), -7, -37, true)
 end
 
-function test_fmpz_factor()
-   print("fmpz.factor...")
+@testset "fmpz.factor..." begin
+   a = fmpz(-3*5*7*11*13^10)
 
-   a = fmpz(fmpz(-3*5*7*11*13^10))
+   fact = factor(a)
 
-   fac = factor(a)
+   b = unit(fact)
 
-   b = unit(fac)
-
-   for (p, e) in fac
+   for (p, e) in fact
       b = b*p^e
    end
 
    @test b == a
 
-   @test fac[fmpz(3)] == 1
-   @test fac[fmpz(5)] == 1
-   @test fac[fmpz(7)] == 1
-   @test fac[fmpz(11)] == 1
-   @test fac[fmpz(13)] == 10
-   @test 3 in fac
-   @test !(2 in fac)
+   @test fact[fmpz(3)] == 1
+   @test fact[fmpz(5)] == 1
+   @test fact[fmpz(7)] == 1
+   @test fact[fmpz(11)] == 1
+   @test fact[fmpz(13)] == 10
+   @test 3 in fact
+   @test !(2 in fact)
 
-   fac = factor(fmpz(-1))
+   fact = factor(fmpz(-1))
 
-   @test fac.fac == Dict{fmpz, Int}()
+   @test fact.fac == Dict{fmpz, Int}()
 
-   fac = factor(fmpz(-2))
+   fact = factor(fmpz(-2))
 
-   @test fac.fac == Dict(fmpz(2) => 1)
-   @test unit(fac) == -1
+   @test fact.fac == Dict(fmpz(2) => 1)
+   @test unit(fact) == -1
 
-   println("PASS")
+   @test_throws ArgumentError factor(fmpz(0))
+
+   n = fmpz(2 * 1125899906842679)
+   b, f = Nemo.ecm(n)
+   @test mod(n, f) == 0
+
+   n = fac(50)
+   d, u = Nemo._factor_trial_range(n, 0, 50)
+   @test isone(u)
+   @test prod(p^e for (p, e) in d) == n
 end
 
-function test_fmpz_number_theoretic()
-   print("fmpz.number_theoretic...")
-
+@testset "fmpz.number_theoretic..." begin
    @test isprime(fmpz(13))
 
-   @test isprobabprime(fmpz(13))
+   @test isprime(13)
+
+   @test isprobable_prime(fmpz(13))
 
    @test divisible(fmpz(12), fmpz(6))
 
@@ -546,7 +509,11 @@ function test_fmpz_number_theoretic()
 
    @test sigma(fmpz(128), 10) == fmpz("1181745669222511412225")
 
+   @test_throws DomainError sigma(fmpz(1), -1)
+
    @test eulerphi(fmpz(12480)) == 3072
+
+   @test_throws DomainError  eulerphi(-fmpz(12480))
 
    @test remove(fmpz(12), fmpz(2)) == (2, 3)
 
@@ -558,71 +525,55 @@ function test_fmpz_number_theoretic()
 
    @test divisor_lenstra(fmpz(12), fmpz(4), fmpz(5)) == 4
 
+   @test_throws DomainError divisor_lenstra(fmpz(12), -fmpz(4), fmpz(5))
+   @test_throws DomainError divisor_lenstra(fmpz(1), fmpz(4), fmpz(5))
+   @test_throws DomainError divisor_lenstra(fmpz(10), fmpz(4), fmpz(3))
+
    @test risingfac(fmpz(12), 5) == 524160
+
+   @test_throws DomainError risingfac(fmpz(12), -1)
 
    @test risingfac(12, 5) == 524160
 
+   @test_throws DomainError risingfac(12, -1)
+
    @test primorial(7) == 210
+
+   @test_throws DomainError primorial(-7)
 
    @test binom(12, 5) == 792
 
    @test bell(12) == 4213597
 
+   @test_throws DomainError bell(-1)
+
    @test moebiusmu(fmpz(13)) == -1
+
+   @test_throws DomainError moebiusmu(-fmpz(1))
 
    @test jacobi(fmpz(2), fmpz(5)) == -1
 
-   if !is_windows64()
+   @test_throws DomainError jacobi(fmpz(5), fmpz(2))
+
+   @test_throws DomainError jacobi(-fmpz(5), fmpz(2))
+
+   if !Nemo.iswindows64()
 
       @test numpart(10) == 42
 
+      @test_throws DomainError numpart(-10)
+
       @test numpart(fmpz(1000)) == fmpz("24061467864032622473692149727991")
 
-   end
+      @test_throws DomainError numpart(-fmpz(1000))
 
-   println("PASS")
+   end
 end
 
-function test_fmpz_square_root()
-   print("fmpz.square_root...")
-
+@testset "fmpz.square_root..." begin
    @test sqrt(fmpz(4)) == 2
 
+   @test_throws DomainError sqrt(-fmpz(4))
+
    @test sqrt(fmpz(0)) == 0
-
-   println("PASS")
-end
-
-function test_fmpz()
-   test_fmpz_abstract_types()
-   test_fmpz_constructors()
-   test_fmpz_printing()
-   test_fmpz_convert()
-   test_fmpz_manipulation()
-   test_fmpz_binary_ops()
-   test_fmpz_division()
-   test_fmpz_remainder()
-   test_fmpz_exact_division()
-   test_fmpz_gcd_lcm()
-   test_fmpz_logarithm()
-   test_fmpz_adhoc_binary()
-   test_fmpz_adhoc_division()
-   test_fmpz_shift()
-   test_fmpz_powering()
-   test_fmpz_comparison()
-   test_fmpz_adhoc_comparison()
-   test_fmpz_unary_ops()
-   test_fmpz_abs()
-   test_fmpz_divrem()
-   test_fmpz_roots()
-   test_fmpz_extended_gcd()
-   test_fmpz_bit_twiddling()
-   test_fmpz_bases()
-   test_fmpz_string_io()
-   test_fmpz_modular_arithmetic()
-   test_fmpz_factor()
-   test_fmpz_number_theoretic()
-   test_fmpz_square_root()
-
-   println("")
 end

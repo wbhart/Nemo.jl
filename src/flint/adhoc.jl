@@ -4,11 +4,11 @@
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     *(a::fmpz, b::AbsSeriesElem)
 > Return $a\times b$.
 """
-function *(a::fmpz, b::AbsSeriesElem) 
+function *(a::fmpz, b::AbsSeriesElem)
    len = length(b)
    z = parent(b)()
    fit!(z, len)
@@ -20,28 +20,28 @@ function *(a::fmpz, b::AbsSeriesElem)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     *(a::AbsSeriesElem, b::fmpz)
 > Return $a\times b$.
 """
 *(a::AbsSeriesElem, b::fmpz) = b*a
 
-doc"""
+@doc Markdown.doc"""
     ==(x::AbsSeriesElem, y::fmpz)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::AbsSeriesElem, y::fmpz) = precision(x) == 0 || ((length(x) == 0 && iszero(y))
                                        || (length(x) == 1 && coeff(x, 0) == y))
 
-doc"""
+@doc Markdown.doc"""
     ==(x::fmpz, y::AbsSeriesElem)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::fmpz, y::AbsSeriesElem) = y == x
 
-doc"""
-    divexact(a::AbsSeriesElem, b::fmpz)
-> Return $a/b$ where the quotient is expected to be exact.
+@doc Markdown.doc"""
+    divexact(x::AbsSeriesElem, y::fmpz)
+> Return $x/y$ where the quotient is expected to be exact.
 """
 function divexact(x::AbsSeriesElem, y::fmpz)
    iszero(y) && throw(DivideError())
@@ -56,8 +56,8 @@ function divexact(x::AbsSeriesElem, y::fmpz)
 end
 
 function (a::Generic.AbsSeriesRing{T})(b::fmpz) where {T <: RingElement}
-   if b == 0
-      z = Generic.AbsSeries{T}(Array{T}(0), 0, a.prec_max)
+   if iszero(b)
+      z = Generic.AbsSeries{T}(Array{T}(undef, 0), 0, a.prec_max)
    else
       z = Generic.AbsSeries{T}([base_ring(a)(b)], 1, a.prec_max)
    end
@@ -71,7 +71,7 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     *(a::fmpz, b::RelSeriesElem)
 > Return $a\times b$.
 """
@@ -89,29 +89,29 @@ function *(a::fmpz, b::RelSeriesElem)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     *(a::RelSeriesElem, b::fmpz)
 > Return $a\times b$.
 """
 *(a::RelSeriesElem, b::fmpz) = b*a
 
-doc"""
+@doc Markdown.doc"""
     ==(x::RelSeriesElem, y::fmpz)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::RelSeriesElem, y::fmpz) = precision(x) == 0 ||
-                  ((pol_length(x) == 0 && iszero(y)) || (pol_length(x) == 1 && 
+                  ((pol_length(x) == 0 && iszero(y)) || (pol_length(x) == 1 &&
                     valuation(x) == 0 && polcoeff(x, 0) == y))
 
-doc"""
+@doc Markdown.doc"""
     ==(x::fmpz, y::RelSeriesElem)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::fmpz, y::RelSeriesElem) = y == x
 
-doc"""
-    divexact(a::RelSeriesElem, b::fmpz)
-> Return $a/b$ where the quotient is expected to be exact.
+@doc Markdown.doc"""
+    divexact(x::RelSeriesElem, y::fmpz)
+> Return $x/y$ where the quotient is expected to be exact.
 """
 function divexact(x::RelSeriesElem, y::fmpz)
    iszero(y) && throw(DivideError())
@@ -126,9 +126,9 @@ function divexact(x::RelSeriesElem, y::fmpz)
    return z
 end
 
-function (a::Generic.RelSeriesRing{T})(b::fmpz) where {T <: RingElement} 
+function (a::Generic.RelSeriesRing{T})(b::fmpz) where {T <: RingElement}
    if iszero(b)
-      z = Generic.RelSeries{T}(Array{T}(0), 0, a.prec_max, a.prec_max)
+      z = Generic.RelSeries{T}(Array{T}(undef, 0), 0, a.prec_max, a.prec_max)
    else
       z = Generic.RelSeries{T}([base_ring(a)(b)], 1, a.prec_max, 0)
    end
@@ -142,7 +142,7 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     *(a::fmpz, b::PolyElem)
 > Return $a\times b$.
 """
@@ -157,26 +157,26 @@ function *(a::fmpz, b::PolyElem)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     *(a::PolyElem, b::fmpz)
 > Return $a\times b$.
 """
 *(a::PolyElem, b::fmpz) = b*a
 
-doc"""
+@doc Markdown.doc"""
     ==(x::PolyElem, y::fmpz)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::PolyElem, y::fmpz) = ((length(x) == 0 && iszero(y))
                         || (length(x) == 1 && coeff(x, 0) == y))
 
-doc"""
+@doc Markdown.doc"""
     ==(x::fmpz, y::PolyElem)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::fmpz, y::PolyElem) = y == x
 
-doc"""
+@doc Markdown.doc"""
     divexact(a::PolyElem, b::fmpz)
 > Return $a/b$ where the quotient is expected to be exact.
 """
@@ -228,54 +228,54 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     *(a::ResElem, b::fmpz)
 > Return $a\times b$.
 """
 *(a::ResElem, b::fmpz) = parent(a)(data(a) * b)
 
-doc"""
+@doc Markdown.doc"""
     *(a::fmpz, b::ResElem)
 > Return $a\times b$.
 """
 *(a::fmpz, b::ResElem) = parent(b)(a * data(b))
 
-doc"""
+@doc Markdown.doc"""
     +(a::ResElem, b::fmpz)
 > Return $a + b$.
 """
 +(a::ResElem, b::fmpz) = parent(a)(data(a) + b)
 
-doc"""
+@doc Markdown.doc"""
     +(a::fmpz, b::ResElem)
 > Return $a + b$.
 """
 +(a::fmpz, b::ResElem) = parent(b)(a + data(b))
 
-doc"""
+@doc Markdown.doc"""
     -(a::ResElem, b::fmpz)
 > Return $a - b$.
 """
 -(a::ResElem, b::fmpz) = parent(a)(data(a) - b)
 
-doc"""
+@doc Markdown.doc"""
     -(a::fmpz, b::ResElem)
 > Return $a - b$.
 """
 -(a::fmpz, b::ResElem) = parent(b)(a - data(b))
 
-doc"""
-    ==(x::ResElem, y::fmpz)
-> Return `true` if $x == y$ arithmetically, otherwise return `false`.
+@doc Markdown.doc"""
+    ==(a::ResElem, b::fmpz)
+> Return `true` if $a == b$ arithmetically, otherwise return `false`.
 """
 function ==(a::ResElem, b::fmpz)
    z = base_ring(a)(b)
    return data(a) == mod(z, modulus(a))
 end
 
-doc"""
-    ==(x::fmpz, y::ResElem)
-> Return `true` if $x == y$ arithmetically, otherwise return `false`.
+@doc Markdown.doc"""
+    ==(a::fmpz, b::ResElem)
+> Return `true` if $a == b$ arithmetically, otherwise return `false`.
 """
 function ==(a::fmpz, b::ResElem)
    z = base_ring(b)(a)
@@ -329,7 +329,7 @@ function *(a::Generic.MPoly{T}, n::fmpz) where T <: RingElem
    for i = 1:length(a)
       c = a.coeffs[i]*n
       if c != 0
-         r.coeffs[j] = c 
+         r.coeffs[j] = c
          monomial_set!(r.exps, j, a.exps, i, N)
          j += 1
       end
@@ -343,7 +343,7 @@ end
 
 function ==(a::Generic.MPoly{T}, n::fmpz) where T <: RingElem
    N = size(a.exps, 1)
-   if n == 0
+   if iszero(n)
       return a.length == 0
    elseif a.length == 1
       return a.coeffs[1] == n && monomial_iszero(a.exps, 1, N)
@@ -358,14 +358,22 @@ function evaluate(a::Generic.MPoly{T}, A::Array{fmpz, 1}) where {T <: RingElemen
    N = size(a.exps, 1)
    ord = parent(a).ord
    if ord == :lex
-      start_var = 1
+      start_var = N
    else
-      start_var = 2
+      start_var = N - 1
    end
-   while a.length > 1 || (a.length == 1 && !monomial_iszero(a.exps, a.length, N))
-      k = main_variable(a, start_var)
-      p = main_variable_extract(a, k)
-      a = evaluate(p, A[k - start_var + 1])
+   if ord == :degrevlex
+      while a.length > 1 || (a.length == 1 && !monomial_iszero(a.exps, a.length, N))
+         k = main_variable(a, start_var)
+         p = main_variable_extract(a, k)
+         a = evaluate(p, A[k])
+      end
+   else
+      while a.length > 1 || (a.length == 1 && !monomial_iszero(a.exps, a.length, N))
+         k = main_variable(a, start_var)
+         p = main_variable_extract(a, k)
+         a = evaluate(p, A[start_var - k + 1])
+      end
    end
    if a.length == 0
       return base_ring(a)()
@@ -387,7 +395,7 @@ function *(a::Generic.SparsePoly{T}, n::fmpz) where T <: RingElem
    for i = 1:length(a)
       c = a.coeffs[i]*n
       if c != 0
-         r.coeffs[j] = c 
+         r.coeffs[j] = c
          r.exps[j] = a.exps[i]
          j += 1
       end
@@ -398,8 +406,8 @@ end
 
 *(n::fmpz, a::Generic.SparsePoly{T}) where T <: RingElem = a*n
 
-function ==(a::Generic.SparsePoly{T}, b::fmpz) where T <: RingElem 
-   return length(a) == 0 ? b == 0 : a.length == 1 &
+function ==(a::Generic.SparsePoly{T}, b::fmpz) where T <: RingElem
+   return length(a) == 0 ? iszero(b) : a.length == 1 &
           a.exps[1] == 0 && a.coeffs[1] == b
 end
 
@@ -418,35 +426,35 @@ end
 #
 ###############################################################################
 
-doc"""
+@doc Markdown.doc"""
     *(x::fmpz, y::MatElem)
 > Return $x\times y$.
 """
 function *(x::fmpz, y::MatElem)
    z = similar(y)
-   for i = 1:rows(y)
-      for j = 1:cols(y)
+   for i = 1:nrows(y)
+      for j = 1:ncols(y)
          z[i, j] = x*y[i, j]
       end
    end
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     *(x::MatElem, y::fmpz)
 > Return $x\times y$.
 """
 *(x::MatElem, y::fmpz) = y*x
 
-doc"""
+@doc Markdown.doc"""
     +(x::fmpz, y::MatElem)
 > Return $S(x) + y$ where $S$ is the parent of $y$.
 """
 function +(x::fmpz, y::MatElem)
    z = similar(y)
    R = base_ring(y)
-   for i = 1:rows(y)
-      for j = 1:cols(y)
+   for i = 1:nrows(y)
+      for j = 1:ncols(y)
          if i != j
             z[i, j] = deepcopy(y[i, j])
          else
@@ -457,40 +465,40 @@ function +(x::fmpz, y::MatElem)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     +(x::MatElem, y::fmpz)
 > Return $x + S(y)$ where $S$ is the parent of $x$.
 """
 +(x::MatElem, y::fmpz) = y + x
 
-doc"""
+@doc Markdown.doc"""
     -(x::fmpz, y::MatElem)
 > Return $S(x) - y$ where $S$ is the parent of $y$.
 """
 function -(x::fmpz, y::MatElem)
    z = similar(y)
    R = base_ring(y)
-   for i = 1:rows(y)
-      for j = 1:cols(y)
+   for i = 1:nrows(y)
+      for j = 1:ncols(y)
          if i != j
             z[i, j] = -y[i, j]
          else
-            z[i, j] = x - y[i, j] 
+            z[i, j] = x - y[i, j]
          end
       end
    end
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     -(x::MatElem, y::fmpz)
 > Return $x - S(y)$, where $S$ is the parent of $x$
 """
-function -(x::MatElem, y::fmpz) 
+function -(x::MatElem, y::fmpz)
    z = similar(x)
    R = base_ring(x)
-   for i = 1:rows(x)
-      for j = 1:cols(x)
+   for i = 1:nrows(x)
+      for j = 1:ncols(x)
          if i != j
             z[i, j] = deepcopy(x[i, j])
          else
@@ -501,19 +509,19 @@ function -(x::MatElem, y::fmpz)
    return z
 end
 
-doc"""
+@doc Markdown.doc"""
     ==(x::MatElem, y::fmpz)
 > Return `true` if $x == S(y)$ arithmetically, where $S$ is the parent of $x$,
 > otherwise return `false`.
 """
-function ==(x::MatElem, y::fmpz) 
-   for i = 1:min(rows(x), cols(x))
+function ==(x::MatElem, y::fmpz)
+   for i = 1:min(nrows(x), ncols(x))
       if x[i, i] != y
          return false
       end
    end
-   for i = 1:rows(x)
-      for j = 1:cols(x)
+   for i = 1:nrows(x)
+      for j = 1:ncols(x)
          if i != j && !iszero(x[i, j])
             return false
          end
@@ -522,22 +530,22 @@ function ==(x::MatElem, y::fmpz)
    return true
 end
 
-doc"""
+@doc Markdown.doc"""
     ==(x::fmpz, y::MatElem)
 > Return `true` if $S(x) == y$ arithmetically, where $S$ is the parent of $y$,
 > otherwise return `false`.
 """
 ==(x::fmpz, y::MatElem) = y == x
 
-doc"""
+@doc Markdown.doc"""
     divexact(x::MatElem, y::fmpz)
 > Return $x/y$, i.e. the matrix where each of the entries has been divided by
 > $y$. Each division is expected to be exact.
 """
 function divexact(x::MatElem, y::fmpz)
    z = similar(x)
-   for i = 1:rows(x)
-      for j = 1:cols(x)
+   for i = 1:nrows(x)
+      for j = 1:ncols(x)
          z[i, j] = divexact(x[i, j], y)
       end
    end
@@ -545,13 +553,13 @@ function divexact(x::MatElem, y::fmpz)
 end
 
 function (a::Generic.MatSpace{T})(b::fmpz_mat) where {T <: RingElement}
-  if a.rows != rows(b) || a.cols != cols(b)
+  if a.nrows != nrows(b) || a.ncols != ncols(b)
     error("incompatible matrix dimensions")
   end
   A = a()
   R = base_ring(a)
-  for i=1:a.rows
-    for j=1:a.cols
+  for i=1:a.nrows
+    for j=1:a.ncols
       A[i,j] = R(b[i,j])
     end
   end
@@ -571,10 +579,10 @@ end
 ###############################################################################
 
 //(x::T, y::fmpz) where {T <: RingElem} = x//parent(x)(y)
-                                          
+
 //(x::fmpz, y::T) where {T <: RingElem} = parent(y)(x)//y
 
-doc"""
+@doc Markdown.doc"""
     *(a::FracElem, b::fmpz)
 > Return $a\times b$.
 """
@@ -586,7 +594,7 @@ function *(a::FracElem, b::fmpz)
    return parent(a)(n, d)
 end
 
-doc"""
+@doc Markdown.doc"""
     *(a::fmpz, b::FracElem)
 > Return $a\times b$.
 """
@@ -598,7 +606,7 @@ function *(a::fmpz, b::FracElem)
    return parent(b)(n, d)
 end
 
-doc"""
+@doc Markdown.doc"""
     +(a::FracElem, b::fmpz)
 > Return $a + b$.
 """
@@ -609,7 +617,7 @@ function +(a::FracElem, b::fmpz)
    return parent(a)(divexact(n, g), divexact(d, g))
 end
 
-doc"""
+@doc Markdown.doc"""
     -(a::FracElem, b::fmpz)
 > Return $a - b$.
 """
@@ -620,13 +628,13 @@ function -(a::FracElem, b::fmpz)
    return parent(a)(divexact(n, g), divexact(d, g))
 end
 
-doc"""
+@doc Markdown.doc"""
     +(a::fmpz, b::FracElem)
 > Return $a + b$.
 """
 +(a::fmpz, b::FracElem) = b + a
 
-doc"""
+@doc Markdown.doc"""
     -(a::fmpz, b::FracElem)
 > Return $a - b$.
 """
@@ -637,7 +645,7 @@ function -(a::fmpz, b::FracElem)
    return parent(b)(divexact(n, g), divexact(d, g))
 end
 
-doc"""
+@doc Markdown.doc"""
     ==(x::FracElem, y::fmpz)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
@@ -645,13 +653,13 @@ function ==(x::FracElem, y::fmpz)
    return (isone(denominator(x)) && numerator(x) == y) || (numerator(x) == denominator(x)*y)
 end
 
-doc"""
+@doc Markdown.doc"""
     ==(x::fmpz, y::FracElem)
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::fmpz, y::FracElem) = y == x
 
-doc"""
+@doc Markdown.doc"""
     divexact(a::FracElem, b::fmpz)
 > Return $a/b$.
 """
@@ -664,7 +672,7 @@ function divexact(a::FracElem, b::fmpz)
    return parent(a)(n, d)
 end
 
-doc"""
+@doc Markdown.doc"""
     divexact(a::fmpz, b::FracElem)
 > Return $a/b$.
 """
@@ -682,5 +690,3 @@ function (a::Generic.FracField{T})(b::fmpz) where {T <: RingElement}
    z.parent = a
    return z
 end
-
-

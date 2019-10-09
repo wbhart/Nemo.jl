@@ -6,7 +6,7 @@ CurrentModule = Nemo
 
 Arbitrary precision complex ball arithmetic is supplied by Arb which provides a
 ball representation which tracks error bounds rigorously. Complex numbers are 
-represented in in rectangular form $a+bi$ where $a,b$ are `arb` balls.
+represented in rectangular form $a+bi$ where $a,b$ are `arb` balls.
 
 The Arb complex field is constructed using the `AcbField` constructor. This
 constructs the parent object for the Arb complex field.
@@ -126,7 +126,7 @@ collection.
 addeq!(c::acb, a::acb)
 ```
 
-In-place addition. Adds $a$ to $c$ and sets $c$ to the result. This function
+In-place addition adds $a$ to $c$ and sets $c$ to the result. This function
 is provided for performance reasons as it saves allocating a new object for
 the result and eliminates associated garbage collection.
 
@@ -702,14 +702,26 @@ d = hyp1f1(s, s+1, z)
 lindep(::Array{acb, 1}, n::Int)
 ```
 
+```@docs
+lindep(A::Array{acb, 2}, bits::Int)
+```
+
 **Examples**
 
 ```julia
 CC = ComplexField(128)
 
+# These are two of the roots of x^5 + 3x + 1
 a = CC(1.0050669478588622428791051888364775253, - 0.93725915669289182697903585868761513585)
+b = CC(-0.33198902958450931620250069492231652319)
 
-V = [CC(1), a, a^2, a^3, a^4, a^5];
-W = lindep(V, 20)
+# We recover the polynomial from one root....
+V1 = [CC(1), a, a^2, a^3, a^4, a^5];
+W = lindep(V1, 20)
+
+# ...or from two
+V2 = [CC(1), b, b^2, b^3, b^4, b^5];
+Vs = [V1 V2]'
+X = lindep(Vs, 20)
 ```
 

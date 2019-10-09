@@ -1,6 +1,4 @@
-function test_fq_nmod_abs_series_constructors()
-   print("fq_nmod_abs_series.constructors...")
-
+@testset "fq_nmod_abs_series.constructors..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -24,26 +22,18 @@ function test_fq_nmod_abs_series_constructors()
    @test isa(R(ZZ(2)), SeriesElem)
 
    @test isa(R(), SeriesElem)
-
-   println("PASS")
 end
 
-function test_fq_nmod_abs_series_printing()
-   print("fq_nmod_abs_series.printing...")
-
+@testset "fq_nmod_abs_series.printing..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
    b = x^2 + 3x + O(x^4)
 
    @test string(b) == "(3)*x+x^2+O(x^4)"
-
-   println("PASS")
 end
 
-function test_fq_nmod_abs_series_manipulation()
-   print("fq_nmod_abs_series.manipulation...")
-
+@testset "fq_nmod_abs_series.manipulation..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -61,13 +51,9 @@ function test_fq_nmod_abs_series_manipulation()
    @test valuation(a) == 1
 
    @test valuation(b) == 4
-
-   println("PASS")
 end
 
-function test_fq_nmod_abs_series_unary_ops()
-   print("fq_nmod_abs_series.unary_ops...")
-
+@testset "fq_nmod_abs_series.unary_ops..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -75,15 +61,11 @@ function test_fq_nmod_abs_series_unary_ops()
    b = 1 + 2x + x^2 + O(x^3)
 
    @test -a == -2x - x^3
-   
-   @test -b == -1 - 2x - x^2 + O(x^3)
 
-   println("PASS")
+   @test -b == -1 - 2x - x^2 + O(x^3)
 end
 
-function test_fq_nmod_abs_series_binary_ops()
-   print("fq_nmod_abs_series.binary_ops...")
-
+@testset "fq_nmod_abs_series.binary_ops..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -101,13 +83,9 @@ function test_fq_nmod_abs_series_binary_ops()
    @test a*c == 3*x^5+x^4+7*x^3+2*x^2+2*x+O(x^6)
 
    @test a*d == -x^7+3*x^6-x^5+6*x^4+2*x^3
-
-   println("PASS")
 end
 
-function test_fq_nmod_abs_series_adhoc_binary_ops()
-   print("fq_nmod_abs_series.adhoc_binary_ops...")
-
+@testset "fq_nmod_abs_series.adhoc_binary_ops..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -128,13 +106,9 @@ function test_fq_nmod_abs_series_adhoc_binary_ops()
    R, t = PowerSeriesRing(F, 6, "t", model=:capped_absolute)
 
    @test F(1) * t == t
-
-   println("PASS")
 end
 
-function test_fq_nmod_abs_series_comparison()
-   print("fq_nmod_abs_series.comparison...")
-
+@testset "fq_nmod_abs_series.comparison..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -148,13 +122,9 @@ function test_fq_nmod_abs_series_comparison()
    @test b == d
 
    @test c != d
-
-   println("PASS")
 end
 
-function test_fq_nmod_abs_series_adhoc_comparison()
-   print("fq_nmod_abs_series.adhoc_comparison...")
-
+@testset "fq_nmod_abs_series.adhoc_comparison..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -172,13 +142,9 @@ function test_fq_nmod_abs_series_adhoc_comparison()
    @test 2 == b
 
    @test ZZ(1) == c
-
-   println("PASS")
 end
 
-function test_fq_nmod_abs_series_powering()
-   print("fq_nmod_abs_series.powering...")
-
+@testset "fq_nmod_abs_series.powering..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -195,12 +161,10 @@ function test_fq_nmod_abs_series_powering()
 
    @test d^12 == 4096*x^12+24576*x^14+O(x^15)
 
-   println("PASS")
+   @test_throws DomainError a^-1
 end
 
-function test_fq_nmod_abs_series_shift()
-   print("fq_nmod_abs_series.shift...")
-
+@testset "fq_nmod_abs_series.shift..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -217,12 +181,12 @@ function test_fq_nmod_abs_series_shift()
 
    @test shift_right(d, 3) == 1+O(x^1)
 
-   println("PASS")
+   @test_throws DomainError shift_left(a, -1)
+
+   @test_throws DomainError shift_right(a, -1)
 end
 
-function test_fq_nmod_abs_series_truncation()
-   print("fq_nmod_abs_series.truncation...")
-
+@testset "fq_nmod_abs_series.truncation..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -239,12 +203,10 @@ function test_fq_nmod_abs_series_truncation()
 
    @test truncate(d, 5) == x^3+2*x+O(x^4)
 
-   println("PASS")
+   @test_throws DomainError truncate(a, -1)
 end
 
-function test_fq_nmod_abs_series_exact_division()
-   print("fq_nmod_abs_series.exact_division...")
-
+@testset "fq_nmod_abs_series.exact_division..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -260,16 +222,12 @@ function test_fq_nmod_abs_series_exact_division()
    @test divexact(b, c) == O(x^4)
 
    @test divexact(d, c) == -2*x^5+2*x^4-x^2+x+O(x^6)
-
-   println("PASS")
 end
 
-function test_fq_nmod_abs_series_adhoc_exact_division()
-   print("fq_nmod_abs_series.adhoc_exact_division...")
-
+@testset "fq_nmod_abs_series.adhoc_exact_division..." begin
    S, t = FiniteField(23, 5, "t")
-   R, x = PolynomialRing(ZZ, "x", model=:capped_absolute)
-   
+   R, x = PowerSeriesRing(ZZ, 30, "x", model=:capped_absolute)
+
    a = x + x^3
    b = O(x^4)
    c = 1 + x + 2x^2 + O(x^5)
@@ -284,13 +242,9 @@ function test_fq_nmod_abs_series_adhoc_exact_division()
    @test isequal(divexact(9d, 9), d)
 
    @test isequal(divexact(94872394861923874346987123694871329847a, 94872394861923874346987123694871329847), a)
-
-   println("PASS")
 end
 
-function test_fq_nmod_abs_series_inversion()
-   print("fq_nmod_abs_series.inversion...")
-
+@testset "fq_nmod_abs_series.inversion..." begin
    S, t = FiniteField(23, 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -300,24 +254,4 @@ function test_fq_nmod_abs_series_inversion()
    @test inv(a) == -x^4+3*x^3-x^2-x+1+O(x^5)
 
    @test inv(b) == -1
-
-   println("PASS")
-end
-
-function test_fq_nmod_abs_series()
-   test_fq_nmod_abs_series_constructors()
-   test_fq_nmod_abs_series_printing()
-   test_fq_nmod_abs_series_manipulation()
-   test_fq_nmod_abs_series_unary_ops()
-   test_fq_nmod_abs_series_binary_ops()
-   test_fq_nmod_abs_series_adhoc_binary_ops()
-   test_fq_nmod_abs_series_comparison()
-   test_fq_nmod_abs_series_adhoc_comparison()
-   test_fq_nmod_abs_series_powering()
-   test_fq_nmod_abs_series_shift()
-   test_fq_nmod_abs_series_truncation()
-   test_fq_nmod_abs_series_exact_division()
-   test_fq_nmod_abs_series_inversion()
-
-   println("")
 end

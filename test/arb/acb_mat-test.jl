@@ -1,15 +1,15 @@
 CC = AcbField(64)
 RR = ArbField(64)
 
-function test_acb_mat_constructors()
-   print("acb_mat.constructors...")
- 
+@testset "acb_mat.constructors..." begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
    @test elem_type(S) == acb_mat
    @test elem_type(AcbMatSpace) == acb_mat
    @test parent_type(acb_mat) == AcbMatSpace
+   @test nrows(S) == 3
+   @test ncols(S) == 3
 
    @test isa(S, AcbMatSpace)
 
@@ -27,7 +27,9 @@ function test_acb_mat_constructors()
       @test isa(k, MatElem)
    end
 
-   k = S(map(fmpz, [2 3 5; 1 4 7; 9 6 3]))
+   k = S(Int[2 3 5; 1 4 7; 9 6 3]')
+
+   @test isa(k, MatElem)
 
    l = S(k)
 
@@ -63,14 +65,14 @@ function test_acb_mat_constructors()
       M = matrix(CC, map(T, arr))
       @test isa(M, acb_mat)
       @test M.base_ring == CC
-      @test rows(M) == 2
-      @test cols(M) == 2
+      @test nrows(M) == 2
+      @test ncols(M) == 2
 
       M2 = matrix(CC, 2, 3, map(T, arr2))
       @test isa(M2, acb_mat)
       @test M2.base_ring == CC
-      @test rows(M2) == 2
-      @test cols(M2) == 3
+      @test nrows(M2) == 2
+      @test ncols(M2) == 3
       @test_throws ErrorConstrDimMismatch matrix(CC, 2, 2, map(T, arr2))
       @test_throws ErrorConstrDimMismatch matrix(CC, 2, 4, map(T, arr2))
    end
@@ -85,23 +87,45 @@ function test_acb_mat_constructors()
    @test isa(M4, acb_mat)
    @test M4.base_ring == CC
 
-   println("PASS")
+   a = zero_matrix(CC, 2, 2)
+   b = zero_matrix(CC, 2, 3)
+   @test a in [a, b]
+   @test a in [b, a]
+   @test !(a in [b])
 end
 
-function test_acb_mat_printing()
-   print("acb_mat.printing...")
- 
+@testset "acb_mat.similar..." begin
+   S = MatrixSpace(CC, 3, 3)
+   s = S(fmpz(3))
+
+   t = similar(s)
+   @test t isa acb_mat
+   @test size(t) == size(s)
+
+   t = similar(s, 2, 3)
+   @test t isa acb_mat
+   @test size(t) == (2, 3)
+
+   for (R, M) in ring_to_mat
+      t = similar(s, R)
+      @test t isa M
+      @test size(t) == size(s)
+
+      t = similar(s, R, 2, 3)
+      @test t isa M
+      @test size(t) == (2, 3)
+   end
+end
+
+@testset "acb_mat.printing..." begin
    S = MatrixSpace(CC, 3, 3)
    f = S(fmpz(3))
 
-   @test string(f) == "[3.0000000000000000000 + i*0 0 + i*0 0 + i*0]\n[0 + i*0 3.0000000000000000000 + i*0 0 + i*0]\n[0 + i*0 0 + i*0 3.0000000000000000000 + i*0]"
-
-   println("PASS")
+   # test that default Julia printing is not used
+   @test !occursin(string(typeof(f)), string(f))
 end
 
-function test_acb_mat_manipulation()
-   print("acb_mat.manipulation...")
-
+@testset "acb_mat.manipulation..." begin
    S = MatrixSpace(CC, 3, 3)
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
    B = S([fmpz(1) 4 7; 9 6 7; 4 3 3])
@@ -113,17 +137,13 @@ function test_acb_mat_manipulation()
 
    @test B[1, 1] == CC(3)
 
-   @test rows(B) == 3
-   @test cols(B) == 3
+   @test nrows(B) == 3
+   @test ncols(B) == 3
 
    @test deepcopy(A) == A
-
-   println("PASS")
 end
 
-function test_acb_mat_unary_ops()
-   print("acb_mat.unary_ops...")
-
+@testset "acb_mat.unary_ops..." begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -131,13 +151,9 @@ function test_acb_mat_unary_ops()
    B = R([(-2) (-3) (-5); (-1) (-4) (-7); (-9) (-6) (-3)])
 
    @test contains(-A, B)
-
-   println("PASS")
 end
 
-function test_acb_mat_transpose()
-   print("acb_mat.transpose...")
-
+@testset "acb_mat.transpose..." begin
    S = MatrixSpace(CC, 3, 3)
    T = MatrixSpace(ZZ, 3, 3)
 
@@ -150,13 +166,9 @@ function test_acb_mat_transpose()
    C = transpose(A)*A
 
    @test overlaps(transpose(C), C)
-
-   println("PASS")
 end
 
-function test_acb_mat_binary_ops()
-   print("acb_mat.binary_ops...")
-
+@testset "acb_mat.binary_ops..." begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -168,13 +180,9 @@ function test_acb_mat_binary_ops()
    @test contains(A - B, R([1 (-1) (-2); (-8) (-2) 0; 5 3 0]))
 
    @test contains(A*B, R([49 41 50; 65 49 56; 75 81 114]))
-
-   println("PASS")
 end
 
-function test_acb_mat_adhoc_binary()
-   print("acb_mat.adhoc_binary...")
-
+@testset "acb_mat.adhoc_binary..." begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
    T = MatrixSpace(QQ, 3, 3)
@@ -220,13 +228,9 @@ function test_acb_mat_adhoc_binary()
 
    @test contains(qq*A, C*qq)
    @test contains(A*qq, C*qq)
-
-   println("PASS")
 end
 
-function test_acb_mat_shifting()
-   print("acb_mat.shifting...")
-
+@testset "acb_mat.shifting..." begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -237,13 +241,9 @@ function test_acb_mat_shifting()
 
    @test overlaps(16*A, C)
    @test contains(C, 16*B)
-
-   println("PASS")
 end
 
-function test_acb_mat_comparison()
-   print("acb_mat.comparison...")
-
+@testset "acb_mat.comparison..." begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -259,17 +259,13 @@ function test_acb_mat_comparison()
    @test A == A
 
    @test A != B
-   
+
    @test overlaps(A, C)
 
    @test contains(C, A)
-   
-   println("PASS")
 end
 
-function test_acb_mat_adhoc_comparison()
-   print("acb_mat.adhoc_comparison...")
-
+@testset "acb_mat.adhoc_comparison..." begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
    T = MatrixSpace(QQ, 3, 3)
@@ -280,7 +276,7 @@ function test_acb_mat_adhoc_comparison()
 
    @test contains(A, B)
    @test contains(A, C)
-   
+
    @test S(12) == 12
    @test 12 == S(12)
    @test S(5) == fmpz(5)
@@ -288,13 +284,9 @@ function test_acb_mat_adhoc_comparison()
 
    @test A == B
    @test B == A
-
-   println("PASS")
 end
 
-function test_acb_mat_predicates()
-   print("acb_mat.predicates...")
-
+@testset "acb_mat.predicates..." begin
    S = MatrixSpace(CC, 3, 3)
    A = S([1 2 1000; 0 3 1; 0 2 1])
 
@@ -303,13 +295,9 @@ function test_acb_mat_predicates()
    A = onei(CC) * A
 
    @test !isreal(A)
-   
-   println("PASS")
 end
 
-function test_acb_mat_inversion()
-   print("acb_mat.inversion...")
-
+@testset "acb_mat.inversion..." begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -320,13 +308,9 @@ function test_acb_mat_inversion()
 
    @test overlaps(A*C, one(S))
    @test contains(C, B)
-
-   println("PASS")
 end
 
-function test_acb_mat_divexact()
-   print("acb_mat.divexact...")
-
+@testset "acb_mat.divexact..." begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -335,13 +319,9 @@ function test_acb_mat_divexact()
 
    @test overlaps(divexact(A, A), one(S))
    @test contains(divexact(one(S), A), B)
-
-   println("PASS")
 end
 
-function test_acb_mat_adhoc_divexact()
-   print("acb_mat.adhoc_divexact...")
-
+@testset "acb_mat.adhoc_divexact..." begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -354,13 +334,9 @@ function test_acb_mat_adhoc_divexact()
    @test contains(divexact(A, Float64(3)), B)
    @test contains(divexact(A, BigFloat(3)), B)
    @test contains(divexact(A, CC("3.0 +/- 0.5")), B)
-
-   println("PASS")
 end
 
-function test_acb_mat_charpoly()
-   print("acb_mat.charpoly...")
-
+@testset "acb_mat.charpoly..." begin
    S = MatrixSpace(CC, 3, 3)
    R, x = PolynomialRing(CC, "x")
    ZZy, y = PolynomialRing(ZZ, "y")
@@ -374,13 +350,9 @@ function test_acb_mat_charpoly()
    g = charpoly(R, A)
 
    @test contains(g, f)
-
-   println("PASS")
 end
 
-function test_acb_mat_det()
-   print("acb_mat.det...")
-
+@testset "acb_mat.det..." begin
    S = MatrixSpace(CC, 3, 3)
 
    A = S(["2.0 +/- 0.1" "3.0 +/- 0.1" "5.0 +/- 0.1";
@@ -390,13 +362,9 @@ function test_acb_mat_det()
    d = det(A)
 
    @test contains(d, 24)
-
-   println("PASS")
 end
 
-function test_acb_mat_exp()
-   print("acb_mat.exp...")
-
+@testset "acb_mat.exp..." begin
    S = MatrixSpace(CC, 3, 3)
 
    A = S(["2.0 +/- 0.1" "0.0 +/- 0.1" "0.0 +/- 0.1";
@@ -408,13 +376,9 @@ function test_acb_mat_exp()
    C = exp(A)
 
    @test overlaps(B, C)
-
-   println("PASS")
 end
 
-function test_acb_mat_linear_solving()
-   print("acb_mat.linear_solving...")
-
+@testset "acb_mat.linear_solving..." begin
    S = MatrixSpace(CC, 3, 3)
    T = MatrixSpace(ZZ, 3, 3)
 
@@ -426,7 +390,7 @@ function test_acb_mat_linear_solving()
 
    b = CC["6.0 +/- 0.1" "15.0 +/- 0.1" "25.0 +/- 0.1"]
 
-   r, p, L, U = lufact(A)
+   r, p, L, U = lu(A)
 
    @test overlaps(L*U, p*A)
    @test r == 3
@@ -437,20 +401,16 @@ function test_acb_mat_linear_solving()
 
    @test contains(transpose(y), ZZ[1 1 1])
 
-   Nemo.lufact!(p, A)
+   Nemo.lu!(p, A)
 
    y = solve_lu_precomp(p, A, transpose(b))
 
    @test overlaps(B*y, transpose(b))
 
    @test contains(transpose(y), ZZ[1 1 1])
-
-   println("PASS")
 end
 
-function test_acb_mat_bound_inf_norm()
-   print("acb_mat.bound_inf_norm...")
-
+@testset "acb_mat.bound_inf_norm..." begin
    S = MatrixSpace(CC, 3, 3)
 
    A = S([2 3 5; 1 4 7; 9 6 3])
@@ -462,30 +422,32 @@ function test_acb_mat_bound_inf_norm()
        @test abs(A[i, j]) <= c
      end
    end
-
-   println("PASS")
 end
 
-function test_acb_mat()
-   test_acb_mat_constructors()
-   test_acb_mat_printing()
-   test_acb_mat_manipulation()
-   test_acb_mat_unary_ops()
-   test_acb_mat_transpose()
-   test_acb_mat_binary_ops()
-   test_acb_mat_adhoc_binary()
-   test_acb_mat_shifting()
-   test_acb_mat_comparison()
-   test_acb_mat_adhoc_comparison()
-   test_acb_mat_predicates()
-   test_acb_mat_inversion()
-   test_acb_mat_divexact()
-   test_acb_mat_adhoc_divexact()
-   test_acb_mat_charpoly()
-   test_acb_mat_det()
-   test_acb_mat_exp()
-   test_acb_mat_linear_solving()
-   test_acb_mat_bound_inf_norm()
+@testset "acb_mat.eigvals..." begin
+   A = matrix(CC, 3, 3, [1, 2, 3, 0, 4, 5, 0, 0, 6])
 
-   println("")
+   E = eigvals(A)
+   @test length(E) == 3
+   @test E[1][2] == 1
+   @test E[2][2] == 1
+   @test E[3][2] == 1
+   @test contains(E[1][1], 1)
+   @test contains(E[2][1], 4)
+   @test contains(E[3][1], 6)
+
+   EE = eigvals_simple(A)
+   @test length(EE) == 3
+   @test contains(EE[1], 1)
+   @test contains(EE[2], 4)
+   @test contains(EE[3], 6)
+
+   A = matrix(CC, 3, 3, [2, 2, 3, 0, 2, 5, 0, 0, 2])
+
+   E = eigvals(A)
+   @test length(E) == 1
+   @test E[1][2] == 3
+   @test contains(E[1][1], 2)
+
+   @test_throws ErrorException eigvals_simple(A)
 end

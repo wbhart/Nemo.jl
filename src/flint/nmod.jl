@@ -55,7 +55,7 @@ isunit(a::nmod) = a.parent.n == 1 ? a.data == 0 : gcd(a.data, a.parent.n) == 1
 
 modulus(R::NmodRing) = R.n
 
-function deepcopy_internal(a::nmod, dict::ObjectIdDict)
+function deepcopy_internal(a::nmod, dict::IdDict)
    R = parent(a)
    return nmod(deepcopy(a.data), R)
 end
@@ -75,7 +75,7 @@ function canonical_unit(x::nmod)
   end
   g = gcd(modulus(x), data(x))
   u = divexact(data(x), g)
-  a, b = ppio(modulus(x), u) 
+  a, b = ppio(modulus(x), u)
   if isone(a)
     r = u
   elseif isone(b)
@@ -102,7 +102,7 @@ end
 
 needs_parentheses(x::nmod) = false
 
-isnegative(x::nmod) = false
+displayed_with_minus_in_front(x::nmod) = false
 
 show_minus_one(::Type{nmod}) = true
 
@@ -254,13 +254,14 @@ end
 
 function inv(x::nmod)
    R = parent(x)
-   (x == 0 && R.n != 1) && throw(DivideError())
+   (iszero(x) && R.n != 1) && throw(DivideError())
    if R.n == 1
       return deepcopy(x)
    end
-   s = [UInt(0)]
+   #s = [UInt(0)]
+   s = Ref{UInt}()
    g = ccall((:n_gcdinv, :libflint), UInt, (Ptr{UInt}, UInt, UInt),
-         pointer(s), x.data, R.n)
+         s, x.data, R.n)
    g != 1 && error("Impossible inverse in ", R)
    return nmod(s[], R)
 end
@@ -291,15 +292,15 @@ function divides(a::nmod, b::nmod)
    m = modulus(R)
    gb = gcd(B, m)
    q, r = divrem(A, gb)
-   if r != 0
+   if !iszero(r)
       return false, b
    end
    ub = divexact(B, gb)
    # The Julia invmod function does not give the correct result for me
    b1 = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
            ub, divexact(m, gb))
-   r = R(q)*b1
-   return true, r
+   rr = R(q)*b1
+   return true, rr
 end
 
 ###############################################################################
@@ -319,7 +320,7 @@ function gcd(x::nmod, y::nmod)
    end
 end
 
-doc"""
+@doc Markdown.doc"""
     gcdx(a::nmod, b::nmod)
 > Compute the extended gcd with the Euclidean structure inherited from
 > $\mathbb{Z}$.
@@ -361,13 +362,13 @@ end
 #
 ###############################################################################
 
-function rand(R::NmodRing)
-   n = rand(UInt(0):R.n - 1)
+function rand(r::Random.AbstractRNG, R::NmodRing)
+   n = rand(r, UInt(0):R.n - 1)
    return nmod(n, R)
 end
 
-function rand(R::NmodRing, b::UnitRange{Int64})
-   n = rand(b)
+function rand(r::Random.AbstractRNG, R::NmodRing, b::UnitRange{Int})
+   n = rand(r, b)
    return R(n)
 end
 
@@ -440,7 +441,7 @@ end
 ###############################################################################
 
 function ResidueRing(R::FlintIntegerRing, n::Int; cached::Bool=true)
-   n <= 0 && throw(DomainError())
+   n <= 0 && throw(DomainError("Modulus must be non-negative: $n"))
    return NmodRing(UInt(n), cached)
 end
 

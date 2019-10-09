@@ -100,7 +100,7 @@ f = ZZ(1)//7^2 + ZZ(2)//7 + 3 + 4*7 + O(R, 7^2)
 ```
 
 Beware that the expression `1 + 2*p + 3*p^2 + O(R, p^n)` is actually computed
-as a normal Julia expression. Therefore if \code{Int} values are used instead
+as a normal Julia expression. Therefore if `{Int}` values are used instead
 of Flint integers or Julia bignums, overflow may result in evaluating the
 value.
 

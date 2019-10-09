@@ -3,6 +3,9 @@ using Documenter, Nemo
 makedocs(
          format   = :html,
          sitename = "Nemo.jl",
+         modules = [Nemo],
+         clean = true,
+         doctest = false,
          pages    = [
              "index.md",
              "about.md",
@@ -10,6 +13,7 @@ makedocs(
              "constructors.md",
              "Rings" => [ "integer.md",
                           "polynomial.md",
+                          "mpolynomial.md",
                           "series.md",
                           "puiseux.md",
                           "residue.md"],
@@ -17,19 +21,21 @@ makedocs(
                            "rational.md",
                            "arb.md",
                            "acb.md",
+                           "gfp.md",
                            "finitefield.md",
                            "numberfield.md",
-                           "padic.md"],
+                           "padic.md",
+                           "qadic.md"],
              "matrix.md",
              "factor.md"
          ]
 )
 
 deploydocs(
-   julia = "nightly",
+   julia = "1.0",
    repo   = "github.com/Nemocas/Nemo.jl.git",
    target = "build",
-   deps = Deps.pip("pygments", "mkdocs", "python-markdown-math"),
-   make   = nothing
+   deps = nothing,
+   make   = nothing,
+   osname = "linux"
 )
-

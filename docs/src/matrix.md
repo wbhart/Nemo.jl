@@ -20,13 +20,14 @@ Generic ring $R$                      | AbstractAlgebra.jl  | `Generic.Mat{T}`  
 $\mathbb{Z}$                          | Flint               | `fmpz_mat`          | `FmpzMatSpace`
 $\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint               | `nmod_mat`          | `NmodMatSpace`
 $\mathbb{Q}$                          | Flint               | `fmpq_mat`          | `FmpqMatSpace`
+$\mathbb{Z}/p\mathbb{Z}$ (small $p$)  | Flint               | `gfp_mat`           | `GFPMatSpace`
 $\mathbb{F}_{p^n}$ (small $p$)        | Flint               | `fq_nmod_mat`       | `FqNmodMatSpace`
 $\mathbb{F}_{p^n}$ (large $p$)        | Flint               | `fq_mat`            | `FqMatSpace
 $\mathbb{R}$                          | Arb                 | `arb_mat`           | `ArbMatSpace`
 $\mathbb{C}$                          | Arb                 | `acb_mat`           | `AcbMatSpace`
 
 The dimensions and base ring $R$ of a generic matrix are stored in its parent
-object. 
+object.
 
 All matrix element types belong to the abstract type `MatElem` and all of
 the matrix space types belong to the abstract type `MatSpace`. This enables
@@ -92,12 +93,12 @@ contains(D, C)
 S = MatrixSpace(ZZ, 3, 3)
 
 A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
- 
+
 B = A<<5
 C = B>>2
 ```
 
-##i# Determinant
+### Determinant
 
 ```@docs
 det_divisor(::fmpz_mat)
@@ -114,7 +115,7 @@ det_given_divisor(::fmpz_mat, ::fmpz, ::Bool)
 S = MatrixSpace(ZZ, 3, 3)
 
 A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
- 
+
 c = det_divisor(A)
 d = det_given_divisor(A, c)
 ```
@@ -136,7 +137,7 @@ solve_dixon(::fmpq_mat, ::fmpq_mat)
 S = MatrixSpace(ZZ, 3, 3)
 T = MatrixSpace(ZZ, 3, 1)
 
-A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])   
+A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
 B = T([fmpz(4), 5, 7])
 
 X, m = solve_dixon(A, B)
@@ -154,7 +155,7 @@ pseudo_inv(::fmpz_mat)
 S = MatrixSpace(ZZ, 3, 3)
 
 A = S([1 0 1; 2 3 1; 5 6 7])
-  
+
 B, d = pseudo_inv(A)
 ```
 
@@ -177,7 +178,7 @@ reduce_mod(::fmpz_mat, ::fmpz)
 S = MatrixSpace(ZZ, 3, 3)
 
 A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
-   
+
 reduce_mod(A, ZZ(5))
 reduce_mod(A, 2)
 ```
@@ -186,6 +187,7 @@ reduce_mod(A, 2)
 
 ```@docs
 lift(::nmod_mat)
+lift(::gfp_mat)
 ```
 
 **Examples**
@@ -195,7 +197,7 @@ R = ResidueRing(ZZ, 7)
 S = MatrixSpace(R, 3, 3)
 
 a = S([4 5 6; 7 3 2; 1 4 5])
-  
+
  b = lift(a)
 ```
 
@@ -252,7 +254,7 @@ ishnf(::fmpz_mat)
 S = MatrixSpace(ZZ, 3, 3)
 
 A = S([fmpz(2) 3 5; 1 4 7; 19 3 7])
-   
+
 B = hnf(A)
 H, T = hnf_with_transform(A)
 M = hnf_modular(A, fmpz(27))
@@ -297,13 +299,21 @@ lll_with_removal(::fmpz_mat, ::fmpz, ::lll_ctx)
 lll_with_removal_transform(::fmpz_mat, ::fmpz, ::lll_ctx)
 ```
 
+```@docs
+lll!(::fmpz_mat, ::lll_ctx)
+```
+
+```@docs
+lll_gram!(::fmpz_mat, ::lll_ctx)
+```
+
 **Examples**
 
 ```julia
 S = MatrixSpace(ZZ, 3, 3)
 
 A = S([fmpz(2) 3 5; 1 4 7; 19 3 7])
-   
+
 L = lll(A, lll_ctx(0.95, 0.55, :zbasis, :approx)
 L, T = lll_with_transform(A)
 
@@ -334,7 +344,7 @@ issnf(::fmpz_mat)
 S = MatrixSpace(ZZ, 3, 3)
 
 A = S([fmpz(2) 3 5; 1 4 7; 19 3 7])
-   
+
 B = snf(A)
 issnf(B) == true
 
@@ -347,6 +357,7 @@ C = snf_diagonal(B)
 
 ```@docs
 strong_echelon_form(::nmod_mat)
+strong_echelon_form(::gfp_mat)
 ```
 
 **Examples**
@@ -364,6 +375,7 @@ B = strong_echelon_form(A)
 
 ```@docs
 howell_form(::nmod_mat)
+howell_form(::gfp_mat)
 ```
 
 **Examples**
@@ -469,12 +481,25 @@ isreal(onei(CC)*A)
 
 Julia matrices use a different data structure than Nemo matrices. Conversion to Julia matrices is usually only required for interfacing with other packages. It isn't necessary to convert Nemo matrices to Julia matrices in order to manipulate them.
 
-This conversion can be performed with standard Julia syntax, such as the following, where `A` is an `fmpz_mat`: 
+This conversion can be performed with standard Julia syntax, such as the following, where `A` is an `fmpz_mat`:
 
 ```julia
 Matrix{Int}(A)
 Matrix{BigInt}(A)
 ```
 
-In case the matrix cannot be converted without loss, an `InexactError` is thrown: in this case, cast to a matrix of `BigInt`s rather than `Int`s. 
+In case the matrix cannot be converted without loss, an `InexactError` is thrown: in this case, cast to a matrix of `BigInt`s rather than `Int`s.
 
+### Eigenvalues and Eigenvectors (experimental)
+
+```@docs
+eigvals(::acb_mat)
+eigvals_simple(a::acb_mat)
+```
+
+```julia
+A = CC[1 2 3; 0 4 5; 0 0 6]
+eigvals_simple(A)
+A = CC[2 2 3; 0 2 5; 0 0 2])
+eigvals(A)
+```

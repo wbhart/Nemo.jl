@@ -1,12 +1,12 @@
-function test_nmod_constructors()
-   print("nmod.constructors...")
-
+@testset "nmod.constructors..." begin
    R = ResidueRing(ZZ, 13)
+
+   @test_throws DomainError ResidueRing(ZZ, -13)
 
    @test elem_type(R) == Nemo.nmod
    @test elem_type(Nemo.NmodRing) == Nemo.nmod
    @test parent_type(Nemo.nmod) == Nemo.NmodRing
-   
+
    @test isa(R, Nemo.NmodRing)
 
    @test isa(R(), Nemo.nmod)
@@ -24,7 +24,7 @@ function test_nmod_constructors()
       d = a.data
 
       @test a.data < R.n
-   end 
+   end
 
    for i = 1:1000
       R = ResidueRing(ZZ, rand(1:24))
@@ -33,25 +33,31 @@ function test_nmod_constructors()
       d = a.data
 
       @test a.data < R.n
-   end 
-
-   println("PASS")
+   end
 end
 
-function test_nmod_printing()
-   print("nmod.printing...")
+@testset "nmod.rand..." begin
+   R = ResidueRing(ZZ, 13)
+   @test rand(R) isa Nemo.nmod
+   @test rand(R, 1:9) isa Nemo.nmod
+   Random.seed!(rng, 0)
+   s = rand(rng, R)
+   @test s isa Nemo.nmod
+   t = rand(rng, R, 1:9)
+   @test t isa Nemo.nmod
+   Random.seed!(rng, 0)
+   @test s == rand(rng, R)
+   @test t == rand(rng, R, 1:9)
+end
 
+@testset "nmod.printing..." begin
    R = ResidueRing(ZZ, 13)
 
    @test string(R(3)) == "3"
    @test string(R()) == "0"
-
-   println("PASS")
 end
 
-function test_nmod_manipulation()
-   print("nmod.manipulation...")
-
+@testset "nmod.manipulation..." begin
    R = ResidueRing(ZZ, 13)
 
    @test iszero(zero(R))
@@ -74,13 +80,9 @@ function test_nmod_manipulation()
    @test modulus(S) == UInt(1)
 
    @test isunit(S())
-
-   println("PASS")
 end
 
-function test_nmod_unary_ops()
-   print("nmod.unary_ops...")
-
+@testset "nmod.unary_ops..." begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(UInt(1):typemax(UInt)))
 
@@ -100,13 +102,9 @@ function test_nmod_unary_ops()
          @test a == -(-a)
       end
    end
-
-   println("PASS")
 end
 
-function test_nmod_binary_ops()
-   print("nmod.binary_ops...")
-
+@testset "nmod.binary_ops..." begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -144,13 +142,9 @@ function test_nmod_binary_ops()
          @test R(1)*a1 == a1
       end
    end
-
-   println("PASS")
 end
 
-function test_nmod_adhoc_binary()
-   print("nmod.adhoc_binary...")
-
+@testset "nmod.adhoc_binary..." begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -194,13 +188,9 @@ function test_nmod_adhoc_binary()
          @test a*d1 + a*d2 == a*(d1 + d2)
       end
    end
-
-   println("PASS")
 end
 
-function test_nmod_powering()
-   print("nmod.powering...")
-
+@testset "nmod.powering..." begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -213,7 +203,7 @@ function test_nmod_powering()
             @test r == 0 || a == r^n
 
             a *= r
-         end   
+         end
       end
 
       for iter = 1:100
@@ -230,7 +220,7 @@ function test_nmod_powering()
             @test r == 0 || a == r^(-n)
 
             a *= rinv
-         end   
+         end
       end
    end
 
@@ -246,7 +236,7 @@ function test_nmod_powering()
             @test r == 0 || a == r^n
 
             a *= r
-         end   
+         end
       end
 
       for iter = 1:100
@@ -263,16 +253,12 @@ function test_nmod_powering()
             @test r == 0 || a == r^(-n)
 
             a *= rinv
-         end   
+         end
       end
    end
-
-   println("PASS")
 end
 
-function test_nmod_comparison()
-   print("nmod.comparison...")
-  
+@testset "nmod.comparison..." begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -304,13 +290,9 @@ function test_nmod_comparison()
          @test R(d) == R(d)
       end
    end
-
-   println("PASS")
 end
 
-function test_nmod_adhoc_comparison()
-   print("nmod.adhoc_comparison...")
-  
+@testset "nmod.adhoc_comparison..." begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -338,19 +320,15 @@ function test_nmod_adhoc_comparison()
          @test d == R(d)
       end
    end
-
-   println("PASS")
 end
 
-function test_nmod_inversion()
-   print("nmod.inversion...")
-  
+@testset "nmod.inversion..." begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
       for iter = 1:100
          a = rand(R)
-         
+
          @test !isunit(a) || inv(inv(a)) == a
 
          @test !isunit(a) || a*inv(a) == one(R)
@@ -362,19 +340,15 @@ function test_nmod_inversion()
 
       for iter = 1:100
          a = rand(R)
-         
+
          @test !isunit(a) || inv(inv(a)) == a
 
          @test !isunit(a) || a*inv(a) == one(R)
       end
    end
-
-   println("PASS")
 end
 
-function test_nmod_exact_division()
-   print("nmod.exact_division...")
-  
+@testset "nmod.exact_division..." begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -385,7 +359,7 @@ function test_nmod_exact_division()
          p = a1*a2
 
          q = divexact(p, a2)
-         
+
          @test q*a2 == p
       end
    end
@@ -404,13 +378,9 @@ function test_nmod_exact_division()
          @test q*a2 == p
       end
    end
-
-   println("PASS")
 end
 
-function test_nmod_gcd()
-   print("nmod.gcd...")
-  
+@testset "nmod.gcd..." begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -422,13 +392,9 @@ function test_nmod_gcd()
          @test gcd(c*a, c*b) == R(gcd(c.data*gcd(a, b).data, R.n))
       end
    end
-
-   println("PASS")
 end
 
-function test_nmod_gcdx()
-   print("nmod.gcdx...")
-
+@testset "nmod.gcdx..." begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -441,24 +407,4 @@ function test_nmod_gcdx()
          @test g == s*a + t*b
       end
    end
-
-   println("PASS")
-end
-
-function test_nmod()
-   test_nmod_constructors()
-   test_nmod_printing()
-   test_nmod_manipulation()
-   test_nmod_unary_ops()
-   test_nmod_binary_ops()
-   test_nmod_adhoc_binary()
-   test_nmod_powering()
-   test_nmod_comparison()
-   test_nmod_adhoc_comparison()
-   test_nmod_inversion()
-   test_nmod_exact_division()
-   test_nmod_gcd()
-   test_nmod_gcdx()
-   
-   println("")
 end
