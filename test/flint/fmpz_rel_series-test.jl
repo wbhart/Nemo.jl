@@ -326,25 +326,23 @@ end
    @test divexact(d, c) == -2*x^5+2*x^4-x^2+x+O(x^6)
 end
 
-if false
-   @testset "fmpz_rel_series.adhoc_exact_division..." begin
-      R, x = PolynomialRing(ZZ, "x")
+@testset "fmpz_rel_series.adhoc_exact_division..." begin
+   R, x = PowerSeriesRing(ZZ, 30, "x")
 
-      a = x + x^3
-      b = O(x^4)
-      c = 1 + x + 2x^2 + O(x^5)
-      d = x + x^3 + O(x^6)
+   a = x + x^3
+   b = O(x^4)
+   c = 1 + x + 2x^2 + O(x^5)
+   d = x + x^3 + O(x^6)
 
-      @test isequal(divexact(7a, 7), a)
+   @test isequal(divexact(7a, 7), a)
 
-      @test isequal(divexact(11b, fmpz(11)), b)
+   @test isequal(divexact(11b, fmpz(11)), b)
 
-      @test isequal(divexact(2c, fmpz(2)), c)
+   @test isequal(divexact(2c, fmpz(2)), c)
 
-      @test isequal(divexact(9d, 9), d)
+   @test isequal(divexact(9d, 9), d)
 
-      @test isequal(divexact(94872394861923874346987123694871329847a, 94872394861923874346987123694871329847), a)
-   end
+   @test isequal(divexact(94872394861923874346987123694871329847a, 94872394861923874346987123694871329847), a)
 end
 
 @testset "fmpz_rel_series.inversion..." begin
