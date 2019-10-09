@@ -242,6 +242,10 @@ end
 
 *(x::fmpz_abs_series, y::fmpz) = y * x
 
+*(x::Integer, y::fmpz_abs_series) = fmpz(x)*y                                            
+
+*(x::fmpz_abs_series, y::Integer) = y*x
+
 ###############################################################################
 #
 #   Shifting

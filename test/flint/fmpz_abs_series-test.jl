@@ -90,6 +90,8 @@ end
 
    @test 2a == 4x + 2x^3
 
+   @test Int128(2)*a == 4x + 2x^3
+
    @test ZZ(3)*b == O(x^4)
 
    @test c*2 == 2 + 2*x + 6*x^2 + O(x^5)
