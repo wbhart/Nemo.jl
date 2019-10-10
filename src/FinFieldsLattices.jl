@@ -66,11 +66,11 @@ function modulus(k::FqNmodFiniteField)
     p::Int = characteristic(k)
     R = PolynomialRing(ResidueRing(ZZ, p), "T")[1]
     Q = R()
-    P = ccall((:fq_nmod_ctx_modulus, :libflint), Ptr{nmod_poly},
-                 (Ptr{FqNmodFiniteField},), &k)
-    ccall((:nmod_poly_set, :libflint), Void,
-          (Ptr{nmod_poly}, Ptr{nmod_poly}),
-          &Q, P)
+    P = ccall((:fq_nmod_ctx_modulus, :libflint), Ref{nmod_poly},
+                 (Ref{FqNmodFiniteField},), k)
+    ccall((:nmod_poly_set, :libflint), Nothing,
+          (Ref{nmod_poly}, Ref{nmod_poly}),
+          Q, P)
 
     return Q
 end
