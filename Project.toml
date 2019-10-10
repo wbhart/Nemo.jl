@@ -1,5 +1,5 @@
 name = "Nemo"
-uuid = "2edaba10-b0f1-5616-af89-8c11ac63239a"
+uuid = "6498ff0d-3b3c-4707-a49c-ffef2cfe6b30"
 version = "0.15.0"
 
 [deps]
