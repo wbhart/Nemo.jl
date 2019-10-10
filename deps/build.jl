@@ -183,7 +183,7 @@ else
 
   try
     println("Cloning flint2 ... ")
-    run(`git clone https://github.com/erou/flint2.git`)
+    run(`git clone https://github.com/defeo/flint2.git`)
     cd(joinpath("$wdir", "flint2"))
     run(`git checkout $FLINT_VERSION`)
     cd(wdir)
