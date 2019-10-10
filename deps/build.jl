@@ -65,7 +65,7 @@ else
   @show MPIR_VERSION = "3.0.0-90740d8fdf03b941b55723b449831c52fd7f51ca"
   @show MPFR_VERSION = "4.0.0"
   @show ANTIC_VERSION = "a69c142a972e4566e01f5b1d76415b0208405ecb"
-  @show FLINT_VERSION = "165143e3e4cc54e00471ddab1a9573a8e28477ff"
+  @show FLINT_VERSION = "embeddings"
   @show ARB_VERSION = "ef5ab30492a8810746dba91a3ad95afafe5171bd"
 
   if Sys.iswindows()
@@ -183,7 +183,7 @@ else
 
   try
     println("Cloning flint2 ... ")
-    run(`git clone https://github.com/wbhart/flint2.git`)
+    run(`git clone https://github.com/defeo/flint2.git`)
     cd(joinpath("$wdir", "flint2"))
     run(`git checkout $FLINT_VERSION`)
     cd(wdir)
