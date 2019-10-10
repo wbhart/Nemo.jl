@@ -16,13 +16,11 @@ overfields(k::FqNmodFiniteField) = k.overfields
 subfields(k::FqNmodFiniteField) = k.subfields
 
 """
-    addOverfield!{T <: FinField}(F::T,
-                                 f::FinFieldMorphism{T})
+    addOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
 Add an overfield to `F`, represented by a morphism ``f: F->codomain(f)``.
 """
-function addOverfield!{T <: FinField}(F::T,
-                                      f::FinFieldMorphism{T})
+function addOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
     d = degree(codomain(f))
     over = overfields(F)
@@ -36,13 +34,11 @@ function addOverfield!{T <: FinField}(F::T,
 end
 
 """
-    addSubfield!{T <: FinField}(F::T,
-                                f::FinFieldMorphism{T})
+    addSubfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
 Add a subfield to `F`, represented by a morphism ``f: domain(f)->F``.
 """
-function addSubfield!{T <: FinField}(F::T,
-                                     f::FinFieldMorphism{T})
+function addSubfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
     d = degree(domain(f))
     sub = subfields(F)
@@ -115,11 +111,11 @@ anyRoot(x::PolyElem) = -coeff(linfactor(x), 0)
 ################################################################################
 
 """
-    berlekampMassey{Y <: RingElem}(a::Array{Y,1}, n::Int)
+    berlekampMassey(a::Array{Y, 1}, n::Int) where Y <: FieldElem
 
 Compute the minimal polynomial of a linear recurring sequence.
 """
-function berlekampMassey{Y <: FieldElem}(a::Array{Y, 1}, n::Int)
+function berlekampMassey(a::Array{Y, 1}, n::Int) where Y <: FieldElem
 
   S, T = PolynomialRing(parent(a[1]), "T")
   m = 2*n-1
@@ -192,11 +188,11 @@ end
 ################################################################################
 
 """
-    is_embedded{T <: FinField}(k::T, K::T)
+    is_embedded(k::T, K::T) where T <: FinField
 
 If `k` is embbeded in `K`, return the corresponding embedding.
 """
-function is_embedded{T <: FinField}(k::T, K::T)
+function is_embedded(k::T, K::T) where T <: FinField
 
     d = degree(K)
     ov = overfields(k)
@@ -213,11 +209,11 @@ function is_embedded{T <: FinField}(k::T, K::T)
 end
 
 """
-    embed_no_cond{T <: FinField}(k::T, K::T)
+    embed_no_cond(k::T, K::T) where T <: FinField
 
 Embed `k` in `K` without worrying about compatibility conditions.
 """
-function embed_no_cond{T <: FinField}(k::T, K::T)
+function embed_no_cond(k::T, K::T) where T <: FinField
 
     # We call the Flint algorithms directly, currently this is based on
     # factorization
@@ -230,11 +226,11 @@ function embed_no_cond{T <: FinField}(k::T, K::T)
 end
 
 """
-    find_morph{T <: FinField}(k::T, K::T)
+    find_morph(k::T, K::T) where T <: FinField
 
 Return a compatible embedding from `k` to `K`.
 """
-function find_morph{T <: FinField}(k::T, K::T)
+function find_morph(k::T, K::T) where T <: FinField
 
     S = PolynomialRing(K, "T")[1]
     Q = S()
@@ -338,12 +334,12 @@ function transitive_closure(f::FinFieldMorphism)
 end
 
 """
-    intersections{T <: FinField}(k::T, K::T)
+    intersections(k::T, K::T) where T <: FinField
 
 For each subfield S of K, embed I in S and k, where I is the intersection
 between S and k.
 """
-function intersections{T <: FinField}(k::T, K::T)
+function intersections(k::T, K::T) where T <: FinField
 
     d = degree(k)
     subk = subfields(k)
@@ -404,12 +400,12 @@ function intersections{T <: FinField}(k::T, K::T)
 end
 
 """
-    embed{T <: FinField}(k::T, K::T)
+    embed(k::T, K::T) where T <: FinField
 
 Embed `k` in `K`, with some additionnal computations in order to satisfy
 compatibility conditions with previous and future embeddings.
 """
-function embed{T <: FinField}(k::T, K::T)
+function embed(k::T, K::T) where T <: FinField
 
     # If k == K we return the identity
 
@@ -462,11 +458,11 @@ end
 ################################################################################
 
 """
-    section{T <: FinField}(K::T, k::T)
+    section(K::T, k::T) where T <: FinField
 
 Compute a section of the embedding of `k` into `K`.
 """
-function section{T <: FinField}(K::T, k::T)
+function section(K::T, k::T) where T <: FinField
     f = embed(k, K)
     return section(f)
 end
