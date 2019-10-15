@@ -26,7 +26,7 @@ Base ring                             | Library            | Element type       
 --------------------------------------|--------------------|-----------------------|----------------------
 Generic ring $R$                      | AbstractAlgebra.jl | `Generic.RelSeries{T} | `Generic.RelSeriesRing{T}`
 $\mathbb{Z}$                          | Flint              | `fmpz_rel_series`     | `FmpzRelSeriesRing`
-$\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint              |  nmod_rel_series      |  NmodRelSeriesRing
+$\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint              | `nmod_rel_series`     |  NmodRelSeriesRing
 $\mathbb{Z}/n\mathbb{Z}$              | Flint              | `fmpz_mod_rel_series` | `FmpzModRelSeriesRing`
 $\mathbb{Q}$                          | Flint              | `fmpq_rel_series`     | `FmpqRelSeriesRing`
 $\mathbb{F}_{p^n}$ (small $p$)        | Flint              | `fq_nmod_rel_series`  | `FqNmodRelSeriesRing`
