@@ -1,7 +1,4 @@
-function test_fq_nmod_embed()
-
-    # Prelude 
-    # Creation of the finite fields
+@testset "fq_nmod_embed.embed..." begin
 
     p = 11
     
@@ -17,13 +14,6 @@ function test_fq_nmod_embed()
     k16, x16 = FiniteField(p, 16, "x16")
     k18, x18 = FiniteField(p, 18, "x18")
     k24, x24 = FiniteField(p, 24, "x24")
-    k35, x35 = FiniteField(p, 35, "x35")
-    k50, x50 = FiniteField(p, 50, "x50")
-    k70, x70 = FiniteField(p, 70, "x70")
-    k210, x210 = FiniteField(p, 210, "x210")
-
-    # Main movement
-    # Some embeddings
 
     f4_12 = embed(k4, k12)
     f6_24 = embed(k6, k24)
@@ -47,9 +37,6 @@ function test_fq_nmod_embed()
     f2_4 = embed(k2, k4)
     f4_24 = embed(k4, k24)
     f4_8 = embed(k4, k8)
-
-    # Final
-    # Some tests
 
     @test f6_18(f3_6(x3)) == f3_18(x3)
     @test f8_16(f2_8(x2)) == f2_16(x2)
