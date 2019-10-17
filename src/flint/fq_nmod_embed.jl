@@ -12,7 +12,7 @@
 
 function linfactor(x::fq_nmod_poly)
     y = parent(x)()
-    ccall((:fq_nmod_poly_linfactor, :libflint), Nothing, (Ref{fq_nmod_poly},
+    ccall((:fq_nmod_poly_factor_split_single, :libflint), Nothing, (Ref{fq_nmod_poly},
           Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}), y, x, base_ring(x))
     return y
 end
