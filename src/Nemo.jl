@@ -352,7 +352,7 @@ export Generic
 #
 ###############################################################################
 
-include("embedding/EmbeddingType.jl")
+include("embedding/EmbeddingTypes.jl")
 
 include("flint/FlintTypes.jl")
 

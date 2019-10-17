@@ -489,10 +489,9 @@ end
 #
 ################################################################################
 
-"""
+@doc Markdown.doc"""
     modulus(k::FqNmodFiniteField)
-
-Return the modulus defining the finite field `k`.
+>Returns the modulus defining the finite field $k$.
 """
 function modulus(k::FqNmodFiniteField)
     p::Int = characteristic(k)

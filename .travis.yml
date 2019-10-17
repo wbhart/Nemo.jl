@@ -29,6 +29,7 @@ notifications:
 env:
    global:
       - DOCUMENTER_DEBUG=true
+      - NEMO_SOURCE_BUILD=1
 
 jobs:
    include:
