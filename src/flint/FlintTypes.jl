@@ -1672,6 +1672,8 @@ mutable struct FqFiniteField <: FinField
    inv_length::Int
    inv_p::Int # fmpz
    var::Ptr{Nothing}
+   overfields :: Dict{Int, Array{FinFieldMorphism, 1}}
+   subfields :: Dict{Int, Array{FinFieldMorphism, 1}}
 
    function FqFiniteField(char::fmpz, deg::Int, s::Symbol, cached::Bool = true)
       if cached && haskey(FqFiniteFieldID, (char, deg, s))

@@ -12,15 +12,15 @@ export embed, section
 #
 ################################################################################
 
-overfields(k::FqNmodFiniteField) = k.overfields
-subfields(k::FqNmodFiniteField) = k.subfields
+overfields(k::T) = k.overfields where T <: FinField
+subfields(k::T) = k.subfields where T <: FinField
 
 """
-    addOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
+    AddOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
 Add an overfield to `F`, represented by a morphism ``f: F->codomain(f)``.
 """
-function addOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
+function AddOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
     d = degree(codomain(f))
     over = overfields(F)
@@ -34,11 +34,11 @@ function addOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 end
 
 """
-    addSubfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
+    AddSubfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
 Add a subfield to `F`, represented by a morphism ``f: domain(f)->F``.
 """
-function addSubfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
+function AddSubfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
     d = degree(domain(f))
     sub = subfields(F)
@@ -51,74 +51,30 @@ function addSubfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
     end
 end
 
-################################################################################
-#
-#  Modulus 
-#
-################################################################################
-
-"""
-    modulus(k::FqNmodFiniteField)
-
-Return the modulus defining the finite field `k`.
-"""
-function modulus(k::FqNmodFiniteField)
-    p::Int = characteristic(k)
-    R = PolynomialRing(ResidueRing(ZZ, p), "T")[1]
-    Q = R()
-    P = ccall((:fq_nmod_ctx_modulus, :libflint), Ref{nmod_poly},
-                 (Ref{FqNmodFiniteField},), k)
-    ccall((:nmod_poly_set, :libflint), Nothing,
-          (Ref{nmod_poly}, Ref{nmod_poly}),
-          Q, P)
-
-    return Q
-end
 
 ################################################################################
 #
-#  Random monic and splitting polynomials
+#  Root Finding (of a splitting polynomial, internal use only)
 #
 ################################################################################
 
-function rand_split(R::PolyRing, d::Int)
-    x = gen(R)
-    k = base_ring(R)
-    r = one(R)
-    for i in 1:d
-        r *= x + rand(k)
-    end
-    return r
-end
-
-function rand(R::PolyRing, d::Int)
-    k = base_ring(R)
-    return R([rand(k) for i in 0:d])
-end
+any_root(x::PolyElem) = -coeff(linear_factor(x), 0)
 
 ################################################################################
 #
-#  Root Finding 
-#
-################################################################################
-
-anyRoot(x::PolyElem) = -coeff(linfactor(x), 0)
-
-################################################################################
-#
-# Minimal polynomial of the generator
+#  Minimal polynomial of the generator
 #
 ################################################################################
 
 """
-    berlekampMassey(a::Array{Y, 1}, n::Int) where Y <: FieldElem
+    berlekamp_massey(a::Array{Y, 1}, n::Int) where Y <: FieldElem
 
 Compute the minimal polynomial of a linear recurring sequence.
 """
-function berlekampMassey(a::Array{Y, 1}, n::Int) where Y <: FieldElem
+function berlekamp_massey(a::Array{Y, 1}, n::Int) where Y <: FieldElem
 
   S, T = PolynomialRing(parent(a[1]), "T")
-  m = 2*n-1
+  m = 2*n - 1
   R0 = T^(2*n)
   R1 = S(reverse(a))
   V0 = S(0)
@@ -137,16 +93,16 @@ function berlekampMassey(a::Array{Y, 1}, n::Int) where Y <: FieldElem
 end
 
 """
-    genminpoly(f::FinFieldMorphism)
+    generator_minimum_polynomial(f::FinFieldMorphism)
 
 Compute the minimal polynomial of the generator of the codomain 
 of `f` over the domain of `f`.
 """
-function genminpoly(f::FinFieldMorphism)
+function generator_minimum_polynomial(f::FinFieldMorphism)
 
     E = domain(f)
     F = codomain(f)
-    d::Int = degree(F)/degree(E)
+    d::Int = div(degree(F), degree(E))
     b = 2*d
 
     # We define `sec`, the section of the morphism `f`
@@ -155,11 +111,11 @@ function genminpoly(f::FinFieldMorphism)
     x = gen(F)
     y = one(F)
 
-    # We compute the recurring sequence sec(x^j) for j from 0 to 2d-1
+    # We compute the recurring sequence sec(x^j) for j from 0 to 2d - 1
 
     A = Array{typeof(x)}(undef, b)
 
-    for j in 1:(b-1)
+    for j in 1:(b - 1)
         A[j] = sec(y)
         y *= x
     end
@@ -167,18 +123,7 @@ function genminpoly(f::FinFieldMorphism)
 
     # We apply Berlekamp Massey algorithm to the sequence
 
-    return berlekampMassey(A, d)
-end
-
-################################################################################
-#
-#   Embedding a polynomial
-#
-################################################################################
-
-function embedPoly(P::fq_nmod_poly, f::FinFieldMorphism)
-    S = PolynomialRing(codomain(f), "T")[1]
-    return S([f(coeff(P, j)) for j in 0:degree(P)])
+    return berlekamp_massey(A, d)
 end
 
 ################################################################################
@@ -188,11 +133,11 @@ end
 ################################################################################
 
 """
-    is_embedded(k::T, K::T) where T <: FinField
+    isembedded(k::T, K::T) where T <: FinField
 
 If `k` is embbeded in `K`, return the corresponding embedding.
 """
-function is_embedded(k::T, K::T) where T <: FinField
+function isembedded(k::T, K::T) where T <: FinField
 
     d = degree(K)
     ov = overfields(k)
@@ -209,11 +154,11 @@ function is_embedded(k::T, K::T) where T <: FinField
 end
 
 """
-    embed_no_cond(k::T, K::T) where T <: FinField
+    embed_any(k::T, K::T) where T <: FinField
 
 Embed `k` in `K` without worrying about compatibility conditions.
 """
-function embed_no_cond(k::T, K::T) where T <: FinField
+function embed_any(k::T, K::T) where T <: FinField
 
     # We call the Flint algorithms directly, currently this is based on
     # factorization
@@ -226,11 +171,11 @@ function embed_no_cond(k::T, K::T) where T <: FinField
 end
 
 """
-    find_morph(k::T, K::T) where T <: FinField
+    find_morphism(k::T, K::T) where T <: FinField
 
 Return a compatible embedding from `k` to `K`.
 """
-function find_morph(k::T, K::T) where T <: FinField
+function find_morphism(k::T, K::T) where T <: FinField
 
     S = PolynomialRing(K, "T")[1]
     Q = S()
@@ -245,7 +190,7 @@ function find_morph(k::T, K::T) where T <: FinField
         if haskey(subfields(K), l)
             f = subfields(k)[l][1]
             g = subfields(K)[l][1]
-            P = embedPoly(genminpoly(f), g)
+            P = embed_polynomial(generator_minimum_polynomial(f), g)
             if needy
                 Q = gcd(Q, P)
             else
@@ -261,7 +206,7 @@ function find_morph(k::T, K::T) where T <: FinField
 
     if needy
         defPol = modulus(k)
-        t = anyRoot(Q)
+        t = any_root(Q)
         M, N = embed_matrices_pre(gen(k), t, defPol)
         f(x) = embed_pre_mat(x, K, M)
         g(y) = embed_pre_mat(y, k, N)
@@ -270,7 +215,7 @@ function find_morph(k::T, K::T) where T <: FinField
     # If there is no common subfield, there is no compatibility condition to
     # fulfill
     else
-        morph = embed_no_cond(k, K)
+        morph = embed_any(k, K)
     end
 
     return morph
@@ -301,8 +246,8 @@ function transitive_closure(f::FinFieldMorphism)
                 tinv(x) = g.inv(f.inv(x))
                 phi = FinFieldMorphism(domain(g), K, t, tinv)
 
-                addSubfield!(K, phi)
-                addOverfield!(domain(g), phi)
+                AddSubfield!(K, phi)
+                AddOverfield!(domain(g), phi)
             end
         else
             val = FqNmodFiniteField[codomain(v) for v in subK[d]]
@@ -313,8 +258,8 @@ function transitive_closure(f::FinFieldMorphism)
                     tinv(x) = g.inv(f.inv(x))
                     phi = FinFieldMorphism(domain(g), K, t, tinv)
 
-                    addSubfield!(K, phi)
-                    addOverfield!(domain(g), phi)
+                    AddSubfield!(K, phi)
+                    AddOverfield!(domain(g), phi)
                end
             end
         end
@@ -417,7 +362,7 @@ function embed(k::T, K::T) where T <: FinField
 
     # If k is already embedded in K, we return the corresponding embedding
 
-    tr = is_embedded(k, K)
+    tr = isembedded(k, K)
     if tr != nothing
         return tr
     end
@@ -433,11 +378,11 @@ function embed(k::T, K::T) where T <: FinField
     if needmore 
 
         # We compute a compatible embedding
-        morph = find_morph(k, K)
+        morph = find_morphism(k, K)
 
         # We had it to the over and sub fields of k and K
-        addOverfield!(k, morph)
-        addSubfield!(K, morph)
+        AddOverfield!(k, morph)
+        AddSubfield!(K, morph)
 
         # We compute the transitive closure induced by the new embedding
         transitive_closure(morph)
@@ -447,7 +392,7 @@ function embed(k::T, K::T) where T <: FinField
     else
 
         # If the embedding has already been computing, we return it
-        return is_embedded(k, K)
+        return isembedded(k, K)
     end
 end
 

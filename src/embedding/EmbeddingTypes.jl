@@ -1,12 +1,6 @@
 ################################################################################
 #
-#  FinFieldsTypes.jl : some types needed to play with embeddings
-#
-################################################################################
-
-################################################################################
-#
-#  FinFieldsMorphism : embeddings
+#  FinFieldsMorphism : some types needed to work with embeddings
 #
 ################################################################################
 
@@ -56,4 +50,4 @@ function Base.show(io::IO, f::FinFieldSection)
     print("Section from $(domain(f))\nto $(codomain(f))")
 end
 
-section(f::FinFieldMorphism) = FinFieldSection(f.codomain, f.domain, f.inv, f.f)
+section(f::FinFieldMorphism) = FinFieldSection(f.codomain, f.domain, f.inv, f.f):

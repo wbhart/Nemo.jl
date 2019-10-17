@@ -10,7 +10,7 @@
 #
 ###############################################################################
 
-function linfactor(x::fq_nmod_poly)
+function linear_factor(x::fq_nmod_poly)
     y = parent(x)()
     ccall((:fq_nmod_poly_factor_split_single, :libflint), Nothing, (Ref{fq_nmod_poly},
           Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}), y, x, base_ring(x))
@@ -90,16 +90,27 @@ function embed_pre_mat(x::fq_nmod, K::FqNmodFiniteField, M::nmod_mat)
     S = MatrixSpace(base_ring(M), d, 1)
     col = S()
 
-    for j in 0:(d-1)
-        col[j+1, 1] = coeff(x, j)
+    for j in 0:(d - 1)
+        col[j + 1, 1] = coeff(x, j)
     end
 
     product = M*col
     res = K()
 
     for j in degree(K):-1:1
-        coeff!(res, j-1, Int(data(product[j, 1])))
+        coeff!(res, j - 1, Int(data(product[j, 1])))
     end
 
     return res
+end
+
+################################################################################
+#
+#   Embedding a polynomial
+#
+################################################################################
+
+function embed_polynomial(P::fq_nmod_poly, f::FinFieldMorphism)
+    S = PolynomialRing(codomain(f), "T")[1]
+    return S([f(coeff(P, j)) for j in 0:degree(P)])
 end

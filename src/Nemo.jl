@@ -352,7 +352,7 @@ export Generic
 #
 ###############################################################################
 
-include("FinFieldsTypes.jl")
+include("embedding/EmbeddingType.jl")
 
 include("flint/FlintTypes.jl")
 
@@ -364,7 +364,7 @@ include("arb/ArbTypes.jl")
 
 include("flint/adhoc.jl")
 
-include("FinFieldsLattices.jl")
+include("embedding/embedding.jl")
 
 include("Rings.jl")
 

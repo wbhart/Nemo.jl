@@ -482,3 +482,27 @@ function FlintFiniteField(pol::Zmodn_poly, s::AbstractString; cached = true)
 
    return parent_obj, gen(parent_obj)
 end
+
+################################################################################
+#
+#  FqNmodFiniteField Modulus
+#
+################################################################################
+
+"""
+    modulus(k::FqNmodFiniteField)
+
+Return the modulus defining the finite field `k`.
+"""
+function modulus(k::FqNmodFiniteField)
+    p::Int = characteristic(k)
+    R = PolynomialRing(ResidueRing(ZZ, p), "T")[1]
+    Q = R()
+    P = ccall((:fq_nmod_ctx_modulus, :libflint), Ref{nmod_poly},
+                 (Ref{FqNmodFiniteField},), k)
+    ccall((:nmod_poly_set, :libflint), Nothing,
+          (Ref{nmod_poly}, Ref{nmod_poly}),
+          Q, P)
+
+    return Q
+end
