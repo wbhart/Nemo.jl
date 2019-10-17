@@ -108,7 +108,7 @@ function generator_minimum_polynomial(f::FinFieldMorphism)
 
     # We define `sec`, the preimage of the morphism `f`
     
-    sec = f.inv
+    sec = inverse_fn(f)
     x = gen(F)
     y = one(F)
 
@@ -244,7 +244,7 @@ function transitive_closure(f::FinFieldMorphism)
         if !haskey(subK, d)
             for g in subk[d]
                 t(y) = f(g(y))
-                tinv(x) = g.inv(f.inv(x))
+                tinv(x) = inverse_fn(g)(inverse_fn(f)(x))
                 phi = FinFieldMorphism(domain(g), K, t, tinv)
 
                 AddSubfield!(K, phi)
@@ -256,7 +256,7 @@ function transitive_closure(f::FinFieldMorphism)
             for g in subk[d]
                 if !(domain(g) in val)
                     t(y) = f(g(y))
-                    tinv(x) = g.inv(f.inv(x))
+                    tinv(x) = inverse_fn(g)(inverse_fn(f)(x))
                     phi = FinFieldMorphism(domain(g), K, t, tinv)
 
                     AddSubfield!(K, phi)
