@@ -50,4 +50,4 @@ function Base.show(io::IO, f::FinFieldSection)
     print("Section from $(domain(f))\nto $(codomain(f))")
 end
 
-section(f::FinFieldMorphism) = FinFieldSection(f.codomain, f.domain, f.inv, f.f):
+section(f::FinFieldMorphism) = FinFieldSection(f.codomain, f.domain, f.inv, f.f)
