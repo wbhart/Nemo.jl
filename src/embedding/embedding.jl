@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-export embed, section
+export embed, preimage
 
 ################################################################################
 #
@@ -106,7 +106,7 @@ function generator_minimum_polynomial(f::FinFieldMorphism)
     d::Int = div(degree(F), degree(E))
     b = 2*d
 
-    # We define `sec`, the section of the morphism `f`
+    # We define `sec`, the preimage of the morphism `f`
     
     sec = f.inv
     x = gen(F)
@@ -404,11 +404,11 @@ end
 ################################################################################
 
 @doc Markdown.doc"""
-    section(K::T, k::T) where T <: FinField
+    preimage(K::T, k::T) where T <: FinField
 
-> Compute a section of the embedding of $k$ into $K$.
+> Computes the preimage map corresponding to the embedding of $k$ into $K$.
 """
-function section(K::T, k::T) where T <: FinField
+function preimage(K::T, k::T) where T <: FinField
     f = embed(k, K)
-    return section(f)
+    return preimage(f)
 end

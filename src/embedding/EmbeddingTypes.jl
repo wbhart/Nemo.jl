@@ -23,18 +23,18 @@ function Base.show(io::IO, f::FinFieldMorphism)
     print("Morphism from $(domain(f))\nto $(codomain(f))")
 end
 
-struct FinFieldSection{T}
+struct FinFieldPreimage{T}
     domain::T
     codomain::T
     f::Function
     inv::Function
 end
 
-domain(f::FinFieldSection) = f.domain
+domain(f::FinFieldPreimage) = f.domain
 
-codomain(f::FinFieldSection) = f.codomain
+codomain(f::FinFieldPreimage) = f.codomain
 
-function (f::FinFieldSection)(x)
+function (f::FinFieldPreimage)(x)
     a = f.f(x)::elem_type(codomain(f))
     b = f.inv(a)
     if x == b
@@ -46,8 +46,8 @@ function (f::FinFieldSection)(x)
     end
 end
 
-function Base.show(io::IO, f::FinFieldSection)
-    print("Section from $(domain(f))\nto $(codomain(f))")
+function Base.show(io::IO, f::FinFieldPreimage)
+    print("Preimage from $(domain(f))\nto $(codomain(f))")
 end
 
-section(f::FinFieldMorphism) = FinFieldSection(f.codomain, f.domain, f.inv, f.f)
+preimage(f::FinFieldMorphism) = FinFieldPreimage(f.codomain, f.domain, f.inv, f.f)

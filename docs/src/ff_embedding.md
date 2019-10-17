@@ -16,7 +16,7 @@ provided by the C library Flint, whereas high level tasks are written directly i
 It is possible to explicitly call the embedding `embed` function to create an embedding,
 but standard object oriented conversion works too. The resulting embedding is of
 type `FinFieldMorphism`. It is also possible to
-compute the preimage of an embedding via the `section` function, applied to an
+compute the preimage of an embedding via the `preimage` function, applied to an
 embedding or directly to the finite fields (this actually first computes the
 embedding), or via conversion. An error is thrown if the element you want to
 compute the preimage is not in the image of the embedding.
@@ -26,6 +26,7 @@ compute the preimage is not in the image of the embedding.
 ```@docs
 embed(::FqNmodFiniteField, ::FqNmodFiniteField)
 ```
+
 **Examples**
 
 ```julia
@@ -41,16 +42,17 @@ z = k4(x2)
 ### Computed the preimage of an embedding
 
 ```@docs
-section(::FqNmodFiniteField, ::FqNmodFiniteField)
-section(::FinFieldMorphism)
+preimage(::FqNmodFiniteField, ::FqNmodFiniteField)
+preimage(::FinFieldMorphism)
 ```
+
 **Examples**
 
 ```julia
 k7, x7 = FiniteField(13, 7, "x7")
 k21, x21 = FiniteField(13, 21, "x21")
 
-s = section(k7, k21)
+s = preimage(k7, k21)
 
 y = k21(x7)
 
