@@ -10,7 +10,7 @@ struct FinFieldMorphism{T} <: AbstractAlgebra.Map{T, T, AbstractAlgebra.SetMap,
     preimage::AbstractAlgebra.FunctionalMap
 
     function FinFieldMorphism(domain::T, codomain::T, image_fn::Function,
-                              inverse_fn::Function)
+                              inverse_fn::Function) where T
         map = AbstractAlgebra.FunctionalMap(domain, codomain, image_fn)
         preimage = AbstractAlgebra.FunctionalMap(codomain, domain, inverse_fn)
         return FinFieldMorphism(map, preimage)
@@ -31,7 +31,7 @@ function Base.show(io::IO, f::FinFieldMorphism)
 end
 
 struct FinFieldPreimage{T} <: AbstractAlgebra.Map{T, T, AbstractAlgebra.SetMap,
-                                                  FinFieldMorphism}
+                                                  FinFieldMorphism} where T
     map::AbstractAlgebra.FunctionalMap
     preimage::AbstractAlgebra.FunctionalMap
 
@@ -60,7 +60,7 @@ function (f::FinFieldPreimage)(x)
     end
 end
 
-function Base.show(io::IO, f::FinFieldSection)
+function Base.show(io::IO, f::FinFieldPreimage)
     print("Preimage of the morphism from $(domain(f))\nto $(codomain(f))")
 end
 
