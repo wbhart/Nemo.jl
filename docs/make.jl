@@ -23,6 +23,7 @@ makedocs(
                            "acb.md",
                            "gfp.md",
                            "finitefield.md",
+			   "ff_embedding.md",
                            "numberfield.md",
                            "padic.md",
                            "qadic.md"],
