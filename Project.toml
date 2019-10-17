@@ -1,6 +1,6 @@
 name = "Nemo"
 uuid = "2edaba10-b0f1-5616-af89-8c11ac63239a"
-version = "0.15.0"
+version = "0.15.1"
 
 [deps]
 AbstractAlgebra = "c3fe647b-3220-5bb0-a1ea-a7954cac585d"
@@ -14,5 +14,5 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 AbstractAlgebra = "^0.7.0"
-BinaryProvider = "≥ 0.3.0"
-julia = "≥ 1.0.0"
+BinaryProvider = "0.4, 0.5"
+julia = "1"
