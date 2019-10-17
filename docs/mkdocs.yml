@@ -18,6 +18,7 @@ pages:
 - Integers:                     integer.md
 - Rationals:                    rational.md
 - Finite fields:                finitefield.md
+- Finite field embeddings:      ff_embedding.md
 - P-adic fields:                padic.md
 - Q-adic fields:                qadic.md
 - Real balls:                   arb.md
