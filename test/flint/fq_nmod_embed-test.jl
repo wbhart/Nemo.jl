@@ -18,46 +18,52 @@
         k18, x18 = FiniteField(p, 18, "x18")
         k24, x24 = FiniteField(p, 24, "x24")
 
-        f4_12 = embed(k4, k12)
-        f6_24 = embed(k6, k24)
-        f8_16 = embed(k8, k16)
-        f2_16 = embed(k2, k16)
-        f3_6 = embed(k3, k6)
-        f9_18 = embed(k9, k18)
-        f6_12 = embed(k6, k12)
-        f3_18 = embed(k3, k18)
-        f4_16 = embed(k4, k16)
-        f6_18 = embed(k6, k18)
-        f2_8 = embed(k2, k8)
-        f12_24 = embed(k12, k24)
-        f3_9 = embed(k3, k9)
-        f2_6 = embed(k2, k6)
-        f8_24 = embed(k8, k24)
-        f3_24 = embed(k3, k24)
-        f2_12 = embed(k2, k12)
-        f3_12 = embed(k3, k12)
-        f2_24 = embed(k2, k24)
-        f2_4 = embed(k2, k4)
-        f4_24 = embed(k4, k24)
-        f4_8 = embed(k4, k8)
+        S = Set([(k4, k12),
+                 (k6, k24),
+                 (k8, k16),
+                 (k2, k16),
+                 (k3, k6),
+                 (k9, k18),
+                 (k6, k12),
+                 (k3, k18),
+                 (k4, k16),
+                 (k6, k18),
+                 (k2, k8),
+                 (k12, k24),
+                 (k3, k9),
+                 (k2, k6),
+                 (k8, k24),
+                 (k3, k24),
+                 (k2, k12),
+                 (k3, k12),
+                 (k2, k24),
+                 (k2, k4),
+                 (k4, k24),
+                 (k4, k8)])
 
-        @test f6_18(f3_6(x3)) == f3_18(x3)
-        @test f8_16(f2_8(x2)) == f2_16(x2)
-        @test f12_24(f6_12(x6)) == f6_24(x6)
-        @test f9_18(f3_9(x3)) == f3_18(x3)
-        @test f6_24(f3_6(x3)) == f3_24(x3)
-        @test f6_12(f2_6(x2)) == f2_12(x2)
-        @test f6_12(f3_6(x3)) == f3_12(x3)
-        @test f12_24(f3_12(x3)) == f3_24(x3)
-        @test f6_24(f2_6(x2)) == f2_24(x2)
-        @test f12_24(f2_12(x2)) == f2_24(x2)
-        @test f12_24(f4_12(x4)) == f4_24(x4)
-        @test f4_12(f2_4(x2)) == f2_12(x2)
-        @test f4_24(f2_4(x2)) == f2_24(x2)
-        @test f8_16(f4_8(x4)) == f4_16(x4)
-        @test f8_24(f4_8(x4)) == f4_24(x4)
-        @test f4_8(f2_4(x2)) == f2_8(x2)
-        @test f4_16(f2_4(x2)) == f2_16(x2)
+        f = Dict()
+        while !isempty(S)
+            k, K = pop!(S, rand(S))
+            f[(k, K)] = embed(k, K)
+        end
+
+        @test f[k6, k18](f[k3, k6](x3)) == f[k3, k18](x3)
+        @test f[k8, k16](f[k2, k8](x2)) == f[k2, k16](x2)
+        @test f[k12, k24](f[k6, k12](x6)) == f[k6, k24](x6)
+        @test f[k9, k18](f[k3, k9](x3)) == f[k3, k18](x3)
+        @test f[k6, k24](f[k3, k6](x3)) == f[k3, k24](x3)
+        @test f[k6, k12](f[k2, k6](x2)) == f[k2, k12](x2)
+        @test f[k6, k12](f[k3, k6](x3)) == f[k3, k12](x3)
+        @test f[k12, k24](f[k3, k12](x3)) == f[k3, k24](x3)
+        @test f[k6, k24](f[k2, k6](x2)) == f[k2, k24](x2)
+        @test f[k12, k24](f[k2, k12](x2)) == f[k2, k24](x2)
+        @test f[k12, k24](f[k4, k12](x4)) == f[k4, k24](x4)
+        @test f[k4, k12](f[k2, k4](x2)) == f[k2, k12](x2)
+        @test f[k4, k24](f[k2, k4](x2)) == f[k2, k24](x2)
+        @test f[k8, k16](f[k4, k8](x4)) == f[k4, k16](x4)
+        @test f[k8, k24](f[k4, k8](x4)) == f[k4, k24](x4)
+        @test f[k4, k8](f[k2, k4](x2)) == f[k2, k8](x2)
+        @test f[k4, k16](f[k2, k4](x2)) == f[k2, k16](x2)
     end
     println("PASS")
 end
