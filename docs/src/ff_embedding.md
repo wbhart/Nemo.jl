@@ -14,8 +14,8 @@ provided by the C library Flint, whereas high level tasks are written directly i
 ## Embedding functionality
 
 It is possible to explicitly call the embedding `embed` function to create an embedding,
-but it is also possible to directly ask for the conversion of an element `x` in
-some field `k` via calling `k(x)`. The resulting embedding is of
+but it is also possible to directly ask for the conversion of a finite field element `x` in
+some other finite field `k` via calling `k(x)`. The resulting embedding is of
 type `FinFieldMorphism`. It is also possible to
 compute the preimage of an embedding via the `preimage` function, applied to an
 embedding or directly to the finite fields (this actually first computes the

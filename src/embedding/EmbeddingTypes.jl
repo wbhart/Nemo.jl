@@ -6,16 +6,17 @@
 
 struct FinFieldMorphism{T} <: AbstractAlgebra.Map{T, T, AbstractAlgebra.SetMap,
                                                   FinFieldMorphism} 
-    map::AbstractAlgebra.FunctionalMap
-    preimage::AbstractAlgebra.FunctionalMap
+    map::AbstractAlgebra.Map
+    preimage::AbstractAlgebra.Map
 
     function FinFieldMorphism(domain::T, codomain::T, image_fn::Function,
                               inverse_fn::Function) where T
-        map = AbstractAlgebra.FunctionalMap(domain, codomain, image_fn)
-        preimage = AbstractAlgebra.FunctionalMap(codomain, domain, inverse_fn)
-        return FinFieldMorphism(map, preimage)
+        map = AbstractAlgebra.map_from_func(image_fn, domain, codomain)
+        preimage = AbstractAlgebra.map_from_func(inverse_fn, codomain, domain)
+        return new{T}(map, preimage)
     end
 end
+
 
 domain(f::FinFieldMorphism) = (f.map).domain
 codomain(f::FinFieldMorphism) = (f.map).codomain
@@ -31,15 +32,15 @@ function Base.show(io::IO, f::FinFieldMorphism)
 end
 
 struct FinFieldPreimage{T} <: AbstractAlgebra.Map{T, T, AbstractAlgebra.SetMap,
-                                                  FinFieldMorphism} where T
-    map::AbstractAlgebra.FunctionalMap
-    preimage::AbstractAlgebra.FunctionalMap
+                                                  FinFieldPreimage}
+    map::AbstractAlgebra.Map
+    preimage::AbstractAlgebra.Map
 
     function FinFieldPreimage(domain::T, codomain::T, image_fn::Function,
-                              inverse_fn::Function)
-        map = AbstractAlgebra.FunctionalMap(domain, codomain, image_fn)
-        preimage = AbstractAlgebra.FunctionalMap(codomain, domain, inverse_fn)
-        return FinFieldPreimage(map, preimage)
+                              inverse_fn::Function) where T
+        map = AbstractAlgebra.map_from_func(image_fn, domain, codomain)
+        preimage = AbstractAlgebra.map_from_func(inverse_fn, codomain, domain)
+        return new{T}(map, preimage)
     end
 end
 
