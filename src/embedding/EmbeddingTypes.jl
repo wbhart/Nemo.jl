@@ -65,5 +65,5 @@ function Base.show(io::IO, f::FinFieldPreimage)
     print("Preimage of the morphism from $(domain(f))\nto $(codomain(f))")
 end
 
-preimage(f::FinFieldMorphism) = FinFieldPreimage(domain(f), codomain(f),
+preimage_map(f::FinFieldMorphism) = FinFieldPreimage(domain(f), codomain(f),
                                                  image_fn(f), inverse_fn(f))

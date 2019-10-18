@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-export embed, preimage
+export embed, preimage, preimage_map
 
 ################################################################################
 #
@@ -404,11 +404,13 @@ end
 ################################################################################
 
 @doc Markdown.doc"""
-    preimage(K::T, k::T) where T <: FinField
+    preimage_map(k::T, k::T) where T <: FinField
 
 > Computes the preimage map corresponding to the embedding of $k$ into $K$.
 """
-function preimage(K::T, k::T) where T <: FinField
+function preimage_map(k::T, K::T) where T <: FinField
     f = embed(k, K)
-    return preimage(f)
+    return preimage_map(f)
 end
+
+preimage(f::FinFieldMorphism, x::T) where T <: FinField = preimage_map(f)(x)
