@@ -439,7 +439,7 @@ function test_module(x, y)
    end
 
    cmd = "using Test; using Nemo; include(\"$test_file\"); $test_function_name();"
-   @info("spawning ", `$julia_exe -e \"$cmd\"`)
+   println("spawning ", `$julia_exe -e \"$cmd\"`)
    run(`$julia_exe -e $cmd`)
 end
 
