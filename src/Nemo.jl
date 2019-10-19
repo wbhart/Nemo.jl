@@ -352,6 +352,8 @@ export Generic
 #
 ###############################################################################
 
+include("embedding/EmbeddingTypes.jl")
+
 include("flint/FlintTypes.jl")
 
 include("antic/AnticTypes.jl")
@@ -361,6 +363,8 @@ include("arb/ArbTypes.jl")
 #include("ambiguities.jl") # remove ambiguity warnings
 
 include("flint/adhoc.jl")
+
+include("embedding/embedding.jl")
 
 include("Rings.jl")
 

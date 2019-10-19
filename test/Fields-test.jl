@@ -2,6 +2,7 @@ include("flint/fmpq-test.jl")
 include("flint/gfp-test.jl")
 include("flint/fq-test.jl")
 include("flint/fq_nmod-test.jl")
+include("flint/fq_nmod_embed-test.jl")
 include("flint/padic-test.jl")
 include("flint/qadic-test.jl")
 

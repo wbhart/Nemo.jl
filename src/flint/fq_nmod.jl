@@ -447,8 +447,20 @@ function (a::FqNmodFiniteField)(b::fmpz)
 end
 
 function (a::FqNmodFiniteField)(b::fq_nmod)
-   parent(b) != a && error("Coercion between finite fields not implemented")
-   return b
+    k = parent(b)
+    da = degree(a)
+    dk = degree(k)
+    if k == a
+        return b
+    elseif dk < da
+        da % dk != 0 && error("Coercion impossible")
+        f = embed(k, a)
+        return f(b)
+    else
+        dk % da != 0 && error("Coercion impossible")
+        f = preimage_map(k, a)
+        return f(b)
+    end
 end
 
 ###############################################################################
@@ -469,4 +481,27 @@ function FlintFiniteField(pol::Zmodn_poly, s::AbstractString; cached = true)
    parent_obj = FqNmodFiniteField(pol, S, cached)
 
    return parent_obj, gen(parent_obj)
+end
+
+################################################################################
+#
+#  FqNmodFiniteField Modulus
+#
+################################################################################
+
+@doc Markdown.doc"""
+    modulus(k::FqNmodFiniteField)
+>Returns the modulus defining the finite field $k$.
+"""
+function modulus(k::FqNmodFiniteField)
+    p::Int = characteristic(k)
+    R = PolynomialRing(ResidueRing(ZZ, p), "T")[1]
+    Q = R()
+    P = ccall((:fq_nmod_ctx_modulus, :libflint), Ref{nmod_poly},
+                 (Ref{FqNmodFiniteField},), k)
+    ccall((:nmod_poly_set, :libflint), Nothing,
+          (Ref{nmod_poly}, Ref{nmod_poly}),
+          Q, P)
+
+    return Q
 end

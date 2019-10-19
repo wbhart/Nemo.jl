@@ -1528,6 +1528,8 @@ mutable struct FqNmodFiniteField <: FinField
    inv_ninv :: Int
    inv_norm :: Int
    var :: Ptr{Nothing}
+   overfields :: Dict{Int, Array{FinFieldMorphism, 1}}
+   subfields :: Dict{Int, Array{FinFieldMorphism, 1}}
 
    function FqNmodFiniteField(c::fmpz, deg::Int, s::Symbol, cached::Bool = true)
       if cached && haskey(FqNmodFiniteFieldID, (c, deg, s))
@@ -1537,6 +1539,8 @@ mutable struct FqNmodFiniteField <: FinField
          ccall((:fq_nmod_ctx_init, :libflint), Nothing,
                (Ref{FqNmodFiniteField}, Ref{fmpz}, Int, Ptr{UInt8}),
 			    d, c, deg, string(s))
+         d.overfields = Dict{Int, Array{FinFieldMorphism, 1}}()
+         d.subfields = Dict{Int, Array{FinFieldMorphism, 1}}()
          if cached
             FqNmodFiniteFieldID[c, deg, s] = d
          end
@@ -1553,6 +1557,8 @@ mutable struct FqNmodFiniteField <: FinField
          ccall((:fq_nmod_ctx_init_modulus, :libflint), Nothing,
             (Ref{FqNmodFiniteField}, Ref{nmod_poly}, Ptr{UInt8}),
 	      z, f, string(s))
+         z.overfields = Dict{Int, Array{FinFieldMorphism, 1}}()
+         z.subfields = Dict{Int, Array{FinFieldMorphism, 1}}()
          if cached
             FqNmodFiniteFieldIDNmodPol[parent(f), f, s] = z
          end
@@ -1666,6 +1672,8 @@ mutable struct FqFiniteField <: FinField
    inv_length::Int
    inv_p::Int # fmpz
    var::Ptr{Nothing}
+   overfields :: Dict{Int, Array{FinFieldMorphism, 1}}
+   subfields :: Dict{Int, Array{FinFieldMorphism, 1}}
 
    function FqFiniteField(char::fmpz, deg::Int, s::Symbol, cached::Bool = true)
       if cached && haskey(FqFiniteFieldID, (char, deg, s))
