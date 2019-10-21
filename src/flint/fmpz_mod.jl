@@ -132,7 +132,7 @@ function +(x::fmpz_mod, y::fmpz_mod)
    R = parent(x)
    n = modulus(R)
    d = x.data + y.data - n
-   if d > x.data
+   if d < 0
       return fmpz_mod(d + n, R)
    else
       return fmpz_mod(d, R)
@@ -144,7 +144,7 @@ function -(x::fmpz_mod, y::fmpz_mod)
    R = parent(x)
    n = modulus(R)
    d = x.data - y.data
-   if d > x.data
+   if d < 0
       return fmpz_mod(d + n, R)
    else
       return fmpz_mod(d, R)
