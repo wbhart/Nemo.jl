@@ -14,9 +14,9 @@ include("flint/gfp_poly.jl")
 
 include("flint/nmod.jl")
 
-include("flint/gfp_elem.jl")
-
 include("flint/fmpz_mod.jl")
+
+include("flint/gfp_elem.jl")
 
 include("flint/fmpz_mod_poly.jl")
 

@@ -420,6 +420,54 @@ end
 
 ###############################################################################
 #
+#   FmpzModRing / fmpz_mod
+#
+###############################################################################
+
+mutable struct fmpz_mod_ctx_struct
+   n::Int # fmpz_t
+   add_fxn::Ptr{Nothing}
+   sub_fxn::Ptr{Nothing}
+   mul_fxn::Ptr{Nothing}
+   n2::UInt
+   ninv::UInt
+   norm::UInt
+   n_limbs::Tuple{UInt, UInt, UInt}
+   ninv_limbs::Tuple{UInt, UInt, UInt}
+
+   function fmpz_mod_ctx_struct()
+      return new()
+   end
+end
+
+mutable struct FmpzModRing <: Ring
+   n::fmpz
+   ninv::fmpz_mod_ctx_struct
+
+   function FmpzModRing(n::fmpz, cached::Bool=true)
+      if cached && haskey(FmpzModRingID, n)
+         return FmpzModRingID[n]
+      else
+         ninv = fmpz_mod_ctx_struct()
+         ccall((:fmpz_mod_ctx_init, :libflint), Nothing, (Ref{fmpz_mod_ctx_struct}, Ref{fmpz}), ninv, n)
+         z = new(n, ninv)
+         if cached
+            FmpzModRingID[n] = z
+         end
+         return z
+      end
+   end
+end
+
+const FmpzModRingID = Dict{fmpz, FmpzModRing}()
+
+struct fmpz_mod <: ResElem{fmpz}
+   data::fmpz
+   parent::FmpzModRing
+end
+
+###############################################################################
+#
 #   NmodPolyRing / nmod_poly
 #
 ###############################################################################

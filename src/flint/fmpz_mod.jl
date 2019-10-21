@@ -6,19 +6,412 @@
 
 ###############################################################################
 #
+#   Type and parent object methods
+#
+###############################################################################
+
+parent_type(::Type{fmpz_mod}) = FmpzModRing
+
+elem_type(::Type{FmpzModRing}) = fmpz_mod
+
+base_ring(a::FmpzModRing) = Union{}
+
+base_ring(a::fmpz_mod) = Union{}
+
+parent(a::fmpz_mod) = a.parent
+
+function check_parent(a::fmpz_mod, b::fmpz_mod)
+   a.parent != b.parent && error("Operations on distinct residue rings not supported")
+end
+
+###############################################################################
+#
+#   Basic manipulation
+#
+###############################################################################
+
+function Base.hash(a::fmpz_mod, h::UInt)
+   b = 0x2fbb6980039a0fec%UInt
+   return xor(xor(hash(a.data), h), b)
+end
+
+function zero(R::FmpzModRing)
+   return fmpz_mod(fmpz(0), R)
+end
+
+function one(R::FmpzModRing)
+   if R.n == 1
+      return fmpz_mod(fmpz(0), R)
+   else
+      return fmpz_mod(fmpz(1), R)
+   end
+end
+
+iszero(a::fmpz_mod) = a.data == 0
+
+isone(a::fmpz_mod) = a.parent.n == 1 ? a.data == 0 : a.data == 1
+
+isunit(a::fmpz_mod) = a.parent.n == 1 ? a.data == 0 : gcd(a.data, a.parent.n) == 1
+
+modulus(R::FmpzModRing) = R.n
+
+function deepcopy_internal(a::fmpz_mod, dict::IdDict)
+   R = parent(a)
+   return fmpz_mod(deepcopy(a.data), R)
+end
+
+###############################################################################
+#
+#   Canonicalisation
+#
+###############################################################################
+
+function canonical_unit(x::fmpz_mod)
+  # the simple return x does not work
+  #  - if x == 0, this is not a unit
+  #  - if R is not a field....
+  if iszero(x)
+    return parent(x)(0)
+  end
+  g = gcd(modulus(x), data(x))
+  u = divexact(data(x), g)
+  a, b = ppio(modulus(x), u)
+  if isone(a)
+    r = u
+  elseif isone(b)
+    r = b
+  else
+    r = crt(fmpz(1), a, u, b)
+  end
+  return parent(x)(r)
+end
+
+###############################################################################
+#
+#   AbstractString I/O
+#
+###############################################################################
+
+function show(io::IO, R::FmpzModRing)
+   print(io, "Integers modulo ", R.n)
+end
+
+function show(io::IO, a::fmpz_mod)
+   print(io, a.data)
+end
+
+needs_parentheses(x::fmpz_mod) = false
+
+displayed_with_minus_in_front(x::fmpz_mod) = false
+
+show_minus_one(::Type{fmpz_mod}) = true
+
+###############################################################################
+#
+#   Unary operations
+#
+###############################################################################
+
+function -(x::fmpz_mod)
+   if x.data == 0
+      return deepcopy(x)
+   else
+      R = parent(x)
+      return fmpz_mod(R.n - x.data, R)
+   end
+end
+
+###############################################################################
+#
+#   Binary operations
+#
+###############################################################################
+
+function +(x::fmpz_mod, y::fmpz_mod)
+   check_parent(x, y)
+   R = parent(x)
+   n = modulus(R)
+   d = x.data + y.data - n
+   if d > x.data
+      return fmpz_mod(d + n, R)
+   else
+      return fmpz_mod(d, R)
+   end
+end
+
+function -(x::fmpz_mod, y::fmpz_mod)
+   check_parent(x, y)
+   R = parent(x)
+   n = modulus(R)
+   d = x.data - y.data
+   if d > x.data
+      return fmpz_mod(d + n, R)
+   else
+      return fmpz_mod(d, R)
+   end
+end
+
+function *(x::fmpz_mod, y::fmpz_mod)
+   check_parent(x, y)
+   R = parent(x)
+   d = fmpz()
+   ccall((:fmpz_mod_mul, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+             d, x.data, y.data, R.ninv)
+   return fmpz_mod(d, R)
+end
+
+###############################################################################
+#
+#   Ad hoc binary operators
+#
+###############################################################################
+
+function *(x::Integer, y::fmpz_mod)
+   R = parent(y)
+   return R(x*y.data)
+end
+
+*(x::fmpz_mod, y::Integer) = y*x
+
++(x::fmpz_mod, y::Integer) = x + parent(x)(y)
+
++(x::Integer, y::fmpz_mod) = y + x
+
+-(x::fmpz_mod, y::Integer) = x - parent(x)(y)
+
+-(x::Integer, y::fmpz_mod) = parent(y)(x) - y
+
+###############################################################################
+#
+#   Powering
+#
+###############################################################################
+
+function ^(x::fmpz_mod, y::Int)
+   R = parent(x)
+   if y < 0
+      x = inv(x)
+      y = -y
+   end
+   d = fmpz()
+   ccall((:fmpz_mod_pow_ui, :libflint), Nothing,
+	 (Ref{fmpz}, Ref{fmpz}, UInt, Ref{fmpz_mod_ctx_struct}),
+             d, x.data, y, R.ninv)
+   return fmpz_mod(d, R)
+end
+
+
+###############################################################################
+#
+#   Comparison
+#
+###############################################################################
+
+function ==(x::fmpz_mod, y::fmpz_mod)
+   check_parent(x, y)
+   return x.data == y.data
+end
+
+###############################################################################
+#
+#   Ad hoc comparison
+#
+###############################################################################
+
+==(x::fmpz_mod, y::Integer) = x == parent(x)(y)
+
+==(x::Integer, y::fmpz_mod) = parent(y)(x) == y
+
+==(x::fmpz_mod, y::fmpz) = x == parent(x)(y)
+
+==(x::fmpz, y::fmpz_mod) = parent(y)(x) == y
+
+###############################################################################
+#
+#   Inversion
+#
+###############################################################################
+
+function inv(x::fmpz_mod)
+   R = parent(x)
+   (iszero(x) && R.n != 1) && throw(DivideError())
+   if R.n == 1
+      return deepcopy(x)
+   end
+   s = fmpz()
+   g = fmpz()
+   ccall((:fmpz_gcdinv, :libflint), Nothing,
+	 (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
+            g, s, x.data, R.n)
+   g != 1 && error("Impossible inverse in ", R)
+   return fmpz_mod(s, R)
+end
+
+###############################################################################
+#
+#   Exact division
+#
+###############################################################################
+
+function divexact(x::fmpz_mod, y::fmpz_mod)
+   check_parent(x, y)
+   fl, q = divides(x, y)
+   if !fl
+     error("Impossible inverse in ", parent(x))
+   end
+   return q
+end
+
+function divides(a::fmpz_mod, b::fmpz_mod)
+   check_parent(a, b)
+   if iszero(a)
+      return true, a
+   end
+   A = data(a)
+   B = data(b)
+   R = parent(a)
+   m = modulus(R)
+   gb = gcd(B, m)
+   q, r = divrem(A, gb)
+   if !iszero(r)
+      return false, b
+   end
+   ub = divexact(B, gb)
+   b1 = fmpz()
+   ccall((:fmpz_invmod, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
+           b1, ub, divexact(m, gb))
+   rr = R(q)*b1
+   return true, rr
+end
+
+###############################################################################
+#
 #   GCD
 #
 ###############################################################################
 
+function gcd(x::fmpz_mod, y::fmpz_mod)
+   check_parent(x, y)
+   R = parent(x)
+   d = gcd(gcd(x.data, R.n), y.data)
+   if d == R.n
+      return fmpz_mod(0, R)
+   else
+      return fmpz_mod(d, R)
+   end
+end
+
 @doc Markdown.doc"""
-    gcdx(a::ResElem{fmpz}, b::ResElem{fmpz})
+    gcdx(a::fmpz_mod, b::fmpz_mod)
 > Compute the extended gcd with the Euclidean structure inherited from
 > $\mathbb{Z}$.
 """
-function gcdx(a::ResElem{fmpz}, b::ResElem{fmpz})
-  m = modulus(a)
-  R = parent(a)
-  g, u, v = gcdx(fmpz(a.data), fmpz(b.data))
-  G, U, V = gcdx(g, fmpz(m))
-  return R(G), R(U)*R(u), R(U)*R(v)
+function gcdx(a::fmpz_mod, b::fmpz_mod)
+   m = modulus(a)
+   R = parent(a)
+   g, u, v = gcdx(a.data, b.data)
+   G, U, V = gcdx(g, m)
+   return R(G), R(U)*R(u), R(U)*R(v)
 end
+
+###############################################################################
+#
+#   Unsafe functions
+#
+###############################################################################
+
+function zero!(z::fmpz_mod)
+   ccall((:fmpz_set_ui, :libflint), Nothing,
+		(Ref{fmpz}, UInt), z.data, UInt(0))
+   return z
+end
+
+function mul!(z::fmpz_mod, x::fmpz_mod, y::fmpz_mod)
+   R = parent(z)
+   ccall((:fmpz_mod_mul, :libflint), Nothing,
+	 (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+	      z.data, x.data, y.data, R.ninv)
+   return z
+end
+
+function addeq!(z::fmpz_mod, x::fmpz_mod)
+   R = parent(z)
+   ccall((:fmpz_mod_add, :libflint), Nothing,
+	 (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+	    z.data, z.data, x.data, R.ninv)
+   return z
+end
+
+function add!(z::fmpz_mod, x::fmpz_mod, y::fmpz_mod)
+   R = parent(z)
+   ccall((:fmpz_mod_add, :libflint), Nothing,
+	(Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+	   z.data, x.data, y.data, R.ninv)
+   return z
+end
+
+###############################################################################
+#
+#   Random functions
+#
+###############################################################################
+
+function rand(r::Random.AbstractRNG, R::FmpzModRing)
+   n = rand(r, BigInt(0):BigInt(R.n) - 1)
+   return fmpz_mod(fmpz(n), R)
+end
+
+function rand(r::Random.AbstractRNG, R::FmpzModRing, b::UnitRange{Int})
+   n = rand(r, b)
+   return R(n)
+end
+
+###############################################################################
+#
+#   Promotions
+#
+###############################################################################
+
+promote_rule(::Type{fmpz_mod}, ::Type{T}) where T <: Integer = fmpz_mod
+
+###############################################################################
+#
+#   Parent object call overload
+#
+###############################################################################
+
+function (R::FmpzModRing)()
+   return fmpz_mod(fmpz(0), R)
+end
+
+function (R::FmpzModRing)(a::Integer)
+   n = R.n
+   d = fmpz(a)%n
+   if d < 0
+      d += n
+   end
+   return fmpz_mod(d, R)
+end
+
+function (R::FmpzModRing)(a::fmpz)
+   d = fmpz()
+   ccall((:fmpz_mod, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
+             d, a, R.n)
+   return fmpz_mod(d, R)
+end
+
+function (R::FmpzModRing)(a::fmpz_mod)
+   return a
+end
+
+###############################################################################
+#
+#   fmpz_mod constructor
+#
+###############################################################################
+
+function ResidueRing(R::FlintIntegerRing, n::fmpz; cached::Bool=true)
+   n <= 0 && throw(DomainError("Modulus must be non-negative: $n"))
+   return FmpzModRing(n, cached)
+end
+
