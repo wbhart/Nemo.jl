@@ -468,6 +468,38 @@ end
 
 ###############################################################################
 #
+#   GaloisFmpzField / gfp_fmpz_elem
+#
+###############################################################################
+
+mutable struct GaloisFmpzField <: FinField
+   n::fmpz
+   ninv::fmpz_mod_ctx_struct
+
+   function GaloisFmpzField(n::fmpz, cached::Bool=true)
+      if cached && haskey(GaloisFmpzFieldID, n)
+         return GaloisFmpzFieldID[n]
+      else
+         ninv = fmpz_mod_ctx_struct()
+         ccall((:fmpz_mod_ctx_init, :libflint), Nothing, (Ref{fmpz_mod_ctx_struct}, Ref{fmpz}), ninv, n)
+         z = new(n, ninv)
+         if cached
+            GaloisFmpzFieldID[n] = z
+         end
+         return z
+      end
+   end
+end
+
+const GaloisFmpzFieldID = Dict{fmpz, GaloisFmpzField}()
+
+struct gfp_fmpz_elem <: FinFieldElem
+   data::fmpz
+   parent::GaloisFmpzField
+end
+
+###############################################################################
+#
 #   NmodPolyRing / nmod_poly
 #
 ###############################################################################
@@ -898,30 +930,30 @@ end
 #
 ###############################################################################
 
-mutable struct GFPFmpzPolyRing <: PolyRing{Generic.ResF{fmpz}}
-  base_ring::Generic.ResField{fmpz}
+mutable struct GFPFmpzPolyRing <: PolyRing{gfp_fmpz_elem}
+  base_ring::GaloisFmpzField
   S::Symbol
   n::fmpz
 
-  function GFPFmpzPolyRing(R::Generic.ResField{fmpz}, s::Symbol, cached::Bool = true)
+  function GFPFmpzPolyRing(R::GaloisFmpzField, s::Symbol, cached::Bool = true)
     m = modulus(R)
     if cached && haskey(GFPFmpzPolyRingID, (R, s))
        return GFPFmpzPolyRingID[R, s]
     else
        z = new(R, s, m)
        if cached
-          GFPFmpzPolyRingID[R ,s] = z
+          GFPFmpzPolyRingID[R, s] = z
        end
        return z
     end
   end
 end
 
-const GFPFmpzPolyRingID = Dict{Tuple{Generic.ResField{fmpz}, Symbol}, GFPFmpzPolyRing}()
+const GFPFmpzPolyRingID = Dict{Tuple{GaloisFmpzField, Symbol}, GFPFmpzPolyRing}()
 
 const ZmodNFmpzPolyRing = Union{FmpzModPolyRing, GFPFmpzPolyRing}
 
-mutable struct gfp_fmpz_poly <: PolyElem{Generic.ResF{fmpz}}
+mutable struct gfp_fmpz_poly <: PolyElem{gfp_fmpz_elem}
    coeffs::Ptr{Nothing}
    alloc::Int
    length::Int
@@ -969,7 +1001,7 @@ mutable struct gfp_fmpz_poly <: PolyElem{Generic.ResF{fmpz}}
       return z
    end
 
-   function gfp_fmpz_poly(n::fmpz, arr::Array{Generic.ResF{fmpz}, 1})
+   function gfp_fmpz_poly(n::fmpz, arr::Array{gfp_fmpz_elem, 1})
       z = new()
       ccall((:fmpz_mod_poly_init2, :libflint), Nothing,
             (Ref{gfp_fmpz_poly}, Ref{fmpz}, Int), z, n, length(arr))

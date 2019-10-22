@@ -1,5 +1,6 @@
 include("flint/fmpq-test.jl")
 include("flint/gfp-test.jl")
+include("flint/gfp_fmpz-test.jl")
 include("flint/fq-test.jl")
 include("flint/fq_nmod-test.jl")
 include("flint/fq_nmod_embed-test.jl")

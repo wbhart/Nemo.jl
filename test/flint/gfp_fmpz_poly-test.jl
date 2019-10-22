@@ -8,7 +8,7 @@
 
    @test typeof(S) <: GFPFmpzPolyRing
 
-   @test isa(x, PolyElem{Generic.ResF{fmpz}})
+   @test isa(x, PolyElem{Nemo.gfp_fmpz_elem})
 
    f = x^3 + 2x^2 + x + 1
 
