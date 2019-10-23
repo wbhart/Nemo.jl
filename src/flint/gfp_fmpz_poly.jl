@@ -43,12 +43,12 @@ end
 
 *(x::Integer, y::gfp_fmpz_poly) = y*x
 
-function *(x::gfp_fmpz_poly, y::Generic.ResF{fmpz})
+function *(x::gfp_fmpz_poly, y::gfp_fmpz_elem)
   (base_ring(x) != parent(y)) && error("Must have same parent")
   return x*y.data
 end
 
-*(x::Generic.ResF{fmpz}, y::gfp_fmpz_poly) = y*x
+*(x::gfp_fmpz_elem, y::gfp_fmpz_poly) = y*x
 
 function +(x::gfp_fmpz_poly, y::Int)
   z = parent(x)()
@@ -72,12 +72,12 @@ end
 
 +(x::Integer, y::gfp_fmpz_poly) = fmpz(y) + x 
 
-function +(x::gfp_fmpz_poly, y::Generic.ResF{fmpz})
+function +(x::gfp_fmpz_poly, y::gfp_fmpz_elem)
   (base_ring(x) != parent(y)) && error("Elements must have same parent")
   return x + y.data
 end
 
-+(x::Generic.ResF{fmpz}, y::gfp_fmpz_poly) = y + x
++(x::gfp_fmpz_elem, y::gfp_fmpz_poly) = y + x
 
 function -(x::gfp_fmpz_poly, y::Int)
   z = parent(x)()
@@ -111,12 +111,12 @@ end
 
 -(x::Integer, y::gfp_fmpz_poly) = fmpz(x) - y
 
-function -(x::gfp_fmpz_poly, y::Generic.ResF{fmpz})
+function -(x::gfp_fmpz_poly, y::gfp_fmpz_elem)
   (base_ring(x) != parent(y)) && error("Elements must have same parent")
   return x - y.data
 end
 
-function -(x::Generic.ResF{fmpz}, y::gfp_fmpz_poly)
+function -(x::gfp_fmpz_elem, y::gfp_fmpz_poly)
    (parent(x) != base_ring(y)) && error("Elements must have same parent")
    return x.data - y
 end
@@ -127,7 +127,7 @@ end
 #
 ################################################################################
 
-function ==(x::gfp_fmpz_poly, y::Generic.ResF{fmpz})
+function ==(x::gfp_fmpz_poly, y::gfp_fmpz_elem)
   base_ring(x) != parent(y) && error("Incompatible base rings in comparison")
   if length(x) > 1
      return false
@@ -141,7 +141,7 @@ function ==(x::gfp_fmpz_poly, y::Generic.ResF{fmpz})
   end 
 end
 
-==(x::Generic.ResF{fmpz}, y::gfp_fmpz_poly) = y == x
+==(x::gfp_fmpz_elem, y::gfp_fmpz_poly) = y == x
 
 ################################################################################
 #
@@ -149,7 +149,7 @@ end
 #
 ################################################################################
 
-function divexact(x::gfp_fmpz_poly, y::Generic.ResF{fmpz})
+function divexact(x::gfp_fmpz_poly, y::gfp_fmpz_elem)
   base_ring(x) != parent(y) && error("Elements must have same parent")
   iszero(y) && throw(DivideError())
   q = parent(x)()
@@ -167,7 +167,7 @@ end
 
 function integral(x::gfp_fmpz_poly)
    len = length(x)
-   v = Vector{Generic.ResF{fmpz}}(undef, len + 1)
+   v = Vector{gfp_fmpz_elem}(undef, len + 1)
    v[1] = zero(base_ring(x))
    for i = 1:len
       v[i + 1] = divexact(coeff(x, i - 1), base_ring(x)(i))
@@ -307,7 +307,7 @@ end
 #
 ################################################################################
 
-setcoeff!(x::gfp_fmpz_poly, n::Int, y::Generic.ResF{fmpz}) = setcoeff!(x, n, y.data)
+setcoeff!(x::gfp_fmpz_poly, n::Int, y::gfp_fmpz_elem) = setcoeff!(x, n, y.data)
 
 ################################################################################
 #
@@ -315,7 +315,7 @@ setcoeff!(x::gfp_fmpz_poly, n::Int, y::Generic.ResF{fmpz}) = setcoeff!(x, n, y.d
 #
 ################################################################################
 
-promote_rule(::Type{gfp_fmpz_poly}, ::Type{Generic.ResF{fmpz}}) = gfp_fmpz_poly
+promote_rule(::Type{gfp_fmpz_poly}, ::Type{gfp_fmpz_elem}) = gfp_fmpz_poly
 
 ###############################################################################
 #
@@ -323,7 +323,7 @@ promote_rule(::Type{gfp_fmpz_poly}, ::Type{Generic.ResF{fmpz}}) = gfp_fmpz_poly
 #
 ###############################################################################
 
-function (f::gfp_fmpz_poly)(a::Generic.ResF{fmpz})
+function (f::gfp_fmpz_poly)(a::gfp_fmpz_elem)
    if parent(a) != base_ring(f)
       return subst(f, a)
    end
@@ -354,7 +354,7 @@ function (R::GFPFmpzPolyRing)(x::Integer)
   return z
 end
 
-function (R::GFPFmpzPolyRing)(x::Generic.ResF{fmpz})
+function (R::GFPFmpzPolyRing)(x::gfp_fmpz_elem)
   base_ring(R) != parent(x) && error("Wrong parents")
   z = gfp_fmpz_poly(R.n, x.data)
   z.parent = R
@@ -367,7 +367,7 @@ function (R::GFPFmpzPolyRing)(arr::Array{fmpz, 1})
   return z
 end
 
-function (R::GFPFmpzPolyRing)(arr::Array{Generic.ResF{fmpz}, 1})
+function (R::GFPFmpzPolyRing)(arr::Array{gfp_fmpz_elem, 1})
   if length(arr) > 0
      (base_ring(R) != parent(arr[1])) && error("Wrong parents")
   end
@@ -395,7 +395,7 @@ end
 #
 ################################################################################
 
-function PolynomialRing(R::Generic.ResField{fmpz}, s::AbstractString; cached=true)
+function PolynomialRing(R::GaloisFmpzField, s::AbstractString; cached=true)
    parent_obj = GFPFmpzPolyRing(R, Symbol(s), cached)
 
    return parent_obj, parent_obj([R(0), R(1)])

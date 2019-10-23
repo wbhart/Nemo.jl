@@ -272,6 +272,7 @@ end
 
 function divexact(x::gfp_elem, y::gfp_elem)
    check_parent(x, y)
+   y == 0 && throw(DivideError())
    R = parent(x)
    yinv = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
            y.data, R.n)
@@ -394,7 +395,7 @@ end
 
 ###############################################################################
 #
-#   gfp_elem constructor
+#   GF constructor
 #
 ###############################################################################
 
@@ -411,24 +412,3 @@ function GF(n::UInt; cached::Bool=true)
    return GaloisField(un, cached)
 end
 
-function GF(n::fmpz; cached::Bool=true)
-   return ResidueField(FlintZZ, n, cached = cached)
-end
-
-################################################################################
-#
-#   Characteristic & order
-#
-################################################################################
-
-@doc Markdown.doc"""
-    characteristic(F::Generic.ResField{fmpz}) -> fmpz
-> Return the characteristic of the given Galois field.
-"""
-characteristic(F::Generic.ResField{fmpz}) = modulus(F)
-
-@doc Markdown.doc"""
-    order(F::Generic.ResField{fmpz})-> fmpz
-> Return the order, i.e. the number of elements in, the given Galois field.
-"""
-order(F::Generic.ResField{fmpz}) = modulus(F)

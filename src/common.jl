@@ -6,7 +6,7 @@
 
 rand(x::Union{GaloisField,FinField,NmodRing}) = rand(Random.GLOBAL_RNG, x)
 
-rand(x::Union{AnticNumberField,GaloisField,NmodRing,FlintIntegerRing}, v) =
+rand(x::Union{AnticNumberField,GaloisField,NmodRing,FmpzModRing,FlintIntegerRing,GaloisFmpzField}, v) =
     rand(Random.GLOBAL_RNG, x, v)
 
 rand(x::Union{FlintPuiseuxSeriesRing,FlintPuiseuxSeriesField}, v1, v2, v...) =
