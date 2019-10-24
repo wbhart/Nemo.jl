@@ -1,27 +1,26 @@
-@testset "gfp.constructors..." begin
-   R = GF(13)
+@testset "gfp_fmpz.constructors..." begin
+   R = GF(ZZ(13))
 
-   @test_throws DomainError GF(-13)
+   @test_throws DomainError GF(-ZZ(13))
 
-   @test elem_type(R) == Nemo.gfp_elem
-   @test elem_type(Nemo.GaloisField) == Nemo.gfp_elem
-   @test parent_type(Nemo.gfp_elem) == Nemo.GaloisField
+   @test elem_type(R) == Nemo.gfp_fmpz_elem
+   @test elem_type(Nemo.GaloisFmpzField) == Nemo.gfp_fmpz_elem
+   @test parent_type(Nemo.gfp_fmpz_elem) == Nemo.GaloisFmpzField
 
-   @test isa(R, Nemo.GaloisField)
+   @test isa(R, Nemo.GaloisFmpzField)
 
-   @test isa(R(), Nemo.gfp_elem)
+   @test isa(R(), Nemo.gfp_fmpz_elem)
 
-   @test isa(R(11), Nemo.gfp_elem)
+   @test isa(R(11), Nemo.gfp_fmpz_elem)
 
    a = R(11)
 
-   @test isa(R(a), Nemo.gfp_elem)
+   @test isa(R(a), Nemo.gfp_fmpz_elem)
 
    for i = 1:1000
-      p = rand(UInt(1):typemax(UInt))
-
-      if Nemo.isprime(ZZ(p))
-         R = GF(p)
+      p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
+      if Nemo.isprobable_prime(ZZ(p))
+         R = GF(ZZ(p))
 
          a = R(rand(Int))
          d = a.data
@@ -33,7 +32,7 @@
    for i = 1:1000
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
-         R = GF(p)
+         R = GF(ZZ(p))
 
          a = R(rand(Int))
          d = a.data
@@ -42,38 +41,46 @@
       end
    end
 
-   S = GF(17)
-   T = GF(17)
+   S = GF(ZZ(17))
+   T = GF(ZZ(17))
    @test T === S
 
-   S = GF(19, cached = false)
-   T = GF(19, cached = false)
+   S = GF(ZZ(19), cached = false)
+   T = GF(ZZ(19), cached = false)
+   @test !(S === T)
+
+   S = GF(fmpz(17))
+   T = GF(fmpz(17))
+   @test T === S
+
+   S = GF(fmpz(19), cached = false)
+   T = GF(fmpz(19), cached = false)
    @test !(S === T)
 end
 
-@testset "gfp.rand..." begin
-   R = GF(13)
-   @test rand(R) isa Nemo.gfp_elem
-   @test rand(R, 1:9) isa Nemo.gfp_elem
+@testset "gfp_fmpz.rand..." begin
+   R = GF(ZZ(13))
+   @test rand(R) isa Nemo.gfp_fmpz_elem
+   @test rand(R, 1:9) isa Nemo.gfp_fmpz_elem
    Random.seed!(rng, 0)
    s = rand(rng, R)
-   @test s isa Nemo.gfp_elem
+   @test s isa Nemo.gfp_fmpz_elem
    t = rand(rng, R, 1:9)
-   @test t isa Nemo.gfp_elem
+   @test t isa Nemo.gfp_fmpz_elem
    Random.seed!(rng, 0)
    @test s == rand(rng, R)
    @test t == rand(rng, R, 1:9)
 end
 
-@testset "gfp.printing..." begin
-   R = GF(13)
+@testset "gfp_fmpz.printing..." begin
+   R = GF(ZZ(13))
 
    @test string(R(3)) == "3"
    @test string(R()) == "0"
 end
 
-@testset "gfp.manipulation..." begin
-   R = GF(13)
+@testset "gfp_fmpz.manipulation..." begin
+   R = GF(ZZ(13))
 
    @test iszero(zero(R))
 
@@ -84,18 +91,18 @@ end
 
    @test deepcopy(R(3)) == R(3)
 
-   R1 = GF(13)
+   R1 = GF(ZZ(13))
 
    @test R === R1
 end
 
-@testset "gfp.unary_ops..." begin
-   for i = 1:100
-      p = rand(UInt(1):typemax(UInt))
-      if Nemo.isprime(ZZ(p))
-         R = GF(p)
+@testset "gfp_fmpz.unary_ops..." begin
+   for i = 1:1000
+      p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
+      if Nemo.isprobable_prime(ZZ(p))
+         R = GF(ZZ(p))
 
-         for iter = 1:100
+         for iter = 1:1000
             a = rand(R)
 
             @test a == -(-a)
@@ -106,7 +113,7 @@ end
    for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
-         R = GF(p)
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a = rand(R)
@@ -117,11 +124,11 @@ end
    end
 end
 
-@testset "gfp.binary_ops..." begin
+@testset "gfp_fmpz.binary_ops..." begin
    for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
-         R = GF(p)
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a1 = rand(R)
@@ -140,10 +147,10 @@ end
       end
    end
 
-   for i = 1:100
-      p = rand(UInt(1):typemax(UInt))
-      if Nemo.isprime(ZZ(p))
-         R = GF(p)
+   for i = 1:1000
+      p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
+      if Nemo.isprobable_prime(ZZ(p))
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a1 = rand(R)
@@ -163,11 +170,11 @@ end
    end
 end
 
-@testset "gfp.adhoc_binary..." begin
+@testset "gfp_fmpz.adhoc_binary..." begin
    for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
-         R = GF(p)
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a = rand(R)
@@ -189,10 +196,10 @@ end
       end
    end
 
-   for i = 1:100
-      p = rand(UInt(1):typemax(UInt))
-      if Nemo.isprime(ZZ(p))
-         R = GF(p)
+   for i = 1:1000
+      p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
+      if Nemo.isprobable_prime(ZZ(p))
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a = rand(R)
@@ -215,11 +222,11 @@ end
    end
 end
 
-@testset "gfp.powering..." begin
+@testset "gfp_fmpz.powering..." begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
-         R = GF(p)
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a = R(1)
@@ -252,10 +259,10 @@ end
       end
    end
 
-   for i = 1:100
-      p = rand(UInt(1):typemax(UInt))
-      if Nemo.isprime(ZZ(p))
-         R = GF(p)
+   for i = 1:1000
+      p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
+      if Nemo.isprobable_prime(ZZ(p))
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a = R(1)
@@ -289,11 +296,11 @@ end
    end
 end
 
-@testset "gfp.comparison..." begin
+@testset "gfp_fmpz.comparison..." begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
-         R = GF(p)
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a = rand(R)
@@ -309,10 +316,10 @@ end
       end
    end
 
-   for i = 1:100
-      p = rand(UInt(1):typemax(UInt))
-      if Nemo.isprime(ZZ(p))
-         R = GF(p)
+   for i = 1:1000
+      p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
+      if Nemo.isprobable_prime(ZZ(p))
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a = rand(R)
@@ -329,11 +336,11 @@ end
    end
 end
 
-@testset "gfp.adhoc_comparison..." begin
+@testset "gfp_fmpz.adhoc_comparison..." begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
-         R = GF(p)
+         R = GF(ZZ(p))
 
          for iter = 1:100
             c = rand(0:100)
@@ -347,10 +354,10 @@ end
       end
    end
 
-   for i = 1:100
-      p = rand(UInt(1):typemax(UInt))
-      if Nemo.isprime(ZZ(p))
-         R = GF(p)
+   for i = 1:1000
+      p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
+      if Nemo.isprobable_prime(ZZ(p))
+         R = GF(ZZ(p))
 
          for iter = 1:100
             c = rand(Int)
@@ -365,11 +372,11 @@ end
    end
 end
 
-@testset "gfp.inversion..." begin
+@testset "gfp_fmpz.inversion..." begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
-         R = GF(p)
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a = rand(R)
@@ -381,10 +388,10 @@ end
       end
    end
 
-   for i = 1:100
-      p = rand(UInt(1):typemax(UInt))
-      if Nemo.isprime(ZZ(p))
-         R = GF(p)
+   for i = 1:1000
+      p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
+      if Nemo.isprobable_prime(ZZ(p))
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a = rand(R)
@@ -397,11 +404,11 @@ end
    end
 end
 
-@testset "gfp.exact_division..." begin
+@testset "gfp_fmpz.exact_division..." begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
-         R = GF(p)
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a1 = rand(R)
@@ -417,10 +424,10 @@ end
    end
 
 
-   for i = 1:100
-      p = rand(UInt(1):typemax(UInt))
-      if Nemo.isprime(ZZ(p))
-         R = GF(p)
+   for i = 1:1000
+      p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
+      if Nemo.isprobable_prime(ZZ(p))
+         R = GF(ZZ(p))
 
          for iter = 1:100
             a1 = rand(R)

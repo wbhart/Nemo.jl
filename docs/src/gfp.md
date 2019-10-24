@@ -6,13 +6,14 @@ CurrentModule = Nemo
 
 Nemo allows the creation of Galois fields of the form $\mathbb{Z}/p\mathbb{Z}$ for a
 prime $p$. Note that these are not the same as finite fields of degree 1, as Conway
-polynomials are not used.
+polynomials are not used and no generator is given.
 
 For convenience, the following constructors are provided.
 
 ```julia
 GF(n::UInt)
 GF(n::Int)
+GF(n::fmpz)
 ```
 
 For example, one can create the Galois field of characteristic $7$ as follows.
@@ -27,13 +28,16 @@ Elements of the field are then created in the usual way.
 a = R(3)
 ```
 
-Elements of Galois fields have type `gfp_elem`, and the type of the parent objects is
-`GaloisField`.
+Elements of Galois fields have type `gfp_elem` when $p$ is given to the
+constructor as an `Int` or `UInt`, and of type `gfp_fmpz_elem` if $p$ is
+given as an `fmpz`, and the type of the parent objects is
+`GaloisField` or `GaloisFmpzField` respectively.
 
 The modulus $p$ of an element of a Galois field is stored in its parent object.
 
-The `gfp_elem` type belong to the abstract type `FinFieldElem` and the
-`GaloisField` parent object type belongs to the abstract type `FinField`.
+The `gfp_elem` and `gfp_fmpz_elem` types belong to the abstract type
+`FinFieldElem` and the `GaloisField` and `GaloisFmpzField` parent object types
+belong to the abstract type `FinField`.
 
 ## Galois field functionality
 
@@ -51,10 +55,12 @@ Below we describe the functionality that is provided in addition to this interfa
 
 ```@docs
 characteristic(::GaloisField)
+characteristic(::GaloisFmpzField)
 ```
 
 ```@docs
 order(::GaloisField)
+order(::GaloisFmpzField)
 ```
 
 **Examples**

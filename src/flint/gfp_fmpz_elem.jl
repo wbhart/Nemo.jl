@@ -1,6 +1,6 @@
 ###############################################################################
 #
-#   fmpz_mod.jl : Nemo fmpz_mod (integers modulo large n)
+#   gfp_fmpz_elem.jl : Galois fields Z/pZ (large n)
 #
 ###############################################################################
 
@@ -10,17 +10,17 @@
 #
 ###############################################################################
 
-parent_type(::Type{fmpz_mod}) = FmpzModRing
+parent_type(::Type{gfp_fmpz_elem}) = GaloisFmpzField
 
-elem_type(::Type{FmpzModRing}) = fmpz_mod
+elem_type(::Type{GaloisFmpzField}) = gfp_fmpz_elem
 
-base_ring(a::FmpzModRing) = Union{}
+base_ring(a::GaloisFmpzField) = Union{}
 
-base_ring(a::fmpz_mod) = Union{}
+base_ring(a::gfp_fmpz_elem) = Union{}
 
-parent(a::fmpz_mod) = a.parent
+parent(a::gfp_fmpz_elem) = a.parent
 
-function check_parent(a::fmpz_mod, b::fmpz_mod)
+function check_parent(a::gfp_fmpz_elem, b::gfp_fmpz_elem)
    a.parent != b.parent && error("Operations on distinct residue rings not supported")
 end
 
@@ -30,34 +30,46 @@ end
 #
 ###############################################################################
 
-function Base.hash(a::fmpz_mod, h::UInt)
-   b = 0x2fbb6980039a0fec%UInt
+function Base.hash(a::gfp_fmpz_elem, h::UInt)
+   b = 0x6b61d2959976f517%UInt
    return xor(xor(hash(a.data), h), b)
 end
 
-function zero(R::FmpzModRing)
-   return fmpz_mod(fmpz(0), R)
+iszero(a::gfp_fmpz_elem) = a.data == 0                                                        
+
+isone(a::gfp_fmpz_elem) = a.data == 1
+
+function zero(R::GaloisFmpzField)
+   return gfp_fmpz_elem(fmpz(0), R)
 end
 
-function one(R::FmpzModRing)
+function one(R::GaloisFmpzField)
    if R.n == 1
-      return fmpz_mod(fmpz(0), R)
+      return gfp_fmpz_elem(fmpz(0), R)
    else
-      return fmpz_mod(fmpz(1), R)
+      return gfp_fmpz_elem(fmpz(1), R)
    end
 end
 
-iszero(a::fmpz_mod) = a.data == 0
+isunit(a::gfp_fmpz_elem) = a.data != 0
 
-isone(a::fmpz_mod) = a.parent.n == 1 ? a.data == 0 : a.data == 1
+modulus(R::GaloisFmpzField) = R.n
 
-isunit(a::fmpz_mod) = a.parent.n == 1 ? a.data == 0 : gcd(a.data, a.parent.n) == 1
+@doc Markdown.doc"""
+    characteristic(F::GaloisFmpzField)
+> Return the characteristic of the given Galois field.
+"""
+characteristic(F::GaloisFmpzField) = modulus(F)
 
-modulus(R::FmpzModRing) = R.n
+@doc Markdown.doc"""
+    order(F::GaloisFmpzField)
+> Return the order, i.e. the number of elements in, the given Galois field.
+"""
+order(F::GaloisFmpzField) = modulus(F)
 
-function deepcopy_internal(a::fmpz_mod, dict::IdDict)
+function deepcopy_internal(a::gfp_fmpz_elem, dict::IdDict)
    R = parent(a)
-   return fmpz_mod(deepcopy(a.data), R)
+   return gfp_fmpz_elem(deepcopy(a.data), R)
 end
 
 ###############################################################################
@@ -66,25 +78,7 @@ end
 #
 ###############################################################################
 
-function canonical_unit(x::fmpz_mod)
-  # the simple return x does not work
-  #  - if x == 0, this is not a unit
-  #  - if R is not a field....
-  if iszero(x)
-    return parent(x)(0)
-  end
-  g = gcd(modulus(x), data(x))
-  u = divexact(data(x), g)
-  a, b = ppio(modulus(x), u)
-  if isone(a)
-    r = u
-  elseif isone(b)
-    r = b
-  else
-    r = crt(fmpz(1), a, u, b)
-  end
-  return parent(x)(r)
-end
+canonical_unit(x::gfp_fmpz_elem) = x
 
 ###############################################################################
 #
@@ -92,19 +86,19 @@ end
 #
 ###############################################################################
 
-function show(io::IO, R::FmpzModRing)
-   print(io, "Integers modulo ", R.n)
+function show(io::IO, R::GaloisFmpzField)
+   print(io, "Galois field with characteristic ", R.n)
 end
 
-function show(io::IO, a::fmpz_mod)
+function show(io::IO, a::gfp_fmpz_elem)
    print(io, a.data)
 end
 
-needs_parentheses(x::fmpz_mod) = false
+needs_parentheses(x::gfp_fmpz_elem) = false
 
-displayed_with_minus_in_front(x::fmpz_mod) = false
+displayed_with_minus_in_front(x::gfp_fmpz_elem) = false
 
-show_minus_one(::Type{fmpz_mod}) = true
+show_minus_one(::Type{gfp_fmpz_elem}) = true
 
 ###############################################################################
 #
@@ -112,12 +106,12 @@ show_minus_one(::Type{fmpz_mod}) = true
 #
 ###############################################################################
 
-function -(x::fmpz_mod)
+function -(x::gfp_fmpz_elem)
    if x.data == 0
       return deepcopy(x)
    else
       R = parent(x)
-      return fmpz_mod(R.n - x.data, R)
+      return gfp_fmpz_elem(R.n - x.data, R)
    end
 end
 
@@ -127,37 +121,38 @@ end
 #
 ###############################################################################
 
-function +(x::fmpz_mod, y::fmpz_mod)
+function +(x::gfp_fmpz_elem, y::gfp_fmpz_elem)
    check_parent(x, y)
    R = parent(x)
    n = modulus(R)
    d = x.data + y.data - n
    if d < 0
-      return fmpz_mod(d + n, R)
+      return gfp_fmpz_elem(d + n, R)
    else
-      return fmpz_mod(d, R)
+      return gfp_fmpz_elem(d, R)
    end
 end
 
-function -(x::fmpz_mod, y::fmpz_mod)
+function -(x::gfp_fmpz_elem, y::gfp_fmpz_elem)
    check_parent(x, y)
    R = parent(x)
    n = modulus(R)
    d = x.data - y.data
    if d < 0
-      return fmpz_mod(d + n, R)
+      return gfp_fmpz_elem(d + n, R)
    else
-      return fmpz_mod(d, R)
+      return gfp_fmpz_elem(d, R)
    end
 end
 
-function *(x::fmpz_mod, y::fmpz_mod)
+function *(x::gfp_fmpz_elem, y::gfp_fmpz_elem)
    check_parent(x, y)
    R = parent(x)
    d = fmpz()
-   ccall((:fmpz_mod_mul, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
-             d, x.data, y.data, R.ninv)
-   return fmpz_mod(d, R)
+   ccall((:fmpz_mod_mul, :libflint), Nothing,
+         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+				                d, x.data, y.data, R.ninv)
+   return gfp_fmpz_elem(d, R)
 end
 
 ###############################################################################
@@ -166,20 +161,32 @@ end
 #
 ###############################################################################
 
-function *(x::Integer, y::fmpz_mod)
+function *(x::Integer, y::gfp_fmpz_elem)
    R = parent(y)
    return R(x*y.data)
 end
 
-*(x::fmpz_mod, y::Integer) = y*x
+*(x::gfp_fmpz_elem, y::Integer) = y*x
 
-+(x::fmpz_mod, y::Integer) = x + parent(x)(y)
+*(x::gfp_fmpz_elem, y::fmpz) = x*parent(x)(y)
 
-+(x::Integer, y::fmpz_mod) = y + x
+*(x::fmpz, y::gfp_fmpz_elem) = y*x
 
--(x::fmpz_mod, y::Integer) = x - parent(x)(y)
++(x::gfp_fmpz_elem, y::Integer) = x + parent(x)(y)
 
--(x::Integer, y::fmpz_mod) = parent(y)(x) - y
++(x::Integer, y::gfp_fmpz_elem) = y + x
+
++(x::gfp_fmpz_elem, y::fmpz) = x + parent(x)(y)
+
++(x::fmpz, y::gfp_fmpz_elem) = y + x
+
+-(x::gfp_fmpz_elem, y::Integer) = x - parent(x)(y)
+
+-(x::Integer, y::gfp_fmpz_elem) = parent(y)(x) - y
+
+-(x::gfp_fmpz_elem, y::fmpz) = x - parent(x)(y)
+
+-(x::fmpz, y::gfp_fmpz_elem) = parent(y)(x) - y
 
 ###############################################################################
 #
@@ -187,7 +194,7 @@ end
 #
 ###############################################################################
 
-function ^(x::fmpz_mod, y::Int)
+function ^(x::gfp_fmpz_elem, y::Int)
    R = parent(x)
    if y < 0
       x = inv(x)
@@ -196,10 +203,9 @@ function ^(x::fmpz_mod, y::Int)
    d = fmpz()
    ccall((:fmpz_mod_pow_ui, :libflint), Nothing,
 	 (Ref{fmpz}, Ref{fmpz}, UInt, Ref{fmpz_mod_ctx_struct}),
-             d, x.data, y, R.ninv)
-   return fmpz_mod(d, R)
+						 d, x.data, y, R.ninv)
+   return gfp_fmpz_elem(d, R)
 end
-
 
 ###############################################################################
 #
@@ -207,7 +213,7 @@ end
 #
 ###############################################################################
 
-function ==(x::fmpz_mod, y::fmpz_mod)
+function ==(x::gfp_fmpz_elem, y::gfp_fmpz_elem)
    check_parent(x, y)
    return x.data == y.data
 end
@@ -218,13 +224,13 @@ end
 #
 ###############################################################################
 
-==(x::fmpz_mod, y::Integer) = x == parent(x)(y)
+==(x::gfp_fmpz_elem, y::Integer) = x == parent(x)(y)
 
-==(x::Integer, y::fmpz_mod) = parent(y)(x) == y
+==(x::Integer, y::gfp_fmpz_elem) = parent(y)(x) == y
 
-==(x::fmpz_mod, y::fmpz) = x == parent(x)(y)
+==(x::gfp_fmpz_elem, y::fmpz) = x == parent(x)(y)
 
-==(x::fmpz, y::fmpz_mod) = parent(y)(x) == y
+==(x::fmpz, y::gfp_fmpz_elem) = parent(y)(x) == y
 
 ###############################################################################
 #
@@ -232,19 +238,15 @@ end
 #
 ###############################################################################
 
-function inv(x::fmpz_mod)
+function inv(x::gfp_fmpz_elem)
    R = parent(x)
-   (iszero(x) && R.n != 1) && throw(DivideError())
-   if R.n == 1
-      return deepcopy(x)
-   end
+   iszero(x) && throw(DivideError())
    s = fmpz()
    g = fmpz()
    ccall((:fmpz_gcdinv, :libflint), Nothing,
 	 (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
-            g, s, x.data, R.n)
-   g != 1 && error("Impossible inverse in ", R)
-   return fmpz_mod(s, R)
+					         g, s, x.data, R.n)
+   return gfp_fmpz_elem(s, R)
 end
 
 ###############################################################################
@@ -253,65 +255,21 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpz_mod, y::fmpz_mod)
+function divexact(x::gfp_fmpz_elem, y::gfp_fmpz_elem)
    check_parent(x, y)
-   fl, q = divides(x, y)
-   if !fl
-     error("Impossible inverse in ", parent(x))
-   end
-   return q
+   iszero(y) && throw(DivideError())
+   return x*inv(y)
 end
 
-function divides(a::fmpz_mod, b::fmpz_mod)
-   check_parent(a, b)
+function divides(a::gfp_fmpz_elem, b::gfp_fmpz_elem)
+   check_parent(x, y)
    if iszero(a)
       return true, a
    end
-   A = data(a)
-   B = data(b)
-   R = parent(a)
-   m = modulus(R)
-   gb = gcd(B, m)
-   q, r = divrem(A, gb)
-   if !iszero(r)
-      return false, b
+   if iszero(b)
+      return false, a
    end
-   ub = divexact(B, gb)
-   b1 = fmpz()
-   ccall((:fmpz_invmod, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
-           b1, ub, divexact(m, gb))
-   rr = R(q)*b1
-   return true, rr
-end
-
-###############################################################################
-#
-#   GCD
-#
-###############################################################################
-
-function gcd(x::fmpz_mod, y::fmpz_mod)
-   check_parent(x, y)
-   R = parent(x)
-   d = gcd(gcd(x.data, R.n), y.data)
-   if d == R.n
-      return fmpz_mod(0, R)
-   else
-      return fmpz_mod(d, R)
-   end
-end
-
-@doc Markdown.doc"""
-    gcdx(a::fmpz_mod, b::fmpz_mod)
-> Compute the extended gcd with the Euclidean structure inherited from
-> $\mathbb{Z}$.
-"""
-function gcdx(a::fmpz_mod, b::fmpz_mod)
-   m = modulus(a)
-   R = parent(a)
-   g, u, v = gcdx(a.data, b.data)
-   G, U, V = gcdx(g, m)
-   return R(G), R(U)*R(u), R(U)*R(v)
+   return true, divexact(a, b)
 end
 
 ###############################################################################
@@ -320,33 +278,33 @@ end
 #
 ###############################################################################
 
-function zero!(z::fmpz_mod)
+function zero!(z::gfp_fmpz_elem)
    ccall((:fmpz_set_ui, :libflint), Nothing,
-		(Ref{fmpz}, UInt), z.data, UInt(0))
+	 (Ref{fmpz}, UInt), z.data, UInt(0))
    return z
 end
 
-function mul!(z::fmpz_mod, x::fmpz_mod, y::fmpz_mod)
+function mul!(z::gfp_fmpz_elem, x::gfp_fmpz_elem, y::gfp_fmpz_elem)
    R = parent(z)
    ccall((:fmpz_mod_mul, :libflint), Nothing,
 	 (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
-	      z.data, x.data, y.data, R.ninv)
+					   z.data, x.data, y.data, R.ninv)
    return z
 end
 
-function addeq!(z::fmpz_mod, x::fmpz_mod)
+function addeq!(z::gfp_fmpz_elem, x::gfp_fmpz_elem)
+   R = parent(z)
+   ccall((:fmpz_mod_add, :libflint), Nothing,
+         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+		                          z.data, z.data, x.data, R.ninv)
+   return z
+end
+
+function add!(z::gfp_fmpz_elem, x::gfp_fmpz_elem, y::gfp_fmpz_elem)
    R = parent(z)
    ccall((:fmpz_mod_add, :libflint), Nothing,
 	 (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
-	    z.data, z.data, x.data, R.ninv)
-   return z
-end
-
-function add!(z::fmpz_mod, x::fmpz_mod, y::fmpz_mod)
-   R = parent(z)
-   ccall((:fmpz_mod_add, :libflint), Nothing,
-	(Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
-	   z.data, x.data, y.data, R.ninv)
+					 z.data, x.data, y.data, R.ninv)
    return z
 end
 
@@ -356,12 +314,12 @@ end
 #
 ###############################################################################
 
-function rand(r::Random.AbstractRNG, R::FmpzModRing)
+function rand(r::Random.AbstractRNG, R::GaloisFmpzField)
    n = rand(r, BigInt(0):BigInt(R.n) - 1)
-   return fmpz_mod(fmpz(n), R)
+   return gfp_fmpz_elem(fmpz(n), R)
 end
 
-function rand(r::Random.AbstractRNG, R::FmpzModRing, b::UnitRange{Int})
+function rand(r::Random.AbstractRNG, R::GaloisFmpzField, b::UnitRange{Int})
    n = rand(r, b)
    return R(n)
 end
@@ -372,7 +330,9 @@ end
 #
 ###############################################################################
 
-promote_rule(::Type{fmpz_mod}, ::Type{T}) where T <: Integer = fmpz_mod
+function promote_rule(::Type{gfp_fmpz_elem}, ::Type{T}) where T <: Integer
+   return gfp_fmpz_elem
+end
 
 ###############################################################################
 #
@@ -380,38 +340,39 @@ promote_rule(::Type{fmpz_mod}, ::Type{T}) where T <: Integer = fmpz_mod
 #
 ###############################################################################
 
-function (R::FmpzModRing)()
-   return fmpz_mod(fmpz(0), R)
+function (R::GaloisFmpzField)()
+   return gfp_fmpz_elem(fmpz(0), R)
 end
 
-function (R::FmpzModRing)(a::Integer)
+function (R::GaloisFmpzField)(a::Integer)
    n = R.n
    d = fmpz(a)%n
    if d < 0
       d += n
    end
-   return fmpz_mod(d, R)
+   return gfp_fmpz_elem(d, R)
 end
 
-function (R::FmpzModRing)(a::fmpz)
+function (R::GaloisFmpzField)(a::fmpz)
    d = fmpz()
    ccall((:fmpz_mod, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
-             d, a, R.n)
-   return fmpz_mod(d, R)
+				              d, a, R.n)
+   return gfp_fmpz_elem(d, R)
 end
 
-function (R::FmpzModRing)(a::fmpz_mod)
+function (R::GaloisFmpzField)(a::gfp_fmpz_elem)
    return a
 end
 
 ###############################################################################
 #
-#   fmpz_mod constructor
+#   GF constructor
 #
 ###############################################################################
 
-function ResidueRing(R::FlintIntegerRing, n::fmpz; cached::Bool=true)
-   n <= 0 && throw(DomainError("Modulus must be non-negative: $n"))
-   return FmpzModRing(n, cached)
+function GF(n::fmpz; cached::Bool=true)
+   (n <= 0) && throw(DomainError("Characteristic must be positive: $n"))
+   !isprobable_prime(n) && throw(DomainError("Characteristic must be prime: $n"))
+   return GaloisFmpzField(n, cached)
 end
 
