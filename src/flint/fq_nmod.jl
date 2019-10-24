@@ -458,7 +458,7 @@ function (a::FqNmodFiniteField)(b::fq_nmod)
         return f(b)
     else
         dk % da != 0 && error("Coercion impossible")
-        f = preimage_map(k, a)
+        f = preimage_map(a, k)
         return f(b)
     end
 end
@@ -485,7 +485,7 @@ end
 
 ################################################################################
 #
-#  FqNmodFiniteField Modulus
+#   FqNmodFiniteField Modulus
 #
 ################################################################################
 
