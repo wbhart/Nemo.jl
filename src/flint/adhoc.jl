@@ -282,18 +282,6 @@ function ==(a::fmpz, b::ResElem)
    return data(b) == mod(z, modulus(b))
 end
 
-function (a::Generic.ResRing{T})(b::fmpz) where {T <: RingElement}
-   z = Generic.Res{T}(mod(base_ring(a)(b), modulus(a)))
-   z.parent = a
-   return z
-end
-
-function (a::Generic.ResRing{fmpz})(b::fmpz)
-   z = Generic.Res{fmpz}(mod(base_ring(a)(b), modulus(a)))
-   z.parent = a
-   return z
-end
-
 # ambiguities
 
 *(a::ResElem{fmpz}, b::fmpz) = parent(a)(data(a) * b)

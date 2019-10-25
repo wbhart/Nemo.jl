@@ -415,3 +415,6 @@ function ResidueRing(R::FlintIntegerRing, n::fmpz; cached::Bool=true)
    return FmpzModRing(n, cached)
 end
 
+function ResidueRing(R::FlintIntegerRing, n::Integer; cached::Bool=true)
+   return ResidueRing(R, fmpz(n))
+end

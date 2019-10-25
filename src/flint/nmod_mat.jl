@@ -848,7 +848,7 @@ function MatrixSpace(R::NmodRing, r::Int, c::Int, cached::Bool = true)
   NmodMatSpace(R, r, c, cached)
 end
 
-function MatrixSpace(R::Generic.ResRing{fmpz}, r::Int, c::Int, cached::Bool = true)
+function MatrixSpace(R::FmpzModRing, r::Int, c::Int, cached::Bool = true)
   T = elem_type(R)
   return Generic.MatSpace{T}(R, r, c, cached)
 end

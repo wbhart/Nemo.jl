@@ -796,12 +796,12 @@ const Zmodn_poly = Union{nmod_poly, gfp_poly}
 #
 ###############################################################################
 
-mutable struct FmpzModPolyRing <: PolyRing{Generic.Res{fmpz}}
-  base_ring::Generic.ResRing{fmpz}
+mutable struct FmpzModPolyRing <: PolyRing{fmpz_mod}
+  base_ring::FmpzModRing
   S::Symbol
   n::fmpz
 
-  function FmpzModPolyRing(R::Generic.ResRing{fmpz}, s::Symbol, cached::Bool = true)
+  function FmpzModPolyRing(R::FmpzModRing, s::Symbol, cached::Bool = true)
     m = modulus(R)
     if cached && haskey(FmpzModPolyRingID, (m, s))
        return FmpzModPolyRingID[m, s]
@@ -817,7 +817,7 @@ end
 
 const FmpzModPolyRingID = Dict{Tuple{fmpz, Symbol}, FmpzModPolyRing}()
 
-mutable struct fmpz_mod_poly <: PolyElem{Generic.Res{fmpz}}
+mutable struct fmpz_mod_poly <: PolyElem{fmpz_mod}
    coeffs::Ptr{Nothing}
    alloc::Int
    length::Int
@@ -865,7 +865,7 @@ mutable struct fmpz_mod_poly <: PolyElem{Generic.Res{fmpz}}
       return z
    end
 
-   function fmpz_mod_poly(n::fmpz, arr::Array{Generic.Res{fmpz}, 1})
+   function fmpz_mod_poly(n::fmpz, arr::Array{fmpz_mod, 1})
       z = new()
       ccall((:fmpz_mod_poly_init2, :libflint), Nothing,
             (Ref{fmpz_mod_poly}, Ref{fmpz}, Int), z, n, length(arr))
@@ -2560,8 +2560,8 @@ end
 #
 ###############################################################################
 
-mutable struct FmpzModRelSeriesRing <: SeriesRing{Generic.Res{fmpz}}
-   base_ring::Generic.ResRing{fmpz}
+mutable struct FmpzModRelSeriesRing <: SeriesRing{fmpz_mod}
+   base_ring::FmpzModRing
    prec_max::Int
    S::Symbol
 
@@ -2579,10 +2579,10 @@ mutable struct FmpzModRelSeriesRing <: SeriesRing{Generic.Res{fmpz}}
    end
 end
 
-const FmpzModRelSeriesID = Dict{Tuple{Generic.ResRing{fmpz}, Int, Symbol},
+const FmpzModRelSeriesID = Dict{Tuple{FmpzModRing, Int, Symbol},
                                 FmpzModRelSeriesRing}()
 
-mutable struct fmpz_mod_rel_series <: RelSeriesElem{Generic.Res{fmpz}}
+mutable struct fmpz_mod_rel_series <: RelSeriesElem{fmpz_mod}
    coeffs::Ptr{Nothing}
    alloc::Int
    length::Int
@@ -2613,7 +2613,7 @@ mutable struct fmpz_mod_rel_series <: RelSeriesElem{Generic.Res{fmpz}}
       return z
    end
 
-   function fmpz_mod_rel_series(p::fmpz, a::Array{Generic.Res{fmpz}, 1}, len::Int, prec::Int, val::Int)
+   function fmpz_mod_rel_series(p::fmpz, a::Array{fmpz_mod, 1}, len::Int, prec::Int, val::Int)
       z = new()
       ccall((:fmpz_mod_poly_init2, :libflint), Nothing,
             (Ref{fmpz_mod_rel_series}, Ref{fmpz}, Int), z, p, len)
@@ -2649,8 +2649,8 @@ end
 #
 ###############################################################################
 
-mutable struct FmpzModAbsSeriesRing <: SeriesRing{Generic.Res{fmpz}}
-   base_ring::Generic.ResRing{fmpz}
+mutable struct FmpzModAbsSeriesRing <: SeriesRing{fmpz_mod}
+   base_ring::FmpzModRing
    prec_max::Int
    S::Symbol
 
@@ -2668,10 +2668,10 @@ mutable struct FmpzModAbsSeriesRing <: SeriesRing{Generic.Res{fmpz}}
    end
 end
 
-const FmpzModAbsSeriesID = Dict{Tuple{Generic.ResRing{fmpz}, Int, Symbol},
+const FmpzModAbsSeriesID = Dict{Tuple{FmpzModRing, Int, Symbol},
                                 FmpzModAbsSeriesRing}()
 
-mutable struct fmpz_mod_abs_series <: AbsSeriesElem{Generic.Res{fmpz}}
+mutable struct fmpz_mod_abs_series <: AbsSeriesElem{fmpz_mod}
    coeffs::Ptr{Nothing}
    alloc::Int
    length::Int
@@ -2700,7 +2700,7 @@ mutable struct fmpz_mod_abs_series <: AbsSeriesElem{Generic.Res{fmpz}}
       return z
    end
 
-   function fmpz_mod_abs_series(p::fmpz, a::Array{Generic.Res{fmpz}, 1}, len::Int, prec::Int)
+   function fmpz_mod_abs_series(p::fmpz, a::Array{fmpz_mod, 1}, len::Int, prec::Int)
       z = new()
       ccall((:fmpz_mod_poly_init2, :libflint), Nothing,
             (Ref{fmpz_mod_abs_series}, Ref{fmpz}, Int), z, p, len)

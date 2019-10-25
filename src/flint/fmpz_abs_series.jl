@@ -124,7 +124,7 @@ function show(io::IO, a::FmpzAbsSeriesRing)
    show(io, base_ring(a))
 end
 
-show_minus_one(::Type{fmpz_abs_series}) = show_minus_one(GenRes{fmpz})
+show_minus_one(::Type{fmpz_abs_series}) = show_minus_one(fmpz)
 
 ###############################################################################
 #
