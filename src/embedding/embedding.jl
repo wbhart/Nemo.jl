@@ -8,7 +8,7 @@ export embed, preimage, preimage_map
 
 ################################################################################
 #
-#  Over/Sub fields
+#   Over/Sub fields
 #
 ################################################################################
 
@@ -55,7 +55,7 @@ end
 
 ################################################################################
 #
-#  Root Finding (of a splitting polynomial, internal use only)
+#   Root Finding (of a splitting polynomial, internal use only)
 #
 ################################################################################
 
@@ -63,7 +63,7 @@ any_root(x::PolyElem) = -coeff(linear_factor(x), 0)
 
 ################################################################################
 #
-#  Minimal polynomial of the generator
+#   Minimal polynomial of the generator
 #
 ################################################################################
 
@@ -129,7 +129,7 @@ end
 
 ################################################################################
 #
-#  Embedding 
+#   Embedding
 #
 ################################################################################
 
@@ -353,11 +353,19 @@ end
 """
 function embed(k::T, K::T) where T <: FinField
 
-    # If k == K we return the identity
+    degree(K) % degree(k) != 0 && error("Embedding impossible")
+
+    # Special cases of k == K or degree(k) == 1
 
     if k == K
         identity(x) = x
         morph = FinFieldMorphism(k, k, identity, identity)
+        return morph
+
+    elseif degree(k) == 1
+        f(x) = K(coeff(x, 0))
+        finv(y) = k(coeff(y, 0))
+        morph = FinFieldMorphism(k, K, f, finv)
         return morph
     end
 
@@ -399,7 +407,7 @@ end
 
 ################################################################################
 #
-#   Sections
+#   Preimage map
 #
 ################################################################################
 

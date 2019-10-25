@@ -48,7 +48,7 @@ julia> z = k4(x2)
 6*x4^3+5*x4^2+9*x4+17
 ```
 
-### Computed the preimage of an embedding
+### Computing the preimage of an embedding
 
 ```@docs
 preimage_map(::FqNmodFiniteField, ::FqNmodFiniteField)
