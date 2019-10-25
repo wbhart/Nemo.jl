@@ -292,7 +292,7 @@ end
 #
 ################################################################################
 
-version() = v"0.15.1"
+version() = v"0.15.2-dev"
 
 function versioninfo()
   print("Nemo version $(version())\n")
