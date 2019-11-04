@@ -325,6 +325,7 @@ function ^(x::T, y::Int) where T <: Zmod_fmpz_mat
           (Ref{T}, Ref{T}, Int), z, x, y)
   return z
 end
+=#
 
 function ^(x::T, y::fmpz) where T <: Zmod_fmpz_mat
   (y > fmpz(typemax(Int))) &&
@@ -333,8 +334,6 @@ function ^(x::T, y::fmpz) where T <: Zmod_fmpz_mat
           error("Exponent must be bigger then ", fmpz(typemin(Int)))
   return x^(Int(y))
 end
-
-=#
 
 ################################################################################
 #
