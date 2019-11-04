@@ -19,6 +19,7 @@ Base ring                             | Library             | Element type      
 Generic ring $R$                      | AbstractAlgebra.jl  | `Generic.Mat{T}`    | `Generic.MatSpace{T}`
 $\mathbb{Z}$                          | Flint               | `fmpz_mat`          | `FmpzMatSpace`
 $\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint               | `nmod_mat`          | `NmodMatSpace`
+$\mathbb{Z}/n\mathbb{Z}$ (large $n$)  | Flint               | `fmpz_mod_mat`      | `FmpzModMatSpace`
 $\mathbb{Q}$                          | Flint               | `fmpq_mat`          | `FmpqMatSpace`
 $\mathbb{Z}/p\mathbb{Z}$ (small $p$)  | Flint               | `gfp_mat`           | `GFPMatSpace`
 $\mathbb{F}_{p^n}$ (small $p$)        | Flint               | `fq_nmod_mat`       | `FqNmodMatSpace`
