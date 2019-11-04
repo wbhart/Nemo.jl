@@ -559,10 +559,12 @@ end
 
   @test c == parent(aa)([12 13 1; 14 13 15; 4 4 1])
 
-  @test_throws ErrorException inv(a)
+  @test_throws DomainError inv(a)
 
   @test_throws ErrorException inv(transpose(a)*a)
 end
+
+#=  Not implemented in Flint yet
 
 @testset "fmpz_mod_mat.solve..." begin
   Z17 = ResidueRing(ZZ, ZZ(17))
@@ -583,6 +585,10 @@ end
 
   @test_throws ErrorException  solve(a,c)
 end
+
+=#
+
+#= Not implemented in Flint yet
 
 @testset "fmpz_mod_mat.lu..." begin
 
@@ -611,6 +617,8 @@ end
   @test r == 3
   @test l*u == P*c
 end
+
+=#
 
 @testset "fmpz_mod_mat.swap_rows..." begin
   Z17 = ResidueRing(ZZ, ZZ(17))
@@ -757,6 +765,7 @@ end
                      Z17(3) Z17(2) Z17(1);
                      Z17(0) Z17(0) Z17(2) ]
 
+#= Not implemented in Flint yet
   b = lift(a)
 
   @test b == S([ 1 2 3; 3 2 1; 0 0 2])
@@ -765,6 +774,8 @@ end
   lift!(c,a)
 
   @test c == S([ 1 2 3; 3 2 1; 0 0 2])
+=#
+
 end
 
 @testset "fmpz_mod_mat.charpoly..." begin

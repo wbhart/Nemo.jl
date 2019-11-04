@@ -341,8 +341,6 @@ end
 #
 ################################################################################
 
-#= Not implemented in Flint yet
-
 function strong_echelon_form!(a::T) where T <: Zmod_fmpz_mat
   ccall((:fmpz_mod_mat_strong_echelon_form, :libflint), Nothing, (Ref{T}, ), a)
 end
@@ -377,8 +375,6 @@ function howell_form(a::fmpz_mod_mat)
   howell_form!(z)
   return z
 end
-
-=#
 
 ################################################################################
 #
@@ -450,7 +446,8 @@ function inv(a::T) where T <: Zmod_fmpz_mat
   return z
 end
 
-=# 
+=#
+
 ################################################################################
 #
 #  Linear solving
