@@ -270,6 +270,10 @@ end
    @test cmpabs(a, b) == 1
 
    @test cmp(a, b) == -1
+
+   @test fmpz(2) < 47632748687326487326487326487326
+
+   @test fmpz(2) < 476327486873264873264873264873264837624982
 end
 
 @testset "fmpz.adhoc_comparison..." begin
