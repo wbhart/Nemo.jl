@@ -119,7 +119,10 @@ return of the quotient and $r$ representing return of the remainder.
 
 Function                    | Return | Rounding
 ----------------------------|--------|------------------------
-`divrem(a::fmpz, b::fmpz)`  | q, r   | towards zero 
+`mod`                       | r      | towards minus infinity
+`rem`                       | r      | towards zero
+`div`                       | q      | towards minus infinity
+`divrem(a::fmpz, b::fmpz)`  | q, r   | towards minus infinity 
 `tdivrem(a::fmpz, b::fmpz)` | q, r   | towards zero
 `fdivrem(a::fmpz, b::fmpz)` | q, r   | towards minus infinity 
 
@@ -128,6 +131,7 @@ description is as for the other Euclidean division functions.
 
 Function                    | Return | Rounding
 ----------------------------|--------|------------------------
+`mod(a::fmpz, b::Int)`      | r      | towards minus infinity
 `rem(a::fmpz, b::Int)`      | r      | towards zero
 `div(a::fmpz, b::Int)`      | q      | towards zero
 `tdiv(a::fmpz, b::Int)`     | q      | towards zero

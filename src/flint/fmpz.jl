@@ -282,7 +282,7 @@ for (fJ, fC) in ((:+, :add), (:-,:sub), (:*, :mul),
     end
 end
 
-# Metaprogram to define functions fdiv, cdiv, tdiv, div, mod
+# Metaprogram to define functions fdiv, cdiv, tdiv, div
 
 for (fJ, fC) in ((:fdiv, :fdiv_q), (:cdiv, :cdiv_q), (:tdiv, :tdiv_q),
                  (:div, :tdiv_q))
@@ -310,7 +310,7 @@ function rem(x::fmpz, c::fmpz)
     q = fmpz()
     r = fmpz()
     ccall((:fmpz_tdiv_qr, :libflint), Nothing,
-          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), q, r, x, abs(c))
+          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), q, r, x, c)
     return r
 end
 
@@ -407,8 +407,11 @@ divexact(x::Integer, y::fmpz) = divexact(fmpz(x), y)
 
 function rem(x::fmpz, c::Int)
     c == 0 && throw(DivideError())
-    r = ccall((:fmpz_tdiv_ui, :libflint), Int, (Ref{fmpz}, Int), x, abs(c))
-    return sign(x) > 0 ? r : -r
+    q = fmpz()
+    r = fmpz()
+    ccall((:fmpz_tdiv_qr, :libflint), Nothing,
+          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), q, r, x, fmpz(c))
+    return r
 end
 
 function tdivpow2(x::fmpz, c::Int)
@@ -480,6 +483,10 @@ rem(x::Integer, y::fmpz) = rem(fmpz(x), y)
 mod(x::Integer, y::fmpz) = mod(fmpz(x), y)
 
 div(x::Integer, y::fmpz) = div(fmpz(x), y)
+
+divrem(x::fmpz, y::Integer) = divrem(x, fmpz(y))
+
+divrem(x::Integer, y::fmpz) = divrem(fmpz(x), y)
 
 ###############################################################################
 #
@@ -654,29 +661,24 @@ end
 
 @doc Markdown.doc"""
     mod(x::fmpz, y::fmpz)
-> Return the remainder after division of $x$ by $y$. The remainder will be the
-> least nonnegative remainder.
+> Return the remainder after division of $x$ by $y$. The remainder will be
+> closer to zero than $y$ and have the same sign, or it will be zero.
 """
 function mod(x::fmpz, y::fmpz)
-   z = fmpz()
-   ccall((:fmpz_mod, :libflint), Nothing,
-         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
-   return z
+   y == 0 && throw(DivideError())
+   r = fmpz()
+   ccall((:fmpz_fdiv_r, :libflint), Nothing,
+         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), r, x, y)
+   return r
 end
 
 @doc Markdown.doc"""
     mod(x::fmpz, y::Int)
-> Return the remainder after division of $x$ by $y$. The remainder will be the
-> least nonnegative remainder.
+> Return the remainder after division of $x$ by $y$. The remainder will be
+> closer to zero than $y$ and have the same sign, or it will be zero.
 """
-function mod(x::fmpz, c::Int)
-    c == 0 && throw(DivideError())
-    if c > 0
-        return Int(ccall((:fmpz_fdiv_ui, :libflint), Base.GMP.Limb, (Ref{fmpz}, Base.GMP.Limb), x, c))
-    else
-        r = ccall((:fmpz_fdiv_ui, :libflint), Base.GMP.Limb, (Ref{fmpz}, Base.GMP.Limb), x, -c)
-        return r == 0 ? 0 : r + c
-    end
+function mod(x::fmpz, y::Int)
+   return mod(x, fmpz(y))
 end
 
 @doc Markdown.doc"""
