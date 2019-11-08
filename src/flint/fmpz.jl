@@ -560,6 +560,10 @@ end
 
 isless(x::fmpz, y::fmpz) = x < y
 
+isless(x::fmpz, y::Integer) = x < fmpz(y)
+
+isless(x::Integer, y::fmpz) = fmpz(x) < y
+
 ###############################################################################
 #
 #   Ad hoc comparison
