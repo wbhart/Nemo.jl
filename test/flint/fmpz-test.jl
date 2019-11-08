@@ -222,6 +222,8 @@ end
    @test mod(-12, fmpz(3)) == 0
 
    @test rem(-12, fmpz(3)) == 0
+
+   @test_throws ErrorException divexact(ZZ(2), 3)
 end
 
 @testset "fmpz.shift.." begin

@@ -391,10 +391,12 @@ end
 
 function divexact(x::fmpz, y::Int)
     y == 0 && throw(DivideError())
-    z = fmpz()
-    ccall((:fmpz_divexact_si, :libflint), Nothing,
-          (Ref{fmpz}, Ref{fmpz}, Int), z, x, y)
-    z
+    q = fmpz()
+    r = fmpz()
+    ccall((:fmpz_tdiv_qr, :libflint), Nothing,
+          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), q, r, x, fmpz(y))
+    r != 0 && error("Not an exact division in divexact")
+    return q
 end
 
 divexact(x::fmpz, y::Integer) = divexact(x, fmpz(y))
