@@ -33,6 +33,13 @@
    d = R(c)
 
    @test isa(d, fq)
+
+   # check for primality
+   T3, z3 = FiniteField(yy^2 + 1, "z", check=false)
+   @test isa(T2, FqFiniteField)
+   Syyy, yyy = PolynomialRing(ResidueRing(FlintZZ, ZZ(4)), "y")
+   @test yyy isa fmpz_mod_poly
+   @test_throws DomainError FiniteField(yyy^2+1, "z")
 end
 
 @testset "fq.printing..." begin

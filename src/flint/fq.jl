@@ -581,25 +581,27 @@ function FlintFiniteField(char::Integer, deg::Int, s::AbstractString; cached = t
 end
 
 @doc Markdown.doc"""
-    FlintFiniteField(pol::fmpz_mod_poly, s::AbstractString; cached = true)
+    FlintFiniteField(pol::fmpz_mod_poly, s::AbstractString; cached = true, check = true)
 > Returns a tuple $S, x$ consisting of a finite field parent object $S$ and
 > generator $x$ for the finite field over $F_p$ defined by the given
 > polynomial, i.e. $\mathbb{F}_p[t]/(pol)$. The characteristic is specified by
 > the modulus of `pol`. The polynomial is required to be irreducible, but this
-> is not checked. The string $s$ is used to designate how the finite field
+> is not checked. The base ring of the polynomial is required to be a field, which
+> is checked by default. Use `check = false` to disable the check.
+> The string $s$ is used to designate how the finite field
 > generator will be printed. The generator will not be multiplicative in
 > general.
 """
-function FlintFiniteField(pol::fmpz_mod_poly, s::AbstractString; cached = true)
+function FlintFiniteField(pol::fmpz_mod_poly, s::AbstractString; cached = true, check::Bool=true)
    S = Symbol(s)
-   parent_obj = FqFiniteField(pol, S, cached)
+   parent_obj = FqFiniteField(pol, S, cached, check=check)
 
    return parent_obj, gen(parent_obj)
 end
 
-function FlintFiniteField(pol::gfp_fmpz_poly, s::AbstractString; cached = true)
+function FlintFiniteField(pol::gfp_fmpz_poly, s::AbstractString; cached = true, check::Bool=true)
    S = Symbol(s)
-   parent_obj = FqFiniteField(pol, S, cached)
+   parent_obj = FqFiniteField(pol, S, cached, check=check)
 
    return parent_obj, gen(parent_obj)
 end
