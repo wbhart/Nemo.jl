@@ -57,6 +57,9 @@ end
    @test Float32(a) == Float32(-123)
    @test Float16(a) == Float16(-123)
    @test BigFloat(a) == BigFloat(-123)
+
+   @test_throws InexactError Int(fmpz(1234484735687346876324432764872))
+   @test_throws InexactError UInt(fmpz(typemin(Int)))
 end
 
 @testset "fmpz.manipulation..." begin

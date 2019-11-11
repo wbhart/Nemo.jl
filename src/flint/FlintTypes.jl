@@ -48,7 +48,7 @@ mutable struct fmpz <: RingElem
     end
 
     function fmpz(x::Float64)
-        !isinteger(x) && throw(InexactError())
+        !isinteger(x) && throw(InexactError(:convert, fmpz, x))
         z = new()
         ccall((:fmpz_init, :libflint), Nothing, (Ref{fmpz},), z)
         ccall((:fmpz_set_d, :libflint), Nothing, (Ref{fmpz}, Cdouble), z, x)
