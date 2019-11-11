@@ -405,15 +405,6 @@ divexact(x::Integer, y::fmpz) = divexact(fmpz(x), y)
 #
 ###############################################################################
 
-function rem(x::fmpz, c::Int)
-    c == 0 && throw(DivideError())
-    q = fmpz()
-    r = fmpz()
-    ccall((:fmpz_tdiv_qr, :libflint), Nothing,
-          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), q, r, x, fmpz(c))
-    return r
-end
-
 function tdivpow2(x::fmpz, c::Int)
     c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
     z = fmpz()
@@ -446,14 +437,6 @@ function cdivpow2(x::fmpz, c::Int)
     return z
 end
 
-function div(x::fmpz, c::Int)
-    c == 0 && throw(DivideError())
-    z = fmpz()
-    ccall((:fmpz_tdiv_q_si, :libflint), Nothing,
-          (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
-    return z
-end
-
 function tdiv(x::fmpz, c::Int)
     c == 0 && throw(DivideError())
     z = fmpz()
@@ -480,9 +463,20 @@ end
 
 rem(x::Integer, y::fmpz) = rem(fmpz(x), y)
 
+rem(x::fmpz, y::Integer) = rem(x, fmpz(y))
+
 mod(x::Integer, y::fmpz) = mod(fmpz(x), y)
 
+@doc Markdown.doc"""
+    mod(x::fmpz, y::Integer)
+> Return the remainder after division of $x$ by $y$. The remainder will be
+> closer to zero than $y$ and have the same sign, or it will be zero.
+"""
+mod(x::fmpz, y::Integer) = mod(x, fmpz(y))
+
 div(x::Integer, y::fmpz) = div(fmpz(x), y)
+
+div(x::fmpz, y::Integer) = div(x, fmpz(y))
 
 divrem(x::fmpz, y::Integer) = divrem(x, fmpz(y))
 
@@ -670,15 +664,6 @@ function mod(x::fmpz, y::fmpz)
    ccall((:fmpz_fdiv_r, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), r, x, y)
    return r
-end
-
-@doc Markdown.doc"""
-    mod(x::fmpz, y::Int)
-> Return the remainder after division of $x$ by $y$. The remainder will be
-> closer to zero than $y$ and have the same sign, or it will be zero.
-"""
-function mod(x::fmpz, y::Int)
-   return mod(x, fmpz(y))
 end
 
 @doc Markdown.doc"""
