@@ -126,6 +126,8 @@ end
 
    @test mod(b, a) == 2
 
+   @test mod(fmpz(3), fmpz(-2)) == fmpz(-1)
+
    @test rem(b, a) == 2
 
    @test mod(b, 12) == 2
@@ -219,6 +221,10 @@ end
    @test div(-12, fmpz(3)) == -4
 
    @test mod(-12, fmpz(3)) == 0
+
+   @test isa(mod(fmpz(2), -3), fmpz)
+
+   @test mod(fmpz(2), -3) == -1
 
    @test rem(-12, fmpz(3)) == 0
 end
