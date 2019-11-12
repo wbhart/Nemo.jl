@@ -1003,7 +1003,7 @@ end
 """
 function root(x::fmpz, n::Int)
    x < 0 && iseven(n) && throw(DomainError("Argument $x must be positive if exponent $n is even"))
-   n <= 0 && throw(DomainError("Exponent must be non-negative: $n"))
+   n <= 0 && throw(DomainError("Exponent $n not positive in root"))
    z = fmpz()
    ccall((:fmpz_root, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, n)
