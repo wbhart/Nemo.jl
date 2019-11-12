@@ -1655,14 +1655,14 @@ end
 convert(::Type{BigInt}, a::fmpz) = BigInt(a)
 
 function (::Type{Int})(a::fmpz)
-   (a > typemax(Int) || a < typemin(Int)) && throw(InexactError())
+   (a > typemax(Int) || a < typemin(Int)) && throw(InexactError(:convert, Int, a))
    return ccall((:fmpz_get_si, :libflint), Int, (Ref{fmpz},), a)
 end
 
 convert(::Type{Int}, a::fmpz) = Int(a)
 
 function (::Type{UInt})(a::fmpz)
-   (a > typemax(UInt) || a < 0) && throw(InexactError())
+   (a > typemax(UInt) || a < 0) && throw(InexactError(:convert, UInt, a))
    return ccall((:fmpz_get_ui, :libflint), UInt, (Ref{fmpz}, ), a)
 end
 
