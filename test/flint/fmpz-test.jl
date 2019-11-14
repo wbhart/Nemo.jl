@@ -568,9 +568,13 @@ end
 
    @test_throws DomainError jacobi_symbol(fmpz(5), fmpz(-2))
 
+   @test_throws DomainError jacobi_symbol(fmpz(5), fmpz(2))
+
    @test jacobi_symbol(2, 3) == -1
 
    @test_throws DomainError jacobi_symbol(2, 0)
+
+   @test_throws DomainError jacobi_symbol(-5, 4)
 
    if !Nemo.iswindows64()
 
