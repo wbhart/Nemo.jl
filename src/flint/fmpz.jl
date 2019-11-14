@@ -1379,8 +1379,10 @@ function numpart(x::Int)
    if (Sys.iswindows() ? true : false) && Int == Int64
       error("not yet supported on win64")
    end
-   x <= 0 && throw(DomainError(x, "Argument must be positive"))
    z = fmpz()
+   if x < 0
+      return z
+   end
    ccall((:partitions_fmpz_ui, :libarb), Nothing,
          (Ref{fmpz}, UInt), z, x)
    return z
@@ -1395,8 +1397,10 @@ function numpart(x::fmpz)
    if (Sys.iswindows() ? true : false) && Int == Int64
       error("not yet supported on win64")
    end
-   x <= 0 && throw(DomainError(x, "Argument must be positive"))
    z = fmpz()
+   if x < 0
+      return z
+   end
    ccall((:partitions_fmpz_fmpz, :libarb), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, 0)
    return z
