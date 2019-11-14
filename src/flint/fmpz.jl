@@ -1344,7 +1344,7 @@ moebius_mu(x::Integer) = moebius_mu(fmpz(x))
 > $y \leq 0$, we throw a `DomainError()`.
 """
 function jacobi_symbol(x::fmpz, y::fmpz)
-   y <= 0 && throw(DomainError(y, "Modulus must be positive"))
+   (y <= 0 || mod(y, 2) == 0) && throw(DomainError(y, "Modulus must be odd and positive"))
    if x < 0 || x >= y
       x = mod(x, y)
    end
@@ -1353,7 +1353,7 @@ function jacobi_symbol(x::fmpz, y::fmpz)
 end
 
 function jacobi_symbol(x::Int, y::Int)
-   y <= 0 && throw(DomainError(y, "Modulus must be positive"))
+   (y <= 0 || mod(y, 2) == 0) && throw(DomainError(y, "Modulus must be odd and positive"))
    if x < 0 || x >= y
       x = mod(x, y)
    end
