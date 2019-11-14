@@ -1231,7 +1231,7 @@ end
 > $x \geq 0$.
 """
 function factorial(x::Int)
-    x < 0 && throw(DomainError("Argument must be non-negative: $n"))
+    x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
     ccall((:fmpz_fac_ui, :libflint), Nothing, (Ref{fmpz}, UInt), z, x)
     return z
