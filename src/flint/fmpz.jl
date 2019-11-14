@@ -31,15 +31,17 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash, fac, bell,
-       binom, isprime, fdiv, cdiv, tdiv, div, rem, mod, gcd, lcm, invmod,
+# Do not export binomial or factorial as they are defined by Base
+export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
+       bell, isprime, fdiv, cdiv, tdiv, div, rem, mod, gcd, lcm, invmod,
        powmod, abs, divrem, isqrt, popcount, prevpow2, nextpow2, ndigits, dec,
        bin, oct, hex, base, one, zero, divexact, fits, sign, nbits, deepcopy,
        tdivpow2, fdivpow2, cdivpow2, flog, clog, cmpabs, clrbit!, setbit!,
        combit!, crt, divisible, divisor_lenstra, fdivrem, tdivrem, fmodpow2,
-       gcdinv, isprobable_prime, issquare, jacobi, remove, root, size, isqrtrem,
-       sqrtmod, trailing_zeros, sigma, eulerphi, fib, moebiusmu, primorial,
-       risingfac, numpart, canonical_unit, needs_parentheses, displayed_with_minus_in_front,
+       gcdinv, isprobable_prime, issquare, jacobi_symbol, remove, root, size,
+       isqrtrem, sqrtmod, trailing_zeros, divisor_sigma, euler_phi, fibonacci,
+       moebius_mu, primorial, rising_factorial, number_of_partitions,
+       canonical_unit, needs_parentheses, displayed_with_minus_in_front,
        show_minus_one, addeq!, mul!, isunit, isequal,
        iszero, rand
 
@@ -1224,11 +1226,11 @@ function divisor_lenstra(n::fmpz, r::fmpz, m::fmpz)
 end
 
 @doc Markdown.doc"""
-    fac(x::Int)
+    factorial(x::Int)
 > Return the factorial of $x$, i.e. $x! = 1.2.3\ldots x$. We require
 > $x \geq 0$.
 """
-function fac(x::Int)
+function factorial(x::Int)
     x < 0 && throw(DomainError("Argument must be non-negative: $n"))
     z = fmpz()
     ccall((:fmpz_fac_ui, :libflint), Nothing, (Ref{fmpz}, UInt), z, x)
@@ -1236,11 +1238,11 @@ function fac(x::Int)
 end
 
 @doc Markdown.doc"""
-    risingfac(x::fmpz, y::Int)
+    rising_factorial(x::fmpz, y::Int)
 > Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
 > If $n < 0$ we throw a `DomainError()`.
 """
-function risingfac(x::fmpz, y::Int)
+function rising_factorial(x::fmpz, y::Int)
     y < 0 && throw(DomainError("Argument must be non-negative: $y"))
     z = fmpz()
     ccall((:fmpz_rfac_ui, :libflint), Nothing,
@@ -1249,17 +1251,17 @@ function risingfac(x::fmpz, y::Int)
 end
 
 @doc Markdown.doc"""
-    risingfac(x::Int, y::Int)
+    rising_factorial(x::Int, y::Int)
 > Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
 > If $n < 0$ we throw a `DomainError()`.
 """
-function risingfac(x::Int, y::Int)
+function rising_factorial(x::Int, y::Int)
     y < 0 && throw(DomainError("Argument must be non-negative: $y"))
     z = fmpz()
     if x < 0
        if y <= -x # we don't pass zero
-          z = isodd(y) ? -risingfac(-x - y + 1, y) :
-                          risingfac(-x - y + 1, y)
+          z = isodd(y) ? -rising_factorial(-x - y + 1, y) :
+                          rising_factorial(-x - y + 1, y)
        end
     else
        ccall((:fmpz_rfac_uiui, :libflint), Nothing,
@@ -1267,6 +1269,8 @@ function risingfac(x::Int, y::Int)
     end
     return z
 end
+
+rising_factorial(x::Integer, y::Int) = rising_factorial(fmpz(x), y)
 
 @doc Markdown.doc"""
     primorial(x::Int)
@@ -1282,12 +1286,12 @@ function primorial(x::Int)
 end
 
 @doc Markdown.doc"""
-    fib(x::Int)
+    fibonacci(x::Int)
 >  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
 > $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. We require $n \geq 0$. For
 > convenience, we define $F_0 = 0$.
 """
-function fib(x::Int)
+function fibonacci(x::Int)
     x < 0 && throw(DomainError("Argument must be non-negative: $x"))
     z = fmpz()
     ccall((:fmpz_fib_ui, :libflint), Nothing,
@@ -1308,11 +1312,11 @@ function bell(x::Int)
 end
 
 @doc Markdown.doc"""
-    binom(n::Int, k::Int)
+    binomial(n::Int, k::Int)
 > Return the binomial coefficient $\frac{n!}{(n - k)!k!}$. If $n, k < 0$ or
 > $k > n$ we return $0$.
 """
-function binom(n::Int, k::Int)
+function binomial(n::Int, k::Int)
     n < 0 && return fmpz(0)
     k < 0 && return fmpz(0)
     z = fmpz()
@@ -1322,34 +1326,48 @@ function binom(n::Int, k::Int)
 end
 
 @doc Markdown.doc"""
-    moebiusmu(x::fmpz)
+    moebius_mu(x::fmpz)
 > Returns the Moebius mu function of $x$ as an `Int`. The value
 > returned is either $-1$, $0$ or $1$. If $x < 0$ we throw a `DomainError()`.
 """
-function moebiusmu(x::fmpz)
+function moebius_mu(x::fmpz)
    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
    return Int(ccall((:fmpz_moebius_mu, :libflint), Cint,
                     (Ref{fmpz},), x))
 end
 
+moebius_mu(x::Integer) = moebius_mu(fmpz(x))
+
 @doc Markdown.doc"""
-    jacobi(x::fmpz, y::fmpz)
+    jacobi_symbol(x::fmpz, y::fmpz)
 > Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. If
-> $y \leq x$ or $x < 0$, we throw a `DomainError()`.
+> $y \leq 0$, we throw a `DomainError()`.
 """
-function jacobi(x::fmpz, y::fmpz)
-   y <= x && throw(DomainError("Second argument must be larger than first argument: $x $y"))
-   x < 0 && throw(DomainError("First argument must be non-negative: $x"))
+function jacobi_symbol(x::fmpz, y::fmpz)
+   y <= 0 && throw(DomainError(y, "Modulus must be positive"))
+   if x < 0 || x >= y
+      x = mod(x, y)
+   end
    return Int(ccall((:fmpz_jacobi, :libflint), Cint,
                     (Ref{fmpz}, Ref{fmpz}), x, y))
 end
 
+function jacobi_symbol(x::Int, y::Int)
+   y <= 0 && throw(DomainError(y, "Modulus must be positive"))
+   if x < 0 || x >= y
+      x = mod(x, y)
+   end
+   return Int(ccall((:n_jacobi, :libflint), Cint, (Int, UInt), x, UInt(y)))
+end
+   
+jacobi_symbol(x::Integer, y::Integer) = jacobi_symbol(fmpz(x), fmpz(y))
+
 @doc Markdown.doc"""
-    sigma(x::fmpz, y::Int)
+    divisor_sigma(x::fmpz, y::Int)
 > Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
 > $y < 0$ we throw a `DomainError()`.
 """
-function sigma(x::fmpz, y::Int)
+function divisor_sigma(x::fmpz, y::Int)
    y < 0 && throw(DomainError("Second argument must be non-negative: $y"))
    z = fmpz()
    ccall((:fmpz_divisor_sigma, :libflint), Nothing,
@@ -1357,12 +1375,14 @@ function sigma(x::fmpz, y::Int)
    return z
 end
 
+divisor_sigma(x::Integer, y::Int) = divisor_sigma(fmpz(x), y)
+
 @doc Markdown.doc"""
-    eulerphi(x::fmpz)
+    euler_phi(x::fmpz)
 > Return the value of the Euler phi function at $x$, i.e. the number of
 > positive integers less than $x$ that are coprime with $x$.
 """
-function eulerphi(x::fmpz)
+function euler_phi(x::fmpz)
    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
    z = fmpz()
    ccall((:fmpz_euler_phi, :libflint), Nothing,
@@ -1370,12 +1390,14 @@ function eulerphi(x::fmpz)
    return z
 end
 
+euler_phi(x::Integer) = euler_phi(fmpz(x))
+
 @doc Markdown.doc"""
-    numpart(x::Int)
+    number_of_partitions(x::Int)
 > Return the number of partitions of $x$. This function is not available on
 > Windows 64.
 """
-function numpart(x::Int)
+function number_of_partitions(x::Int)
    if (Sys.iswindows() ? true : false) && Int == Int64
       error("not yet supported on win64")
    end
@@ -1387,11 +1409,11 @@ function numpart(x::Int)
 end
 
 @doc Markdown.doc"""
-    numpart(x::fmpz)
+    number_of_partitions(x::fmpz)
 > Return the number of partitions of $x$. This function is not available on
 > Windows 64.
 """
-function numpart(x::fmpz)
+function number_of_partitions(x::fmpz)
    if (Sys.iswindows() ? true : false) && Int == Int64
       error("not yet supported on win64")
    end
@@ -1401,6 +1423,8 @@ function numpart(x::fmpz)
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, 0)
    return z
 end
+
+number_of_partitions(x::Integer) = number_of_partitions(fmpz(x))
 
 ###############################################################################
 #

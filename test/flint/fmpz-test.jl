@@ -501,7 +501,7 @@ end
    b, f = Nemo.ecm(n)
    @test mod(n, f) == 0
 
-   n = fac(50)
+   n = Nemo.factorial(50)
    d, u = Nemo._factor_trial_range(n, 0, 50)
    @test isone(u)
    @test prod(p^e for (p, e) in d) == n
@@ -518,15 +518,15 @@ end
 
    @test issquare(fmpz(36))
 
-   @test fac(100) == fmpz("93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000")
+   @test Nemo.factorial(100) == fmpz("93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000")
 
-   @test sigma(fmpz(128), 10) == fmpz("1181745669222511412225")
+   @test divisor_sigma(fmpz(128), 10) == fmpz("1181745669222511412225")
 
-   @test_throws DomainError sigma(fmpz(1), -1)
+   @test_throws DomainError divisor_sigma(fmpz(1), -1)
 
-   @test eulerphi(fmpz(12480)) == 3072
+   @test euler_phi(fmpz(12480)) == 3072
 
-   @test_throws DomainError  eulerphi(-fmpz(12480))
+   @test_throws DomainError  euler_phi(-fmpz(12480))
 
    @test remove(fmpz(12), fmpz(2)) == (2, 3)
 
@@ -542,43 +542,45 @@ end
    @test_throws DomainError divisor_lenstra(fmpz(1), fmpz(4), fmpz(5))
    @test_throws DomainError divisor_lenstra(fmpz(10), fmpz(4), fmpz(3))
 
-   @test risingfac(fmpz(12), 5) == 524160
+   @test rising_factorial(fmpz(12), 5) == 524160
 
-   @test_throws DomainError risingfac(fmpz(12), -1)
+   @test_throws DomainError rising_factorial(fmpz(12), -1)
 
-   @test risingfac(12, 5) == 524160
+   @test rising_factorial(12, 5) == 524160
 
-   @test_throws DomainError risingfac(12, -1)
+   @test_throws DomainError rising_factorial(12, -1)
 
    @test primorial(7) == 210
 
    @test_throws DomainError primorial(-7)
 
-   @test binom(12, 5) == 792
+   @test Nemo.binomial(12, 5) == 792
 
    @test bell(12) == 4213597
 
    @test_throws DomainError bell(-1)
 
-   @test moebiusmu(fmpz(13)) == -1
+   @test moebius_mu(fmpz(13)) == -1
 
-   @test_throws DomainError moebiusmu(-fmpz(1))
+   @test_throws DomainError moebius_mu(-fmpz(1))
 
-   @test jacobi(fmpz(2), fmpz(5)) == -1
+   @test jacobi_symbol(fmpz(2), fmpz(5)) == -1
 
-   @test_throws DomainError jacobi(fmpz(5), fmpz(2))
+   @test_throws DomainError jacobi_symbol(fmpz(5), fmpz(-2))
 
-   @test_throws DomainError jacobi(-fmpz(5), fmpz(2))
+   @test jacobi_symbol(2, 3) == -1
+
+   @test_throws DomainError jacobi_symbol(2, 0)
 
    if !Nemo.iswindows64()
 
-      @test numpart(10) == 42
+      @test number_of_partitions(10) == 42
 
-      @test_throws DomainError numpart(-10)
+      @test_throws DomainError number_of_partitions(-10)
 
-      @test numpart(fmpz(1000)) == fmpz("24061467864032622473692149727991")
+      @test number_of_partitions(fmpz(1000)) == fmpz("24061467864032622473692149727991")
 
-      @test_throws DomainError numpart(-fmpz(1000))
+      @test_throws DomainError number_of_partitions(-fmpz(1000))
 
    end
 end

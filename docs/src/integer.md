@@ -315,12 +315,12 @@ divisor_lenstra(::fmpz, ::fmpz, ::fmpz)
 ```
 
 ```@docs
-fac(::Int)
+Nemo.factorial(::Int)
 ```
 
 ```@docs
-risingfac(::fmpz, ::Int)
-risingfac(::Int, ::Int)
+rising_factorial(::fmpz, ::Int)
+rising_factorial(::Int, ::Int)
 ```
 
 ```@docs
@@ -328,7 +328,7 @@ primorial(::Int)
 ```
 
 ```@docs
-fib(::Int)
+fibonacci(::Int)
 ```
 
 ```@docs
@@ -336,38 +336,38 @@ bell(::Int)
 ```
 
 ```@docs
-binom(::Int, ::Int)
+Nemo.binomial(::Int, ::Int)
 ```
 
 ```@docs
-moebiusmu(::fmpz)
+moebius_mu(::fmpz)
 ```
 
 ```@docs
-jacobi(::fmpz, ::fmpz)
+jacobi_symbol(::fmpz, ::fmpz)
 ```
 
 ```@docs
-sigma(::fmpz, ::Int)
+divisor_sigma(::fmpz, ::Int)
 ```
 
 ```@docs
-eulerphi(::fmpz)
+euler_phi(::fmpz)
 ```
 
 ```@docs
-numpart(::Int)
-numpart(::fmpz) 
+number_of_partitions(::Integer)
+number_of_partitions(::fmpz) 
 ```
 
 **Examples**
 
 ```julia
 isprime(ZZ(13))
-n = fac(100)
-s = sigma(ZZ(128), 10)
-a = eulerphi(ZZ(12480))
-p = numpart(1000)
+n = Nemo.factorial(100)
+s = divisor_sigma(ZZ(128), 10)
+a = euler_phi(ZZ(12480))
+p = number_of_partitions(1000)
 f = factor(ZZ(12))
 ```
 
