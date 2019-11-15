@@ -211,6 +211,9 @@ function numerator(a::fmpz)
    return a
 end
 
+isodd(a::fmpz)  = ccall((:fmpz_is_odd,  :libflint), Cint, (Ref{fmpz},), a) % Bool
+iseven(a::fmpz) = ccall((:fmpz_is_even, :libflint), Cint, (Ref{fmpz},), a) % Bool
+
 ###############################################################################
 #
 #   AbstractString I/O
