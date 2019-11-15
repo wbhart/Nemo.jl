@@ -1363,7 +1363,7 @@ end
 @doc Markdown.doc"""
     eulerphi(x::fmpz)
 > Return the value of the Euler phi function at $x$, i.e. the number of
-> positive integers less than $x$ that are coprime with $x$.
+> positive integers up to $x$ (inclusive) that are coprime with $x$.
 """
 function eulerphi(x::fmpz)
    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
