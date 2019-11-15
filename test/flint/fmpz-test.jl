@@ -223,7 +223,7 @@ end
 
    @test rem(-12, fmpz(3)) == 0
 
-   @test_throws ErrorException divexact(ZZ(2), 3)
+   @test_throws ArgumentError divexact(ZZ(2), 3)
 end
 
 @testset "fmpz.shift.." begin
