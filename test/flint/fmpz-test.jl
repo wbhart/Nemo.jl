@@ -582,12 +582,13 @@ end
 
       @test numpart(10) == 42
 
-      @test_throws DomainError numpart(-10)
-
       @test numpart(fmpz(1000)) == fmpz("24061467864032622473692149727991")
 
-      @test_throws DomainError numpart(-fmpz(1000))
+      @test numpart(0) == 1
 
+      @test numpart(-1) == 0
+
+      @test numpart(fmpz(-2)) == 0
    end
 end
 
