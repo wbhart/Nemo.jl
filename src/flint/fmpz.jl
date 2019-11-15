@@ -213,6 +213,9 @@ function numerator(a::fmpz)
    return a
 end
 
+isodd(a::fmpz)  = ccall((:fmpz_is_odd,  :libflint), Cint, (Ref{fmpz},), a) % Bool
+iseven(a::fmpz) = ccall((:fmpz_is_even, :libflint), Cint, (Ref{fmpz},), a) % Bool
+
 ###############################################################################
 #
 #   AbstractString I/O
@@ -1005,7 +1008,7 @@ end
 """
 function root(x::fmpz, n::Int)
    x < 0 && iseven(n) && throw(DomainError("Argument $x must be positive if exponent $n is even"))
-   n <= 0 && throw(DomainError("Exponent must be non-negative: $n"))
+   n <= 0 && throw(DomainError(n, "Exponent must be positive"))
    z = fmpz()
    ccall((:fmpz_root, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, n)
@@ -1380,7 +1383,7 @@ divisor_sigma(x::Integer, y::Int) = divisor_sigma(fmpz(x), y)
 @doc Markdown.doc"""
     euler_phi(x::fmpz)
 > Return the value of the Euler phi function at $x$, i.e. the number of
-> positive integers less than $x$ that are coprime with $x$.
+> positive integers up to $x$ (inclusive) that are coprime with $x$.
 """
 function euler_phi(x::fmpz)
    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
@@ -1401,8 +1404,10 @@ function number_of_partitions(x::Int)
    if (Sys.iswindows() ? true : false) && Int == Int64
       error("not yet supported on win64")
    end
-   x < 0 && throw(DomainError("Argument must be non-negative: $x"))
    z = fmpz()
+   if x < 0
+      return z
+   end
    ccall((:partitions_fmpz_ui, :libarb), Nothing,
          (Ref{fmpz}, UInt), z, x)
    return z
@@ -1417,8 +1422,10 @@ function number_of_partitions(x::fmpz)
    if (Sys.iswindows() ? true : false) && Int == Int64
       error("not yet supported on win64")
    end
-   x < 0 && throw(DomainError("Argument must be non-negative: $x"))
    z = fmpz()
+   if x < 0
+      return z
+   end
    ccall((:partitions_fmpz_fmpz, :libarb), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, 0)
    return z

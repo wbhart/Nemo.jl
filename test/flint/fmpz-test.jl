@@ -89,6 +89,14 @@ end
    @test numerator(fmpz(12)) == fmpz(12)
 
    @test denominator(fmpz(12)) == fmpz(1)
+
+   @test iseven(fmpz(12))
+   @test isodd(fmpz(13))
+   b = big(2)
+   x = rand(-b^rand(1:1000):b^rand(1:1000))
+   y = fmpz(x)
+   @test iseven(x) == iseven(y)
+   @test isodd(x) == isodd(y)
 end
 
 @testset "fmpz.binary_ops..." begin
@@ -580,12 +588,13 @@ end
 
       @test number_of_partitions(10) == 42
 
-      @test_throws DomainError number_of_partitions(-10)
-
       @test number_of_partitions(fmpz(1000)) == fmpz("24061467864032622473692149727991")
 
-      @test_throws DomainError number_of_partitions(-fmpz(1000))
+      @test number_of_partitions(0) == 1
 
+      @test number_of_partitions(-1) == 0
+
+      @test numpart(fmpz(-2)) == 0
    end
 end
 
