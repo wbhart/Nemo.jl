@@ -89,6 +89,14 @@ end
    @test numerator(fmpz(12)) == fmpz(12)
 
    @test denominator(fmpz(12)) == fmpz(1)
+
+   @test iseven(fmpz(12))
+   @test isodd(fmpz(13))
+   b = big(2)
+   x = rand(-b^rand(1:1000):b^rand(1:1000))
+   y = fmpz(x)
+   @test iseven(x) == iseven(y)
+   @test isodd(x) == isodd(y)
 end
 
 @testset "fmpz.binary_ops..." begin
