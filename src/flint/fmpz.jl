@@ -135,7 +135,7 @@ function deepcopy_internal(a::fmpz, dict::IdDict)
    return z
 end
 
-characteristic(R::FlintIntegerRing) = fmpz(0)
+characteristic(R::FlintIntegerRing) = 0
 
 @doc Markdown.doc"""
     one(R::FlintIntegerRing)
