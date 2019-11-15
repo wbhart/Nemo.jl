@@ -303,7 +303,7 @@ function divexact(x::fmpz, y::fmpz)
     r = fmpz()
     ccall((:fmpz_tdiv_qr, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, r, x, y)
-    r != 0 && ArgumentError("Not an exact division")
+    r != 0 && throw(ArgumentError("Not an exact division"))
     return z
 end
 
