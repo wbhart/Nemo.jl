@@ -509,7 +509,7 @@ end
    b, f = Nemo.ecm(n)
    @test mod(n, f) == 0
 
-   n = Nemo.factorial(50)
+   n = factorial(ZZ(50))
    d, u = Nemo._factor_trial_range(n, 0, 50)
    @test isone(u)
    @test prod(p^e for (p, e) in d) == n
