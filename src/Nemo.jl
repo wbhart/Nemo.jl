@@ -11,9 +11,9 @@ using Libdl
 using Random
 
 import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh,
-             bin, ceil, checkbounds, conj, convert, cmp, cos, cosh,
+             bin, binomial, ceil, checkbounds, conj, convert, cmp, cos, cosh,
              cospi, cot, coth, dec, deepcopy, deepcopy_internal, denominator,
-             div, divrem, expm1, exp, floor, gcd, gcdx, getindex,
+             div, divrem, expm1, exp, factorial, floor, gcd, gcdx, getindex,
              hash, hcat, hex, hypot, intersect, inv, invmod, isequal, iseven,
              isfinite, isinteger, isless, isodd, isqrt, isreal, iszero, lcm, ldexp, length,
              log, log1p, mod, ndigits, numerator, oct, one, parent, parse, precision,
