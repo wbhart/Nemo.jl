@@ -594,7 +594,7 @@ end
 
       @test number_of_partitions(-1) == 0
 
-      @test numpart(fmpz(-2)) == 0
+      @test number_of_partitions(fmpz(-2)) == 0
    end
 end
 
