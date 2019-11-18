@@ -43,24 +43,13 @@ end
 #
 ###############################################################################
 
-function similar(::MatElem, R::FlintIntegerRing, r::Int, c::Int)
+function similar(::fmpz_mat, R::FlintIntegerRing, r::Int, c::Int)
    z = fmpz_mat(r, c)
    z.base_ring = R
    return z
 end
 
-const MatrixRing = Union{FlintIntegerRing,
-                         FlintRationalField,
-                         NmodRing,
-                         GaloisField,
-                         FqNmodFiniteField,
-                         FqFiniteField,
-                         ArbField,
-                         AcbField,
-                         }
-
-# Nemo matrices are always initialized to zero
-zero(x::MatElem, R::MatrixRing, r::Int, c::Int) = similar(x, R, r, c)
+zero(m::fmpz_mat, R::FlintIntegerRing, r::Int, c::Int) = similar(m, R, r, c)
 
 ###############################################################################
 #

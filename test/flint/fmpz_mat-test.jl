@@ -91,30 +91,22 @@ end
 
    for (R, M) in ring_to_mat
       t = sim_zero(s, R)
-      @test t isa M
       @test size(t) == size(s)
-      @test iszero(t)
-
-      t = sim_zero(s, R, 2, 3)
-      @test t isa M
-      @test size(t) == (2, 3)
-      @test iszero(t)
-   end
-
-   # test that similar also creates Nemo matrices when the input is not
-   for s in (matrix(Nemo.AbstractAlgebra.ZZ, zeros(Int, 3, 3)),
-             matrix(Nemo.AbstractAlgebra.QQ, zeros(Int, 3, 3)))
-      for (R, M) in ring_to_mat
-         t = sim_zero(s, R)
-         @test t isa M
-         @test size(t) == size(s)
-         @test iszero(t)
-
-         t = sim_zero(s, R, 2, 3)
-         @test t isa M
-         @test size(t) == (2, 3)
+      if sim_zero == zero
          @test iszero(t)
       end
+
+      t = sim_zero(s, R, 2, 3)
+      @test size(t) == (2, 3)
+      if sim_zero == zero
+         @test iszero(t)
+      end
+   end
+
+   # issue #651
+   m = one(Generic.MatSpace{fmpz}(ZZ, 2, 2, false))
+   for n = (m, -m, m*m, m+m, 2m)
+      @test n isa Generic.MatSpaceElem{fmpz}
    end
 end
 
