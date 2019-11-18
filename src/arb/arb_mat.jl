@@ -11,15 +11,17 @@ export zero, one, deepcopy, -, transpose, +, *, &, ==, !=,
 
 ###############################################################################
 #
-#   Similar
+#   Similar & zero
 #
 ###############################################################################
 
-function similar(::MatElem, R::ArbField, r::Int, c::Int)
+function similar(::arb_mat, R::ArbField, r::Int, c::Int)
    z = arb_mat(r, c)
    z.base_ring = R
    return z
 end
+
+zero(m::arb_mat, R::ArbField, r::Int, c::Int) = zero(m, R, r, c)
 
 ###############################################################################
 #

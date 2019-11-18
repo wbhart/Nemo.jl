@@ -33,15 +33,17 @@ end
 
 ###############################################################################
 #
-#   Similar
+#   Similar & zero
 #
 ###############################################################################
 
-function similar(::MatElem, R::FlintRationalField, r::Int, c::Int)
+function similar(::fmpq_mat, R::FlintRationalField, r::Int, c::Int)
    z = fmpq_mat(r, c)
    z.base_ring = R
    return z
 end
+
+zero(m::fmpq_mat, R::FlintRationalField, r::Int, c::Int) = similar(m, R, r, c)
 
 ###############################################################################
 #

@@ -108,12 +108,16 @@ end
 
    for (R, M) in ring_to_mat
       t = similar(s, R)
-      @test t isa M
       @test size(t) == size(s)
 
       t = similar(s, R, 2, 3)
-      @test t isa M
       @test size(t) == (2, 3)
+   end
+
+   # issue #651
+   m = one(Generic.MatSpace{acb}(CC, 2, 2, false))
+   for n = (m, -m, m*m, m+m, 2m)
+      @test n isa Generic.MatSpaceElem{acb}
    end
 end
 

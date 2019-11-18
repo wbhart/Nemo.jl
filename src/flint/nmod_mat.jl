@@ -33,15 +33,17 @@ end
 
 ###############################################################################
 #
-#   Similar
+#   Similar & zero
 #
 ###############################################################################
 
-function similar(::MatElem, R::NmodRing, r::Int, c::Int)
+function similar(::nmod_mat, R::NmodRing, r::Int, c::Int)
    z = nmod_mat(r, c, R.n)
    z.base_ring = R
    return z
 end
+
+zero(m::nmod_mat, R::NmodRing, r::Int, c::Int) = similar(m, R, r, c)
 
 ################################################################################
 #

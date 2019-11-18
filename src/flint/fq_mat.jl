@@ -33,11 +33,12 @@ end
 
 ###############################################################################
 #
-#   Similar
+#   Similar & zero
 #
 ###############################################################################
 
-similar(::MatElem, R::FqFiniteField, r::Int, c::Int) = fq_mat(r, c, R)
+similar(::fq_mat, R::FqFiniteField, r::Int, c::Int) = fq_mat(r, c, R)
+zero(m::fq_mat, R::FqFiniteField, r::Int, c::Int) = fq_mat(r, c, R)
 
 ################################################################################
 #

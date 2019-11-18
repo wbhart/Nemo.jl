@@ -20,15 +20,17 @@ dense_matrix_type(::Type{gfp_elem}) = gfp_mat
 
 ###############################################################################
 #
-#   Similar
+#   Similar & zero
 #
 ###############################################################################
 
-function similar(::MatElem, R::GaloisField, r::Int, c::Int)
+function similar(::gfp_mat, R::GaloisField, r::Int, c::Int)
    z = gfp_mat(r, c, R.n)
    z.base_ring = R
    return z
 end
+
+zero(m::gfp_mat, R::GaloisField, r::Int, c::Int) = similar(m, R, r, c)
 
 ################################################################################
 #

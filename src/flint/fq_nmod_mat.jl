@@ -33,11 +33,12 @@ end
 
 ###############################################################################
 #
-#   Similar
+#   Similar & zero
 #
 ###############################################################################
 
-similar(::MatElem, R::FqNmodFiniteField, r::Int, c::Int) = fq_nmod_mat(r, c, R)
+similar(::fq_nmod_mat, R::FqNmodFiniteField, r::Int, c::Int) = fq_nmod_mat(r, c, R)
+zero(::fq_nmod_mat, R::FqNmodFiniteField, r::Int, c::Int) = fq_nmod_mat(r, c, R)
 
 ################################################################################
 #
