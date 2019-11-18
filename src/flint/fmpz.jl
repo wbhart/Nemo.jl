@@ -1254,7 +1254,7 @@ end
 
 @doc Markdown.doc"""
     rising_factorial(x::fmpz, y::fmpz)
-> Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
+> Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\cdots (x + n - 1)$.
 > If $n < 0$ we throw a `DomainError()`.
 """
 rising_factorial(x::fmpz, y::fmpz) = rising_factorial(x, Int(y))
@@ -1302,7 +1302,8 @@ function primorial(x::fmpz)
     z = fmpz()
     ccall((:fmpz_primorial, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
-    return z                                                                        end
+    return z
+end
 
 @doc Markdown.doc"""
     fibonacci(x::Int)
@@ -1382,7 +1383,7 @@ function moebius_mu(x::fmpz)
 end
 
 @doc Markdown.doc"""
-    moebius_mu(x::fmpz)
+    moebius_mu(x::Int)
 > Returns the Moebius mu function of $x$ as an `Int`. The value
 > returned is either $-1$, $0$ or $1$. If $x < 0$ we throw a `DomainError()`.
 """
