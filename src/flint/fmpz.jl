@@ -1236,41 +1236,41 @@ function factorial(x::fmpz)
 end
 
 @doc Markdown.doc"""
-    rising_factorial(x::fmpz, y::Int)
+    rising_factorial(x::fmpz, n::Int)
 > Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
 > If $n < 0$ we throw a `DomainError()`.
 """
-function rising_factorial(x::fmpz, y::Int)
-    y < 0 && throw(DomainError("Argument must be non-negative: $y"))
+function rising_factorial(x::fmpz, n::Int)
+    n < 0 && throw(DomainError("Argument must be non-negative: $n"))
     z = fmpz()
     ccall((:fmpz_rfac_ui, :libflint), Nothing,
-          (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
+          (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(n))
     return z
 end
 
 @doc Markdown.doc"""
-    rising_factorial(x::fmpz, y::fmpz)
+    rising_factorial(x::fmpz, n::fmpz)
 > Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\cdots (x + n - 1)$.
 > If $n < 0$ we throw a `DomainError()`.
 """
-rising_factorial(x::fmpz, y::fmpz) = rising_factorial(x, Int(y))
+rising_factorial(x::fmpz, n::fmpz) = rising_factorial(x, Int(n))
 
 @doc Markdown.doc"""
-    rising_factorial(x::Int, y::Int)
+    rising_factorial(x::Int, n::Int)
 > Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
 > If $n < 0$ we throw a `DomainError()`.
 """
-function rising_factorial(x::Int, y::Int)
-    y < 0 && throw(DomainError("Argument must be non-negative: $y"))
+function rising_factorial(x::Int, n::Int)
+    n < 0 && throw(DomainError("Argument must be non-negative: $n"))
     z = fmpz()
     if x < 0
-       if y <= -x # we don't pass zero
-          z = isodd(y) ? -rising_factorial(-x - y + 1, y) :
-                          rising_factorial(-x - y + 1, y)
+       if n <= -x # we don't pass zero
+          z = isodd(n) ? -rising_factorial(-x - n + 1, n) :
+                          rising_factorial(-x - n + 1, n)
        end
     else
        ccall((:fmpz_rfac_uiui, :libflint), Nothing,
-             (Ref{fmpz}, UInt, UInt), z, x, y)
+             (Ref{fmpz}, UInt, UInt), z, x, n)
     end
     return Int(z)
 end
