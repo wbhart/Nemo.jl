@@ -31,7 +31,6 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# Do not export binomial or factorial as they are defined by Base
 export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        bell, isprime, fdiv, cdiv, tdiv, div, rem, mod, gcd, lcm, invmod,
        powmod, abs, divrem, isqrt, popcount, prevpow2, nextpow2, ndigits, dec,
@@ -43,7 +42,7 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        moebius_mu, primorial, rising_factorial, number_of_partitions,
        canonical_unit, needs_parentheses, displayed_with_minus_in_front,
        show_minus_one, addeq!, mul!, isunit, isequal,
-       iszero, rand
+       iszero, rand, binomial, factorial
 
 ###############################################################################
 #
@@ -1231,14 +1230,14 @@ function divisor_lenstra(n::fmpz, r::fmpz, m::fmpz)
 end
 
 @doc Markdown.doc"""
-    factorial(x::Int)
+    factorial(x::fmpz)
 > Return the factorial of $x$, i.e. $x! = 1.2.3\ldots x$. We require
 > $x \geq 0$.
 """
-function factorial(x::Int)
+function factorial(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
-    ccall((:fmpz_fac_ui, :libflint), Nothing, (Ref{fmpz}, UInt), z, x)
+    ccall((:fmpz_fac_ui, :libflint), Nothing, (Ref{fmpz}, UInt), z, UInt(x))
     return z
 end
 
@@ -1251,9 +1250,16 @@ function rising_factorial(x::fmpz, y::Int)
     y < 0 && throw(DomainError("Argument must be non-negative: $y"))
     z = fmpz()
     ccall((:fmpz_rfac_ui, :libflint), Nothing,
-          (Ref{fmpz}, Ref{fmpz}, UInt), z, x, y)
+          (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
     return z
 end
+
+@doc Markdown.doc"""
+    rising_factorial(x::fmpz, y::fmpz)
+> Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\cdots (x + n - 1)$.
+> If $n < 0$ we throw a `DomainError()`.
+"""
+rising_factorial(x::fmpz, y::fmpz) = rising_factorial(x, Int(y))
 
 @doc Markdown.doc"""
     rising_factorial(x::Int, y::Int)
@@ -1272,10 +1278,8 @@ function rising_factorial(x::Int, y::Int)
        ccall((:fmpz_rfac_uiui, :libflint), Nothing,
              (Ref{fmpz}, UInt, UInt), z, x, y)
     end
-    return z
+    return Int(z)
 end
-
-rising_factorial(x::Integer, y::Int) = rising_factorial(fmpz(x), y)
 
 @doc Markdown.doc"""
     primorial(x::Int)
@@ -1286,7 +1290,20 @@ function primorial(x::Int)
     x < 0 && throw(DomainError("Argument must be non-negative: $x"))
     z = fmpz()
     ccall((:fmpz_primorial, :libflint), Nothing,
-          (Ref{fmpz}, UInt), z, x)
+          (Ref{fmpz}, UInt), z, UInt(x))
+    return Int(z)
+end
+
+@doc Markdown.doc"""
+    primorial(x::fmpz)
+>  Return the primorial of $x$, i.e. the product of all primes less than or
+> equal to $x$. If $x < 0$ we throw a `DomainError()`.
+"""
+function primorial(x::fmpz)
+    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    z = fmpz()
+    ccall((:fmpz_primorial, :libflint), Nothing,
+          (Ref{fmpz}, UInt), z, UInt(x))
     return z
 end
 
@@ -1300,7 +1317,21 @@ function fibonacci(x::Int)
     x < 0 && throw(DomainError("Argument must be non-negative: $x"))
     z = fmpz()
     ccall((:fmpz_fib_ui, :libflint), Nothing,
-          (Ref{fmpz}, UInt), z, x)
+          (Ref{fmpz}, UInt), z, UInt(x))
+    return Int(z)
+end
+
+@doc Markdown.doc"""
+    fibonacci(x::fmpz)
+>  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
+> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. We require $n \geq 0$. For
+> convenience, we define $F_0 = 0$.
+"""
+function fibonacci(x::fmpz)
+    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    z = fmpz()
+    ccall((:fmpz_fib_ui, :libflint), Nothing,
+          (Ref{fmpz}, UInt), z, UInt(x))
     return z
 end
 
@@ -1312,21 +1343,33 @@ function bell(x::Int)
     x < 0 && throw(DomainError("Argument must be non-negative: $x"))
     z = fmpz()
     ccall((:arith_bell_number, :libflint), Nothing,
-          (Ref{fmpz}, UInt), z, x)
+          (Ref{fmpz}, UInt), z, UInt(x))
+    return Int(z)
+end
+
+@doc Markdown.doc"""
+    bell(x::fmpz)
+> Return the Bell number $B_x$.
+"""
+function bell(x::fmpz)
+    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    z = fmpz()
+    ccall((:arith_bell_number, :libflint), Nothing,
+          (Ref{fmpz}, UInt), z, UInt(x))
     return z
 end
 
 @doc Markdown.doc"""
-    binomial(n::Int, k::Int)
+    binomial(n::fmpz, k::fmpz)
 > Return the binomial coefficient $\frac{n!}{(n - k)!k!}$. If $n, k < 0$ or
 > $k > n$ we return $0$.
 """
-function binomial(n::Int, k::Int)
+function binomial(n::fmpz, k::fmpz)
     n < 0 && return fmpz(0)
     k < 0 && return fmpz(0)
     z = fmpz()
     ccall((:fmpz_bin_uiui, :libflint), Nothing,
-          (Ref{fmpz}, UInt, UInt), z, n, k)
+          (Ref{fmpz}, UInt, UInt), z, UInt(n), UInt(k))
     return z
 end
 
@@ -1341,7 +1384,12 @@ function moebius_mu(x::fmpz)
                     (Ref{fmpz},), x))
 end
 
-moebius_mu(x::Integer) = moebius_mu(fmpz(x))
+@doc Markdown.doc"""
+    moebius_mu(x::Int)
+> Returns the Moebius mu function of $x$ as an `Int`. The value
+> returned is either $-1$, $0$ or $1$. If $x < 0$ we throw a `DomainError()`.
+"""
+moebius_mu(x::Int) = moebius_mu(fmpz(x))
 
 @doc Markdown.doc"""
     jacobi_symbol(x::fmpz, y::fmpz)
@@ -1357,6 +1405,11 @@ function jacobi_symbol(x::fmpz, y::fmpz)
                     (Ref{fmpz}, Ref{fmpz}), x, y))
 end
 
+@doc Markdown.doc"""
+    jacobi_symbol(x::Int, y::Int)
+> Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. If
+> $y \leq 0$, we throw a `DomainError()`.
+"""
 function jacobi_symbol(x::Int, y::Int)
    (y <= 0 || mod(y, 2) == 0) && throw(DomainError(y, "Modulus must be odd and positive"))
    if x < 0 || x >= y
@@ -1365,8 +1418,6 @@ function jacobi_symbol(x::Int, y::Int)
    return Int(ccall((:n_jacobi, :libflint), Cint, (Int, UInt), x, UInt(y)))
 end
    
-jacobi_symbol(x::Integer, y::Integer) = jacobi_symbol(fmpz(x), fmpz(y))
-
 @doc Markdown.doc"""
     divisor_sigma(x::fmpz, y::Int)
 > Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
@@ -1380,7 +1431,19 @@ function divisor_sigma(x::fmpz, y::Int)
    return z
 end
 
-divisor_sigma(x::Integer, y::Int) = divisor_sigma(fmpz(x), y)
+@doc Markdown.doc"""
+    divisor_sigma(x::fmpz, y::fmpz)
+> Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
+> $y < 0$ we throw a `DomainError()`.
+"""
+divisor_sigma(x::fmpz, y::fmpz) = divisor_sigma(x, Int(y))
+
+@doc Markdown.doc"""
+    divisor_sigma(x::Int, y::Int)
+> Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
+> $y < 0$ we throw a `DomainError()`.
+"""
+divisor_sigma(x::Int, y::Int) = Int(divisor_sigma(fmpz(x), y))
 
 @doc Markdown.doc"""
     euler_phi(x::fmpz)
@@ -1395,7 +1458,12 @@ function euler_phi(x::fmpz)
    return z
 end
 
-euler_phi(x::Integer) = euler_phi(fmpz(x))
+@doc Markdown.doc"""
+    euler_phi(x::Int)
+> Return the value of the Euler phi function at $x$, i.e. the number of
+> positive integers up to $x$ (inclusive) that are coprime with $x$.
+"""
+euler_phi(x::Int) = Int(euler_phi(fmpz(x)))
 
 @doc Markdown.doc"""
     number_of_partitions(x::Int)
@@ -1408,11 +1476,11 @@ function number_of_partitions(x::Int)
    end
    z = fmpz()
    if x < 0
-      return z
+      return 0
    end
    ccall((:partitions_fmpz_ui, :libarb), Nothing,
          (Ref{fmpz}, UInt), z, x)
-   return z
+   return Int(z)
 end
 
 @doc Markdown.doc"""
@@ -1432,8 +1500,6 @@ function number_of_partitions(x::fmpz)
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, 0)
    return z
 end
-
-number_of_partitions(x::Integer) = number_of_partitions(fmpz(x))
 
 ###############################################################################
 #

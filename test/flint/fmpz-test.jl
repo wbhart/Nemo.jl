@@ -509,7 +509,7 @@ end
    b, f = Nemo.ecm(n)
    @test mod(n, f) == 0
 
-   n = Nemo.factorial(50)
+   n = factorial(ZZ(50))
    d, u = Nemo._factor_trial_range(n, 0, 50)
    @test isone(u)
    @test prod(p^e for (p, e) in d) == n
@@ -526,7 +526,7 @@ end
 
    @test issquare(fmpz(36))
 
-   @test Nemo.factorial(100) == fmpz("93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000")
+   @test factorial(ZZ(100)) == fmpz("93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000")
 
    @test divisor_sigma(fmpz(128), 10) == fmpz("1181745669222511412225")
 
@@ -562,7 +562,7 @@ end
 
    @test_throws DomainError primorial(-7)
 
-   @test Nemo.binomial(12, 5) == 792
+   @test binomial(ZZ(12), ZZ(5)) == 792
 
    @test bell(12) == 4213597
 
