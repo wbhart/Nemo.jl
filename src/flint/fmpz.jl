@@ -1304,11 +1304,10 @@ end
 @doc Markdown.doc"""
     fibonacci(x::Int)
 >  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
-> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. We require $n \geq 0$. For
-> convenience, we define $F_0 = 0$.
+> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. We require $n > 0$.
 """
 function fibonacci(x::Int)
-    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    x <= 0 && throw(DomainError(x, "Argument must be positive"))
     z = fmpz()
     ccall((:fmpz_fib_ui, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
@@ -1318,11 +1317,10 @@ end
 @doc Markdown.doc"""
     fibonacci(x::fmpz)
 >  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
-> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. We require $n \geq 0$. For
-> convenience, we define $F_0 = 0$.
+> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. We require $n > 0$.
 """
 function fibonacci(x::fmpz)
-    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    x <= 0 && throw(DomainError(x, "Argument must be positive"))
     z = fmpz()
     ccall((:fmpz_fib_ui, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
@@ -1370,10 +1368,10 @@ end
 @doc Markdown.doc"""
     moebius_mu(x::fmpz)
 > Returns the Moebius mu function of $x$ as an `Int`. The value
-> returned is either $-1$, $0$ or $1$. If $x < 0$ we throw a `DomainError()`.
+> returned is either $-1$, $0$ or $1$. If $x \leq 0$ we throw a `DomainError()`.
 """
 function moebius_mu(x::fmpz)
-   x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+   x <= 0 && throw(DomainError(x, "Argument must be positive"))
    return Int(ccall((:fmpz_moebius_mu, :libflint), Cint,
                     (Ref{fmpz},), x))
 end
@@ -1381,7 +1379,7 @@ end
 @doc Markdown.doc"""
     moebius_mu(x::Int)
 > Returns the Moebius mu function of $x$ as an `Int`. The value
-> returned is either $-1$, $0$ or $1$. If $x < 0$ we throw a `DomainError()`.
+> returned is either $-1$, $0$ or $1$. If $x \leq 0$ we throw a `DomainError()`.
 """
 moebius_mu(x::Int) = moebius_mu(fmpz(x))
 
@@ -1415,10 +1413,11 @@ end
 @doc Markdown.doc"""
     divisor_sigma(x::fmpz, y::Int)
 > Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
-> $y < 0$ we throw a `DomainError()`.
+> "x \leq 0$ or $y < 0$ we throw a `DomainError()`.
 """
 function divisor_sigma(x::fmpz, y::Int)
-   y < 0 && throw(DomainError("Second argument must be non-negative: $y"))
+   x <= 0 && throw(DomainError(x, "Argument must be positive"))
+   y < 0 && throw(DomainError(y, "Power must be non-negative"))
    z = fmpz()
    ccall((:fmpz_divisor_sigma, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, y)
@@ -1428,24 +1427,25 @@ end
 @doc Markdown.doc"""
     divisor_sigma(x::fmpz, y::fmpz)
 > Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
-> $y < 0$ we throw a `DomainError()`.
+> $x \leq 0$ or $y < 0$ we throw a `DomainError()`.
 """
 divisor_sigma(x::fmpz, y::fmpz) = divisor_sigma(x, Int(y))
 
 @doc Markdown.doc"""
     divisor_sigma(x::Int, y::Int)
 > Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
-> $y < 0$ we throw a `DomainError()`.
+> $x \leq 0$ or $y < 0$ we throw a `DomainError()`.
 """
 divisor_sigma(x::Int, y::Int) = Int(divisor_sigma(fmpz(x), y))
 
 @doc Markdown.doc"""
     euler_phi(x::fmpz)
 > Return the value of the Euler phi function at $x$, i.e. the number of
-> positive integers up to $x$ (inclusive) that are coprime with $x$.
+> positive integers up to $x$ (inclusive) that are coprime with $x$. An
+> exception is raised if $x \leq 0$. 
 """
 function euler_phi(x::fmpz)
-   x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+   x <= 0 && throw(DomainError(x, "Argument must be positive"))
    z = fmpz()
    ccall((:fmpz_euler_phi, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}), z, x)
@@ -1455,7 +1455,8 @@ end
 @doc Markdown.doc"""
     euler_phi(x::Int)
 > Return the value of the Euler phi function at $x$, i.e. the number of
-> positive integers up to $x$ (inclusive) that are coprime with $x$.
+> positive integers up to $x$ (inclusive) that are coprime with $x$. An
+> exception is raised if $x \leq 0$.
 """
 euler_phi(x::Int) = Int(euler_phi(fmpz(x)))
 
