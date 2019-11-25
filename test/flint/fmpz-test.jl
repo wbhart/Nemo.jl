@@ -392,6 +392,12 @@ end
    @test_throws DomainError gcdinv(-fmpz(5), fmpz(12))
 
    @test_throws DomainError gcdinv(fmpz(13), fmpz(12))
+
+   for i = -10:10
+      for j = -10:10
+         @test gcdx(fmpz(i), fmpz(j)) == gcdx(i, j)
+      end
+   end
 end
 
 @testset "fmpz.bit_twiddling..." begin
