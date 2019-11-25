@@ -919,42 +919,8 @@ end
 > and $b$ and integers $s$ and $t$ such that $g = as + bt$.
 """
 function gcdx(a::fmpz, b::fmpz)
-    # special cases to ensure consistency with Julia
-    if iszero(b)
-        return a < 0 ? (-a, -one(FlintZZ), zero(FlintZZ)) :
-	               (a, one(FlintZZ), zero(FlintZZ))
-    end
-    if cmpabs(a, b) == 0
-       return b < 0 ? (-b, zero(FlintZZ), -one(FlintZZ)) :
-                      (b, zero(FlintZZ), one(FlintZZ))
-    end
-
-       
-    g = fmpz()
-    s = fmpz()
-    t = fmpz()
-    ccall((:fmpz_xgcd, :libflint), Nothing,
-        (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
-        g, s, t, a, b)
-    g2 = g*2
-    if cmpabs(b, 2*g) == 0
-       s = fmpz(sign(a))
-       t = divexact(g - a*s, b)
-    elseif cmpabs(a, 2*g) == 0
-       t = fmpz(sign(b))
-       s = divexact(g - b*t, a)
-    else
-       gs2 = g2*s
-       if cmpabs(gs2, b) > 0
-          q, r = divrem(gs2, 2*b)
-          if cmpabs(r, b) > 0
-             q += sign(r) == sign(b) ? 1 : -1
-          end
-	  s -= q*divexact(b, g)
-	  t += q*divexact(a, g)
-       end
-    end
-    g, s, t
+   g, s, t = gcdx(BigInt(a), BigInt(b))
+   return fmpz(g), fmpz(s), fmpz(t)
 end
 
 @doc Markdown.doc"""
