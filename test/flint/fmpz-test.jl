@@ -157,7 +157,7 @@ end
 
    @test gcd(a, b) == 2
    @test gcd(a, 26) == 2
-   @test gcd(12, 26) == 2
+   @test gcd(12, b) == 2
 
    @test_throws ErrorException gcd(fmpz[])
 
