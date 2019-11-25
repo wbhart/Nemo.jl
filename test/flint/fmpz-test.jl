@@ -156,6 +156,8 @@ end
    b = fmpz(26)
 
    @test gcd(a, b) == 2
+   @test gcd(a, 26) == 2
+   @test gcd(12, 26) == 2
 
    @test_throws ErrorException gcd(fmpz[])
 
@@ -168,6 +170,8 @@ end
    @test gcd([fmpz(9), fmpz(27), fmpz(3)]) == 3
 
    @test lcm(a, b) == 156
+   @test lcm(12, b) == 156
+   @test lcm(a, 26) == 156
 
    @test_throws ErrorException lcm(fmpz[])
 
@@ -386,8 +390,12 @@ end
 
 @testset "fmpz.extended_gcd..." begin
    @test gcdx(fmpz(12), fmpz(5)) == (1, -2, 5)
+   @test gcdx(fmpz(12), 5) == (1, -2, 5)
+   @test gcdx(12, fmpz(5)) == (1, -2, 5)
 
    @test gcdinv(fmpz(5), fmpz(12)) == (1, 5)
+   @test gcdinv(fmpz(5), 12) == (1, 5)
+   @test gcdinv(5, fmpz(12)) == (1, 5)
 
    @test_throws DomainError gcdinv(-fmpz(5), fmpz(12))
 

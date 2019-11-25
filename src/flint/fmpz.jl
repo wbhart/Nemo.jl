@@ -907,6 +907,14 @@ function lcm(x::Array{fmpz, 1})
    return z
 end
 
+gcd(a::fmpz, b::Integer) = gcd(a, fmpz(b))
+
+gcd(a::Integer, b::fmpz) = gcd(fmpz(a), b)
+
+lcm(a::fmpz, b::Integer) = lcm(a, fmpz(b))
+
+lcm(a::Integer, b::fmpz) = lcm(fmpz(a), b)
+
 ###############################################################################
 #
 #   Extended GCD
@@ -949,6 +957,14 @@ function gcdinv(a::fmpz, b::fmpz)
         g, s, a, b)
    return g, s
 end
+
+gcdx(a::fmpz, b::Integer) = gcdx(a, fmpz(b))
+
+gcdx(a::Integer, b::fmpz) = gcdx(fmpz(a), b)
+
+gcdinv(a::fmpz, b::Integer) = gcdinv(a, fmpz(b))
+
+gcdinv(a::Integer, b::fmpz) = gcdinv(fmpz(a), b)
 
 ###############################################################################
 #
