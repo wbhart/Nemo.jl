@@ -1304,27 +1304,27 @@ end
 @doc Markdown.doc"""
     fibonacci(x::Int)
 >  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
-> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. We require $n > 0$.
+> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. The sequence is defined for
+> all integers.
 """
 function fibonacci(x::Int)
-    x <= 0 && throw(DomainError(x, "Argument must be positive"))
     z = fmpz()
     ccall((:fmpz_fib_ui, :libflint), Nothing,
-          (Ref{fmpz}, UInt), z, UInt(x))
-    return Int(z)
+          (Ref{fmpz}, UInt), z, UInt(abs(x)))
+    return x < 0 ? ((x & 1) == 0 ? -Int(z) : Int(z)) : Int(z)
 end
 
 @doc Markdown.doc"""
     fibonacci(x::fmpz)
 >  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
-> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. We require $n > 0$.
+> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. The sequence is defined for
+> all integers.
 """
 function fibonacci(x::fmpz)
-    x <= 0 && throw(DomainError(x, "Argument must be positive"))
     z = fmpz()
     ccall((:fmpz_fib_ui, :libflint), Nothing,
-          (Ref{fmpz}, UInt), z, UInt(x))
-    return z
+          (Ref{fmpz}, UInt), z, UInt(abs(x)))
+    return x < 0 ? ((x & 1) == 0 ? -z : z) : z
 end
 
 @doc Markdown.doc"""
