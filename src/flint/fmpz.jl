@@ -1311,7 +1311,7 @@ function fibonacci(x::Int)
     z = fmpz()
     ccall((:fmpz_fib_ui, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(abs(x)))
-    return x < 0 ? ((x & 1) == 0 ? -Int(z) : Int(z)) : Int(z)
+    return x < 0 ? (iseven(x) ? -Int(z) : Int(z)) : Int(z)
 end
 
 @doc Markdown.doc"""
@@ -1324,7 +1324,7 @@ function fibonacci(x::fmpz)
     z = fmpz()
     ccall((:fmpz_fib_ui, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(abs(x)))
-    return x < 0 ? ((x & 1) == 0 ? -z : z) : z
+    return x < 0 ? (iseven(x) ? -z : z) : z
 end
 
 @doc Markdown.doc"""
