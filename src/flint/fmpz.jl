@@ -1312,8 +1312,7 @@ end
 @doc Markdown.doc"""
     fibonacci(x::Int)
 >  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
-> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. The sequence is defined for
-> all integers.
+> $F_{i + 1} = F_i + F_{i - 1}$ for all integers $i$.
 """
 function fibonacci(x::Int)
     z = fmpz()
@@ -1325,8 +1324,7 @@ end
 @doc Markdown.doc"""
     fibonacci(x::fmpz)
 >  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
-> $F_{i + 1} = F_i + F_{i - 1}$ for all $i > 2$. The sequence is defined for
-> all integers.
+> $F_{i + 1} = F_i + F_{i - 1}$ for all integers $i$.
 """
 function fibonacci(x::fmpz)
     z = fmpz()
