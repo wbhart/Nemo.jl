@@ -543,6 +543,16 @@ end
 
    @test euler_phi(fmpz(12480)) == 3072
 
+   @test fibonacci(2) == 1
+
+   @test fibonacci(0) == 0
+
+   @test fibonacci(-2) == -1
+
+   @test fibonacci(fmpz(2)) == 1
+
+   @test fibonacci(fmpz(-2)) == -1
+
    @test_throws DomainError  euler_phi(-fmpz(12480))
 
    @test remove(fmpz(12), fmpz(2)) == (2, 3)
