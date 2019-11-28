@@ -919,16 +919,8 @@ end
 > and $b$ and integers $s$ and $t$ such that $g = as + bt$.
 """
 function gcdx(a::fmpz, b::fmpz)
-    if iszero(b) # shortcut this to ensure consistent results with gcdx(a,b)
-        return a < 0 ? (-a, -one(FlintZZ), zero(FlintZZ)) : (a, one(FlintZZ), zero(FlintZZ))
-    end
-    g = fmpz()
-    s = fmpz()
-    t = fmpz()
-    ccall((:fmpz_xgcd, :libflint), Nothing,
-        (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
-        g, s, t, a, b)
-    g, s, t
+   g, s, t = gcdx(BigInt(a), BigInt(b))
+   return fmpz(g), fmpz(s), fmpz(t)
 end
 
 @doc Markdown.doc"""
