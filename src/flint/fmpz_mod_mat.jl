@@ -112,7 +112,7 @@ base_ring(a::T) where T <: Zmod_fmpz_mat = a.base_ring
 zero(a::FmpzModMatSpace) = a()
 
 function one(a::FmpzModMatSpace)
-  (nrows(a) != ncols(a)) && error("Matrices must be quadratic")
+  (nrows(a) != ncols(a)) && error("Matrices must be square")
   z = a()
   ccall((:fmpz_mod_mat_one, :libflint), Nothing, (Ref{fmpz_mod_mat}, ), z)
   return z

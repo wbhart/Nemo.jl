@@ -134,7 +134,7 @@ base_ring(a::T) where T <: Zmodn_mat = a.base_ring
 zero(a::NmodMatSpace) = a()
 
 function one(a::NmodMatSpace)
-  (nrows(a) != ncols(a)) && error("Matrices must be quadratic")
+  (nrows(a) != ncols(a)) && error("Matrices must be square")
   z = a()
   ccall((:nmod_mat_one, :libflint), Nothing, (Ref{nmod_mat}, ), z)
   return z
