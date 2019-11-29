@@ -347,7 +347,7 @@ end
 function ^(x::T, y::fmpz) where T <: Zmodn_mat
   ( y < 0 ) && error("Exponent must be positive")
   ( y > fmpz(typemax(UInt))) &&
-          error("Exponent must be smaller then ", fmpz(typemax(UInt)))
+          error("Exponent must be smaller than ", fmpz(typemax(UInt)))
   return x^(UInt(y))
 end
 

@@ -329,9 +329,9 @@ end
 
 function ^(x::T, y::fmpz) where T <: Zmod_fmpz_mat
   (y > fmpz(typemax(Int))) &&
-          error("Exponent must be smaller then ", fmpz(typemax(Int)))
+          error("Exponent must be smaller than ", fmpz(typemax(Int)))
   (y < fmpz(typemin(Int))) &&
-          error("Exponent must be bigger then ", fmpz(typemin(Int)))
+          error("Exponent must be bigger than ", fmpz(typemin(Int)))
   return x^(Int(y))
 end
 
