@@ -614,7 +614,7 @@ function solve(a::fmpq_mat, b::fmpq_mat)
    nrows(a) != ncols(a) && error("Not a square matrix in solve")
    nrows(b) != nrows(a) && error("Incompatible dimensions in solve")
    z = similar(b)
-   nonsing = ccall((:fmpq_mat_solve_fraction_free, :libflint), Bool,
+   nonsing = ccall((:fmpq_mat_solve, :libflint), Bool,
       (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpq_mat}), z, a, b)
    !nonsing && error("Singular matrix in solve")
    return z
