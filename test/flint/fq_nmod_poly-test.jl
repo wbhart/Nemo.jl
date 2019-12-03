@@ -97,6 +97,8 @@ end
    @test canonical_unit(-x*y + x + 1) == 22x
 
    @test deepcopy(h) == h
+
+   @test characteristic(S) == 23
 end
 
 @testset "fq_nmod_poly.binary_ops..." begin

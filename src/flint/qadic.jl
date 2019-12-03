@@ -217,7 +217,7 @@ isone(a::qadic) = Bool(ccall((:qadic_is_one, :libflint), Cint,
 isunit(a::qadic) = !Bool(ccall((:qadic_is_zero, :libflint), Cint,
                               (Ref{qadic},), a))
 
-characteristic(R::FlintPadicField) = prime(R)
+characteristic(R::FlintQadicField) = 0
 
 ###############################################################################
 #

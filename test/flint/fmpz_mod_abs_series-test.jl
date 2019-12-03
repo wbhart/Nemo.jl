@@ -51,6 +51,8 @@ end
    @test valuation(a) == 1
 
    @test valuation(b) == 4
+
+   @test characteristic(R) == 123456789012345678949
 end
 
 @testset "fmpz_mod_abs_series.unary_ops..." begin

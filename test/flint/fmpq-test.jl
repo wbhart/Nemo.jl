@@ -79,6 +79,8 @@ end
    @test numerator(fmpq(2, 3)) == 2
 
    @test denominator(fmpq(2, 3)) == 3
+
+   @test characteristic(R) == 0
 end
 
 @testset "fmpq.unary_ops..." begin

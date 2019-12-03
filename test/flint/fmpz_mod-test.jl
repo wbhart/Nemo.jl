@@ -80,6 +80,8 @@ end
    @test modulus(S) == UInt(1)
 
    @test isunit(S())
+
+   @test characteristic(R) == 13
 end
 
 @testset "fmpz_mod.unary_ops..." begin

@@ -123,6 +123,8 @@ end
   @test modulus(x) == 17
 
   @test modulus(R) == 17
+
+  @test characteristic(Rx) == 17
 end
 
 @testset "gfp_poly.unary_ops..." begin

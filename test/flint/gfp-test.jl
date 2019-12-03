@@ -87,6 +87,8 @@ end
    R1 = GF(13)
 
    @test R === R1
+
+   @test characteristic(R) == 13
 end
 
 @testset "gfp.unary_ops..." begin

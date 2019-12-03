@@ -56,6 +56,8 @@ end
    @test valuation(a) == 1
 
    @test valuation(b) == 4
+
+   @test characteristic(R) == 0
 end
 
 @testset "fmpq_abs_series.unary_ops..." begin

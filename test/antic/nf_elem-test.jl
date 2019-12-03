@@ -148,6 +148,8 @@ end
    @test isrational(K(2))
    @test !isinteger(K(1//2))
    @test isrational(K(1//2))
+
+   @test characteristic(K) == 0
 end
 
 @testset "nf_elem.unary_ops..." begin

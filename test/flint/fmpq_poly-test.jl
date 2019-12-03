@@ -112,6 +112,8 @@ end
    @test deepcopy(h) == h
 
    @test denominator(-fmpz(12)//7*y + 1) == 7
+
+   @test characteristic(S) == 0
 end
 
 @testset "fmpq_poly.binary_ops..." begin

@@ -101,6 +101,8 @@ end
    @test modulus(x) == 123456789012345678949
 
    @test modulus(R) == 123456789012345678949
+
+   @test characteristic(S) == 123456789012345678949
 end
 
 @testset "gfp_fmpz_poly.binary_ops..." begin

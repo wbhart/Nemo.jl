@@ -81,6 +81,8 @@ end
    @test lift(FlintZZ, a) == 211
 
    @test lift(FlintQQ, divexact(a, b)) == fmpq(337, 49)
+
+   @test characteristic(R) == 0
 end
 
 @testset "padic.unary_ops..." begin

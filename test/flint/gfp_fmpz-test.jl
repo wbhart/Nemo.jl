@@ -94,6 +94,8 @@ end
    R1 = GF(ZZ(13))
 
    @test R === R1
+
+   @test characteristic(R) == 13
 end
 
 @testset "gfp_fmpz.unary_ops..." begin

@@ -97,6 +97,8 @@ end
    y = fmpz(x)
    @test iseven(x) == iseven(y)
    @test isodd(x) == isodd(y)
+
+   @test characteristic(ZZ) == 0
 end
 
 @testset "fmpz.binary_ops..." begin
