@@ -75,6 +75,8 @@ function deepcopy_internal(a::fq_poly, dict::IdDict)
    return z
 end
 
+characteristic(R::FqPolyRing) = characteristic(base_ring(R))
+
 ################################################################################
 #
 #   Canonicalisation

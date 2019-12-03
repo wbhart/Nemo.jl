@@ -113,6 +113,8 @@ function valuation(a::fmpz_mod_abs_series)
    return precision(a)
 end
 
+characteristic(R::FmpzModAbsSeriesRing) = modulus(R)
+
 ###############################################################################
 #
 #   AbstractString I/O

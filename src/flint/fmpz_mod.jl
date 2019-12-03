@@ -60,6 +60,8 @@ function deepcopy_internal(a::fmpz_mod, dict::IdDict)
    return fmpz_mod(deepcopy(a.data), R)
 end
 
+characteristic(R::FmpzModRing) = modulus(R)
+
 ###############################################################################
 #
 #   Canonicalisation

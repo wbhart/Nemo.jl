@@ -97,6 +97,14 @@ function check_parent(a::FlintPuiseuxSeriesElem, b::FlintPuiseuxSeriesElem)
              error("Incompatible Puiseux series rings in Puiseux series operation")
 end
 
+function characteristic(R::FlintPuiseuxSeriesRing{T}) where T <: RingElem
+   return characteristic(base_ring(R))
+end
+
+function characteristic(R::FlintPuiseuxSeriesField{T}) where T <: FieldElem
+   return characteristic(base_ring(R))
+end
+
 ###############################################################################
 #
 #   Basic manipulation

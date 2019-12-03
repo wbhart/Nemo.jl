@@ -115,6 +115,8 @@ function valuation(a::fmpq_abs_series)
    return precision(a)
 end
 
+characteristic(::FmpqAbsSeriesRing) = 0
+
 ###############################################################################
 #
 #   AbstractString I/O

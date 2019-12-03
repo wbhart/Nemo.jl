@@ -55,6 +55,8 @@ function deepcopy_internal(a::fmpz_poly, dict::IdDict)
    return z
 end
 
+characteristic(::FmpzPolyRing) = 0
+
 ###############################################################################
 #
 #   Canonicalisation

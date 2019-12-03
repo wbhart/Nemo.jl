@@ -152,6 +152,8 @@ function denominator(a::fmpq_mpoly)
   return c
 end
 
+characteristic(::FmpqMPolyRing) = 0
+
 ################################################################################
 #
 #  Getting coefficients

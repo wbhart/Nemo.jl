@@ -237,6 +237,8 @@ function total_degree_fmpz(a::fmpz_mpoly)
    return d
 end
 
+characteristic(::FmpzMPolyRing) = 0
+
 ###############################################################################
 #
 #   Multivariable coefficient polynomials

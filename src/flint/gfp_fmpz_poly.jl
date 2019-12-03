@@ -24,6 +24,8 @@ elem_type(::Type{GFPFmpzPolyRing}) = gfp_fmpz_poly
 
 parent_type(::Type{gfp_fmpz_poly}) = GFPFmpzPolyRing
 
+characteristic(R::GFPFmpzPolyRing) = characteristic(base_ring(R))
+
 ###############################################################################
 #
 #  Ad hoc binary operations

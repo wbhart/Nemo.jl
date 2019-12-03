@@ -60,6 +60,8 @@ function deepcopy_internal(a::nmod, dict::IdDict)
    return nmod(deepcopy(a.data), R)
 end
 
+characteristic(R::NmodRing) = modulus(R)
+
 ###############################################################################
 #
 #   Canonicalisation

@@ -76,6 +76,8 @@ function deepcopy_internal(a::T, dict::IdDict) where {T <: Zmodn_fmpz_poly}
   return z
 end
 
+characteristic(R::ZmodNFmpzPolyRing) = modulus(R)
+
 ################################################################################
 #
 #  AbstractString I/O

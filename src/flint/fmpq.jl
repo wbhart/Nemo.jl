@@ -138,6 +138,8 @@ function deepcopy_internal(a::fmpq, dict::IdDict)
    return z
 end
 
+characteristic(::FlintRationalField) = 0
+
 ###############################################################################
 #
 #   Canonicalisation

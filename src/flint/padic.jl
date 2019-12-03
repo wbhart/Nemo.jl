@@ -210,6 +210,8 @@ isone(a::padic) = Bool(ccall((:padic_is_one, :libflint), Cint,
 isunit(a::padic) = !Bool(ccall((:padic_is_zero, :libflint), Cint,
                               (Ref{padic},), a))
 
+characteristic(R::FlintPadicField) = 0
+
 ###############################################################################
 #
 #   String I/O

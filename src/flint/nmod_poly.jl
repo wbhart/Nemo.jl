@@ -106,6 +106,8 @@ function deepcopy_internal(a::nmod_poly, dict::IdDict)
   return z
 end
 
+characteristic(R::NmodPolyRing) = modulus(R)
+
 ################################################################################
 #
 #  AbstractString I/O

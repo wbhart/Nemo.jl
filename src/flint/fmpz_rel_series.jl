@@ -105,6 +105,8 @@ function renormalize!(z::fmpz_rel_series)
    return nothing
 end
 
+characteristic(::FmpzRelSeriesRing) = 0
+
 ###############################################################################
 #
 #   String I/O

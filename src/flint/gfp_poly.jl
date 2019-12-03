@@ -64,6 +64,8 @@ function deepcopy_internal(a::gfp_poly, dict::IdDict)
   return z
 end
 
+characteristic(R::GFPPolyRing) = characteristic(base_ring(R))
+
 ################################################################################
 #
 #  AbstractString I/O

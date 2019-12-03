@@ -75,6 +75,8 @@ function deepcopy_internal(a::fq_nmod_poly, dict::IdDict)
    return z
 end
 
+characteristic(R::FqNmodPolyRing) = characteristic(base_ring(R))
+
 ################################################################################
 #
 #   Canonicalisation
