@@ -146,7 +146,7 @@ end
 Base.floor(a::fmpq) = fmpq(fdiv(numerator(a), denominator(a)), 1)
 
 @doc Markdown.doc""";
-    floor(a::fmpq)
+    ceil(a::fmpq)
 > Returns the least integer that is greater than or equal to $a$. The result is
 > returned as a rational with denominator $1$.
 """
