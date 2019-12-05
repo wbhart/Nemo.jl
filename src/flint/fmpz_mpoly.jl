@@ -663,6 +663,19 @@ end
 #
 ###############################################################################
 
+function zero!(a::fmpz_mpoly)
+    ccall((:fmpz_mpoly_zero, :libflint), Nothing,
+         (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), a, a.parent)
+    return a
+end
+
+function add!(a::fmpz_mpoly, b::fmpz_mpoly, c::fmpz_mpoly)
+   ccall((:fmpz_mpoly_add, :libflint), Nothing,
+         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly},
+          Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), a, b, c, a.parent)
+   return a
+end
+
 function addeq!(a::fmpz_mpoly, b::fmpz_mpoly)
    ccall((:fmpz_mpoly_add, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Ref{fmpz_mpoly},
