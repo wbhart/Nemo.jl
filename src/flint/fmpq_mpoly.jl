@@ -732,7 +732,7 @@ function zero!(a::fmpq_mpoly)
 end
 
 function add!(a::fmpq_mpoly, b::fmpq_mpoly, c::fmpq_mpoly)
-   ccall((:fmpz_mpoly_add, :libflint), Nothing,
+   ccall((:fmpq_mpoly_add, :libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly},
           Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, b, c, a.parent)
    return a
