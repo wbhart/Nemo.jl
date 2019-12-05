@@ -167,11 +167,9 @@ end
 
    for (R, M) in ring_to_mat
       t = similar(s, R)
-      @test t isa M
       @test size(t) == size(s)
 
       t = similar(s, R, 2, 3)
-      @test t isa M
       @test size(t) == (2, 3)
    end
 end
