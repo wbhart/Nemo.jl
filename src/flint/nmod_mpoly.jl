@@ -696,7 +696,7 @@ end
 #
 ###############################################################################
 
-function zero!(a::fmpz_mpoly)
+function zero!(a::nmod_mpoly)
     ccall((:nmod_mpoly_zero, :libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
     return a
