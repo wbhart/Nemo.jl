@@ -86,7 +86,7 @@ end
 
    @test ceil(fmpq(2, 3)) == 1
    @test ceil(fmpq(-1, 3)) == 0
-   @test ceil(fmpq(2, 1)) == 0
+   @test ceil(fmpq(2, 1)) == 2
 end
 
 @testset "fmpq.unary_ops..." begin
