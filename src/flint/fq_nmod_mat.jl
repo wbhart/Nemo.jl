@@ -101,7 +101,7 @@ base_ring(a::fq_nmod_mat) = a.base_ring
 zero(a::FqNmodMatSpace) = a()
 
 function one(a::FqNmodMatSpace)
-  (nrows(a) != ncols(a)) && error("Matrices must be quadratic")
+  (nrows(a) != ncols(a)) && error("Matrices must be square")
   return a(one(base_ring(a)))
 end
 

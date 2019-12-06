@@ -66,7 +66,7 @@ base_ring(a::GFPMatSpace) = a.base_ring
 zero(a::GFPMatSpace) = a()
 
 function one(a::GFPMatSpace)
-  (nrows(a) != ncols(a)) && error("Matrices must be quadratic")
+  (nrows(a) != ncols(a)) && error("Matrices must be square")
   z = a()
   ccall((:nmod_mat_one, :libflint), Nothing, (Ref{gfp_mat}, ), z)
   return z
