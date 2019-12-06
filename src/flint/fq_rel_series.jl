@@ -111,6 +111,8 @@ function renormalize!(z::fq_rel_series)
    return nothing
 end
 
+characteristic(R::FqRelSeriesRing) = characteristic(base_ring(R))
+
 ###############################################################################
 #
 #   AbstractString I/O

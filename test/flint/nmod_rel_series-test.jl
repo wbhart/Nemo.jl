@@ -80,6 +80,8 @@ end
    @test coeff(a, 1) == 2
 
    @test coeff(b, 7) == 0
+
+   @test characteristic(S) == 17
 end
 
 @testset "nmod_rel_series.unary_ops..." begin

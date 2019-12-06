@@ -80,6 +80,8 @@ end
    @test modulus(S) == UInt(1)
 
    @test isunit(S())
+
+   @test characteristic(S) == 1
 end
 
 @testset "nmod.unary_ops..." begin

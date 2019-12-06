@@ -39,8 +39,7 @@ end
 end
 
 @testset "fmpz_laurent_series.manipulation..." begin
-   R, t = PolynomialRing(ZZ, "t")
-   S, x = LaurentSeriesRing(R, 30, "x")
+   S, x = LaurentSeriesRing(ZZ, 30, "x")
 
    @test max_precision(S) == 30
 
@@ -67,10 +66,10 @@ end
    @test isequal(deepcopy(a), a)
    @test isequal(deepcopy(b), b)
 
-   @test normalise(a, 2) == 2
-
    @test coeff(a, 1) == 2
    @test coeff(b, 7) == 0
+
+   @test characteristic(S) == 0
 end
 
 @testset "fmpz_laurent_series.unary_ops..." begin

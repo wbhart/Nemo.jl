@@ -136,6 +136,8 @@ function isconstant(a::nmod_mpoly)
    return Bool(b)
 end
 
+characteristic(R::NmodMPolyRing) = characteristic(base_ring(R))
+
 ################################################################################
 #
 #  Getting coefficients

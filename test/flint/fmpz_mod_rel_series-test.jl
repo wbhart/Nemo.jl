@@ -76,6 +76,8 @@ end
    @test coeff(a, 1) == 2
 
    @test coeff(b, 7) == 0
+
+   @test characteristic(R) == 123456789012345678949
 end
 
 @testset "fmpz_mod_rel_series.unary_ops..." begin

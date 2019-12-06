@@ -111,6 +111,8 @@ function renormalize!(z::fq_nmod_rel_series)
    return nothing
 end
 
+characteristic(R::FqNmodRelSeriesRing) = characteristic(base_ring(R))
+
 ###############################################################################
 #
 #   AbstractString I/O

@@ -39,6 +39,7 @@ end
    @test Float64(RR(0.5)) == 0.5
    @test convert(Float64, RR(0.5)) == 0.5
    @test abs(Float64(RR("2.3")) - 2.3) < 1e-10
+   @test characteristic(RR) == 0
 end
 
 @testset "arb.comparison..." begin

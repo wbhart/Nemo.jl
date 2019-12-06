@@ -119,6 +119,8 @@ function valuation(a::fq_nmod_abs_series)
    return precision(a)
 end
 
+characteristic(R::FqNmodAbsSeriesRing) = characteristic(base_ring(R))
+
 ###############################################################################
 #
 #   AbstractString I/O

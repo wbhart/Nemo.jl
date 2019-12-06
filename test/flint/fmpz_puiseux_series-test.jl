@@ -71,6 +71,8 @@ end
 
    @test isequal(deepcopy(a), a)
    @test isequal(deepcopy(b), b)
+
+   @test characteristic(S) == 0
 end
 
 @testset "fmpz_puiseux_series.unary_ops..." begin

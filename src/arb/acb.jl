@@ -116,6 +116,8 @@ function check_parent(a::acb, b::acb)
              error("Incompatible acb elements")
 end
 
+characteristic(::AcbField) = 0
+
 ################################################################################
 #
 #  Conversions

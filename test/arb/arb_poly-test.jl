@@ -67,6 +67,8 @@ end
    # @test canonical_unit(-x + 1) == -1
 
    @test deepcopy(f) == f
+
+   @test characteristic(R) == 0
 end
 
 @testset "arb_poly.binary_ops..." begin

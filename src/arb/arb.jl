@@ -98,6 +98,8 @@ function check_parent(a::arb, b::arb)
              error("Incompatible arb elements")
 end
 
+characteristic(::ArbField) = 0
+
 ################################################################################
 #
 #  Conversions

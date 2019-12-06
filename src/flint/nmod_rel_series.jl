@@ -106,6 +106,8 @@ function renormalize!(z::nmod_rel_series)
    return nothing
 end
 
+characteristic(R::NmodRelSeriesRing) = modulus(R)
+
 ###############################################################################
 #
 #   AbstractString I/O

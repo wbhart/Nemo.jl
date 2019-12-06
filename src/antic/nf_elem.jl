@@ -51,6 +51,8 @@ end
 
 show_minus_one(::Type{nf_elem}) = false
 
+characteristic(::AnticNumberField) = 0
+
 ###############################################################################
 #
 #   Basic manipulation

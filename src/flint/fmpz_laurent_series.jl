@@ -339,6 +339,8 @@ function renormalize!(z::fmpz_laurent_series)
    return nothing
 end
 
+characteristic(::FmpzLaurentSeriesRing) = 0
+
 ###############################################################################
 #
 #   AbstractString I/O

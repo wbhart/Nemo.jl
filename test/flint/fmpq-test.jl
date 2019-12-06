@@ -80,6 +80,8 @@ end
 
    @test denominator(fmpq(2, 3)) == 3
 
+   @test characteristic(R) == 0
+
    @test floor(fmpq(2, 3)) == 0
    @test floor(fmpq(-1, 3)) == -1
    @test floor(fmpq(2, 1)) == 2

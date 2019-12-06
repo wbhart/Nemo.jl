@@ -48,6 +48,8 @@ end
    @test CC(BigFloat(2), BigFloat(3)) == b
    @test real(b) == 2
    @test imag(b) == 3
+
+   @test characteristic(CC) == 0
 end
 
 @testset "acb.comparison..." begin

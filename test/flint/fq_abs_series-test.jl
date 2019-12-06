@@ -51,6 +51,8 @@ end
    @test valuation(a) == 1
 
    @test valuation(b) == 4
+
+   @test characteristic(R) == 23
 end
 
 @testset "fq_abs_series.unary_ops..." begin

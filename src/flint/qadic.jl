@@ -120,7 +120,7 @@ end
 
 @doc Markdown.doc"""
     prime(R::FlintQadicField)
-> Return the prime $q$ for the given $q$-adic field.
+> Return the prime $p$ for the given $q$-adic field.
 """
 function prime(R::FlintQadicField)
    z = fmpz()
@@ -216,6 +216,8 @@ isone(a::qadic) = Bool(ccall((:qadic_is_one, :libflint), Cint,
 """
 isunit(a::qadic) = !Bool(ccall((:qadic_is_zero, :libflint), Cint,
                               (Ref{qadic},), a))
+
+characteristic(R::FlintQadicField) = 0
 
 ###############################################################################
 #

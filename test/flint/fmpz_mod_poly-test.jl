@@ -48,6 +48,8 @@
    r = S([1, 2, 3])
 
    @test isa(r, PolyElem)
+
+   @test characteristic(S) == 123456789012345678949
 end
 
 @testset "fmpz_mod_poly.printing..." begin

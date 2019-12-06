@@ -67,6 +67,8 @@ end
       S, varlist = PolynomialRing(R, var_names, ordering = ord)
       g = gens(S)
 
+      @test characteristic(S) == 0
+
       @test !isgen(S(1))
 
       for i = 1:num_vars

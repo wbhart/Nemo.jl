@@ -108,6 +108,8 @@ function renormalize!(z::fmpz_mod_rel_series)
    return nothing
 end
 
+characteristic(R::FmpzModRelSeriesRing) = modulus(R)
+
 ###############################################################################
 #
 #   AbstractString I/O
