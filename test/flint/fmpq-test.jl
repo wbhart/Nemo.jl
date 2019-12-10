@@ -57,6 +57,8 @@ end
 @testset "fmpq.manipulation..." begin
    R = FractionField(ZZ)
 
+   @test zero(fmpq) == 0
+
    a = -fmpz(2)//3
    b = fmpz(123)//234
 
