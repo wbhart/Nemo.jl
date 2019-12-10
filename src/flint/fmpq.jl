@@ -101,6 +101,9 @@ end
 
 zero(a::FlintRationalField) = fmpq(0)
 
+# Exists only to support Julia functionality (no guarantees)
+zero(::Type{fmpq}) = fmpq(0)
+
 one(a::FlintRationalField) = fmpq(1)
 
 function isone(a::fmpq)
