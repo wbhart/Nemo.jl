@@ -147,7 +147,7 @@ characteristic(::FlintRationalField) = 0
 """
 Base.floor(a::fmpq) = fmpq(fdiv(numerator(a), denominator(a)), 1)
 
-@doc Markdown.doc""";
+@doc Markdown.doc"""
     ceil(a::fmpq)
 > Returns the least integer that is greater than or equal to $a$. The result is
 > returned as a rational with denominator $1$.
@@ -431,7 +431,7 @@ function Base.sqrt(a::fmpq)
     sden = sqrt(denominator(a))
     return fmpq(snum, sden)
  end
- 
+
 ###############################################################################
 #
 #   Inversion
@@ -447,7 +447,7 @@ function inv(a::fmpq)
     ccall((:fmpq_inv, :libflint), Nothing, (Ref{fmpq}, Ref{fmpq}), z, a)
     return z
  end
- 
+
  ###############################################################################
 #
 #   Exact division
