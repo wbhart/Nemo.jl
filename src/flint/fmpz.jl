@@ -130,11 +130,7 @@ end
 #
 ###############################################################################
 
-function deepcopy_internal(a::fmpz, dict::IdDict)
-   z = fmpz()
-   ccall((:fmpz_set, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, a)
-   return z
-end
+deepcopy_internal(a::fmpz, dict::IdDict) = fmpz_set(a)
 
 characteristic(R::FlintIntegerRing) = 0
 
