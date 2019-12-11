@@ -522,14 +522,18 @@ end
 ###############################################################################
 
 function ^(x::fmpz, y::Int)
-    if isone(x); return x; end
-    if x == -1; return isodd(y) ? x : -x; end
-    if y < 0; throw(DomainError("Exponent must be non-negative: $y")); end
-    if y > typemax(UInt); throw(DomainError("Exponent too large")); end
-    if y == 0; return one(FlintZZ); end
-    if y == 1; return x; end
+    if isone(x) || y == 0
+        return one(x)
+    elseif x == -1
+        return isodd(y) ? deepcopy(x) : one(x)
+    elseif y < 0
+        throw(DomainError(y, "Exponent must be non-negative"))
+    elseif y == 1
+        return deepcopy(x)
+    end
     z = fmpz()
-    ccall((:fmpz_pow_ui, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
+    ccall((:fmpz_pow_ui, :libflint), Nothing,
+	  (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
     return z
 end
 

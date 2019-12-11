@@ -273,6 +273,39 @@ end
    a = fmpz(-12)
 
    @test a^5 == -248832
+
+   @test a^1 == a
+   @test a^1 !== a
+
+   @test isone(a^0)
+
+   for a in fmpz.(-5:5)
+      for e = -5:-1
+         if a != 1 && a != -1
+            @test_throws DomainError a^e
+         end
+      end
+      @test a^1 == a
+      @test a^1 !== a
+   end
+
+   a = fmpz(1)
+
+   for e = -2:2
+      @test isone(a^e)
+      @test a^e !== a
+   end
+
+   a = fmpz(-1)
+
+   for e = [-3, -1, 1, 3, 5]
+      @test a^e == a
+      @test a^e !== a
+   end
+
+   for e = [-2, 0, 2, 4]
+      @test isone(a^e )
+   end
 end
 
 @testset "fmpz.comparison..." begin
