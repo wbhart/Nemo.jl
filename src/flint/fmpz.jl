@@ -130,7 +130,11 @@ end
 #
 ###############################################################################
 
-deepcopy_internal(a::fmpz, dict::IdDict) = fmpz_set(a)
+function deepcopy_internal(a::fmpz, dict::IdDict)
+   z = fmpz()
+   ccall((:fmpz_set, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, a)
+   return z
+end
 
 characteristic(R::FlintIntegerRing) = 0
 
@@ -521,11 +525,11 @@ function ^(x::fmpz, y::Int)
    if isone(x) || y == 0
       one(x)
    elseif x == -1
-      isodd(y) ? fmpz_set(x) : one(x)
+      isodd(y) ? deepcopy(x) : one(x)
    elseif y < 0
       throw(DomainError("Exponent must be non-negative: $y"))
    elseif y == 1
-      fmpz_set(x)
+      deepcopy(x)
    else
       z = fmpz()
       ccall((:fmpz_pow_ui, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
@@ -1415,7 +1419,7 @@ function jacobi_symbol(x::Int, y::Int)
    end
    return Int(ccall((:n_jacobi, :libflint), Cint, (Int, UInt), x, UInt(y)))
 end
-   
+
 @doc Markdown.doc"""
     divisor_sigma(x::fmpz, y::Int)
 > Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
@@ -1448,7 +1452,7 @@ divisor_sigma(x::Int, y::Int) = Int(divisor_sigma(fmpz(x), y))
     euler_phi(x::fmpz)
 > Return the value of the Euler phi function at $x$, i.e. the number of
 > positive integers up to $x$ (inclusive) that are coprime with $x$. An
-> exception is raised if $x \leq 0$. 
+> exception is raised if $x \leq 0$.
 """
 function euler_phi(x::fmpz)
    x <= 0 && throw(DomainError(x, "Argument must be positive"))
