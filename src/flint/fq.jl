@@ -419,7 +419,7 @@ end
 
 @doc Markdown.doc"""
     tr(x::fq)
-> Return the trace of $a$. This is an element of $\F_p$, but the value returned
+> Return the trace of $a$. This is an element of $\mathbb{F}_p$, but the value returned
 > is this value embedded in the original finite field.
 """
 function tr(x::fq)
@@ -431,7 +431,7 @@ end
 
 @doc Markdown.doc"""
     norm(x::fq)
-> Return the norm of $a$. This is an element of $\F_p$, but the value returned
+> Return the norm of $a$. This is an element of $\mathbb{F}_p$, but the value returned
 > is this value embedded in the original finite field.
 """
 function norm(x::fq)
