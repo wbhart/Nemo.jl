@@ -518,15 +518,19 @@ end
 ###############################################################################
 
 function ^(x::fmpz, y::Int)
-    if isone(x); return x; end
-    if x == -1; return isodd(y) ? x : -x; end
-    if y < 0; throw(DomainError("Exponent must be non-negative: $y")); end
-    if y > typemax(UInt); throw(DomainError("Exponent too large")); end
-    if y == 0; return one(FlintZZ); end
-    if y == 1; return x; end
-    z = fmpz()
-    ccall((:fmpz_pow_ui, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
-    return z
+   if isone(x) || y == 0
+      one(x)
+   elseif x == -1
+      isodd(y) ? fmpz_set(x) : one(x)
+   elseif y < 0
+      throw(DomainError("Exponent must be non-negative: $y"))
+   elseif y == 1
+      fmpz_set(x)
+   else
+      z = fmpz()
+      ccall((:fmpz_pow_ui, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
+      z
+   end
 end
 
 ###############################################################################

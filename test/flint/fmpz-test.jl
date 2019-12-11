@@ -273,6 +273,15 @@ end
    a = fmpz(-12)
 
    @test a^5 == -248832
+
+   # the result must never alias the input
+   @test a^1 !== a
+
+   a = fmpz(-1)
+   @test a^3 !== a
+
+   a = fmpz(1)
+   @test a^2 !== a
 end
 
 @testset "fmpz.comparison..." begin
