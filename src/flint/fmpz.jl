@@ -527,7 +527,7 @@ function ^(x::fmpz, y::Int)
    elseif x == -1
       isodd(y) ? deepcopy(x) : one(x)
    elseif y < 0
-      throw(DomainError("Exponent must be non-negative: $y"))
+      throw(DomainError(y, "Exponent must be non-negative"))
    elseif y == 1
       deepcopy(x)
    else
