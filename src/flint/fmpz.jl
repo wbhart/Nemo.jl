@@ -522,15 +522,19 @@ end
 ###############################################################################
 
 function ^(x::fmpz, y::Int)
-    if isone(x); return x; end
-    if x == -1; return isodd(y) ? x : -x; end
-    if y < 0; throw(DomainError("Exponent must be non-negative: $y")); end
-    if y > typemax(UInt); throw(DomainError("Exponent too large")); end
-    if y == 0; return one(FlintZZ); end
-    if y == 1; return x; end
-    z = fmpz()
-    ccall((:fmpz_pow_ui, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
-    return z
+   if isone(x) || y == 0
+      one(x)
+   elseif x == -1
+      isodd(y) ? deepcopy(x) : one(x)
+   elseif y < 0
+      throw(DomainError(y, "Exponent must be non-negative"))
+   elseif y == 1
+      deepcopy(x)
+   else
+      z = fmpz()
+      ccall((:fmpz_pow_ui, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
+      z
+   end
 end
 
 ###############################################################################
@@ -1415,7 +1419,7 @@ function jacobi_symbol(x::Int, y::Int)
    end
    return Int(ccall((:n_jacobi, :libflint), Cint, (Int, UInt), x, UInt(y)))
 end
-   
+
 @doc Markdown.doc"""
     divisor_sigma(x::fmpz, y::Int)
 > Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
@@ -1448,7 +1452,7 @@ divisor_sigma(x::Int, y::Int) = Int(divisor_sigma(fmpz(x), y))
     euler_phi(x::fmpz)
 > Return the value of the Euler phi function at $x$, i.e. the number of
 > positive integers up to $x$ (inclusive) that are coprime with $x$. An
-> exception is raised if $x \leq 0$. 
+> exception is raised if $x \leq 0$.
 """
 function euler_phi(x::fmpz)
    x <= 0 && throw(DomainError(x, "Argument must be positive"))
