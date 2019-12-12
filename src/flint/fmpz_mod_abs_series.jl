@@ -17,7 +17,7 @@ function O(a::fmpz_mod_abs_series)
       return deepcopy(a)    # 0 + O(x^n)
    end
    prec = length(a) - 1
-   prec < 0 && throw(DomainError("Precision must be non-negative: $prec"))
+   prec < 0 && throw(DomainError(prec, "Precision must be non-negative"))
    z = fmpz_mod_abs_series(modulus(a), Vector{fmpz}(undef, 0), 0, prec)
    z.parent = parent(a)
    return z
@@ -254,7 +254,7 @@ end
 ###############################################################################
 
 function shift_left(x::fmpz_mod_abs_series, len::Int)
-   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
+   len < 0 && throw(DomainError(len, "Shift must be non-negative"))
    xlen = length(x)
    z = parent(x)()
    z.prec = x.prec + len
@@ -270,7 +270,7 @@ function shift_left(x::fmpz_mod_abs_series, len::Int)
 end
 
 function shift_right(x::fmpz_mod_abs_series, len::Int)
-   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
+   len < 0 && throw(DomainError(len, "Shift must be non-negative"))
    xlen = length(x)
    z = parent(x)()
    if len >= xlen
@@ -291,7 +291,7 @@ end
 ###############################################################################
 
 function truncate(x::fmpz_mod_abs_series, prec::Int)
-   prec < 0 && throw(DomainError("Index must be non-negative: $prec"))
+   prec < 0 && throw(DomainError(prec, "Index must be non-negative"))
    if x.prec <= prec
       return x
    end
@@ -310,7 +310,7 @@ end
 ###############################################################################
 
 function ^(a::fmpz_mod_abs_series, b::Int)
-   b < 0 && throw(DomainError("Exponent must be non-negative: $b"))
+   b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    if precision(a) > 0 && isgen(a) && b > 0
       return shift_left(a, b - 1)
    elseif length(a) == 1

@@ -19,7 +19,7 @@ parent_type(::Type{arb_poly}) = ArbPolyRing
 
 elem_type(::Type{ArbPolyRing}) = arb_poly
 
-length(x::arb_poly) = ccall((:arb_poly_length, :libarb), Int, 
+length(x::arb_poly) = ccall((:arb_poly_length, :libarb), Int,
                                    (Ref{arb_poly},), x)
 
 set_length!(x::arb_poly, n::Int) = ccall((:_arb_poly_set_length, :libarb), Nothing,
@@ -28,7 +28,7 @@ set_length!(x::arb_poly, n::Int) = ccall((:_arb_poly_set_length, :libarb), Nothi
 degree(x::arb_poly) = length(x) - 1
 
 function coeff(a::arb_poly, n::Int)
-  n < 0 && throw(DomainError("Index must be non-negative: $n"))
+  n < 0 && throw(DomainError(n, "Index must be non-negative"))
   t = parent(a).base_ring()
   ccall((:arb_poly_get_coeff_arb, :libarb), Nothing,
               (Ref{arb}, Ref{arb_poly}, Int), t, a, n)
@@ -173,7 +173,7 @@ end
 ###############################################################################
 
 function shift_left(x::arb_poly, len::Int)
-  len < 0 && throw(DomainError("Shift must be non-negative: $len"))
+  len < 0 && throw(DomainError(len, "Shift must be non-negative"))
    z = parent(x)()
    ccall((:arb_poly_shift_left, :libarb), Nothing,
       (Ref{arb_poly}, Ref{arb_poly}, Int), z, x, len)
@@ -181,7 +181,7 @@ function shift_left(x::arb_poly, len::Int)
 end
 
 function shift_right(x::arb_poly, len::Int)
-   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
+   len < 0 && throw(DomainError(len, "Shift must be non-negative"))
    z = parent(x)()
    ccall((:arb_poly_shift_right, :libarb), Nothing,
        (Ref{arb_poly}, Ref{arb_poly}, Int), z, x, len)
@@ -231,7 +231,7 @@ function -(x::arb_poly, y::arb_poly)
 end
 
 function ^(x::arb_poly, y::Int)
-  y < 0 && throw(DomainError("Exponent must be non-negative: $y"))
+  y < 0 && throw(DomainError(y, "Exponent must be non-negative"))
   z = parent(x)()
   ccall((:arb_poly_pow_ui, :libarb), Nothing,
               (Ref{arb_poly}, Ref{arb_poly}, UInt, Int),
@@ -325,7 +325,7 @@ end
 ###############################################################################
 
 function truncate(a::arb_poly, n::Int)
-   n < 0 && throw(DomainError("Index must be non-negative: $n"))
+   n < 0 && throw(DomainError(n, "Index must be non-negative"))
    if length(a) <= n
       return a
    end
@@ -337,7 +337,7 @@ function truncate(a::arb_poly, n::Int)
 end
 
 function mullow(x::arb_poly, y::arb_poly, n::Int)
-   n < 0 && throw(DomainError("Index must be non-negative: $n"))
+   n < 0 && throw(DomainError(n, "Index must be non-negative"))
    z = parent(x)()
    ccall((:arb_poly_mullow, :libarb), Nothing,
          (Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Int, Int),

@@ -35,7 +35,7 @@ function Base.hash(a::gfp_fmpz_elem, h::UInt)
    return xor(xor(hash(a.data), h), b)
 end
 
-iszero(a::gfp_fmpz_elem) = a.data == 0                                                        
+iszero(a::gfp_fmpz_elem) = a.data == 0
 
 isone(a::gfp_fmpz_elem) = a.data == 1
 
@@ -371,8 +371,7 @@ end
 ###############################################################################
 
 function GF(n::fmpz; cached::Bool=true)
-   (n <= 0) && throw(DomainError("Characteristic must be positive: $n"))
-   !isprobable_prime(n) && throw(DomainError("Characteristic must be prime: $n"))
+   (n <= 0) && throw(DomainError(n, "Characteristic must be positive"))
+   !isprobable_prime(n) && throw(DomainError(n, "Characteristic must be prime"))
    return GaloisFmpzField(n, cached)
 end
-

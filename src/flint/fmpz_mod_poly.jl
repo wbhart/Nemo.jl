@@ -44,7 +44,7 @@ function degree(x::T) where {T <: Zmodn_fmpz_poly}
 end
 
 function coeff(x::T, n::Int) where {T <: Zmodn_fmpz_poly}
-  n < 0 && throw(DomainError("Index must be non-negative: $n"))
+  n < 0 && throw(DomainError(n, "Index must be non-negative"))
   z = fmpz()
   ccall((:fmpz_mod_poly_get_coeff_fmpz, :libflint), Nothing,
         (Ref{fmpz}, Ref{T}, Int), z, x, n)
@@ -302,7 +302,7 @@ end
 ################################################################################
 
 function ^(x::T, y::Int) where {T <: Zmodn_fmpz_poly}
-  y < 0 && throw(DomainError("Exponent must be non-negative: $y"))
+  y < 0 && throw(DomainError(y, "Exponent must be non-negative"))
   z = parent(x)()
   ccall((:fmpz_mod_poly_pow, :libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, y)
@@ -350,7 +350,7 @@ end
 ################################################################################
 
 function truncate(a::T, n::Int) where {T <: Zmodn_fmpz_poly}
-  n < 0 && throw(DomainError("Index must be non-negative: $n"))
+  n < 0 && throw(DomainError(n, "Index must be non-negative"))
 
   z = deepcopy(a)
 
@@ -365,7 +365,7 @@ end
 
 function mullow(x::T, y::T, n::Int) where {T <: Zmodn_fmpz_poly}
   check_parent(x, y)
-  n < 0 && throw(DomainError("Index must be non-negative: $n"))
+  n < 0 && throw(DomainError(n, "Index must be non-negative"))
 
   z = parent(x)()
   ccall((:fmpz_mod_poly_mullow, :libflint), Nothing,
@@ -381,7 +381,7 @@ end
 ###############################################################################
 
 function reverse(x::T, len::Int) where {T <: Zmodn_fmpz_poly}
-  len < 0 && throw(DomainError("Index must be non-negative: $n"))
+  len < 0 && throw(DomainError(n, "Index must be non-negative"))
   z = parent(x)()
   ccall((:fmpz_mod_poly_reverse, :libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, len)
@@ -395,7 +395,7 @@ end
 ###############################################################################
 
 function shift_left(x::T, len::Int) where {T <: Zmodn_fmpz_poly}
-  len < 0 && throw(DomainError("Shift must be non-negative: $len"))
+  len < 0 && throw(DomainError(len, "Shift must be non-negative"))
   z = parent(x)()
   ccall((:fmpz_mod_poly_shift_left, :libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, len)
@@ -403,7 +403,7 @@ function shift_left(x::T, len::Int) where {T <: Zmodn_fmpz_poly}
 end
 
 function shift_right(x::T, len::Int) where {T <: Zmodn_fmpz_poly}
-  len < 0 && throw(DomainError("Shift must be non-negative: $len"))
+  len < 0 && throw(DomainError(len, "Shift must be non-negative"))
   z = parent(x)()
   ccall((:fmpz_mod_poly_shift_right, :libflint), Nothing,
             (Ref{T}, Ref{T}, Int), z, x, len)

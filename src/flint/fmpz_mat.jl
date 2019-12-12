@@ -381,7 +381,7 @@ end
 > Return $2^yx$.
 """
 function <<(x::fmpz_mat, y::Int)
-   y < 0 && throw(DomainError("Exponent must be non-negative: $y"))
+   y < 0 && throw(DomainError(y, "Exponent must be non-negative"))
    z = similar(x)
    ccall((:fmpz_mat_scalar_mul_2exp, :libflint), Nothing,
                 (Ref{fmpz_mat}, Ref{fmpz_mat}, Int),
@@ -394,7 +394,7 @@ end
 > Return $x/2^y$ where rounding is towards zero.
 """
 function >>(x::fmpz_mat, y::Int)
-   y < 0 && throw(DomainError("Exponent must be non-negative: $y"))
+   y < 0 && throw(DomainError(y, "Exponent must be non-negative"))
    z = similar(x)
    ccall((:fmpz_mat_scalar_tdiv_q_2exp, :libflint), Nothing,
                 (Ref{fmpz_mat}, Ref{fmpz_mat}, Int),
@@ -409,7 +409,7 @@ end
 ###############################################################################
 
 function ^(x::fmpz_mat, y::Int)
-   y < 0 && throw(DomainError("Exponent must be non-negative: $y"))
+   y < 0 && throw(DomainError(y, "Exponent must be non-negative"))
    nrows(x) != ncols(x) && error("Incompatible matrix dimensions")
    z = similar(x)
    ccall((:fmpz_mat_pow, :libflint), Nothing,

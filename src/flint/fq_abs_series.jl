@@ -17,7 +17,7 @@ function O(a::fq_abs_series)
       return deepcopy(a)    # 0 + O(x^n)
    end
    prec = length(a) - 1
-   prec < 0 && throw(DomainError("Valuation must be non-negative: $prec"))
+   prec < 0 && throw(DomainError(prec, "Valuation must be non-negative"))
    z = fq_abs_series(base_ring(a), Vector{fq}(undef, 0), 0, prec)
    z.parent = parent(a)
    return z
@@ -236,7 +236,7 @@ end
 ###############################################################################
 
 function shift_left(x::fq_abs_series, len::Int)
-   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
+   len < 0 && throw(DomainError(len, "Shift must be non-negative"))
    xlen = length(x)
    z = parent(x)()
    z.prec = x.prec + len
@@ -252,7 +252,7 @@ function shift_left(x::fq_abs_series, len::Int)
 end
 
 function shift_right(x::fq_abs_series, len::Int)
-   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
+   len < 0 && throw(DomainError(len, "Shift must be non-negative"))
    xlen = length(x)
    z = parent(x)()
    if len >= xlen
@@ -273,7 +273,7 @@ end
 ###############################################################################
 
 function truncate(x::fq_abs_series, prec::Int)
-   prec < 0 && throw(DomainError("Index must be non-negative: $prec"))
+   prec < 0 && throw(DomainError(prec, "Index must be non-negative"))
    if x.prec <= prec
       return x
    end
@@ -292,7 +292,7 @@ end
 ###############################################################################
 
 function ^(a::fq_abs_series, b::Int)
-   b < 0 && throw(DomainError("Exponent must be non-negative: $b"))
+   b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    if precision(a) > 0 && isgen(a) && b > 0
       return shift_left(a, b - 1)
    elseif length(a) == 1
@@ -564,7 +564,7 @@ end
 
 function (a::FqAbsSeriesRing)(b::fq)
    ctx = base_ring(a)
-   if iszero(b) 
+   if iszero(b)
       z = fq_abs_series(ctx)
       z.prec = a.prec_max
    else

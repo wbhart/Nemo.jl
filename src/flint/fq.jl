@@ -62,7 +62,7 @@ end
 > finite field element.
 """
 function coeff(x::fq, n::Int)
-   n < 0 && throw(DomainError("Index must be non-negative: $n"))
+   n < 0 && throw(DomainError(n, "Index must be non-negative"))
    z = fmpz()
    ccall((:fmpz_poly_get_coeff_fmpz, :libflint), Nothing,
                (Ref{fmpz}, Ref{fq}, Int), z, x, n)

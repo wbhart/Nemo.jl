@@ -1255,7 +1255,7 @@ end
 > Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an Acb.
 """
 function risingfac(x::acb, n::Int)
-  n < 0 && throw(DomainError("Argument must be non-negative: $n"))
+  n < 0 && throw(DomainError(n, "Argument must be non-negative"))
   return risingfac(x, UInt(n))
 end
 
@@ -1273,7 +1273,7 @@ end
 > and its derivative.
 """
 function risingfac2(x::acb, n::Int)
-  n < 0 && throw(DomainError("Argument must be non-negative: $n"))
+  n < 0 && throw(DomainError(n, "Argument must be non-negative"))
   return risingfac2(x, UInt(n))
 end
 
@@ -1483,7 +1483,7 @@ end
 > combination.
 """
 function lindep(A::Array{acb, 1}, bits::Int)
-  bits < 0 && throw(DomainError("Number of bits must be non-negative: $bits"))
+  bits < 0 && throw(DomainError(bits, "Number of bits must be non-negative"))
   n = length(A)
   V = [ldexp(s, bits) for s in A]
   M = zero_matrix(ZZ, n, n + 2)
@@ -1509,7 +1509,7 @@ end
 > array of Nemo integers representing the common linear combination.
 """
 function lindep(A::Array{acb, 2}, bits::Int)
-  bits < 0 && throw(DomainError("Number of bits must be non-negative: $bits"))
+  bits < 0 && throw(DomainError(bits, "Number of bits must be non-negative"))
   m, n = size(A)
   V = [ldexp(s, bits) for s in A]
   M = zero_matrix(ZZ, n, n + 2*m)

@@ -220,7 +220,7 @@ function total_degree_fits_int(a::fmpz_mpoly)
                 (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), a, a.parent)
       return Bool(b)
    end
-   
+
 # Total degree as an Int
 function total_degree(a::fmpz_mpoly)
    d = ccall((:fmpz_mpoly_total_degree_si, :libflint), Int,
@@ -422,7 +422,7 @@ divexact(a::fmpz_mpoly, b::Integer) = divexact(a, fmpz(b))
 ###############################################################################
 
 function ^(a::fmpz_mpoly, b::Int)
-   b < 0 && throw(DomainError("Exponent must be non-negative: $b"))
+   b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    z = parent(a)()
    ccall((:fmpz_mpoly_pow_ui, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}),
@@ -431,7 +431,7 @@ function ^(a::fmpz_mpoly, b::Int)
 end
 
 function ^(a::fmpz_mpoly, b::fmpz)
-   b < 0 && throw(DomainError("Exponent must be non-negative: $b"))
+   b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    z = parent(a)()
    ccall((:fmpz_mpoly_pow_fmpz, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{fmpz}, Ref{FmpzMPolyRing}),
@@ -658,7 +658,7 @@ function (a::fmpz_mpoly)(vals::Union{NCRingElem, RingElement}...)
    end
    return r
 end
-   
+
 ###############################################################################
 #
 #   Unsafe functions
@@ -715,8 +715,8 @@ function combine_like_terms!(a::fmpz_mpoly)
    ccall((:fmpz_mpoly_combine_like_terms, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), a, a.parent)
    return a
-end    
-   
+end
+
 ###############################################################################
 #
 #   Manipulating terms and monomials
@@ -729,23 +729,23 @@ function exponent_vector_fits_ui(a::fmpz_mpoly, i::Int)
              (Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), a, i - 1, a.parent)
       return Bool(b)
 end
-   
+
 # Return true if the exponents of the i-th exp. vector fit into UInts
 function exponent_vector_fits_int(a::fmpz_mpoly, i::Int)
    b = ccall((:fmpz_mpoly_term_exp_fits_si, :libflint), Cint,
              (Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), a, i - 1, a.parent)
    return Bool(b)
 end
-   
+
 # Return Julia array of UInt's corresponding to exponent vector of i-th term
 function exponent_vector_ui(a::fmpz_mpoly, i::Int)
-   z = Vector{UInt}(undef, nvars(parent(a))) 
+   z = Vector{UInt}(undef, nvars(parent(a)))
    ccall((:fmpz_mpoly_get_term_exp_ui, :libflint), Nothing,
          (Ptr{UInt}, Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}),
       z, a, i - 1, parent(a))
    return z
 end
-   
+
 # Return Julia array of Int's corresponding to exponent vector of i-th term
 function exponent_vector(a::fmpz_mpoly, i::Int)
    exponent_vector_fits_int(a, i) ||
@@ -756,7 +756,7 @@ function exponent_vector(a::fmpz_mpoly, i::Int)
       z, a, i - 1, parent(a))
    return z
 end
-   
+
 # Return Julia array of fmpz's corresponding to exponent vector of i-th term
 function exponent_vector_fmpz(a::fmpz_mpoly, i::Int)
    n = nvars(parent(a))
@@ -774,7 +774,7 @@ end
 function exponent_vectors_fmpz(a::fmpz_mpoly)
    return (exponent_vector_fmpz(a, i) for i in 1:length(a))
 end
-   
+
 # Set exponent of n-th term to given vector of UInt's
 # No sort is performed, so this is unsafe. These are promoted to fmpz's if
 # they don't fit into 31/63 bits
@@ -782,13 +782,13 @@ function set_exponent_vector!(a::fmpz_mpoly, n::Int, exps::Vector{UInt})
    if n > length(a)
       ccall((:fmpz_mpoly_resize, :libflint), Nothing,
             (Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), a, n, a.parent)
-   end   
+   end
    ccall((:fmpz_mpoly_set_term_exp_ui, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Int, Ptr{UInt}, Ref{FmpzMPolyRing}),
       a, n - 1, exps, parent(a))
    return a
 end
-   
+
 # Set exponent of n-th term to given vector of Int's
 # No sort is performed, so this is unsafe. The Int's must be positive, but
 # no check is performed
@@ -796,13 +796,13 @@ function set_exponent_vector!(a::fmpz_mpoly, n::Int, exps::Vector{Int})
    if n > length(a)
       ccall((:fmpz_mpoly_resize, :libflint), Nothing,
             (Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), a, n, a.parent)
-   end  
+   end
    ccall((:fmpz_mpoly_set_term_exp_ui, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Int, Ptr{Int}, Ref{FmpzMPolyRing}),
       a, n - 1, exps, parent(a))
    return a
 end
-   
+
 # Set exponent of n-th term to given vector of fmpz's
 # No sort is performed, so this is unsafe
 function set_exponent_vector!(a::fmpz_mpoly, n::Int, exps::Vector{fmpz})
@@ -810,7 +810,7 @@ function set_exponent_vector!(a::fmpz_mpoly, n::Int, exps::Vector{fmpz})
       ccall((:fmpz_mpoly_resize, :libflint), Nothing,
             (Ref{fmpz_mpoly}, Int, Ref{FmpzMPolyRing}), a, n, a.parent)
       return a
-   end  
+   end
    @GC.preserve exps ccall((:fmpz_mpoly_set_term_exp_fmpz, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Int, Ptr{fmpz}, Ref{FmpzMPolyRing}),
       a, n - 1, exps, parent(a))
@@ -844,7 +844,7 @@ function coeff(a::fmpz_mpoly, exps::Vector{Int})
       z, a, exps, parent(a))
    return z
 end
-   
+
 # Set the coefficient of the term with the given exponent vector to the
 # given fmpz. Removal of a zero term is performed.
 function setcoeff!(a::fmpz_mpoly, exps::Vector{UInt}, b::fmpz)
@@ -875,7 +875,7 @@ function sort_terms!(a::fmpz_mpoly)
    ccall((:fmpz_mpoly_sort_terms, :libflint), Nothing,
          (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), a, a.parent)
    return a
-end    
+end
 
 # Return the i-th term of the polynomial, as a polynomial
 function term(a::fmpz_mpoly, i::Int)
@@ -964,15 +964,15 @@ end
 # Create poly with given array of coefficients and array of exponent vectors (sorting is performed)
 function (R::FmpzMPolyRing)(a::Vector{fmpz}, b::Vector{Vector{Int}})
    length(a) != length(b) && error("Coefficient and exponent vector must have the same length")
-   
+
    for i in 1:length(b)
       length(b[i]) != nvars(R) && error("Exponent vector $i has length $(length(b[i])) (expected $(nvars(R)))")
    end
-   
+
    z = fmpz_mpoly(R, a, b)
    return z
 end
-      
+
 # Create poly with given array of coefficients and array of exponent vectors (sorting is performed)
 function (R::FmpzMPolyRing)(a::Vector{Any}, b::Vector{Vector{T}}) where T
    n = nvars(R)

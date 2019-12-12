@@ -227,7 +227,7 @@ characteristic(R::FlintQadicField) = 0
 
 function show(io::IO, x::qadic)
    R = FlintPadicField(prime(parent(x)), parent(x).prec_max)
-   if iszero(x) 
+   if iszero(x)
      print(io, "0")
      return
    end
@@ -580,7 +580,7 @@ end
 > exception is thrown.
 """
 function Base.exp(a::qadic)
-   !iszero(a) && valuation(a) <= 0 && throw(DomainError("Valuation must be positive"))
+   !iszero(a) && valuation(a) <= 0 && throw(DomainError(a, "Valuation must be positive"))
    ctx = parent(a)
    z = qadic(a.N)
    z.parent = ctx
@@ -599,7 +599,7 @@ end
 """
 function log(a::qadic)
    av = valuation(a)
-   (av > 0 || av < 0 || iszero(a)) && throw(DomainError("Valuation must be zero"))
+   (av > 0 || av < 0 || iszero(a)) && throw(DomainError(a, "Valuation must be zero"))
    ctx = parent(a)
    z = qadic(a.N)
    z.parent = ctx
@@ -618,7 +618,7 @@ end
 > thrown.
 """
 function teichmuller(a::qadic)
-   valuation(a) < 0 && throw(DomainError("Valuation must be non-negative"))
+   valuation(a) < 0 && throw(DomainError(a, "Valuation must be non-negative"))
    ctx = parent(a)
    z = qadic(a.N)
    z.parent = ctx

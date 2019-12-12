@@ -14,7 +14,7 @@ export nmod_rel_series, NmodRelSeriesRing
 
 function O(a::nmod_rel_series)
    val = pol_length(a) + valuation(a) - 1
-   val < 0 && throw(DomainError("Valuation must be non-negative: $val"))
+   val < 0 && throw(DomainError(val, "Valuation must be non-negative"))
    z = nmod_rel_series(modulus(a), Vector{UInt}(undef, 0), 0, val, val)
    z.parent = parent(a)
    return z
@@ -312,7 +312,7 @@ end
 ###############################################################################
 
 function shift_left(x::nmod_rel_series, len::Int)
-   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
+   len < 0 && throw(DomainError(len, "Shift must be non-negative"))
    xlen = pol_length(x)
    z = nmod_rel_series(x)
    z.prec = x.prec + len
@@ -322,7 +322,7 @@ function shift_left(x::nmod_rel_series, len::Int)
 end
 
 function shift_right(x::nmod_rel_series, len::Int)
-   len < 0 && throw(DomainError("Shift must be non-negative: $len"))
+   len < 0 && throw(DomainError(len, "Shift must be non-negative"))
    xlen = pol_length(x)
    xval = valuation(x)
    z = parent(x)()
@@ -348,7 +348,7 @@ end
 ###############################################################################
 
 function truncate(x::nmod_rel_series, prec::Int)
-   prec < 0 && throw(DomainError("Index must be non-negative: $prec"))
+   prec < 0 && throw(DomainError(prec, "Index must be non-negative"))
    xlen = pol_length(x)
    xprec = precision(x)
    xval = valuation(x)
@@ -377,7 +377,7 @@ end
 ###############################################################################
 
 function ^(a::nmod_rel_series, b::Int)
-   b < 0 && throw(DomainError("Exponent must be non-negative"))
+   b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    if isgen(a)
       z = parent(a)()
       z = setcoeff!(z, 0, UInt(1))

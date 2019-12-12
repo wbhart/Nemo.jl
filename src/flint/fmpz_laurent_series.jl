@@ -193,7 +193,7 @@ end
 > for padding. It is assumed that the scale factor of $a$ is divisible by $n$.
 """
 function downscale(a::fmpz_laurent_series, n::Int)
-   n <= 0 && throw(DomainError("Scale must be positive: $n"))
+   n <= 0 && throw(DomainError(n, "Scale must be positive"))
    lena = pol_length(a)
    if n == 1 || lena == 0
       return a
@@ -225,7 +225,7 @@ end
 > of $a$ is divisible by $n$.
 """
 function upscale(a::fmpz_laurent_series, n::Int)
-   n <= 0 && throw(DomainError("Scale must be positive: $n"))
+   n <= 0 && throw(DomainError(n, "Scale must be positive"))
    lena = pol_length(a)
    if n == 1 || lena == 0
       return a
