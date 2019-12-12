@@ -1147,7 +1147,7 @@ mutable struct fmpz_mpoly <: MPolyElem{fmpz}
                (Ref{fmpz_mpoly}, Ref{fmpz}, Ptr{UInt}, Ref{FmpzMPolyRing}),
                z, a[i], b[i], ctx)
        end
- 
+
        ccall((:fmpz_mpoly_sort_terms, :libflint), Nothing,
              (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), z, ctx)
        ccall((:fmpz_mpoly_combine_like_terms, :libflint), Nothing,
@@ -1167,7 +1167,7 @@ mutable struct fmpz_mpoly <: MPolyElem{fmpz}
                (Ref{fmpz_mpoly}, Ref{fmpz}, Ptr{Int}, Ref{FmpzMPolyRing}),
                z, a[i], b[i], ctx)
        end
- 
+
        ccall((:fmpz_mpoly_sort_terms, :libflint), Nothing,
              (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), z, ctx)
        ccall((:fmpz_mpoly_combine_like_terms, :libflint), Nothing,
@@ -1187,7 +1187,7 @@ mutable struct fmpz_mpoly <: MPolyElem{fmpz}
                (Ref{fmpz_mpoly}, Ref{fmpz}, Ptr{Ref{fmpz}}, Ref{FmpzMPolyRing}),
                z, a[i], b[i], ctx)
        end
- 
+
        ccall((:fmpz_mpoly_sort_terms, :libflint), Nothing,
              (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}), z, ctx)
        ccall((:fmpz_mpoly_combine_like_terms, :libflint), Nothing,
@@ -1388,7 +1388,7 @@ mutable struct fmpq_mpoly <: MPolyElem{fmpq}
       finalizer(_fmpq_mpoly_clear_fn, z)
       return z
    end
-   
+
    function fmpq_mpoly(ctx::FmpqMPolyRing, a::Int)
       z = new()
       ccall((:fmpq_mpoly_init, :libflint), Nothing,
@@ -1629,7 +1629,9 @@ mutable struct FqNmodFiniteField <: FinField
       end
    end
 
-   function FqNmodFiniteField(f::nmod_poly, s::Symbol, cached::Bool = true)
+   function FqNmodFiniteField(f::nmod_poly, s::Symbol, cached::Bool = true; check::Bool = true)
+      check && !isprime(modulus(f)) &&
+         throw(DomainError(base_ring(f), "the base ring of the polynomial must be a field"))
       if cached && haskey(FqNmodFiniteFieldIDNmodPol, (parent(f), f, s))
          return FqNmodFiniteFieldIDNmodPol[parent(f), f, s]
       else
@@ -1646,8 +1648,9 @@ mutable struct FqNmodFiniteField <: FinField
          return z
       end
    end
-   
-   function FqNmodFiniteField(f::gfp_poly, s::Symbol, cached::Bool = true)
+
+   function FqNmodFiniteField(f::gfp_poly, s::Symbol, cached::Bool = true; check::Bool=true)
+      # check ignored
       if cached && haskey(FqNmodFiniteFieldIDGFPPol, (parent(f), f, s))
          return FqNmodFiniteFieldIDGFPPol[parent(f), f, s]
       else
@@ -1771,7 +1774,9 @@ mutable struct FqFiniteField <: FinField
       end
    end
 
-   function FqFiniteField(f::fmpz_mod_poly, s::Symbol, cached::Bool = true)
+   function FqFiniteField(f::fmpz_mod_poly, s::Symbol, cached::Bool = true; check::Bool = true)
+      check && !isprobable_prime(modulus(f)) &&
+         throw(DomainError(base_ring(f), "the base ring of the polynomial must be a field"))
       if cached && haskey(FqFiniteFieldIDFmpzPol, (f, s))
          return FqFiniteFieldIDFmpzPol[f, s]
       else
@@ -1786,8 +1791,9 @@ mutable struct FqFiniteField <: FinField
          return z
       end
    end
-   
-   function FqFiniteField(f::gfp_fmpz_poly, s::Symbol, cached::Bool = true)
+
+   function FqFiniteField(f::gfp_fmpz_poly, s::Symbol, cached::Bool = true; check::Bool = true)
+      # check ignored
       if cached && haskey(FqFiniteFieldIDGFPPol, (f, s))
          return FqFiniteFieldIDGFPPol[f, s]
       else
@@ -4203,7 +4209,7 @@ mutable struct fq_mat <: MatElem{fq}
    rows::Ptr{Nothing}
    base_ring::FqFiniteField
    view_parent
-   
+
    # used by windows, not finalised!!
    function fq_mat()
       return new()
@@ -4391,7 +4397,7 @@ mutable struct fq_nmod_mat <: MatElem{fq_nmod}
    rows::Ptr{Nothing}
    base_ring::FqNmodFiniteField
    view_parent
-   
+
    # used by windows, not finalised!!
    function fq_nmod_mat()
       return new()
