@@ -652,5 +652,8 @@ end
            @test coeff(f, length(f)) != 0
         end
      end
+
+     f = rand(vars_R)^(fmpz(2)^64)
+     @test_throws DomainError exponent_vector(f, 1)
   end
 end
