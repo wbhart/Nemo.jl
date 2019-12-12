@@ -1907,7 +1907,7 @@ mutable struct FlintPadicField <: FlintLocalField
    prec_max::Int
 
    function FlintPadicField(p::fmpz, prec::Int; cached::Bool = true, check::Bool = true)
-      check && !isprime(p) && throw(DomainError("Characteristic must be prime: $p"))
+      check && !isprobable_prime(p) && throw(DomainError(p, "Characteristic must be prime"))
 
       if cached
          a = (p, prec)
@@ -1977,7 +1977,7 @@ mutable struct FlintQadicField <: FlintLocalField
    prec_max::Int
 
    function FlintQadicField(p::fmpz, d::Int, prec::Int; cached::Bool = true, check::Bool = true)
-      check && !isprime(p) && throw(DomainError("Characteristic must be prime: $p"))
+      check && !isprobable_prime(p) && throw(DomainError(p, "Characteristic must be prime"))
 
       if cached
          a = (p, d, prec)
