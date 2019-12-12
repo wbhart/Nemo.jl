@@ -36,10 +36,13 @@ import AbstractAlgebra: nullspace
 # AbstractAlgebra/Nemo has its own promote_rule, distinct from Base
 # Set, Module, Ring, Group and Field are too generic to pollute the users namespace with
 for i in names(AbstractAlgebra)
-  i in AbstractAlgebra.import_exclude && continue
-  eval(Meta.parse("import AbstractAlgebra." * string(i)))
-  eval(Expr(:export, i))
+   i in AbstractAlgebra.import_exclude && continue
+   i == :GF && continue
+   eval(Meta.parse("import AbstractAlgebra." * string(i)))
+   eval(Expr(:export, i))
 end
+
+export GF
 
 import AbstractAlgebra: Set, Module, Ring, Group, Field, promote_rule
 
