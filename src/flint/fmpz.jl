@@ -150,6 +150,8 @@ one(R::FlintIntegerRing) = fmpz(1)
 """
 zero(R::FlintIntegerRing) = fmpz(0)
 
+# Exists only to support Julia functionality (no guarantees)
+zero(::Type{fmpz}) = fmpz(0)
 
 @doc Markdown.doc"""
     sign(a::fmpz)

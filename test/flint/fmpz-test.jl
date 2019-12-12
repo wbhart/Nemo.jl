@@ -65,10 +65,13 @@ end
 @testset "fmpz.manipulation..." begin
    a = one(FlintIntegerRing())
    b = zero(FlintIntegerRing())
+   c = zero(fmpz)
 
    @test isa(a, RingElem)
 
    @test isa(b, RingElem)
+
+   @test isa(c, RingElem)
 
    @test sign(a) == 1
 
