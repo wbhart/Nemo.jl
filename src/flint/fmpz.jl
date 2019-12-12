@@ -408,7 +408,7 @@ divexact(x::Integer, y::fmpz) = divexact(fmpz(x), y)
 ###############################################################################
 
 function tdivpow2(x::fmpz, c::Int)
-    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
+    c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     z = fmpz()
     ccall((:fmpz_tdiv_q_2exp, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
@@ -416,7 +416,7 @@ function tdivpow2(x::fmpz, c::Int)
 end
 
 function fdivpow2(x::fmpz, c::Int)
-    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
+    c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     z = fmpz()
     ccall((:fmpz_fdiv_q_2exp, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
@@ -424,7 +424,7 @@ function fdivpow2(x::fmpz, c::Int)
 end
 
 function fmodpow2(x::fmpz, c::Int)
-    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
+    c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     z = fmpz()
     ccall((:fmpz_fdiv_r_2exp, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
@@ -432,7 +432,7 @@ function fmodpow2(x::fmpz, c::Int)
 end
 
 function cdivpow2(x::fmpz, c::Int)
-    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
+    c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     z = fmpz()
     ccall((:fmpz_cdiv_q_2exp, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
@@ -636,7 +636,7 @@ end
 > Return $2^cx$ where $c \geq 0$.
 """
 function <<(x::fmpz, c::Int)
-    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
+    c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     c == 0 && return x
     z = fmpz()
     ccall((:fmpz_mul_2exp, :libflint), Nothing,
@@ -649,7 +649,7 @@ end
 > Return $x/2^c$, discarding any remainder, where $c \geq 0$.
 """
 function >>(x::fmpz, c::Int)
-    c < 0 && throw(DomainError("Exponent must be non-negative: $c"))
+    c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     c == 0 && return x
     z = fmpz()
     ccall((:fmpz_fdiv_q_2exp, :libflint), Nothing,
@@ -691,7 +691,7 @@ end
 > Return $x^p (\mod m)$. The remainder will be in the range $[0, m)$
 """
 function powmod(x::fmpz, p::fmpz, m::fmpz)
-    m <= 0 && throw(DomainError("Exponent must be non-negative: $m"))
+    m <= 0 && throw(DomainError(m, "Exponent must be non-negative"))
     if p < 0
        x = invmod(x, m)
        p = -p
@@ -708,7 +708,7 @@ end
 > Return $x^p (\mod m)$. The remainder will be in the range $[0, m)$
 """
 function powmod(x::fmpz, p::Int, m::fmpz)
-    m <= 0 && throw(DomainError("Exponent must be non-negative: $m"))
+    m <= 0 && throw(DomainError(m, "Exponent must be non-negative"))
     if p < 0
        x = invmod(x, m)
        p = -p
@@ -725,7 +725,7 @@ end
 > Return $x^{-1} (\mod m)$. The remainder will be in the range $[0, m)$
 """
 function invmod(x::fmpz, m::fmpz)
-    m <= 0 && throw(DomainError("Modulus must be non-negative: $m"))
+    m <= 0 && throw(DomainError(m, "Modulus must be non-negative"))
     z = fmpz()
     if isone(m)
         return fmpz(0)
@@ -744,7 +744,7 @@ end
 > not terminate.
 """
 function sqrtmod(x::fmpz, m::fmpz)
-    m <= 0 && throw(DomainError("Modulus must be non-negative: $m"))
+    m <= 0 && throw(DomainError(m, "Modulus must be non-negative"))
     z = fmpz()
     if (ccall((:fmpz_sqrtmod, :libflint), Cint,
               (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, m) == 0)
@@ -775,8 +775,8 @@ end
 """
 function crt(r1::fmpz, m1::fmpz, r2::Int, m2::Int, signed = false)
    z = fmpz()
-   r2 < 0 && throw(DomainError("Second residue must be non-negative: $r2"))
-   m2 < 0 && throw(DomainError("Second modulus must be non-negative: $m2"))
+   r2 < 0 && throw(DomainError(r2, "Second residue must be non-negative"))
+   m2 < 0 && throw(DomainError(m2, "Second modulus must be non-negative"))
    ccall((:fmpz_CRT_ui, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Int, Int, Cint),
           z, r1, m1, r2, m2, signed)
@@ -794,8 +794,8 @@ end
 > Return the floor of the logarithm of $x$ to base $c$.
 """
 function flog(x::fmpz, c::fmpz)
-    c <= 0 && throw(DomainError("Base must be non-negative: $c"))
-    x <= 0 && throw(DomainError("Argument must be non-negative: $x"))
+    c <= 0 && throw(DomainError(c, "Base must be non-negative"))
+    x <= 0 && throw(DomainError(x, "Argument must be non-negative"))
     return ccall((:fmpz_flog, :libflint), Int,
                  (Ref{fmpz}, Ref{fmpz}), x, c)
 end
@@ -805,8 +805,8 @@ end
 > Return the ceiling of the logarithm of $x$ to base $c$.
 """
 function clog(x::fmpz, c::fmpz)
-    c <= 0 && throw(DomainError("Base must be non-negative: $c"))
-    x <= 0 && throw(DomainError("Argument must be non-negative: $x"))
+    c <= 0 && throw(DomainError(c, "Base must be non-negative"))
+    x <= 0 && throw(DomainError(x, "Argument must be non-negative"))
     return ccall((:fmpz_clog, :libflint), Int,
                  (Ref{fmpz}, Ref{fmpz}), x, c)
 end
@@ -816,7 +816,7 @@ end
 > Return the floor of the logarithm of $x$ to base $c$.
 """
 function flog(x::fmpz, c::Int)
-    c <= 0 && throw(DomainError("Base must be non-negative: $c"))
+    c <= 0 && throw(DomainError(c, "Base must be non-negative"))
     return ccall((:fmpz_flog_ui, :libflint), Int,
                  (Ref{fmpz}, Int), x, c)
 end
@@ -826,7 +826,7 @@ end
 > Return the ceiling of the logarithm of $x$ to base $c$.
 """
 function clog(x::fmpz, c::Int)
-    c <= 0 && throw(DomainError("Base must be non-negative: $c"))
+    c <= 0 && throw(DomainError(c, "Base must be non-negative"))
     return ccall((:fmpz_clog_ui, :libflint), Int,
                  (Ref{fmpz}, Int), x, c)
 end
@@ -946,8 +946,8 @@ end
 > coprime. We require $b \geq a \geq 0$.
 """
 function gcdinv(a::fmpz, b::fmpz)
-   a < 0 && throw(DomainError("First argument must be non-negative: $a"))
-   b < a && throw(DomainError("First argument $a must be smaller than second argument $b"))
+   a < 0 && throw(DomainError(a, "First argument must be non-negative"))
+   b < a && throw(DomainError((a, b), "First argument must be smaller than second argument"))
    g = fmpz()
    s = fmpz()
    ccall((:fmpz_gcdinv, :libflint), Nothing,
@@ -975,7 +975,7 @@ gcdinv(a::Integer, b::fmpz) = gcdinv(fmpz(a), b)
 > Return the floor of the square root of $x$.
 """
 function isqrt(x::fmpz)
-    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
     ccall((:fmpz_sqrt, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
     return z
@@ -987,7 +987,7 @@ end
 > and the remainder $r$, i.e. such that $x = s^2 + r$. We require $x \geq 0$.
 """
 function isqrtrem(x::fmpz)
-    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     s = fmpz()
     r = fmpz()
     ccall((:fmpz_sqrtrem, :libflint), Nothing,
@@ -1001,7 +1001,7 @@ end
 > exception. We require $x \geq 0$.
 """
 function Base.sqrt(x::fmpz)
-    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     s = fmpz()
     r = fmpz()
     ccall((:fmpz_sqrtrem, :libflint), Nothing,
@@ -1016,7 +1016,7 @@ end
 > $x \geq 0$ if $n$ is even.
 """
 function root(x::fmpz, n::Int)
-   x < 0 && iseven(n) && throw(DomainError("Argument $x must be positive if exponent $n is even"))
+   x < 0 && iseven(n) && throw(DomainError((x, n), "Argument `x` must be positive if exponent `n` is even"))
    n <= 0 && throw(DomainError(n, "Exponent must be positive"))
    z = fmpz()
    ccall((:fmpz_root, :libflint), Nothing,
@@ -1226,9 +1226,9 @@ valuation(x::Integer, y::Integer) = valuation(fmpz(x), fmpz(y))
 > require gcd$(r, m) = 1$ and this condition is not checked.
 """
 function divisor_lenstra(n::fmpz, r::fmpz, m::fmpz)
-   r <= 0 && throw(DomainError("Residue class must be non-negative: $r"))
-   m <= r && throw(DomainError("Modulus must be bigger than residue class: $m"))
-   n <= m && throw(DomainError("Argument must be bigger than modulus: $n"))
+   r <= 0 && throw(DomainError(r, "Residue class must be non-negative"))
+   m <= r && throw(DomainError((m, r), "Modulus must be bigger than residue class"))
+   n <= m && throw(DomainError((n, m), "Argument must be bigger than modulus"))
    z = fmpz()
    if !Bool(ccall((:fmpz_divisor_in_residue_class_lenstra, :libflint),
        Cint, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, n, r, m))
@@ -1255,7 +1255,7 @@ end
 > If $n < 0$ we throw a `DomainError()`.
 """
 function rising_factorial(x::fmpz, n::Int)
-    n < 0 && throw(DomainError("Argument must be non-negative: $n"))
+    n < 0 && throw(DomainError(n, "Argument must be non-negative"))
     z = fmpz()
     ccall((:fmpz_rfac_ui, :libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(n))
@@ -1275,7 +1275,7 @@ rising_factorial(x::fmpz, n::fmpz) = rising_factorial(x, Int(n))
 > If $n < 0$ we throw a `DomainError()`.
 """
 function rising_factorial(x::Int, n::Int)
-    n < 0 && throw(DomainError("Argument must be non-negative: $n"))
+    n < 0 && throw(DomainError(n, "Argument must be non-negative"))
     z = fmpz()
     if x < 0
        if n <= -x # we don't pass zero
@@ -1295,7 +1295,7 @@ end
 > equal to $x$. If $x < 0$ we throw a `DomainError()`.
 """
 function primorial(x::Int)
-    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
     ccall((:fmpz_primorial, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
@@ -1308,7 +1308,7 @@ end
 > equal to $x$. If $x < 0$ we throw a `DomainError()`.
 """
 function primorial(x::fmpz)
-    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
     ccall((:fmpz_primorial, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
@@ -1344,7 +1344,7 @@ end
 > Return the Bell number $B_x$.
 """
 function bell(x::Int)
-    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
     ccall((:arith_bell_number, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
@@ -1356,7 +1356,7 @@ end
 > Return the Bell number $B_x$.
 """
 function bell(x::fmpz)
-    x < 0 && throw(DomainError("Argument must be non-negative: $x"))
+    x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
     ccall((:arith_bell_number, :libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
@@ -1618,7 +1618,7 @@ trailing_zeros(x::fmpz) = ccall((:fmpz_val2, :libflint), Int,
 > that this function modifies its input in-place.
 """
 function clrbit!(x::fmpz, c::Int)
-    c < 0 && throw(DomainError("Second argument must be non-negative: $c"))
+    c < 0 && throw(DomainError(c, "Second argument must be non-negative"))
     ccall((:fmpz_clrbit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 
@@ -1628,7 +1628,7 @@ end
 > that this function modifies its input in-place.
 """
 function setbit!(x::fmpz, c::Int)
-    c < 0 && throw(DomainError("Second argument must be non-negative: $c"))
+    c < 0 && throw(DomainError(c, "Second argument must be non-negative"))
     ccall((:fmpz_setbit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 
@@ -1638,7 +1638,7 @@ end
 > Note that this function modifies its input in-place.
 """
 function combit!(x::fmpz, c::Int)
-    c < 0 && throw(DomainError("Second argument must be non-negative: $c"))
+    c < 0 && throw(DomainError(c, "Second argument must be non-negative"))
     ccall((:fmpz_combit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 
