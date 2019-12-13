@@ -57,13 +57,7 @@ the finite field itself. This is accomplished with one of the following
 constructors.
 
 ```@docs
-FlintFiniteField(::fmpz, ::Int, ::AbstractString)
-FlintFiniteField(::Integer, ::Int, ::AbstractString)
-```
-
-```@docs
-FlintFiniteField(::fmpz_mod_poly, ::AbstractString)
-FlintFiniteField(::gfp_fmpz_poly, ::AbstractString)
+FlintFiniteField
 ```
 
 Here are some examples of creating finite fields and making use of the
@@ -154,4 +148,3 @@ d = frobenius(a)
 f = frobenius(a, 3)
 g = pth_root(a)
 ```
-
