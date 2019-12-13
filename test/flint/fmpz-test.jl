@@ -156,6 +156,13 @@ end
    @test_throws ArgumentError divexact(fmpz(24), fmpz(11))
 end
 
+@testset "fmpz.divides..." begin
+   flag, q = divides(fmpz(12), fmpz(0))
+   @test flag == false
+   @test divides(fmpz(12), fmpz(6)) == (true, fmpz(2))
+   @test divides(fmpz(0), fmpz(0)) == (true, fmpz(0))
+end
+
 @testset "fmpz.gcd_lcm..." begin
    a = fmpz(12)
    b = fmpz(26)
