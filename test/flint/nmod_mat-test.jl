@@ -312,7 +312,7 @@ end
 end
 
 @testset "nmod_mat.binary_ops..." begin
-  Z17 = ResidueRing(ZZ,17)
+  Z17 = ResidueRing(ZZ, 17)
 
   R = MatrixSpace(Z17, 3, 4)
 
