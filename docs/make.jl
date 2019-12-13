@@ -1,9 +1,9 @@
-using Documenter, Nemo
+using Documenter, Nemo, AbstractAlgebra
 
 makedocs(
          format   = :html,
          sitename = "Nemo.jl",
-         modules = [Nemo],
+         modules = [Nemo, AbstractAlgebra],
          clean = true,
          checkdocs = :none,
          doctest = false,
