@@ -51,14 +51,14 @@ zero(m::nmod_mat, R::NmodRing, r::Int, c::Int) = similar(m, R, r, c)
 #
 ################################################################################
 
-@inline function getindex(a::T, i::Int, j::Int) where T <: Zmodn_mat
+@inline function getindex(a::nmod_mat, i::Int, j::Int)
   @boundscheck Generic._checkbounds(a, i, j)
   u = ccall((:nmod_mat_get_entry, :libflint), UInt,
-              (Ref{T}, Int, Int), a, i - 1 , j - 1)
-  return base_ring(a)(u)
+              (Ref{nmod_mat}, Int, Int), a, i - 1 , j - 1)
+  return nmod(u, base_ring(a)) # no reduction needed
 end
 
-#as above, but as a plain UInt
+#as above, but as a plain UInt, no bounds checking
 function getindex_raw(a::T, i::Int, j::Int) where T <: Zmodn_mat
   return ccall((:nmod_mat_get_entry, :libflint), UInt,
                  (Ref{T}, Int, Int), a, i - 1, j - 1)
@@ -66,44 +66,38 @@ end
 
 @inline function setindex!(a::T, u::UInt, i::Int, j::Int) where T <: Zmodn_mat
   @boundscheck Generic._checkbounds(a, i, j)
-  set_entry!(a, i, j, u)
+  R = base_ring(a)
+  setindex_raw!(a, mod(u, R.n), i, j)
 end
 
 @inline function setindex!(a::T, u::fmpz, i::Int, j::Int) where T <: Zmodn_mat
   @boundscheck Generic._checkbounds(a, i, j)
-  set_entry!(a, i, j, u)
+  setindex_raw!(a, u, i, j)
 end
 
 @inline function setindex!(a::nmod_mat, u::nmod, i::Int, j::Int)
   @boundscheck Generic._checkbounds(a, i, j)
   (base_ring(a) != parent(u)) && error("Parent objects must coincide")
-  set_entry!(a, i, j, u.data)
+  setindex_raw!(a, u.data, i, j) # no reduction necessary
 end
 
 setindex!(a::T, u::Integer, i::Int, j::Int) where T <: Zmodn_mat =
         setindex!(a, fmpz(u), i, j)
 
-setindex_t!(a::T, u::V, i::Int, j::Int) where {V <: Union{RingElem, Integer}, T <: Zmodn_mat} =
-  setindex!(a, u, j, i)
-
-function set_entry!(a::T, i::Int, j::Int, u::UInt) where T <: Zmodn_mat
+# as per setindex! but no reduction mod n and no bounds checking
+function setindex_raw!(a::T, u::UInt, i::Int, j::Int) where T <: Zmodn_mat
   ccall((:nmod_mat_set_entry, :libflint), Nothing,
           (Ref{T}, Int, Int, UInt), a, i - 1, j - 1, u)
 end
 
-function set_entry!(a::T, i::Int, j::Int, u::fmpz) where T <: Zmodn_mat
+# as per setindex! but no reduction mod n and no bounds checking
+function setindex_raw!(a::T, u::fmpz, i::Int, j::Int) where T <: Zmodn_mat
   t = fmpz()
   ccall((:fmpz_mod_ui, :libflint), UInt,
           (Ref{fmpz}, Ref{fmpz}, UInt), t, u, a.n)
   tt = ccall((:fmpz_get_ui, :libflint), UInt, (Ref{fmpz}, ), t)
-  set_entry!(a, i, j, tt)
+  setindex_raw!(a, tt, i, j)
 end
-
-set_entry!(a::nmod_mat, i::Int, j::Int, u::nmod) =
-        set_entry!(a, i, j, u.data)
-
-set_entry_t!(a::T, i::Int, j::Int, u::V) where {V <: Union{RingElem, Integer}, T <: Zmodn_mat} =
-  set_entry!(a, j, i, u)
 
 function deepcopy_internal(a::nmod_mat, dict::IdDict)
   z = nmod_mat(nrows(a), ncols(a), a.n)
@@ -733,9 +727,9 @@ function (a::NmodMatSpace)(arr::AbstractArray{BigInt, 2}, transpose::Bool = fals
   return z
 end
 
-function (a::NmodMatSpace)(arr::AbstractArray{BigInt, 1}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{BigInt, 1})
   _check_dim(nrows(a), ncols(a), arr)
-  z = nmod_mat(nrows(a), ncols(a), a.n, arr, transpose)
+  z = nmod_mat(nrows(a), ncols(a), a.n, arr)
   z.base_ring = a.base_ring
   return z
 end
@@ -747,9 +741,9 @@ function (a::NmodMatSpace)(arr::AbstractArray{fmpz, 2}, transpose::Bool = false)
   return z
 end
 
-function (a::NmodMatSpace)(arr::AbstractArray{fmpz, 1}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{fmpz, 1})
   _check_dim(nrows(a), ncols(a), arr)
-  z = nmod_mat(nrows(a), ncols(a), a.n, arr, transpose)
+  z = nmod_mat(nrows(a), ncols(a), a.n, arr)
   z.base_ring = a.base_ring
   return z
 end
@@ -761,9 +755,9 @@ function (a::NmodMatSpace)(arr::AbstractArray{Int, 2}, transpose::Bool = false)
   return z
 end
 
-function (a::NmodMatSpace)(arr::AbstractArray{Int, 1}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{Int, 1})
   _check_dim(nrows(a), ncols(a), arr)
-  z = nmod_mat(nrows(a), ncols(a), a.n, arr, transpose)
+  z = nmod_mat(nrows(a), ncols(a), a.n, arr)
   z.base_ring = a.base_ring
   return z
 end
@@ -776,10 +770,10 @@ function (a::NmodMatSpace)(arr::AbstractArray{nmod, 2}, transpose::Bool = false)
   return z
 end
 
-function (a::NmodMatSpace)(arr::AbstractArray{nmod, 1}, transpose::Bool = false)
+function (a::NmodMatSpace)(arr::AbstractArray{nmod, 1})
   _check_dim(nrows(a), ncols(a), arr)
   (length(arr) > 0 && (base_ring(a) != parent(arr[1]))) && error("Elements must have same base ring")
-  z = nmod_mat(nrows(a), ncols(a), a.n, arr, transpose)
+  z = nmod_mat(nrows(a), ncols(a), a.n, arr)
   z.base_ring = a.base_ring
   return z
 end

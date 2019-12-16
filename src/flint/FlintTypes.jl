@@ -3407,33 +3407,24 @@ mutable struct nmod_mat <: MatElem{nmod}
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_nmod_mat_clear_fn, z)
     if transpose
-      se = set_entry_t!
-      r, c = c, r
-    else
-      se = set_entry!
+      arr = Base.transpose(arr)
     end
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[i, j])
+        setindex_raw!(z, mod(arr[i, j], n), i, j)
       end
     end
     return z
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{UInt, 1}, transpose::Bool = false)
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{UInt, 1})
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_nmod_mat_clear_fn, z)
-    if transpose
-      se = set_entry_t!
-      r,c = c,r
-    else
-      se = set_entry!
-    end
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[(i - 1) * c + j])
+        setindex_raw!(z, mod(arr[(i - 1) * c + j], n), i, j)
       end
     end
     return z
@@ -3445,33 +3436,31 @@ mutable struct nmod_mat <: MatElem{nmod}
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_nmod_mat_clear_fn, z)
     if transpose
-      se = set_entry_t!
-      r,c = c,r
-    else
-      se = set_entry!
+       arr = Base.transpose(arr)
     end
+    t = fmpz()
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[i, j])
+        ccall((:fmpz_mod_ui, :libflint), Nothing,
+	      (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), t, arr[i, j], n)
+	setindex_raw!(z, t, i, j)
       end
     end
     return z
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{fmpz, 1}, transpose::Bool = false)
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{fmpz, 1})
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_nmod_mat_clear_fn, z)
-    if transpose
-      se = set_entry_t!
-      r,c = c,r
-    else
-      se = set_entry!
-    end
+    t = fmpz()
+    n = fmpz(n)
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[(i - 1) * c + j])
+        ccall((:fmpz_mod_ui, :libflint), Nothing,
+              (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), t, arr[(i - 1) * c + j], n)
+        setindex!(z, t, i, j)
       end
     end
     return z
@@ -3482,9 +3471,9 @@ mutable struct nmod_mat <: MatElem{nmod}
     return nmod_mat(r, c, n, arr_fmpz, transpose)
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{T, 1}, transpose::Bool = false) where {T <: Integer}
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{T, 1}) where {T <: Integer}
     arr_fmpz = map(fmpz, arr)
-    return nmod_mat(r, c, n, arr_fmpz, transpose)
+    return nmod_mat(r, c, n, arr_fmpz)
   end
 
   function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{nmod, 2}, transpose::Bool = false)
@@ -3493,33 +3482,24 @@ mutable struct nmod_mat <: MatElem{nmod}
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_nmod_mat_clear_fn, z)
     if transpose
-      se = set_entry_t!
-      r,c = c,r
-    else
-      se = set_entry!
+      arr = Base.transpose(arr)
     end
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[i, j])
+        setindex_raw!(z, arr[i, j].data, i, j) # no reduction necessary
       end
     end
     return z
   end
 
-  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{nmod, 1}, transpose::Bool = false)
+  function nmod_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{nmod, 1})
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_nmod_mat_clear_fn, z)
-    if transpose
-      se = set_entry_t!
-      r, c = c, r
-    else
-      se = set_entry!
-    end
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[(i - 1) * c + j])
+        setindex_raw!(z, arr[(i - 1) * c + j].data, i, j) # no reduction necessary
       end
     end
     return z
@@ -3756,33 +3736,24 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_gfp_mat_clear_fn, z)
     if transpose
-      se = set_entry_t!
-      r, c = c, r
-    else
-      se = set_entry!
+      arr = Base.transpose(arr)
     end
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[i, j])
+        setindex_raw!(z, mod(arr[i, j], n), i, j)
       end
     end
     return z
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{UInt, 1}, transpose::Bool = false)
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{UInt, 1})
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_gfp_mat_clear_fn, z)
-    if transpose
-      se = set_entry_t!
-      r, c = c, r
-    else
-      se = set_entry!
-    end
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[(i - 1) * c + j])
+        setindex_raw!(z, mod(arr[(i - 1) * c + j], n), i, j)
       end
     end
     return z
@@ -3794,33 +3765,30 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_gfp_mat_clear_fn, z)
     if transpose
-      se = set_entry_t!
-      r, c = c, r
-    else
-      se = set_entry!
+       arr = Base.transpose(arr)
     end
+    t = fmpz()
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[i, j])
+        ccall((:fmpz_mod_ui, :libflint), Nothing,
+              (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), t, arr[i, j], n)
+        setindex_raw!(z, t, i, j)
       end
     end
     return z
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{fmpz, 1}, transpose::Bool = false)
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{fmpz, 1})
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_gfp_mat_clear_fn, z)
-    if transpose
-      se = set_entry_t!
-      r, c = c, r
-    else
-      se = set_entry!
-    end
+    t = fmpz()
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[(i - 1) * c + j])
+        ccall((:fmpz_mod_ui, :libflint), Nothing,
+              (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), t, arr[(i - 1) * c + j], n)
+        setindex!(z, t, i, j)
       end
     end
     return z
@@ -3831,9 +3799,9 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
     return gfp_mat(r, c, n, arr_fmpz, transpose)
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{T, 1}, transpose::Bool = false) where {T <: Integer}
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{T, 1}) where {T <: Integer}
     arr_fmpz = map(fmpz, arr)
-    return gfp_mat(r, c, n, arr_fmpz, transpose)
+    return gfp_mat(r, c, n, arr_fmpz)
   end
 
   function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{gfp_elem, 2}, transpose::Bool = false)
@@ -3842,33 +3810,24 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_gfp_mat_clear_fn, z)
     if transpose
-      se = set_entry_t!
-      r, c = c, r
-    else
-      se = set_entry!
+      arr = Base.transpose(arr)
     end
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[i, j])
+        setindex_raw!(z, arr[i, j].data, i, j) # no reduction necessary
       end
     end
     return z
   end
 
-  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{gfp_elem, 1}, transpose::Bool = false)
+  function gfp_mat(r::Int, c::Int, n::UInt, arr::AbstractArray{gfp_elem, 1})
     z = new()
     ccall((:nmod_mat_init, :libflint), Nothing,
             (Ref{gfp_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_gfp_mat_clear_fn, z)
-    if transpose
-      se = set_entry_t!
-      r, c = c, r
-    else
-      se = set_entry!
-    end
     for i = 1:r
       for j = 1:c
-        se(z, i, j, arr[(i - 1) * c + j])
+        setindex_raw!(z, arr[(i - 1) * c + j].data, i, j) # no reduction necessary
       end
     end
     return z
