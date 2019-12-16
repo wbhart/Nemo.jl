@@ -303,7 +303,7 @@ isprime(::fmpz)
 ```
 
 ```@docs
-isprobabprime(::fmpz)
+isprobable_prime(::fmpz)
 ```
 
 ```@docs
@@ -335,7 +335,7 @@ fibonacci(::fmpz)
 ```
 
 ```@docs
-bell(:fmpz)
+bell(::fmpz)
 bell(::Int)
 ```
 

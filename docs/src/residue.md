@@ -47,7 +47,7 @@ The other residue types in Nemo also implement this functionality.
 
 ```@docs
 gcdx(::nmod, ::nmod)
-gcdx(::ResElem{fmpz}, ::ResElem{fmpz})
+gcdx(::fmpz_mod, ::fmpz_mod)
 ```
 
 **Examples**
