@@ -792,7 +792,13 @@ end
 
 (a::FlintRationalField)() = fmpq(fmpz(0), fmpz(1))
 
-(a::FlintRationalField)(b::Rational) = fmpq(numerator(b), denominator(b))
+function (a::FlintRationalField)(b::Rational)
+   if denominator(b) < 0 # work around a Julia bug
+      return fmpq(fmpz(numerator(b)), -fmpz(denominator(b)))
+   else
+      return fmpq(numerator(b), denominator(b))
+   end
+end
 
 (a::FlintRationalField)(b::Integer) = fmpq(b)
 
