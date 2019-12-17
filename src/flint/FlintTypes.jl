@@ -128,13 +128,21 @@ mutable struct fmpq <: FracElem{fmpz}
    function fmpq(a::Int, b::Int)
       b == 0 && throw(DivideError())
       z = new()
-      if b < 0 # Flint requires positive denominator
-         b = -b
-         a = -a
+      if b == typemin(Int) || (b < 0 && a == typemin(Int))
+         bz = -ZZ(b)
+         az = -ZZ(a)
+         ccall((:fmpq_init, :libflint), Nothing, (Ref{fmpq},), z)
+         ccall((:fmpq_set_fmpz_frac, :libflint), Nothing,
+	       (Ref{fmpq}, Ref{fmpz}, Ref{fmpz}), z, az, bz)
+      else
+         if b < 0 # Flint requires positive denominator
+            b = -b
+            a = -a
+         end
+         ccall((:fmpq_init, :libflint), Nothing, (Ref{fmpq},), z)
+         ccall((:fmpq_set_si, :libflint), Nothing,
+               (Ref{fmpq}, Int, Int), z, a, b)
       end
-      ccall((:fmpq_init, :libflint), Nothing, (Ref{fmpq},), z)
-      ccall((:fmpq_set_si, :libflint), Nothing,
-            (Ref{fmpq}, Int, Int), z, a, b)
       finalizer(_fmpq_clear_fn, z)
       return z
    end
