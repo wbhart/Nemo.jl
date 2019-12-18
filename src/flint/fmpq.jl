@@ -93,7 +93,7 @@ end
     sign(a::fmpq)
 > Return the sign of $a$ ($-1$, $0$ or $1$) as a fraction.
 """
-sign(a::fmpq) = sign(numerator(a))
+sign(a::fmpq) = fmpq(sign(numerator(a)))
 
 @doc Markdown.doc"""
     abs(a::fmpq)
