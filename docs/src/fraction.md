@@ -69,6 +69,10 @@ abs(::fmpq)
 ```
 
 ```@docs
+sign(::fmpq)
+```
+
+```@docs
 height(::fmpq)
 ```
 
