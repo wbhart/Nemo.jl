@@ -78,6 +78,10 @@ end
 
    @test abs(a) == fmpz(2)//3
 
+   @test sign(fmpq(-2, 3)) == -1
+   @test sign(fmpq()) == 0
+   @test sign(fmpq(1, 7)) == 1
+
    @test isone(one(R))
 
    @test iszero(zero(R))
