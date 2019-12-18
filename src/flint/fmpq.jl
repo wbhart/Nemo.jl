@@ -458,6 +458,7 @@ function inv(a::fmpq)
 ###############################################################################
 
 function divexact(a::fmpq, b::fmpq)
+   iszero(b) && throw(DivideError())
    z = fmpq()
    ccall((:fmpq_div, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpq}), z, a, b)
@@ -467,7 +468,7 @@ end
 div(a::fmpq, b::fmpq) = divexact(a, b)
 
 function rem(a::fmpq, b::fmpq)
-   iszero(b) && throw("Divide by zero in rem")
+   iszero(b) && throw(DivideError())
    return fmpq(0)
 end
 
@@ -478,6 +479,7 @@ end
 ###############################################################################
 
 function divexact(a::fmpq, b::fmpz)
+   iszero(b) && throw(DivideError())
    z = fmpq()
    ccall((:fmpq_div_fmpz, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpz}), z, a, b)
@@ -506,6 +508,7 @@ divexact(a::Rational{T}, b::fmpq) where {T <: Integer} = divexact(fmpq(a), b)
 > $a$.
 """
 function mod(a::fmpq, b::fmpz)
+   iszero(b) && throw(DivideError())
    z = fmpz()
    ccall((:fmpq_mod_fmpz, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpq}, Ref{fmpz}), z, a, b)
