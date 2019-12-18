@@ -269,6 +269,10 @@ function abs(x::fmpz)
     return z
 end
 
+floor(x::fmpz) = x
+
+ceil(x::fmpz) = x
+
 ###############################################################################
 #
 #   Binary operators and functions
