@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-export fq_mat, FqMatSpace, getindex, setindex!, set_entry!, deepcopy,
+export fq_mat, FqMatSpace, getindex, setindex!, deepcopy,
        parent, base_ring, zero, one, transpose,
        transpose!, rref, rref!, tr, det, rank, inv, solve, lu,
        sub, hcat, vcat, Array, lift, lift!, MatrixSpace, check_parent,

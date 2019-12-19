@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-export nmod_mat, NmodMatSpace, getindex, setindex!, set_entry!, deepcopy,
+export nmod_mat, NmodMatSpace, getindex, setindex!, deepcopy,
        parent, base_ring, zero, one, transpose,
        transpose!, rref, rref!, tr, det, rank, inv, solve, lu,
        sub, hcat, vcat, Array, lift, lift!, MatrixSpace, check_parent,
