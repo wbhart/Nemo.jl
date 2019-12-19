@@ -90,6 +90,12 @@ function denominator(a::fmpq)
 end
 
 @doc Markdown.doc"""
+    sign(a::fmpq)
+> Return the sign of $a$ ($-1$, $0$ or $1$) as a fraction.
+"""
+sign(a::fmpq) = fmpq(sign(numerator(a)))
+
+@doc Markdown.doc"""
     abs(a::fmpq)
 > Return the absolute value of $a$.
 """
@@ -792,7 +798,14 @@ end
 
 (a::FlintRationalField)() = fmpq(fmpz(0), fmpz(1))
 
-(a::FlintRationalField)(b::Rational) = fmpq(numerator(b), denominator(b))
+function (a::FlintRationalField)(b::Rational)
+   # work around Julia bug, https://github.com/JuliaLang/julia/issues/32569
+   if denominator(b) < 0
+      return fmpq(fmpz(numerator(b)), -fmpz(denominator(b)))
+   else
+      return fmpq(numerator(b), denominator(b))
+   end
+end
 
 (a::FlintRationalField)(b::Integer) = fmpq(b)
 
