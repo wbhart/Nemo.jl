@@ -271,8 +271,11 @@ end
 @testset "fmpq.exact_division..." begin
    a = -fmpz(2)//3
    b = fmpz(1)//2
+   c = fmpz(0)//1
 
    @test divexact(a, b) == fmpz(-4)//3
+
+   @test_throws DivideError divexact(a, c)
 end
 
 @testset "fmpq.adhoc_exact_division..." begin
@@ -293,6 +296,12 @@ end
    @test divexact(2//1, a) == -fmpz(6)//2
 
    @test divexact(BigInt(2)//BigInt(1), a) == -fmpz(6)//2
+
+   @test_throws DivideError divexact(a, 0)
+
+   @test_throws DivideError divexact(a, 0//1)
+
+   @test_throws DivideError divexact(a, ZZ(0))
 end
 
 @testset "fmpq.modular_arithmetic..." begin
