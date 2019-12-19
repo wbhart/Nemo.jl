@@ -157,7 +157,7 @@ zero(::Type{fmpz}) = fmpz(0)
     sign(a::fmpz)
 > Returns the sign of $a$, i.e. $+1$, $0$ or $-1$.
 """
-sign(a::fmpz) = Int(ccall((:fmpz_sgn, :libflint), Cint, (Ref{fmpz},), a))
+sign(a::fmpz) = fmpz(ccall((:fmpz_sgn, :libflint), Cint, (Ref{fmpz},), a))
 
 @doc Markdown.doc"""
     fits(::Type{Int}, a::fmpz)
@@ -268,6 +268,10 @@ function abs(x::fmpz)
     ccall((:fmpz_abs, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
     return z
 end
+
+floor(x::fmpz) = x
+
+ceil(x::fmpz) = x
 
 ###############################################################################
 #
