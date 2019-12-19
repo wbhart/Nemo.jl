@@ -41,6 +41,8 @@
 
    @test fmpq(3, -5) == -fmpq(3, 5)
 
+   @test FlintQQ(2//typemin(Int)) == 1//(div(typemin(Int), 2))
+
    @test fmpq(2^62, 1) == 2^62
 
    @test fmpq(typemin(Int), 1) == typemin(Int)
