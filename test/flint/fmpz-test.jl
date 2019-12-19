@@ -75,6 +75,8 @@ end
 
    @test sign(a) == 1
 
+   @test sign(a) isa fmpz
+
    @test fits(Int, a)
 
    @test fits(UInt, a)
@@ -92,6 +94,10 @@ end
    @test numerator(fmpz(12)) == fmpz(12)
 
    @test denominator(fmpz(12)) == fmpz(1)
+
+   @test floor(fmpz(12)) == fmpz(12)
+
+   @test ceil(fmpz(12)) == fmpz(12)
 
    @test iseven(fmpz(12))
    @test isodd(fmpz(13))

@@ -90,6 +90,12 @@ function denominator(a::fmpq)
 end
 
 @doc Markdown.doc"""
+    sign(a::fmpq)
+> Return the sign of $a$ ($-1$, $0$ or $1$) as a fraction.
+"""
+sign(a::fmpq) = fmpq(sign(numerator(a)))
+
+@doc Markdown.doc"""
     abs(a::fmpq)
 > Return the absolute value of $a$.
 """
@@ -458,6 +464,7 @@ function inv(a::fmpq)
 ###############################################################################
 
 function divexact(a::fmpq, b::fmpq)
+   iszero(b) && throw(DivideError())
    z = fmpq()
    ccall((:fmpq_div, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpq}), z, a, b)
@@ -467,7 +474,7 @@ end
 div(a::fmpq, b::fmpq) = divexact(a, b)
 
 function rem(a::fmpq, b::fmpq)
-   iszero(b) && throw("Divide by zero in rem")
+   iszero(b) && throw(DivideError())
    return fmpq(0)
 end
 
@@ -478,6 +485,7 @@ end
 ###############################################################################
 
 function divexact(a::fmpq, b::fmpz)
+   iszero(b) && throw(DivideError())
    z = fmpq()
    ccall((:fmpq_div_fmpz, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Ref{fmpz}), z, a, b)
@@ -506,6 +514,7 @@ divexact(a::Rational{T}, b::fmpq) where {T <: Integer} = divexact(fmpq(a), b)
 > $a$.
 """
 function mod(a::fmpq, b::fmpz)
+   iszero(b) && throw(DivideError())
    z = fmpz()
    ccall((:fmpq_mod_fmpz, :libflint), Nothing,
          (Ref{fmpz}, Ref{fmpq}, Ref{fmpz}), z, a, b)
@@ -793,7 +802,8 @@ end
 (a::FlintRationalField)() = fmpq(fmpz(0), fmpz(1))
 
 function (a::FlintRationalField)(b::Rational)
-   if denominator(b) < 0 # work around a Julia bug
+   # work around Julia bug, https://github.com/JuliaLang/julia/issues/32569
+   if denominator(b) < 0
       return fmpq(fmpz(numerator(b)), -fmpz(denominator(b)))
    else
       return fmpq(numerator(b), denominator(b))
