@@ -75,6 +75,8 @@ end
 
    @test sign(a) == 1
 
+   @test sign(a) isa fmpz
+
    @test fits(Int, a)
 
    @test fits(UInt, a)

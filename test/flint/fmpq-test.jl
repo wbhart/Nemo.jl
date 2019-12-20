@@ -41,6 +41,8 @@
 
    @test fmpq(3, -5) == -fmpq(3, 5)
 
+   @test FlintQQ(2//typemin(Int)) == 1//(div(typemin(Int), 2))
+
    @test fmpq(2^62, 1) == 2^62
 
    @test fmpq(typemin(Int), 1) == typemin(Int)
@@ -268,6 +270,8 @@ end
    a = -fmpz(2)//3
 
    @test a^(-12) == fmpz(531441)//4096
+
+   @test_throws DivideError fmpq(0)^-1
 end
 
 @testset "fmpq.inversion..." begin
@@ -312,6 +316,10 @@ end
    @test_throws DivideError divexact(a, 0//1)
 
    @test_throws DivideError divexact(a, ZZ(0))
+
+   @test_throws DivideError divexact(12, QQ(0))
+
+   @test_throws DivideError divexact(ZZ(12), QQ(0))
 end
 
 @testset "fmpq.modular_arithmetic..." begin
