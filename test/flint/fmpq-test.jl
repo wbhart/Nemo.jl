@@ -317,9 +317,9 @@ end
 
    @test_throws DivideError divexact(a, ZZ(0))
 
-   @test_throws DivideError(12, QQ(0))
+   @test_throws DivideError divexact(12, QQ(0))
 
-   @test_throws DivideError(ZZ(12), QQ(0))
+   @test_throws DivideError divexact(ZZ(12), QQ(0))
 end
 
 @testset "fmpq.modular_arithmetic..." begin
