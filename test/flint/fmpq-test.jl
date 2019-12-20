@@ -270,6 +270,8 @@ end
    a = -fmpz(2)//3
 
    @test a^(-12) == fmpz(531441)//4096
+
+   @test_throws DivideError fmpq(0)^-1
 end
 
 @testset "fmpq.inversion..." begin
@@ -314,6 +316,10 @@ end
    @test_throws DivideError divexact(a, 0//1)
 
    @test_throws DivideError divexact(a, ZZ(0))
+
+   @test_throws DivideError(12, QQ(0))
+
+   @test_throws DivideError(ZZ(12), QQ(0))
 end
 
 @testset "fmpq.modular_arithmetic..." begin
