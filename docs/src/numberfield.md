@@ -187,10 +187,6 @@ denominator(::nf_elem)
 degree(::AnticNumberField)
 ```
 
-```@docs
-signature(::AnticNumberField)
-```
-
 **Examples**
 
 ```julia
