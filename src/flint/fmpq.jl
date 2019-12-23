@@ -395,6 +395,7 @@ isless(a::fmpq, b::Rational{T}) where {T <: Integer} = isless(a, fmpq(b))
 ###############################################################################
 
 function ^(a::fmpq, b::Int)
+   iszero(a) && b < 0 && throw(DivideError())
    temp = fmpq()
    ccall((:fmpq_pow_si, :libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq}, Int), temp, a, b)
@@ -450,7 +451,7 @@ function Base.sqrt(a::fmpq)
 
 function inv(a::fmpq)
     if iszero(a)
-      throw(error("Element not invertible"))
+       throw(error("Element not invertible"))
     end
     z = fmpq()
     ccall((:fmpq_inv, :libflint), Nothing, (Ref{fmpq}, Ref{fmpq}), z, a)
@@ -492,11 +493,17 @@ function divexact(a::fmpq, b::fmpz)
    return z
 end
 
-divexact(a::fmpz, b::fmpq) = inv(b)*a
+function divexact(a::fmpz, b::fmpq)
+   iszero(b) && throw(DivideError())
+   return inv(b)*a
+end
 
 divexact(a::fmpq, b::Integer) = divexact(a, fmpz(b))
 
-divexact(a::Integer, b::fmpq) = inv(b)*a
+function divexact(a::Integer, b::fmpq)
+   iszero(b) && throw(DivideError())
+   return inv(b)*a
+end
 
 divexact(a::fmpq, b::Rational{T}) where {T <: Integer} = divexact(a, fmpq(b))
 
