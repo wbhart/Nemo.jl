@@ -451,6 +451,12 @@ setbit!(::fmpz, ::Int)
 combit!(::fmpz, ::Int)
 ```
 
+### Random generation
+
+```@docs
+rand_bits(::FlintIntegerRing, ::Int)
+```
+
 **Examples**
 
 ```julia

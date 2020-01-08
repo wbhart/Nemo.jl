@@ -42,7 +42,7 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        moebius_mu, primorial, rising_factorial, number_of_partitions,
        canonical_unit, needs_parentheses, displayed_with_minus_in_front,
        show_minus_one, addeq!, mul!, isunit, isequal,
-       iszero, rand, binomial, factorial
+       iszero, rand, rand_bits, binomial, factorial
 
 ###############################################################################
 #
@@ -1429,7 +1429,7 @@ end
 @doc Markdown.doc"""
     divisor_sigma(x::fmpz, y::Int)
 > Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
-> "x \leq 0$ or $y < 0$ we throw a `DomainError()`.
+> $x \leq 0$ or $y < 0$ we throw a `DomainError()`.
 """
 function divisor_sigma(x::fmpz, y::Int)
    x <= 0 && throw(DomainError(x, "Argument must be positive"))
@@ -1730,6 +1730,18 @@ end
 
 function rand(rng::AbstractRNG, R::FlintIntegerRing, n::UnitRange{Int})
    return R(rand(rng, n))
+end
+
+@doc Markdown.doc"""
+    rand_bits(::FlintIntegerRing, b::Int)
+> Return a random signed integer whose absolute value has $b$ bits.
+"""
+function rand_bits(::FlintIntegerRing, b::Int)
+   b >= 0 || throw(DomainError(b, "Bit count must be non-negative"))
+   z = fmpz()
+   ccall((:fmpz_randbits, :libflint), Nothing,(Ref{fmpz}, Ptr{Cvoid}, Int),
+         z, _flint_rand_states[Threads.threadid()].ptr, b)
+   return z
 end
 
 ###############################################################################

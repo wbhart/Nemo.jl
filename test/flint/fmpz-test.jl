@@ -38,6 +38,12 @@ end
    @test t isa fmpz
    Random.seed!(rng, 0)
    @test t == rand(rng, FlintZZ, 1:9)
+
+   for bits in 0:100
+      t = rand_bits(FlintZZ, bits)
+      @test abs(t) < fmpz(2)^bits
+      @test bits < 1 || abs(t) >= fmpz(2)^(bits - 1)
+   end
 end
 
 @testset "fmpz.printing..." begin
