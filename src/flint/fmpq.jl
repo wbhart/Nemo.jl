@@ -7,7 +7,7 @@
 export fmpq, FlintQQ, FractionField, Rational, FlintRationalField, height,
        height_bits, isless, reconstruct, next_minimal, next_signed_minimal,
        next_calkin_wilf, next_signed_calkin_wilf, dedekind_sum, harmonic,
-       bernoulli, bernoulli_cache
+       bernoulli, bernoulli_cache, rand_bits
 
 ###############################################################################
 #
@@ -832,6 +832,26 @@ end
 (a::FlintRationalField)(b::fmpz, c::fmpz) = fmpq(b, c)
 
 (a::FlintRationalField)(b::fmpq) = b
+
+###############################################################################
+#
+#   Random generation
+#
+###############################################################################
+
+@doc Markdown.doc"""
+    rand_bits(::FlintRationalField, b::Int)
+> Return a random signed rational whose numerator and denominator both have $b$
+> bits before canonicalisation. Note that the resulting numerator and
+> denominator can be smaller than $b$ bits.
+"""
+function rand_bits(::FlintRationalField, b::Int)
+   b > 0 || throw(DomainError(b, "Bit count must be positive"))
+   z = fmpq()
+   ccall((:fmpq_randbits, :libflint), Nothing, (Ref{fmpq}, Ptr{Cvoid}, Int),
+         z, _flint_rand_states[Threads.threadid()].ptr, b)
+   return z
+end
 
 ###############################################################################
 #

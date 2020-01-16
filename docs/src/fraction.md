@@ -182,6 +182,12 @@ next_calkin_wilf(fmpz(321)//113)
 next_signed_calkin_wilf(-fmpz(51)//(17))
 ```
 
+### Random generation
+
+```@docs
+rand_bits(::FlintRationalField, b::Int)
+```
+
 ### Special functions
 
 The following special functions are available for specific rings in Nemo.

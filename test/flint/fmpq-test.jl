@@ -54,6 +54,13 @@
    @test fmpq(typemin(Int)) == typemin(Int)
 end
 
+@testset "fmpq.rand..." begin
+   for bits in 1:100
+      t = rand_bits(FlintQQ, bits)
+      @test height_bits(t) <= bits
+   end
+end
+
 @testset "fmpq.printing..." begin
    a = FlintQQ(1, 2)
 
