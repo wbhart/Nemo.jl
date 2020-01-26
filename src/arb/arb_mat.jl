@@ -21,7 +21,7 @@ function similar(::arb_mat, R::ArbField, r::Int, c::Int)
    return z
 end
 
-zero(m::arb_mat, R::ArbField, r::Int, c::Int) = zero(m, R, r, c)
+zero(m::arb_mat, R::ArbField, r::Int, c::Int) = similar(m, R, r, c)
 
 ###############################################################################
 #
