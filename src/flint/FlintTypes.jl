@@ -2001,7 +2001,7 @@ mutable struct FlintQadicField <: FlintLocalField
       end
 
       z = new()
-      ccall((:qadic_ctx_init_conway, :libflint), Nothing,
+      ccall((:qadic_ctx_init, :libflint), Nothing,
            (Ref{FlintQadicField}, Ref{fmpz}, Int, Int, Int, Cstring, Cint),
                                      z, p, d, 0, 0, "a", 0)
       finalizer(_qadic_ctx_clear_fn, z)
