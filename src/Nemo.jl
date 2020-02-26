@@ -257,21 +257,15 @@ function __init__()
    ccall((:flint_set_abort, libflint), Nothing,
          (Ptr{Nothing},), @cfunction(flint_abort, Nothing, ()))
 
-   if isinteractive()
-       oscar_loading = haskey(Base.package_locks,
-                              Base.PkgId(Base.UUID("f1435218-dba5-11e9-1e4d-f1a5fab5fc13"),
-                                         "Oscar"))
+   if isinteractive() &&
+         !any(x -> x.name in ("Hecke", "Oscar"), keys(Base.package_locks)) &&
+         get(ENV, "NEMO_PRINT_BANNER", "true") != "false"
 
-       print_banner = oscar_loading ? "false" :
-                                      get(ENV, "NEMO_PRINT_BANNER", "true")
-
-       if print_banner == "true"
-          println("")
-          println("Welcome to Nemo version $(version())")
-          println("")
-          println("Nemo comes with absolutely no warranty whatsoever")
-          println("")
-       end
+      println("")
+      println("Welcome to Nemo version $(version())")
+      println("")
+      println("Nemo comes with absolutely no warranty whatsoever")
+      println("")
    end
 
   t = create_accessors(AnticNumberField, Dict, get_handle())
