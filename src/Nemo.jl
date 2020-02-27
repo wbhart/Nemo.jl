@@ -171,7 +171,7 @@ function show_active(l::UInt = UInt(0), frames::Int = 2)
     v = active_mem[i]
     if v[2] >= l
       n = min(frames, length(v[3]))
-      Base.show_backtrace(STDOUT, v[3][1:n])
+      Base.show_backtrace(stdout, v[3][1:n])
     end
   end
 end
@@ -183,16 +183,16 @@ function trace_memory(b::Bool)
   if b
     ccall((:__gmp_set_memory_functions, libgmp), Nothing,
        (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
-       cfunction(trace_counted_malloc, UInt, (UInt, )),
-       cfunction(trace_counted_realloc, UInt, (UInt, UInt, UInt)),
-       cfunction(trace_counted_free, Nothing, (UInt, UInt)))
+       @cfunction(trace_counted_malloc, UInt, (UInt, )),
+       @cfunction(trace_counted_realloc, UInt, (UInt, UInt, UInt)),
+       @cfunction(trace_counted_free, Nothing, (UInt, UInt)))
 
     ccall((:__flint_set_memory_functions, libflint), Nothing,
        (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
-       cfunction(trace_malloc, UInt, (UInt, )),
-       cfunction(trace_calloc, UInt, (UInt, UInt)),
-       cfunction(trace_realloc, UInt, (UInt, UInt)),
-       cfunction(trace_free, Nothing, (UInt, )))
+       @cfunction(trace_malloc, UInt, (UInt, )),
+       @cfunction(trace_calloc, UInt, (UInt, UInt)),
+       @cfunction(trace_realloc, UInt, (UInt, UInt)),
+       @cfunction(trace_free, Nothing, (UInt, )))
   else
     ccall((:__gmp_set_memory_functions, libgmp), Nothing,
        (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
