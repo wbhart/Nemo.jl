@@ -104,7 +104,7 @@ parent_type(::Type{padic}) = FlintPadicField
 
 function Base.deepcopy_internal(a::padic, dict::IdDict)
    z = parent(a)()
-   ccall((:padic_set, :libflint), Nothing,
+   ccall((:padic_set, libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, parent(a))
    z.N = a.N      # set does not transfer N - neither should it.
    return z
@@ -120,7 +120,7 @@ end
 """
 function prime(R::FlintPadicField)
    z = fmpz()
-   ccall((:padic_ctx_pow_ui, :libflint), Nothing,
+   ccall((:padic_ctx_pow_ui, libflint), Nothing,
          (Ref{fmpz}, Int, Ref{FlintPadicField}), z, 1, R)
    return z
 end
@@ -147,7 +147,7 @@ valuation(a::padic) = iszero(a) ? a.N : a.v
 function lift(R::FlintRationalField, a::padic)
     ctx = parent(a)
     r = fmpq()
-    ccall((:padic_get_fmpq, :libflint), Nothing,
+    ccall((:padic_get_fmpq, libflint), Nothing,
           (Ref{fmpq}, Ref{padic}, Ref{FlintPadicField}), r, a, ctx)
     return r
 end
@@ -159,7 +159,7 @@ end
 function lift(R::FlintIntegerRing, a::padic)
     ctx = parent(a)
     r = fmpz()
-    ccall((:padic_get_fmpz, :libflint), Nothing,
+    ccall((:padic_get_fmpz, libflint), Nothing,
           (Ref{fmpz}, Ref{padic}, Ref{FlintPadicField}), r, a, ctx)
     return r
 end
@@ -170,7 +170,7 @@ end
 """
 function zero(R::FlintPadicField)
    z = padic(R.prec_max)
-   ccall((:padic_zero, :libflint), Nothing, (Ref{padic},), z)
+   ccall((:padic_zero, libflint), Nothing, (Ref{padic},), z)
    z.parent = R
    return z
 end
@@ -181,7 +181,7 @@ end
 """
 function one(R::FlintPadicField)
    z = padic(R.prec_max)
-   ccall((:padic_one, :libflint), Nothing, (Ref{padic},), z)
+   ccall((:padic_one, libflint), Nothing, (Ref{padic},), z)
    z.parent = R
    return z
 end
@@ -191,7 +191,7 @@ end
 > Return `true` if the given p-adic field element is zero, otherwise return
 > `false`.
 """
-iszero(a::padic) = Bool(ccall((:padic_is_zero, :libflint), Cint,
+iszero(a::padic) = Bool(ccall((:padic_is_zero, libflint), Cint,
                               (Ref{padic},), a))
 
 @doc Markdown.doc"""
@@ -199,7 +199,7 @@ iszero(a::padic) = Bool(ccall((:padic_is_zero, :libflint), Cint,
 > Return `true` if the given p-adic field element is one, otherwise return
 > `false`.
 """
-isone(a::padic) = Bool(ccall((:padic_is_one, :libflint), Cint,
+isone(a::padic) = Bool(ccall((:padic_is_one, libflint), Cint,
                              (Ref{padic},), a))
 
 @doc Markdown.doc"""
@@ -207,7 +207,7 @@ isone(a::padic) = Bool(ccall((:padic_is_one, :libflint), Cint,
 > Return `true` if the given p-adic field element is invertible, i.e. nonzero,
 > otherwise return `false`.
 """
-isunit(a::padic) = !Bool(ccall((:padic_is_zero, :libflint), Cint,
+isunit(a::padic) = !Bool(ccall((:padic_is_zero, libflint), Cint,
                               (Ref{padic},), a))
 
 characteristic(R::FlintPadicField) = 0
@@ -253,13 +253,13 @@ function show(io::IO, x::padic)
 
    pmode = PADIC_PRINTING_MODE[]
 
-   cstr = ccall((:_padic_get_str, :libflint), Ptr{UInt8},
+   cstr = ccall((:_padic_get_str, libflint), Ptr{UInt8},
                 (Ptr{Nothing}, Ref{padic}, Ref{fmpz}, Cint),
                  C_NULL, x, p, pmode)
 
    print(io, unsafe_string(cstr))
 
-   ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), cstr)
+   ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
    print(io, " + O(")
    print(io, p)
    print(io, "^$(x.N))")
@@ -295,7 +295,7 @@ function -(x::padic)
    end
    ctx = parent(x)
    z = padic(x.N)
-   ccall((:padic_neg, :libflint), Nothing,
+   ccall((:padic_neg, libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                      z, x, ctx)
    z.parent = ctx
@@ -313,7 +313,7 @@ function +(x::padic, y::padic)
    ctx = parent(x)
    z = padic(min(x.N, y.N))
    z.parent = ctx
-   ccall((:padic_add, :libflint), Nothing,
+   ccall((:padic_add, libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, x, y, ctx)
    return z
@@ -324,7 +324,7 @@ function -(x::padic, y::padic)
    ctx = parent(x)
    z = padic(min(x.N, y.N))
    z.parent = ctx
-   ccall((:padic_sub, :libflint), Nothing,
+   ccall((:padic_sub, libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                   z, x, y, ctx)
    return z
@@ -335,7 +335,7 @@ function *(x::padic, y::padic)
    ctx = parent(x)
    z = padic(min(x.N + y.v, y.N + x.v))
    z.parent = ctx
-   ccall((:padic_mul, :libflint), Nothing,
+   ccall((:padic_mul, libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, x, y, ctx)
    return z
@@ -393,10 +393,10 @@ function ==(a::padic, b::padic)
    check_parent(a, b)
    ctx = parent(a)
    z = padic(min(a.N, b.N))
-   ccall((:padic_sub, :libflint), Nothing,
+   ccall((:padic_sub, libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, a, b, ctx)
-   return Bool(ccall((:padic_is_zero, :libflint), Cint,
+   return Bool(ccall((:padic_is_zero, libflint), Cint,
                 (Ref{padic},), z))
 end
 
@@ -435,7 +435,7 @@ function ^(a::padic, n::Int)
    ctx = parent(a)
    z = padic(a.N + (n - 1)*a.v)
    z.parent = ctx
-   ccall((:padic_pow_si, :libflint), Nothing,
+   ccall((:padic_pow_si, libflint), Nothing,
                 (Ref{padic}, Ref{padic}, Int, Ref{FlintPadicField}),
                z, a, n, ctx)
    return z
@@ -453,7 +453,7 @@ function divexact(a::padic, b::padic)
    ctx = parent(a)
    z = padic(min(a.N - b.v, b.N - 2*b.v + a.v))
    z.parent = ctx
-   ccall((:padic_div, :libflint), Cint,
+   ccall((:padic_div, libflint), Cint,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, a, b, ctx)
    return z
@@ -492,7 +492,7 @@ function inv(a::padic)
    ctx = parent(a)
    z = padic(a.N - 2*a.v)
    z.parent = ctx
-   ccall((:padic_inv, :libflint), Cint,
+   ccall((:padic_inv, libflint), Cint,
          (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, ctx)
    return z
 end
@@ -558,7 +558,7 @@ function Base.sqrt(a::padic)
    ctx = parent(a)
    z = padic(a.N - div(a.v, 2))
    z.parent = ctx
-   res = Bool(ccall((:padic_sqrt, :libflint), Cint,
+   res = Bool(ccall((:padic_sqrt, libflint), Cint,
                     (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, ctx))
    !res && error("Square root of p-adic does not exist")
    return z
@@ -582,7 +582,7 @@ function Base.exp(a::padic)
    ctx = parent(a)
    z = padic(a.N)
    z.parent = ctx
-   res = Bool(ccall((:padic_exp, :libflint), Cint,
+   res = Bool(ccall((:padic_exp, libflint), Cint,
                     (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, ctx))
    !res && error("Unable to compute exponential")
    return z
@@ -600,7 +600,7 @@ function log(a::padic)
    ctx = parent(a)
    z = padic(a.N)
    z.parent = ctx
-   res = Bool(ccall((:padic_log, :libflint), Cint,
+   res = Bool(ccall((:padic_log, libflint), Cint,
                     (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, ctx))
    !res && error("Unable to compute logarithm")
    return z
@@ -619,7 +619,7 @@ function teichmuller(a::padic)
    ctx = parent(a)
    z = padic(a.N)
    z.parent = ctx
-   ccall((:padic_teichmuller, :libflint), Nothing,
+   ccall((:padic_teichmuller, libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, ctx)
    return z
 end
@@ -633,7 +633,7 @@ end
 function zero!(z::padic)
    z.N = parent(z).prec_max
    ctx = parent(z)
-   ccall((:padic_zero, :libflint), Nothing,
+   ccall((:padic_zero, libflint), Nothing,
          (Ref{padic}, Ref{FlintPadicField}), z, ctx)
    return z
 end
@@ -641,7 +641,7 @@ end
 function mul!(z::padic, x::padic, y::padic)
    z.N = min(x.N + y.v, y.N + x.v)
    ctx = parent(x)
-   ccall((:padic_mul, :libflint), Nothing,
+   ccall((:padic_mul, libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, x, y, ctx)
    return z
@@ -650,7 +650,7 @@ end
 function addeq!(x::padic, y::padic)
    x.N = min(x.N, y.N)
    ctx = parent(x)
-   ccall((:padic_add, :libflint), Nothing,
+   ccall((:padic_add, libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                x, x, y, ctx)
    return x
@@ -659,7 +659,7 @@ end
 function add!(z::padic, x::padic, y::padic)
    z.N = min(x.N, y.N)
    ctx = parent(x)
-   ccall((:padic_add, :libflint), Nothing,
+   ccall((:padic_add, libflint), Nothing,
          (Ref{padic}, Ref{padic}, Ref{padic}, Ref{FlintPadicField}),
                z, x, y, ctx)
    return z
@@ -697,7 +697,7 @@ function (R::FlintPadicField)(n::fmpz)
       N, = remove(n, p)
    end
    z = padic(N + R.prec_max)
-   ccall((:padic_set_fmpz, :libflint), Nothing,
+   ccall((:padic_set_fmpz, libflint), Nothing,
          (Ref{padic}, Ref{fmpz}, Ref{FlintPadicField}), z, n, R)
    z.parent = R
    return z
@@ -715,7 +715,7 @@ function (R::FlintPadicField)(n::fmpq)
      N = -remove(m, p)[1]
    end
    z = padic(N + R.prec_max)
-   ccall((:padic_set_fmpq, :libflint), Nothing,
+   ccall((:padic_set_fmpq, libflint), Nothing,
          (Ref{padic}, Ref{fmpq}, Ref{FlintPadicField}), z, n, R)
    z.parent = R
    return z

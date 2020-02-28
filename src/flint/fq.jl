@@ -64,7 +64,7 @@ end
 function coeff(x::fq, n::Int)
    n < 0 && throw(DomainError(n, "Index must be non-negative"))
    z = fmpz()
-   ccall((:fmpz_poly_get_coeff_fmpz, :libflint), Nothing,
+   ccall((:fmpz_poly_get_coeff_fmpz, libflint), Nothing,
                (Ref{fmpz}, Ref{fq}, Int), z, x, n)
    return z
 end
@@ -75,7 +75,7 @@ end
 """
 function zero(a::FqFiniteField)
    d = a()
-   ccall((:fq_zero, :libflint), Nothing, (Ref{fq}, Ref{FqFiniteField}), d, a)
+   ccall((:fq_zero, libflint), Nothing, (Ref{fq}, Ref{FqFiniteField}), d, a)
    return d
 end
 
@@ -85,7 +85,7 @@ end
 """
 function one(a::FqFiniteField)
    d = a()
-   ccall((:fq_one, :libflint), Nothing, (Ref{fq}, Ref{FqFiniteField}), d, a)
+   ccall((:fq_one, libflint), Nothing, (Ref{fq}, Ref{FqFiniteField}), d, a)
    return d
 end
 
@@ -97,7 +97,7 @@ end
 """
 function gen(a::FqFiniteField)
    d = a()
-   ccall((:fq_gen, :libflint), Nothing, (Ref{fq}, Ref{FqFiniteField}), d, a)
+   ccall((:fq_gen, libflint), Nothing, (Ref{fq}, Ref{FqFiniteField}), d, a)
    return d
 end
 
@@ -106,7 +106,7 @@ end
 > Return `true` if the given finite field element is zero, otherwise return
 > `false`.
 """
-iszero(a::fq) = ccall((:fq_is_zero, :libflint), Bool,
+iszero(a::fq) = ccall((:fq_is_zero, libflint), Bool,
                      (Ref{fq}, Ref{FqFiniteField}), a, a.parent)
 
 @doc Markdown.doc"""
@@ -114,7 +114,7 @@ iszero(a::fq) = ccall((:fq_is_zero, :libflint), Bool,
 > Return `true` if the given finite field element is one, otherwise return
 > `false`.
 """
-isone(a::fq) = ccall((:fq_is_one, :libflint), Bool,
+isone(a::fq) = ccall((:fq_is_one, libflint), Bool,
                     (Ref{fq}, Ref{FqFiniteField}), a, a.parent)
 
 @doc Markdown.doc"""
@@ -129,7 +129,7 @@ isgen(a::fq) = a == gen(parent(a))
 > Return `true` if the given finite field element is invertible, i.e. nonzero,
 > otherwise return `false`.
 """
-isunit(a::fq) = ccall((:fq_is_invertible, :libflint), Bool,
+isunit(a::fq) = ccall((:fq_is_invertible, libflint), Bool,
                      (Ref{fq}, Ref{FqFiniteField}), a, a.parent)
 
 @doc Markdown.doc"""
@@ -138,7 +138,7 @@ isunit(a::fq) = ccall((:fq_is_invertible, :libflint), Bool,
 """
 function characteristic(a::FqFiniteField)
    d = fmpz()
-   ccall((:__fq_ctx_prime, :libflint), Nothing,
+   ccall((:__fq_ctx_prime, libflint), Nothing,
          (Ref{fmpz}, Ref{FqFiniteField}), d, a)
    return d
 end
@@ -149,7 +149,7 @@ end
 """
 function order(a::FqFiniteField)
    d = fmpz()
-   ccall((:fq_ctx_order, :libflint), Nothing,
+   ccall((:fq_ctx_order, libflint), Nothing,
          (Ref{fmpz}, Ref{FqFiniteField}), d, a)
    return d
 end
@@ -159,7 +159,7 @@ end
 > Return the degree of the given finite field.
 """
 function degree(a::FqFiniteField)
-   return ccall((:fq_ctx_degree, :libflint), Int, (Ref{FqFiniteField},), a)
+   return ccall((:fq_ctx_degree, libflint), Int, (Ref{FqFiniteField},), a)
 end
 
 function deepcopy_internal(d::fq, dict::IdDict)
@@ -182,12 +182,12 @@ canonical_unit(x::fq) = x
 ###############################################################################
 
 function show(io::IO, x::fq)
-   cstr = ccall((:fq_get_str_pretty, :libflint), Ptr{UInt8},
+   cstr = ccall((:fq_get_str_pretty, libflint), Ptr{UInt8},
                 (Ref{fq}, Ref{FqFiniteField}), x, x.parent)
 
    print(io, unsafe_string(cstr))
 
-   ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), cstr)
+   ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
 end
 
 function show(io::IO, a::FqFiniteField)
@@ -209,7 +209,7 @@ show_minus_one(::Type{fq}) = true
 
 function -(x::fq)
    z = parent(x)()
-   ccall((:fq_neg, :libflint), Nothing,
+   ccall((:fq_neg, libflint), Nothing,
          (Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, x.parent)
    return z
 end
@@ -223,7 +223,7 @@ end
 function +(x::fq, y::fq)
    check_parent(x, y)
    z = parent(y)()
-   ccall((:fq_add, :libflint), Nothing,
+   ccall((:fq_add, libflint), Nothing,
         (Ref{fq}, Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, y, y.parent)
    return z
 end
@@ -231,7 +231,7 @@ end
 function -(x::fq, y::fq)
    check_parent(x, y)
    z = parent(y)()
-   ccall((:fq_sub, :libflint), Nothing,
+   ccall((:fq_sub, libflint), Nothing,
         (Ref{fq}, Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, y, y.parent)
    return z
 end
@@ -239,7 +239,7 @@ end
 function *(x::fq, y::fq)
    check_parent(x, y)
    z = parent(y)()
-   ccall((:fq_mul, :libflint), Nothing,
+   ccall((:fq_mul, libflint), Nothing,
         (Ref{fq}, Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, y, y.parent)
    return z
 end
@@ -252,7 +252,7 @@ end
 
 function *(x::Int, y::fq)
    z = parent(y)()
-   ccall((:fq_mul_si, :libflint), Nothing,
+   ccall((:fq_mul_si, libflint), Nothing,
          (Ref{fq}, Ref{fq}, Int, Ref{FqFiniteField}), z, y, x, y.parent)
    return z
 end
@@ -263,7 +263,7 @@ end
 
 function *(x::fmpz, y::fq)
    z = parent(y)()
-   ccall((:fq_mul_fmpz, :libflint), Nothing,
+   ccall((:fq_mul_fmpz, libflint), Nothing,
          (Ref{fq}, Ref{fq}, Ref{fmpz}, Ref{FqFiniteField}),
                                             z, y, x, y.parent)
    return z
@@ -299,7 +299,7 @@ function ^(x::fq, y::Int)
       y = -y
    end
    z = parent(x)()
-   ccall((:fq_pow_ui, :libflint), Nothing,
+   ccall((:fq_pow_ui, libflint), Nothing,
          (Ref{fq}, Ref{fq}, Int, Ref{FqFiniteField}), z, x, y, x.parent)
    return z
 end
@@ -310,7 +310,7 @@ function ^(x::fq, y::fmpz)
       y = -y
    end
    z = parent(x)()
-   ccall((:fq_pow, :libflint), Nothing,
+   ccall((:fq_pow, libflint), Nothing,
          (Ref{fq}, Ref{fq}, Ref{fmpz}, Ref{FqFiniteField}),
                                             z, x, y, x.parent)
    return z
@@ -324,7 +324,7 @@ end
 
 function ==(x::fq, y::fq)
    check_parent(x, y)
-   ccall((:fq_equal, :libflint), Bool,
+   ccall((:fq_equal, libflint), Bool,
          (Ref{fq}, Ref{fq}, Ref{FqFiniteField}), x, y, y.parent)
 end
 
@@ -352,7 +352,7 @@ function divexact(x::fq, y::fq)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    z = parent(y)()
-   ccall((:fq_div, :libflint), Nothing,
+   ccall((:fq_div, libflint), Nothing,
         (Ref{fq}, Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, y, y.parent)
    return z
 end
@@ -394,7 +394,7 @@ divexact(x::fmpz, y::fq) = divexact(parent(y)(x), y)
 function inv(x::fq)
    iszero(x) && throw(DivideError())
    z = parent(x)()
-   ccall((:fq_inv, :libflint), Nothing,
+   ccall((:fq_inv, libflint), Nothing,
          (Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, x.parent)
    return z
 end
@@ -412,7 +412,7 @@ end
 """
 function pth_root(x::fq)
    z = parent(x)()
-   ccall((:fq_pth_root, :libflint), Nothing,
+   ccall((:fq_pth_root, libflint), Nothing,
          (Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, x.parent)
    return z
 end
@@ -424,7 +424,7 @@ end
 """
 function tr(x::fq)
    z = fmpz()
-   ccall((:fq_trace, :libflint), Nothing,
+   ccall((:fq_trace, libflint), Nothing,
          (Ref{fmpz}, Ref{fq}, Ref{FqFiniteField}), z, x, x.parent)
    return parent(x)(z)
 end
@@ -436,7 +436,7 @@ end
 """
 function norm(x::fq)
    z = fmpz()
-   ccall((:fq_norm, :libflint), Nothing,
+   ccall((:fq_norm, libflint), Nothing,
          (Ref{fmpz}, Ref{fq}, Ref{FqFiniteField}), z, x, x.parent)
    return parent(x)(z)
 end
@@ -450,7 +450,7 @@ end
 """
 function frobenius(x::fq, n = 1)
    z = parent(x)()
-   ccall((:fq_frobenius, :libflint), Nothing,
+   ccall((:fq_frobenius, libflint), Nothing,
          (Ref{fq}, Ref{fq}, Int, Ref{FqFiniteField}), z, x, n, x.parent)
    return z
 end
@@ -462,25 +462,25 @@ end
 ###############################################################################
 
 function zero!(z::fq)
-   ccall((:fq_zero, :libflint), Nothing,
+   ccall((:fq_zero, libflint), Nothing,
         (Ref{fq}, Ref{FqFiniteField}), z, z.parent)
    return z
 end
 
 function mul!(z::fq, x::fq, y::fq)
-   ccall((:fq_mul, :libflint), Nothing,
+   ccall((:fq_mul, libflint), Nothing,
         (Ref{fq}, Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, y, y.parent)
    return z
 end
 
 function addeq!(z::fq, x::fq)
-   ccall((:fq_add, :libflint), Nothing,
+   ccall((:fq_add, libflint), Nothing,
         (Ref{fq}, Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, z, x, x.parent)
    return z
 end
 
 function add!(z::fq, x::fq, y::fq)
-   ccall((:fq_add, :libflint), Nothing,
+   ccall((:fq_add, libflint), Nothing,
         (Ref{fq}, Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, y, x.parent)
    return z
 end

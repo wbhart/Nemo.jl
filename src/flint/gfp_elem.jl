@@ -146,7 +146,7 @@ end
 function *(x::gfp_elem, y::gfp_elem)
    check_parent(x, y)
    R = parent(x)
-   d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
+   d = ccall((:n_mulmod2_preinv, libflint), UInt, (UInt, UInt, UInt, UInt),
              x.data, y.data, R.n, R.ninv)
    return gfp_elem(d, R)
 end
@@ -167,11 +167,11 @@ end
 function *(x::Int, y::gfp_elem)
    R = parent(y)
    if x < 0
-      d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
+      d = ccall((:n_mulmod2_preinv, libflint), UInt, (UInt, UInt, UInt, UInt),
              UInt(-x), y.data, R.n, R.ninv)
       return -gfp_elem(d, R)
    else
-      d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
+      d = ccall((:n_mulmod2_preinv, libflint), UInt, (UInt, UInt, UInt, UInt),
              UInt(x), y.data, R.n, R.ninv)
       return gfp_elem(d, R)
    end
@@ -181,7 +181,7 @@ end
 
 function *(x::UInt, y::gfp_elem)
    R = parent(y)
-   d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
+   d = ccall((:n_mulmod2_preinv, libflint), UInt, (UInt, UInt, UInt, UInt),
              UInt(x), y.data, R.n, R.ninv)
    return gfp_elem(d, R)
 end
@@ -220,7 +220,7 @@ function ^(x::gfp_elem, y::Int)
       x = inv(x)
       y = -y
    end
-   d = ccall((:n_powmod2_preinv, :libflint), UInt, (UInt, Int, UInt, UInt),
+   d = ccall((:n_powmod2_preinv, libflint), UInt, (UInt, Int, UInt, UInt),
              UInt(x.data), y, R.n, R.ninv)
    return gfp_elem(d, R)
 end
@@ -259,7 +259,7 @@ end
 function inv(x::gfp_elem)
    R = parent(x)
    iszero(x) && throw(DivideError())
-   xinv = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
+   xinv = ccall((:n_invmod, libflint), UInt, (UInt, UInt),
             x.data, R.n)
    return gfp_elem(xinv, R)
 end
@@ -274,9 +274,9 @@ function divexact(x::gfp_elem, y::gfp_elem)
    check_parent(x, y)
    y == 0 && throw(DivideError())
    R = parent(x)
-   yinv = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
+   yinv = ccall((:n_invmod, libflint), UInt, (UInt, UInt),
            y.data, R.n)
-   d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
+   d = ccall((:n_mulmod2_preinv, libflint), UInt, (UInt, UInt, UInt, UInt),
              x.data, yinv, R.n, R.ninv)
    return gfp_elem(d, R)
 end
@@ -369,7 +369,7 @@ function (R::GaloisField)(a::Int)
       d += n
    end
    if d >= n
-      d = ccall((:n_mod2_preinv, :libflint), UInt, (UInt, UInt, UInt),
+      d = ccall((:n_mod2_preinv, libflint), UInt, (UInt, UInt, UInt),
              d, n, ninv)
    end
    return gfp_elem(d, R)
@@ -378,13 +378,13 @@ end
 function (R::GaloisField)(a::UInt)
    n = R.n
    ninv = R.ninv
-   a = ccall((:n_mod2_preinv, :libflint), UInt, (UInt, UInt, UInt),
+   a = ccall((:n_mod2_preinv, libflint), UInt, (UInt, UInt, UInt),
              a, n, ninv)
    return gfp_elem(a, R)
 end
 
 function (R::GaloisField)(a::fmpz)
-   d = ccall((:fmpz_fdiv_ui, :libflint), UInt, (Ref{fmpz}, UInt),
+   d = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt),
              a, R.n)
    return gfp_elem(d, R)
 end

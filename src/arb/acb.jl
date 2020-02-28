@@ -73,7 +73,7 @@ end
 """
 function one(r::AcbField)
   z = acb()
-  ccall((:acb_one, :libarb), Nothing, (Ref{acb}, ), z)
+  ccall((:acb_one, libarb), Nothing, (Ref{acb}, ), z)
   z.parent = r
   return z
 end
@@ -84,7 +84,7 @@ end
 """
 function onei(r::AcbField)
   z = acb()
-  ccall((:acb_onei, :libarb), Nothing, (Ref{acb}, ), z)
+  ccall((:acb_onei, libarb), Nothing, (Ref{acb}, ), z)
   z.parent = r
   return z
 end
@@ -96,12 +96,12 @@ end
 """
 function accuracy_bits(x::acb)
   # bug in acb.h: rel_accuracy_bits is not in the library
-  return -ccall((:acb_rel_error_bits, :libarb), Int, (Ref{acb},), x)
+  return -ccall((:acb_rel_error_bits, libarb), Int, (Ref{acb},), x)
 end
 
 function deepcopy_internal(a::acb, dict::IdDict)
   b = parent(a)()
-  ccall((:acb_set, :libarb), Nothing, (Ref{acb}, Ref{acb}), b, a)
+  ccall((:acb_set, libarb), Nothing, (Ref{acb}, Ref{acb}), b, a)
   return b
 end
 
@@ -126,13 +126,13 @@ characteristic(::AcbField) = 0
 
 function convert(::Type{ComplexF64}, x::acb)
     GC.@preserve x begin
-      re = ccall((:acb_real_ptr, :libarb), Ptr{arb_struct}, (Ref{acb}, ), x)
-      im = ccall((:acb_imag_ptr, :libarb), Ptr{arb_struct}, (Ref{acb}, ), x)
-      t = ccall((:arb_mid_ptr, :libarb), Ptr{arf_struct}, (Ptr{arb}, ), re)
-      u = ccall((:arb_mid_ptr, :libarb), Ptr{arf_struct}, (Ptr{arb}, ), im)
+      re = ccall((:acb_real_ptr, libarb), Ptr{arb_struct}, (Ref{acb}, ), x)
+      im = ccall((:acb_imag_ptr, libarb), Ptr{arb_struct}, (Ref{acb}, ), x)
+      t = ccall((:arb_mid_ptr, libarb), Ptr{arf_struct}, (Ptr{arb}, ), re)
+      u = ccall((:arb_mid_ptr, libarb), Ptr{arf_struct}, (Ptr{arb}, ), im)
       # 4 == round to nearest
-      v = ccall((:arf_get_d, :libarb), Float64, (Ptr{arf_struct}, Int), t, 4)
-      w = ccall((:arf_get_d, :libarb), Float64, (Ptr{arf_struct}, Int), u, 4)
+      v = ccall((:arf_get_d, libarb), Float64, (Ptr{arf_struct}, Int), t, 4)
+      w = ccall((:arf_get_d, libarb), Float64, (Ptr{arf_struct}, Int), u, 4)
     end
     return complex(v, w)
 end
@@ -149,7 +149,7 @@ end
 """
 function real(x::acb)
   z = arb()
-  ccall((:acb_get_real, :libarb), Nothing, (Ref{arb}, Ref{acb}), z, x)
+  ccall((:acb_get_real, libarb), Nothing, (Ref{arb}, Ref{acb}), z, x)
   z.parent = ArbField(parent(x).prec)
   return z
 end
@@ -160,7 +160,7 @@ end
 """
 function imag(x::acb)
   z = arb()
-  ccall((:acb_get_imag, :libarb), Nothing, (Ref{arb}, Ref{acb}), z, x)
+  ccall((:acb_get_imag, libarb), Nothing, (Ref{arb}, Ref{acb}), z, x)
   z.parent = ArbField(parent(x).prec)
   return z
 end
@@ -195,7 +195,7 @@ show_minus_one(::Type{acb}) = true
 
 function -(x::acb)
   z = parent(x)()
-  ccall((:acb_neg, :libarb), Nothing, (Ref{acb}, Ref{acb}), z, x)
+  ccall((:acb_neg, libarb), Nothing, (Ref{acb}, Ref{acb}), z, x)
   return z
 end
 
@@ -211,7 +211,7 @@ for (s,f) in ((:+,"acb_add"), (:*,"acb_mul"), (://, "acb_div"), (:-,"acb_sub"), 
   @eval begin
     function ($s)(x::acb, y::acb)
       z = parent(x)()
-      ccall(($f, :libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
+      ccall(($f, libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
                            z, x, y, parent(x).prec)
       return z
     end
@@ -223,7 +223,7 @@ for (f,s) in ((:+, "add"), (:-, "sub"), (:*, "mul"), (://, "div"), (:^, "pow"))
 
     function ($f)(x::acb, y::UInt)
       z = parent(x)()
-      ccall(($("acb_"*s*"_ui"), :libarb), Nothing,
+      ccall(($("acb_"*s*"_ui"), libarb), Nothing,
                   (Ref{acb}, Ref{acb}, UInt, Int),
                   z, x, y, parent(x).prec)
       return z
@@ -231,14 +231,14 @@ for (f,s) in ((:+, "add"), (:-, "sub"), (:*, "mul"), (://, "div"), (:^, "pow"))
 
     function ($f)(x::acb, y::Int)
       z = parent(x)()
-      ccall(($("acb_"*s*"_si"), :libarb), Nothing,
+      ccall(($("acb_"*s*"_si"), libarb), Nothing,
       (Ref{acb}, Ref{acb}, Int, Int), z, x, y, parent(x).prec)
       return z
     end
 
     function ($f)(x::acb, y::fmpz)
       z = parent(x)()
-      ccall(($("acb_"*s*"_fmpz"), :libarb), Nothing,
+      ccall(($("acb_"*s*"_fmpz"), libarb), Nothing,
                   (Ref{acb}, Ref{acb}, Ref{fmpz}, Int),
                   z, x, y, parent(x).prec)
       return z
@@ -246,7 +246,7 @@ for (f,s) in ((:+, "add"), (:-, "sub"), (:*, "mul"), (://, "div"), (:^, "pow"))
 
     function ($f)(x::acb, y::arb)
       z = parent(x)()
-      ccall(($("acb_"*s*"_arb"), :libarb), Nothing,
+      ccall(($("acb_"*s*"_arb"), libarb), Nothing,
                   (Ref{acb}, Ref{acb}, Ref{arb}, Int),
                   z, x, y, parent(x).prec)
       return z
@@ -278,29 +278,29 @@ end
 
 function -(x::UInt, y::acb)
   z = parent(y)()
-  ccall((:acb_sub_ui, :libarb), Nothing, (Ref{acb}, Ref{acb}, UInt, Int), z, y, x, parent(y).prec)
-  ccall((:acb_neg, :libarb), Nothing, (Ref{acb}, Ref{acb}), z, z)
+  ccall((:acb_sub_ui, libarb), Nothing, (Ref{acb}, Ref{acb}, UInt, Int), z, y, x, parent(y).prec)
+  ccall((:acb_neg, libarb), Nothing, (Ref{acb}, Ref{acb}), z, z)
   return z
 end
 
 function -(x::Int, y::acb)
   z = parent(y)()
-  ccall((:acb_sub_si, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int, Int), z, y, x, parent(y).prec)
-  ccall((:acb_neg, :libarb), Nothing, (Ref{acb}, Ref{acb}), z, z)
+  ccall((:acb_sub_si, libarb), Nothing, (Ref{acb}, Ref{acb}, Int, Int), z, y, x, parent(y).prec)
+  ccall((:acb_neg, libarb), Nothing, (Ref{acb}, Ref{acb}), z, z)
   return z
 end
 
 function -(x::fmpz, y::acb)
   z = parent(y)()
-  ccall((:acb_sub_fmpz, :libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{fmpz}, Int), z, y, x, parent(y).prec)
-  ccall((:acb_neg, :libarb), Nothing, (Ref{acb}, Ref{acb}), z, z)
+  ccall((:acb_sub_fmpz, libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{fmpz}, Int), z, y, x, parent(y).prec)
+  ccall((:acb_neg, libarb), Nothing, (Ref{acb}, Ref{acb}), z, z)
   return z
 end
 
 function -(x::arb, y::acb)
   z = parent(y)()
-  ccall((:acb_sub_arb, :libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{arb}, Int), z, y, x, parent(y).prec)
-  ccall((:acb_neg, :libarb), Nothing, (Ref{acb}, Ref{acb}), z, z)
+  ccall((:acb_sub_arb, libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{arb}, Int), z, y, x, parent(y).prec)
+  ccall((:acb_neg, libarb), Nothing, (Ref{acb}, Ref{acb}), z, z)
   return z
 end
 
@@ -411,17 +411,17 @@ divexact(x::acb, y::Rational{T}) where {T <: Integer} = x // y
 > and imaginary parts have the same midpoints and radii.
 """
 function isequal(x::acb, y::acb)
-  r = ccall((:acb_equal, :libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
+  r = ccall((:acb_equal, libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
   return Bool(r)
 end
 
 function ==(x::acb, y::acb)
-  r = ccall((:acb_eq, :libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
+  r = ccall((:acb_eq, libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
   return Bool(r)
 end
 
 function !=(x::acb, y::acb)
-  r = ccall((:acb_ne, :libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
+  r = ccall((:acb_ne, libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
   return Bool(r)
 end
 
@@ -464,7 +464,7 @@ end
 > otherwise return `false`.
 """
 function overlaps(x::acb, y::acb)
-  r = ccall((:acb_overlaps, :libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
+  r = ccall((:acb_overlaps, libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
   return Bool(r)
 end
 
@@ -474,7 +474,7 @@ end
 > `false`.
 """
 function contains(x::acb, y::acb)
-  r = ccall((:acb_contains, :libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
+  r = ccall((:acb_contains, libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
   return Bool(r)
 end
 
@@ -484,7 +484,7 @@ end
 > return `false`.
 """
 function contains(x::acb, y::fmpq)
-  r = ccall((:acb_contains_fmpq, :libarb), Cint, (Ref{acb}, Ref{fmpq}), x, y)
+  r = ccall((:acb_contains_fmpq, libarb), Cint, (Ref{acb}, Ref{fmpq}), x, y)
   return Bool(r)
 end
 
@@ -494,13 +494,13 @@ end
 > return `false`.
 """
 function contains(x::acb, y::fmpz)
-  r = ccall((:acb_contains_fmpz, :libarb), Cint, (Ref{acb}, Ref{fmpz}), x, y)
+  r = ccall((:acb_contains_fmpz, libarb), Cint, (Ref{acb}, Ref{fmpz}), x, y)
   return Bool(r)
 end
 
 function contains(x::acb, y::Int)
   v = fmpz(y)
-  r = ccall((:acb_contains_fmpz, :libarb), Cint, (Ref{acb}, Ref{fmpz}), x, v)
+  r = ccall((:acb_contains_fmpz, libarb), Cint, (Ref{acb}, Ref{fmpz}), x, v)
   return Bool(r)
 end
 
@@ -523,7 +523,7 @@ contains(x::acb, y::Rational{T}) where {T <: Integer} = contains(x, fmpz(y))
 > Returns `true` if the box $x$ contains zero, otherwise return `false`.
 """
 function contains_zero(x::acb)
-   return Bool(ccall((:acb_contains_zero, :libarb), Cint, (Ref{acb},), x))
+   return Bool(ccall((:acb_contains_zero, libarb), Cint, (Ref{acb},), x))
 end
 
 ################################################################################
@@ -541,7 +541,7 @@ end
 > Return `true` if $x$ is certainly zero, otherwise return `false`.
 """
 function iszero(x::acb)
-   return Bool(ccall((:acb_is_zero, :libarb), Cint, (Ref{acb},), x))
+   return Bool(ccall((:acb_is_zero, libarb), Cint, (Ref{acb},), x))
 end
 
 @doc Markdown.doc"""
@@ -549,7 +549,7 @@ end
 > Return `true` if $x$ is certainly zero, otherwise return `false`.
 """
 function isone(x::acb)
-   return Bool(ccall((:acb_is_one, :libarb), Cint, (Ref{acb},), x))
+   return Bool(ccall((:acb_is_one, libarb), Cint, (Ref{acb},), x))
 end
 
 @doc Markdown.doc"""
@@ -558,7 +558,7 @@ end
 > midpoint and radius, otherwise return `false`.
 """
 function isfinite(x::acb)
-   return Bool(ccall((:acb_is_finite, :libarb), Cint, (Ref{acb},), x))
+   return Bool(ccall((:acb_is_finite, libarb), Cint, (Ref{acb},), x))
 end
 
 @doc Markdown.doc"""
@@ -567,7 +567,7 @@ end
 > zero radius, otherwise return `false`.
 """
 function isexact(x::acb)
-   return Bool(ccall((:acb_is_exact, :libarb), Cint, (Ref{acb},), x))
+   return Bool(ccall((:acb_is_exact, libarb), Cint, (Ref{acb},), x))
 end
 
 @doc Markdown.doc"""
@@ -575,7 +575,7 @@ end
 > Return `true` if $x$ is an exact integer, otherwise return `false`.
 """
 function isint(x::acb)
-   return Bool(ccall((:acb_is_int, :libarb), Cint, (Ref{acb},), x))
+   return Bool(ccall((:acb_is_int, libarb), Cint, (Ref{acb},), x))
 end
 
 @doc Markdown.doc"""
@@ -584,7 +584,7 @@ end
 > otherwise return `false`.
 """
 function isreal(x::acb)
-   return Bool(ccall((:acb_is_real, :libarb), Cint, (Ref{acb},), x))
+   return Bool(ccall((:acb_is_real, libarb), Cint, (Ref{acb},), x))
 end
 
 isnegative(x::acb) = isreal(x) && isnegative(real(x))
@@ -601,7 +601,7 @@ isnegative(x::acb) = isreal(x) && isnegative(real(x))
 """
 function abs(x::acb)
   z = arb()
-  ccall((:acb_abs, :libarb), Nothing,
+  ccall((:acb_abs, libarb), Nothing,
                 (Ref{arb}, Ref{acb}, Int), z, x, parent(x).prec)
   z.parent = ArbField(parent(x).prec)
   return z
@@ -619,7 +619,7 @@ end
 """
 function inv(x::acb)
   z = parent(x)()
-  ccall((:acb_inv, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+  ccall((:acb_inv, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
   return z
 end
 
@@ -635,7 +635,7 @@ end
 """
 function ldexp(x::acb, y::Int)
   z = parent(x)()
-  ccall((:acb_mul_2exp_si, :libarb), Nothing,
+  ccall((:acb_mul_2exp_si, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Int), z, x, y)
   return z
 end
@@ -646,7 +646,7 @@ end
 """
 function ldexp(x::acb, y::fmpz)
   z = parent(x)()
-  ccall((:acb_mul_2exp_fmpz, :libarb), Nothing,
+  ccall((:acb_mul_2exp_fmpz, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{fmpz}), z, x, y)
   return z
 end
@@ -664,7 +664,7 @@ end
 """
 function trim(x::acb)
   z = parent(x)()
-  ccall((:acb_trim, :libarb), Nothing, (Ref{acb}, Ref{acb}), z, x)
+  ccall((:acb_trim, libarb), Nothing, (Ref{acb}, Ref{acb}), z, x)
   return z
 end
 
@@ -677,7 +677,7 @@ end
 """
 function unique_integer(x::acb)
   z = fmpz()
-  unique = ccall((:acb_get_unique_fmpz, :libarb), Int,
+  unique = ccall((:acb_get_unique_fmpz, libarb), Int,
     (Ref{fmpz}, Ref{acb}), z, x)
   return (unique != 0, z)
 end
@@ -688,7 +688,7 @@ end
 """
 function conj(x::acb)
   z = parent(x)()
-  ccall((:acb_conj, :libarb), Nothing, (Ref{acb}, Ref{acb}), z, x)
+  ccall((:acb_conj, libarb), Nothing, (Ref{acb}, Ref{acb}), z, x)
   return z
 end
 
@@ -699,7 +699,7 @@ end
 """
 function angle(x::acb)
   z = arb()
-  ccall((:acb_arg, :libarb), Nothing,
+  ccall((:acb_arg, libarb), Nothing,
                 (Ref{arb}, Ref{acb}, Int), z, x, parent(x).prec)
   z.parent = ArbField(parent(x).prec)
   return z
@@ -717,7 +717,7 @@ end
 """
 function const_pi(r::AcbField)
   z = r()
-  ccall((:acb_const_pi, :libarb), Nothing, (Ref{acb}, Int), z, prec(r))
+  ccall((:acb_const_pi, libarb), Nothing, (Ref{acb}, Int), z, prec(r))
   return z
 end
 
@@ -735,7 +735,7 @@ end
 """
 function Base.sqrt(x::acb)
    z = parent(x)()
-   ccall((:acb_sqrt, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_sqrt, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -745,7 +745,7 @@ end
 """
 function rsqrt(x::acb)
    z = parent(x)()
-   ccall((:acb_rsqrt, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_rsqrt, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -756,7 +756,7 @@ end
 """
 function log(x::acb)
    z = parent(x)()
-   ccall((:acb_log, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_log, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -766,7 +766,7 @@ end
 """
 function log1p(x::acb)
    z = parent(x)()
-   ccall((:acb_log1p, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_log1p, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -776,7 +776,7 @@ end
 """
 function Base.exp(x::acb)
    z = parent(x)()
-   ccall((:acb_exp, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_exp, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -786,7 +786,7 @@ end
 """
 function exppii(x::acb)
    z = parent(x)()
-   ccall((:acb_exp_pi_i, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_exp_pi_i, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -796,7 +796,7 @@ end
 """
 function sin(x::acb)
    z = parent(x)()
-   ccall((:acb_sin, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_sin, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -806,7 +806,7 @@ end
 """
 function cos(x::acb)
    z = parent(x)()
-   ccall((:acb_cos, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_cos, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -816,7 +816,7 @@ end
 """
 function tan(x::acb)
    z = parent(x)()
-   ccall((:acb_tan, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_tan, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -826,7 +826,7 @@ end
 """
 function cot(x::acb)
    z = parent(x)()
-   ccall((:acb_cot, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_cot, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -836,7 +836,7 @@ end
 """
 function sinpi(x::acb)
    z = parent(x)()
-   ccall((:acb_sin_pi, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_sin_pi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -846,7 +846,7 @@ end
 """
 function cospi(x::acb)
    z = parent(x)()
-   ccall((:acb_cos_pi, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_cos_pi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -856,7 +856,7 @@ end
 """
 function tanpi(x::acb)
    z = parent(x)()
-   ccall((:acb_tan_pi, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_tan_pi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -866,7 +866,7 @@ end
 """
 function cotpi(x::acb)
    z = parent(x)()
-   ccall((:acb_cot_pi, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_cot_pi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -876,7 +876,7 @@ end
 """
 function sinh(x::acb)
    z = parent(x)()
-   ccall((:acb_sinh, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_sinh, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -886,7 +886,7 @@ end
 """
 function cosh(x::acb)
    z = parent(x)()
-   ccall((:acb_cosh, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_cosh, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -896,7 +896,7 @@ end
 """
 function tanh(x::acb)
    z = parent(x)()
-   ccall((:acb_tanh, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_tanh, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -906,7 +906,7 @@ end
 """
 function coth(x::acb)
    z = parent(x)()
-   ccall((:acb_coth, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_coth, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -916,7 +916,7 @@ end
 """
 function atan(x::acb)
    z = parent(x)()
-   ccall((:acb_atan, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_atan, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -926,7 +926,7 @@ end
 """
 function logsinpi(x::acb)
    z = parent(x)()
-   ccall((:acb_log_sin_pi, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_log_sin_pi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -936,7 +936,7 @@ end
 """
 function gamma(x::acb)
    z = parent(x)()
-   ccall((:acb_gamma, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_gamma, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -946,7 +946,7 @@ end
 """
 function rgamma(x::acb)
    z = parent(x)()
-   ccall((:acb_rgamma, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_rgamma, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -956,7 +956,7 @@ end
 """
 function lgamma(x::acb)
    z = parent(x)()
-   ccall((:acb_lgamma, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_lgamma, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -967,7 +967,7 @@ end
 """
 function digamma(x::acb)
    z = parent(x)()
-   ccall((:acb_digamma, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_digamma, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -977,7 +977,7 @@ end
 """
 function zeta(x::acb)
    z = parent(x)()
-   ccall((:acb_zeta, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_zeta, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -987,7 +987,7 @@ end
 """
 function barnesg(x::acb)
    z = parent(x)()
-   ccall((:acb_barnes_g, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_barnes_g, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -997,7 +997,7 @@ end
 """
 function logbarnesg(x::acb)
    z = parent(x)()
-   ccall((:acb_log_barnes_g, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_log_barnes_g, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1007,7 +1007,7 @@ end
 """
 function agm(x::acb)
    z = parent(x)()
-   ccall((:acb_agm1, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_agm1, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1017,7 +1017,7 @@ end
 """
 function erf(x::acb)
    z = parent(x)()
-   ccall((:acb_hypgeom_erf, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_hypgeom_erf, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1027,7 +1027,7 @@ end
 """
 function erfi(x::acb)
    z = parent(x)()
-   ccall((:acb_hypgeom_erfi, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_hypgeom_erfi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1037,7 +1037,7 @@ end
 """
 function erfc(x::acb)
    z = parent(x)()
-   ccall((:acb_hypgeom_erfc, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_hypgeom_erfc, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1047,7 +1047,7 @@ end
 """
 function ei(x::acb)
    z = parent(x)()
-   ccall((:acb_hypgeom_ei, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_hypgeom_ei, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1057,7 +1057,7 @@ end
 """
 function si(x::acb)
    z = parent(x)()
-   ccall((:acb_hypgeom_si, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_hypgeom_si, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1067,7 +1067,7 @@ end
 """
 function ci(x::acb)
    z = parent(x)()
-   ccall((:acb_hypgeom_ci, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_hypgeom_ci, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1077,7 +1077,7 @@ end
 """
 function shi(x::acb)
    z = parent(x)()
-   ccall((:acb_hypgeom_shi, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_hypgeom_shi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1087,7 +1087,7 @@ end
 """
 function chi(x::acb)
    z = parent(x)()
-   ccall((:acb_hypgeom_chi, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_hypgeom_chi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1097,7 +1097,7 @@ end
 """
 function modeta(x::acb)
    z = parent(x)()
-   ccall((:acb_modular_eta, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_modular_eta, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1141,7 +1141,7 @@ end
 """
 function modj(x::acb)
    z = parent(x)()
-   ccall((:acb_modular_j, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_modular_j, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1151,7 +1151,7 @@ end
 """
 function modlambda(x::acb)
    z = parent(x)()
-   ccall((:acb_modular_lambda, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_modular_lambda, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1161,7 +1161,7 @@ end
 """
 function moddelta(x::acb)
    z = parent(x)()
-   ccall((:acb_modular_delta, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_modular_delta, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1171,7 +1171,7 @@ end
 """
 function ellipk(x::acb)
    z = parent(x)()
-   ccall((:acb_modular_elliptic_k, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_modular_elliptic_k, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1181,7 +1181,7 @@ end
 """
 function ellipe(x::acb)
    z = parent(x)()
-   ccall((:acb_modular_elliptic_e, :libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   ccall((:acb_modular_elliptic_e, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
@@ -1192,7 +1192,7 @@ end
 function sincos(x::acb)
   s = parent(x)()
   c = parent(x)()
-  ccall((:acb_sin_cos, :libarb), Nothing,
+  ccall((:acb_sin_cos, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), s, c, x, parent(x).prec)
   return (s, c)
 end
@@ -1204,7 +1204,7 @@ end
 function sincospi(x::acb)
   s = parent(x)()
   c = parent(x)()
-  ccall((:acb_sin_cos_pi, :libarb), Nothing,
+  ccall((:acb_sin_cos_pi, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), s, c, x, parent(x).prec)
   return (s, c)
 end
@@ -1216,7 +1216,7 @@ end
 function sinhcosh(x::acb)
   s = parent(x)()
   c = parent(x)()
-  ccall((:acb_sinh_cosh, :libarb), Nothing,
+  ccall((:acb_sinh_cosh, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), s, c, x, parent(x).prec)
   return (s, c)
 end
@@ -1227,7 +1227,7 @@ end
 """
 function zeta(s::acb, a::acb)
   z = parent(s)()
-  ccall((:acb_hurwitz_zeta, :libarb), Nothing,
+  ccall((:acb_hurwitz_zeta, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, s, a, parent(s).prec)
   return z
 end
@@ -1238,14 +1238,14 @@ end
 """
 function polygamma(s::acb, a::acb)
   z = parent(s)()
-  ccall((:acb_polygamma, :libarb), Nothing,
+  ccall((:acb_polygamma, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, s, a, parent(s).prec)
   return z
 end
 
 function risingfac(x::acb, n::UInt)
   z = parent(x)()
-  ccall((:acb_rising_ui, :libarb), Nothing,
+  ccall((:acb_rising_ui, libarb), Nothing,
               (Ref{acb}, Ref{acb}, UInt, Int), z, x, n, parent(x).prec)
   return z
 end
@@ -1262,7 +1262,7 @@ end
 function risingfac2(x::acb, n::UInt)
   z = parent(x)()
   w = parent(x)()
-  ccall((:acb_rising2_ui, :libarb), Nothing,
+  ccall((:acb_rising2_ui, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, UInt, Int), z, w, x, n, parent(x).prec)
   return (z, w)
 end
@@ -1283,7 +1283,7 @@ end
 """
 function polylog(s::acb, a::acb)
   z = parent(s)()
-  ccall((:acb_polylog, :libarb), Nothing,
+  ccall((:acb_polylog, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, s, a, parent(s).prec)
   return z
 end
@@ -1294,7 +1294,7 @@ end
 """
 function polylog(s::Int, a::acb)
   z = parent(a)()
-  ccall((:acb_polylog_si, :libarb), Nothing,
+  ccall((:acb_polylog_si, libarb), Nothing,
               (Ref{acb}, Int, Ref{acb}, Int), z, s, a, parent(a).prec)
   return z
 end
@@ -1305,7 +1305,7 @@ end
 """
 function li(x::acb)
   z = parent(x)()
-  ccall((:acb_hypgeom_li, :libarb), Nothing,
+  ccall((:acb_hypgeom_li, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Int, Int), z, x, 0, parent(x).prec)
   return z
 end
@@ -1316,7 +1316,7 @@ end
 """
 function lioffset(x::acb)
   z = parent(x)()
-  ccall((:acb_hypgeom_li, :libarb), Nothing,
+  ccall((:acb_hypgeom_li, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Int, Int), z, x, 1, parent(x).prec)
   return z
 end
@@ -1327,7 +1327,7 @@ end
 """
 function expint(s::acb, x::acb)
   z = parent(s)()
-  ccall((:acb_hypgeom_expint, :libarb), Nothing,
+  ccall((:acb_hypgeom_expint, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, s, x, parent(s).prec)
   return z
 end
@@ -1338,7 +1338,7 @@ end
 """
 function gamma(s::acb, x::acb)
   z = parent(s)()
-  ccall((:acb_hypgeom_gamma_upper, :libarb), Nothing,
+  ccall((:acb_hypgeom_gamma_upper, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, s, x, 0, parent(s).prec)
   return z
 end
@@ -1349,7 +1349,7 @@ end
 """
 function besselj(nu::acb, x::acb)
   z = parent(x)()
-  ccall((:acb_hypgeom_bessel_j, :libarb), Nothing,
+  ccall((:acb_hypgeom_bessel_j, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, nu, x, parent(x).prec)
   return z
 end
@@ -1360,7 +1360,7 @@ end
 """
 function bessely(nu::acb, x::acb)
   z = parent(x)()
-  ccall((:acb_hypgeom_bessel_y, :libarb), Nothing,
+  ccall((:acb_hypgeom_bessel_y, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, nu, x, parent(x).prec)
   return z
 end
@@ -1371,7 +1371,7 @@ end
 """
 function besseli(nu::acb, x::acb)
   z = parent(x)()
-  ccall((:acb_hypgeom_bessel_i, :libarb), Nothing,
+  ccall((:acb_hypgeom_bessel_i, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, nu, x, parent(x).prec)
   return z
 end
@@ -1382,7 +1382,7 @@ end
 """
 function besselk(nu::acb, x::acb)
   z = parent(x)()
-  ccall((:acb_hypgeom_bessel_k, :libarb), Nothing,
+  ccall((:acb_hypgeom_bessel_k, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, nu, x, parent(x).prec)
   return z
 end
@@ -1393,7 +1393,7 @@ end
 """
 function hyp1f1(a::acb, b::acb, x::acb)
   z = parent(x)()
-  ccall((:acb_hypgeom_m, :libarb), Nothing,
+  ccall((:acb_hypgeom_m, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, a, b, x, 0, parent(x).prec)
   return z
 end
@@ -1405,7 +1405,7 @@ end
 """
 function hyp1f1r(a::acb, b::acb, x::acb)
   z = parent(x)()
-  ccall((:acb_hypgeom_m, :libarb), Nothing,
+  ccall((:acb_hypgeom_m, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, a, b, x, 1, parent(x).prec)
   return z
 end
@@ -1416,7 +1416,7 @@ end
 """
 function hyperu(a::acb, b::acb, x::acb)
   z = parent(x)()
-  ccall((:acb_hypgeom_u, :libarb), Nothing,
+  ccall((:acb_hypgeom_u, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Int), z, a, b, x, parent(x).prec)
   return z
 end
@@ -1427,7 +1427,7 @@ end
 """
 function hyp2f1(a::acb, b::acb, c::acb, x::acb; flags=0)
   z = parent(x)()
-  ccall((:acb_hypgeom_2f1, :libarb), Nothing,
+  ccall((:acb_hypgeom_2f1, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, a, b, c, x, flags, parent(x).prec)
   return z
 end
@@ -1442,7 +1442,7 @@ function jtheta(z::acb, tau::acb)
   t2 = parent(z)()
   t3 = parent(z)()
   t4 = parent(z)()
-  ccall((:acb_modular_theta, :libarb), Nothing,
+  ccall((:acb_modular_theta, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Int),
                 t1, t2, t3, t4, z, tau, parent(z).prec)
   return (t1, t2, t3, t4)
@@ -1454,7 +1454,7 @@ end
 """
 function ellipwp(z::acb, tau::acb)
   r = parent(z)()
-  ccall((:acb_modular_elliptic_p, :libarb), Nothing,
+  ccall((:acb_modular_elliptic_p, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), r, z, tau, parent(z).prec)
   return r
 end
@@ -1535,36 +1535,36 @@ end
 ################################################################################
 
 function zero!(z::acb)
-   ccall((:acb_zero, :libarb), Nothing, (Ref{acb},), z)
+   ccall((:acb_zero, libarb), Nothing, (Ref{acb},), z)
    return z
 end
 
 function add!(z::acb, x::acb, y::acb)
-  ccall((:acb_add, :libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
+  ccall((:acb_add, libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
          z, x, y, parent(z).prec)
   return z
 end
 
 function addeq!(z::acb, y::acb)
-  ccall((:acb_add, :libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
+  ccall((:acb_add, libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
          z, z, y, parent(z).prec)
   return z
 end
 
 function sub!(z::acb, x::acb, y::acb)
-  ccall((:acb_sub, :libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
+  ccall((:acb_sub, libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
         z, x, y, parent(z).prec)
   return z
 end
 
 function mul!(z::acb, x::acb, y::acb)
-  ccall((:acb_mul, :libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
+  ccall((:acb_mul, libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
         z, x, y, parent(z).prec)
   return z
 end
 
 function div!(z::acb, x::acb, y::acb)
-  ccall((:acb_div, :libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
+  ccall((:acb_div, libarb), Nothing, (Ref{acb}, Ref{acb}, Ref{acb}, Int),
         z, x, y, parent(z).prec)
   return z
 end
@@ -1580,12 +1580,12 @@ for (typeofx, passtoc) in ((acb, Ref{acb}), (Ptr{acb}, Ptr{acb}))
                 ("acb_set_d", Float64))
     @eval begin
       function _acb_set(x::($typeofx), y::($t))
-        ccall(($f, :libarb), Nothing, (($passtoc), ($t)), x, y)
+        ccall(($f, libarb), Nothing, (($passtoc), ($t)), x, y)
       end
 
       function _acb_set(x::($typeofx), y::($t), p::Int)
         _acb_set(x, y)
-        ccall((:acb_set_round, :libarb), Nothing,
+        ccall((:acb_set_round, libarb), Nothing,
                     (($passtoc), ($passtoc), Int), x, x, p)
       end
     end
@@ -1593,88 +1593,88 @@ for (typeofx, passtoc) in ((acb, Ref{acb}), (Ptr{acb}, Ptr{acb}))
 
   @eval begin
     function _acb_set(x::($typeofx), y::fmpz)
-      ccall((:acb_set_fmpz, :libarb), Nothing, (($passtoc), Ref{fmpz}), x, y)
+      ccall((:acb_set_fmpz, libarb), Nothing, (($passtoc), Ref{fmpz}), x, y)
     end
 
     function _acb_set(x::($typeofx), y::fmpz, p::Int)
-      ccall((:acb_set_round_fmpz, :libarb), Nothing,
+      ccall((:acb_set_round_fmpz, libarb), Nothing,
                   (($passtoc), Ref{fmpz}, Int), x, y, p)
     end
 
     function _acb_set(x::($typeofx), y::fmpq, p::Int)
-      ccall((:acb_set_fmpq, :libarb), Nothing,
+      ccall((:acb_set_fmpq, libarb), Nothing,
                   (($passtoc), Ref{fmpq}, Int), x, y, p)
     end
 
     function _acb_set(x::($typeofx), y::arb)
-      ccall((:acb_set_arb, :libarb), Nothing, (($passtoc), Ref{arb}), x, y)
+      ccall((:acb_set_arb, libarb), Nothing, (($passtoc), Ref{arb}), x, y)
     end
 
     function _acb_set(x::($typeofx), y::arb, p::Int)
       _acb_set(x, y)
-      ccall((:acb_set_round, :libarb), Nothing,
+      ccall((:acb_set_round, libarb), Nothing,
                   (($passtoc), ($passtoc), Int), x, x, p)
     end
 
     function _acb_set(x::($typeofx), y::acb)
-      ccall((:acb_set, :libarb), Nothing, (($passtoc), Ref{acb}), x, y)
+      ccall((:acb_set, libarb), Nothing, (($passtoc), Ref{acb}), x, y)
     end
 
     function _acb_set(x::($typeofx), y::acb, p::Int)
-      ccall((:acb_set_round, :libarb), Nothing,
+      ccall((:acb_set_round, libarb), Nothing,
                   (($passtoc), Ref{acb}, Int), x, y, p)
     end
 
     function _acb_set(x::($typeofx), y::AbstractString, p::Int)
-      r = ccall((:acb_real_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+      r = ccall((:acb_real_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
       _arb_set(r, y, p)
-      i = ccall((:acb_imag_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
-      ccall((:arb_zero, :libarb), Nothing, (Ptr{arb}, ), i)
+      i = ccall((:acb_imag_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
+      ccall((:arb_zero, libarb), Nothing, (Ptr{arb}, ), i)
     end
 
     function _acb_set(x::($typeofx), y::BigFloat)
-      r = ccall((:acb_real_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+      r = ccall((:acb_real_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
       _arb_set(r, y)
-      i = ccall((:acb_imag_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
-      ccall((:arb_zero, :libarb), Nothing, (Ptr{arb}, ), i)
+      i = ccall((:acb_imag_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
+      ccall((:arb_zero, libarb), Nothing, (Ptr{arb}, ), i)
     end
 
     function _acb_set(x::($typeofx), y::BigFloat, p::Int)
-      r = ccall((:acb_real_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+      r = ccall((:acb_real_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
       _arb_set(r, y, p)
-      i = ccall((:acb_imag_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
-      ccall((:arb_zero, :libarb), Nothing, (Ptr{arb}, ), i)
+      i = ccall((:acb_imag_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
+      ccall((:arb_zero, libarb), Nothing, (Ptr{arb}, ), i)
     end
 
     function _acb_set(x::($typeofx), y::Int, z::Int, p::Int)
-      ccall((:acb_set_si_si, :libarb), Nothing,
+      ccall((:acb_set_si_si, libarb), Nothing,
                   (($passtoc), Int, Int), x, y, z)
-      ccall((:acb_set_round, :libarb), Nothing,
+      ccall((:acb_set_round, libarb), Nothing,
                   (($passtoc), ($passtoc), Int), x, x, p)
     end
 
     function _acb_set(x::($typeofx), y::arb, z::arb)
-      ccall((:acb_set_arb_arb, :libarb), Nothing,
+      ccall((:acb_set_arb_arb, libarb), Nothing,
                   (($passtoc), Ref{arb}, Ref{arb}), x, y, z)
     end
 
     function _acb_set(x::($typeofx), y::arb, z::arb, p::Int)
       _acb_set(x, y, z)
-      ccall((:acb_set_round, :libarb), Nothing,
+      ccall((:acb_set_round, libarb), Nothing,
                   (($passtoc), ($passtoc), Int), x, x, p)
     end
 
     function _acb_set(x::($typeofx), y::fmpq, z::fmpq, p::Int)
-      r = ccall((:acb_real_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+      r = ccall((:acb_real_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
       _arb_set(r, y, p)
-      i = ccall((:acb_imag_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+      i = ccall((:acb_imag_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
       _arb_set(i, z, p)
     end
 
     function _acb_set(x::($typeofx), y::T, z::T, p::Int) where {T <: AbstractString}
-      r = ccall((:acb_real_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+      r = ccall((:acb_real_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
       _arb_set(r, y, p)
-      i = ccall((:acb_imag_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+      i = ccall((:acb_imag_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
       _arb_set(i, z, p)
     end
 
@@ -1683,16 +1683,16 @@ for (typeofx, passtoc) in ((acb, Ref{acb}), (Ptr{acb}, Ptr{acb}))
   for T in (Float64, BigFloat, UInt, fmpz)
     @eval begin
       function _acb_set(x::($typeofx), y::($T), z::($T))
-        r = ccall((:acb_real_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+        r = ccall((:acb_real_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
         _arb_set(r, y)
-        i = ccall((:acb_imag_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+        i = ccall((:acb_imag_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
         _arb_set(i, z)
       end
 
       function _acb_set(x::($typeofx), y::($T), z::($T), p::Int)
-        r = ccall((:acb_real_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+        r = ccall((:acb_real_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
         _arb_set(r, y, p)
-        i = ccall((:acb_imag_ptr, :libarb), Ptr{arb}, (($passtoc), ), x)
+        i = ccall((:acb_imag_ptr, libarb), Ptr{arb}, (($passtoc), ), x)
         _arb_set(i, z, p)
       end
     end

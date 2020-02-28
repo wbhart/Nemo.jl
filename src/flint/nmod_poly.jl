@@ -44,15 +44,15 @@ end
 
 function lead_isunit(a::nmod_poly)
   d = degree(a)
-  u = ccall((:nmod_poly_get_coeff_ui, :libflint), UInt, (Ref{nmod_poly}, Int), a, d)
-  n = ccall((:n_gcd, :libflint), UInt, (UInt, UInt), u, modulus(a))
+  u = ccall((:nmod_poly_get_coeff_ui, libflint), UInt, (Ref{nmod_poly}, Int), a, d)
+  n = ccall((:n_gcd, libflint), UInt, (UInt, UInt), u, modulus(a))
   return n==1
 end
 
 function Base.hash(a::nmod_poly, h::UInt)
    b = 0x53dd43cd511044d1%UInt
    for i in 0:length(a) - 1
-      u = ccall((:nmod_poly_get_coeff_ui, :libflint), UInt, (Ref{nmod_poly}, Int), a, i)
+      u = ccall((:nmod_poly_get_coeff_ui, libflint), UInt, (Ref{nmod_poly}, Int), a, i)
       b = xor(b, xor(hash(u, h), h))
       b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
    end
@@ -65,20 +65,20 @@ end
 #
 ################################################################################
 
-length(x::T) where T <: Zmodn_poly = ccall((:nmod_poly_length, :libflint), Int,
+length(x::T) where T <: Zmodn_poly = ccall((:nmod_poly_length, libflint), Int,
                                (Ref{T}, ), x)
 
-degree(x::T) where T <: Zmodn_poly = ccall((:nmod_poly_degree, :libflint), Int,
+degree(x::T) where T <: Zmodn_poly = ccall((:nmod_poly_degree, libflint), Int,
                                (Ref{T}, ), x)
 
 function coeff(x::T, n::Int) where T <: Zmodn_poly
   n < 0 && throw(DomainError(n, "Index must be non-negative"))
-  return base_ring(x)(ccall((:nmod_poly_get_coeff_ui, :libflint), UInt,
+  return base_ring(x)(ccall((:nmod_poly_get_coeff_ui, libflint), UInt,
           (Ref{T}, Int), x, n))
 end
 
 function coeff_raw(x::T, n::Int) where T <: Zmodn_poly
-  return ccall((:nmod_poly_get_coeff_ui, :libflint), UInt,
+  return ccall((:nmod_poly_get_coeff_ui, libflint), UInt,
                 (Ref{T}, Int), x, n)
 end
 
@@ -91,7 +91,7 @@ gen(R::NmodPolyRing) = R([zero(base_ring(R)), one(base_ring(R))])
 isgen(a::T) where T <: Zmodn_poly = (degree(a) == 1 &&
                               iszero(coeff(a,0)) && isone(coeff(a,1)))
 
-iszero(a::T) where T <: Zmodn_poly = Bool(ccall((:nmod_poly_is_zero, :libflint), Int32,
+iszero(a::T) where T <: Zmodn_poly = Bool(ccall((:nmod_poly_is_zero, libflint), Int32,
                               (Ref{T}, ), a))
 
 modulus(a::T) where T <: Zmodn_poly = a.parent.n
@@ -118,10 +118,10 @@ function show(io::IO, x::T) where T <: Zmodn_poly
   if length(x) == 0
     print(io, "0")
   else
-    cstr = ccall((:nmod_poly_get_str_pretty, :libflint), Ptr{UInt8},
+    cstr = ccall((:nmod_poly_get_str_pretty, libflint), Ptr{UInt8},
             (Ref{T}, Ptr{UInt8}), x, string(var(parent(x))))
     print(io, unsafe_string(cstr))
-    ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8}, ), cstr)
+    ccall((:flint_free, libflint), Nothing, (Ptr{UInt8}, ), cstr)
   end
 end
 
@@ -150,7 +150,7 @@ canonical_unit(a::T) where T <: Zmodn_poly = canonical_unit(lead(a))
 
 function -(x::T) where T <: Zmodn_poly
   z = parent(x)()
-  ccall((:nmod_poly_neg, :libflint), Nothing,
+  ccall((:nmod_poly_neg, libflint), Nothing,
           (Ref{T}, Ref{T}), z, x)
   return z
 end
@@ -164,7 +164,7 @@ end
 function +(x::T, y::T) where T <: Zmodn_poly
   check_parent(x,y)
   z = parent(x)()
-  ccall((:nmod_poly_add, :libflint), Nothing,
+  ccall((:nmod_poly_add, libflint), Nothing,
           (Ref{T}, Ref{T},  Ref{T}), z, x, y)
   return z
 end
@@ -172,7 +172,7 @@ end
 function -(x::T, y::T) where T <: Zmodn_poly
   check_parent(x,y)
   z = parent(x)()
-  ccall((:nmod_poly_sub, :libflint), Nothing,
+  ccall((:nmod_poly_sub, libflint), Nothing,
           (Ref{T}, Ref{T},  Ref{T}), z, x, y)
   return z
 end
@@ -180,7 +180,7 @@ end
 function *(x::T, y::T) where T <: Zmodn_poly
   check_parent(x,y)
   z = parent(x)()
-  ccall((:nmod_poly_mul, :libflint), Nothing,
+  ccall((:nmod_poly_mul, libflint), Nothing,
           (Ref{T}, Ref{T},  Ref{T}), z, x, y)
   return z
 end
@@ -193,7 +193,7 @@ end
 
 function *(x::T, y::UInt) where T <: Zmodn_poly
   z = parent(x)()
-  ccall((:nmod_poly_scalar_mul_nmod, :libflint), Nothing,
+  ccall((:nmod_poly_scalar_mul_nmod, libflint), Nothing,
           (Ref{T}, Ref{T}, UInt), z, x, y)
   return z
 end
@@ -204,9 +204,9 @@ function *(x::T, y::fmpz) where T <: Zmodn_poly
   z = parent(x)()
   t = fmpz()
   tt = UInt(0)
-  ccall((:fmpz_mod_ui, :libflint), UInt,
+  ccall((:fmpz_mod_ui, libflint), UInt,
                 (Ref{fmpz}, Ref{fmpz}, UInt), t, y, parent(x).n)
-  tt = ccall((:fmpz_get_ui, :libflint), UInt, (Ref{fmpz}, ), t)
+  tt = ccall((:fmpz_get_ui, libflint), UInt, (Ref{fmpz}, ), t)
   return x*tt
 end
 
@@ -225,7 +225,7 @@ end
 
 function +(x::T, y::UInt) where T <: Zmodn_poly
   z = parent(x)()
-  ccall((:nmod_poly_add_ui, :libflint), Nothing,
+  ccall((:nmod_poly_add_ui, libflint), Nothing,
     (Ref{T}, Ref{T}, UInt), z, x, y)
   return z
 end
@@ -236,9 +236,9 @@ function +(x::T, y::fmpz) where T <: Zmodn_poly
   z = parent(x)()
   t = fmpz()
   tt = UInt(0)
-  ccall((:fmpz_mod_ui, :libflint), UInt,
+  ccall((:fmpz_mod_ui, libflint), UInt,
                 (Ref{fmpz}, Ref{fmpz}, UInt), t, y, parent(x).n)
-  tt = ccall((:fmpz_get_ui, :libflint), UInt, (Ref{fmpz}, ), t)
+  tt = ccall((:fmpz_get_ui, libflint), UInt, (Ref{fmpz}, ), t)
   return +(x,tt)
 end
 
@@ -257,7 +257,7 @@ end
 
 function -(x::T, y::UInt) where T <: Zmodn_poly
   z = parent(x)()
-  ccall((:nmod_poly_sub_ui, :libflint), Nothing,
+  ccall((:nmod_poly_sub_ui, libflint), Nothing,
     (Ref{T}, Ref{T}, UInt), z, x, y)
   return z
 end
@@ -268,9 +268,9 @@ function -(x::T, y::fmpz) where T <: Zmodn_poly
   z = parent(x)()
   t = fmpz()
   tt = UInt(0)
-  ccall((:fmpz_mod_ui, :libflint), UInt,
+  ccall((:fmpz_mod_ui, libflint), UInt,
                 (Ref{fmpz}, Ref{fmpz}, UInt), t, y, parent(x).n)
-  tt = ccall((:fmpz_get_ui, :libflint), UInt, (Ref{fmpz}, ), t)
+  tt = ccall((:fmpz_get_ui, libflint), UInt, (Ref{fmpz}, ), t)
   return -(x,tt)
 end
 
@@ -296,7 +296,7 @@ end
 function ^(x::T, y::Int) where T <: Zmodn_poly
   y < 0 && throw(DomainError(y, "Exponent must be nonnegative"))
   z = parent(x)()
-  ccall((:nmod_poly_pow, :libflint), Nothing,
+  ccall((:nmod_poly_pow, libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, y)
   return z
 end
@@ -309,7 +309,7 @@ end
 
 function ==(x::T, y::T) where T <: Zmodn_poly
   check_parent(x, y)
-  return Bool(ccall((:nmod_poly_equal, :libflint), Int32,
+  return Bool(ccall((:nmod_poly_equal, libflint), Int32,
           (Ref{T}, Ref{T}), x, y))
 end
 
@@ -326,7 +326,7 @@ function ==(x::nmod_poly, y::nmod)
   if length(x) > 1
     return false
   elseif length(x) == 1
-    u = ccall((:nmod_poly_get_coeff_ui, :libflint), UInt,
+    u = ccall((:nmod_poly_get_coeff_ui, libflint), UInt,
             (Ref{nmod_poly}, Int), x, 0)
     return u == y
   else
@@ -348,7 +348,7 @@ function truncate(a::T, n::Int) where T <: Zmodn_poly
   if length(z) <= n
     return z
   end
-  ccall((:nmod_poly_truncate, :libflint), Nothing,
+  ccall((:nmod_poly_truncate, libflint), Nothing,
           (Ref{T}, Int), z, n)
   return z
 end
@@ -357,7 +357,7 @@ function mullow(x::T, y::T, n::Int) where T <: Zmodn_poly
   check_parent(x, y)
   n < 0 && throw(DomainError(n, "Index must be non-negative"))
   z = parent(x)()
-  ccall((:nmod_poly_mullow, :libflint), Nothing,
+  ccall((:nmod_poly_mullow, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}, Int), z, x, y, n)
   return z
 end
@@ -371,7 +371,7 @@ end
 function reverse(x::T, len::Int) where T <: Zmodn_poly
   len < 0 && throw(DomainError(n, "Index must be non-negative"))
   z = parent(x)()
-  ccall((:nmod_poly_reverse, :libflint), Nothing,
+  ccall((:nmod_poly_reverse, libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, len)
   return z
 end
@@ -385,7 +385,7 @@ end
 function shift_left(x::T, len::Int) where T <: Zmodn_poly
   len < 0 && throw(DomainError(len, "Shift must be nonnegative."))
   z = parent(x)()
-  ccall((:nmod_poly_shift_left, :libflint), Nothing,
+  ccall((:nmod_poly_shift_left, libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, len)
   return z
 end
@@ -393,7 +393,7 @@ end
 function shift_right(x::T, len::Int) where T <: Zmodn_poly
   len < 0 && throw(DomainError(len, "Shift must be nonnegative."))
   z = parent(x)()
-  ccall((:nmod_poly_shift_right, :libflint), Nothing,
+  ccall((:nmod_poly_shift_right, libflint), Nothing,
             (Ref{T}, Ref{T}, Int), z, x, len)
   return z
 end
@@ -409,7 +409,7 @@ function divexact(x::nmod_poly, y::nmod_poly)
   iszero(y) && throw(DivideError())
   !lead_isunit(y) && error("Impossible inverse in divexact")
   z = parent(x)()
-  ccall((:nmod_poly_div, :libflint), Nothing,
+  ccall((:nmod_poly_div, libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}), z, x, y)
   return z
 end
@@ -448,7 +448,7 @@ function divrem(x::nmod_poly, y::nmod_poly)
   !lead_isunit(y) && error("Impossible inverse in divrem")
   q = parent(x)()
   r = parent(x)()
-  ccall((:nmod_poly_divrem, :libflint), Nothing,
+  ccall((:nmod_poly_divrem, libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}),
           q, r, x, y)
   return q, r
@@ -459,7 +459,7 @@ function div(x::nmod_poly, y::nmod_poly)
   iszero(y) && throw(DivideError())
   !lead_isunit(y) && error("Impossible inverse in div")
   q = parent(x)()
-  ccall((:nmod_poly_div, :libflint), Nothing,
+  ccall((:nmod_poly_div, libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}),
           q, x, y)
   return q
@@ -476,7 +476,7 @@ function rem(x::nmod_poly, y::nmod_poly)
   iszero(y) && throw(DivideError())
   !lead_isunit(y) && error("Impossible inverse in rem")
   z = parent(x)()
-  ccall((:nmod_poly_rem, :libflint), Nothing,
+  ccall((:nmod_poly_rem, libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}), z, x, y)
   return z
 end
@@ -493,7 +493,7 @@ function gcd(x::nmod_poly, y::nmod_poly)
   check_parent(x,y)
   !isprime(modulus(x)) && error("Modulus not prime in gcd")
   z = parent(x)()
-  ccall((:nmod_poly_gcd, :libflint), Nothing,
+  ccall((:nmod_poly_gcd, libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}), z, x, y)
   return z
 end
@@ -504,7 +504,7 @@ function gcdx(x::nmod_poly, y::nmod_poly)
   g = parent(x)()
   s = parent(x)()
   t = parent(x)()
-  ccall((:nmod_poly_xgcd, :libflint), Nothing,
+  ccall((:nmod_poly_xgcd, libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly},
            Ref{nmod_poly}), g, s, t, x, y)
   return g,s,t
@@ -516,7 +516,7 @@ function gcdinv(x::nmod_poly, y::nmod_poly)
   length(y) <= 1 && error("Length of second argument must be >= 2")
   g = parent(x)()
   s = parent(x)()
-  ccall((:nmod_poly_gcdinv, :libflint), Nothing,
+  ccall((:nmod_poly_gcdinv, libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}),
           g, s, x, y)
   return g,s
@@ -535,7 +535,7 @@ function invmod(x::T, y::T) where T <: Zmodn_poly
     return parent(x)(inv(eval(x, coeff(y, 0))))
   end
   z = parent(x)()
-  r = ccall((:nmod_poly_invmod, :libflint), Int32,
+  r = ccall((:nmod_poly_invmod, libflint), Int32,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   r == 0 ? error("Impossible inverse in invmod") : return z
 end
@@ -544,7 +544,7 @@ function mulmod(x::T, y::T, z::T) where T <: Zmodn_poly
   check_parent(x,y)
   check_parent(y,z)
   w = parent(x)()
-  ccall((:nmod_poly_mulmod, :libflint), Nothing,
+  ccall((:nmod_poly_mulmod, libflint), Nothing,
         (Ref{T}, Ref{T}, Ref{T}, Ref{T}),
         w, x, y, z)
   return w
@@ -562,7 +562,7 @@ function powmod(x::T, e::Int, y::T) where T <: Zmodn_poly
     e = -e
   end
 
-  ccall((:nmod_poly_powmod_ui_binexp, :libflint), Nothing,
+  ccall((:nmod_poly_powmod_ui_binexp, libflint), Nothing,
         (Ref{T}, Ref{T}, Int, Ref{T}), z, x, e, y)
 
   return z
@@ -579,7 +579,7 @@ function resultant(x::nmod_poly, y::nmod_poly,  check::Bool = true)
     check_parent(x,y)
     !isprime(modulus(x)) && error("Modulus not prime in resultant")
   end
-  r = ccall((:nmod_poly_resultant, :libflint), UInt,
+  r = ccall((:nmod_poly_resultant, libflint), UInt,
           (Ref{nmod_poly}, Ref{nmod_poly}), x, y)
   return base_ring(x)(r)
 end
@@ -592,7 +592,7 @@ end
 
 function evaluate(x::nmod_poly, y::nmod)
   base_ring(x) != parent(y) && error("Elements must have same parent")
-  z = ccall((:nmod_poly_evaluate_nmod, :libflint), UInt,
+  z = ccall((:nmod_poly_evaluate_nmod, libflint), UInt,
               (Ref{nmod_poly}, UInt), x, y.data)
   return parent(y)(z)
 end
@@ -605,7 +605,7 @@ end
 
 function derivative(x::T) where T <: Zmodn_poly
   z = parent(x)()
-  ccall((:nmod_poly_derivative, :libflint), Nothing,
+  ccall((:nmod_poly_derivative, libflint), Nothing,
         (Ref{T}, Ref{T}), z, x)
   return z
 end
@@ -618,7 +618,7 @@ end
 
 function integral(x::T) where T <: Zmodn_poly
   z = parent(x)()
-  ccall((:nmod_poly_integral, :libflint), Nothing,
+  ccall((:nmod_poly_integral, libflint), Nothing,
         (Ref{T}, Ref{T}), z, x)
   return z
 end
@@ -632,7 +632,7 @@ end
 function compose(x::T, y::T) where T <: Zmodn_poly
   check_parent(x,y)
   z = parent(x)()
-  ccall((:nmod_poly_compose, :libflint), Nothing,
+  ccall((:nmod_poly_compose, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   return z
 end
@@ -655,7 +655,7 @@ function interpolate(R::NmodPolyRing, x::Array{nmod, 1},
 
     ay[i] = y[i].data
   end
-  ccall((:nmod_poly_interpolate_nmod_vec, :libflint), Nothing,
+  ccall((:nmod_poly_interpolate_nmod_vec, libflint), Nothing,
           (Ref{nmod_poly}, Ptr{UInt}, Ptr{UInt}, Int),
           z, ax, ay, length(x))
   return z
@@ -670,7 +670,7 @@ end
 function inflate(x::T, n::Int) where T <: Zmodn_poly
   n < 0 && throw(DomainError(n, "Cannot inflate by a negative number."))
   z = parent(x)()
-  ccall((:nmod_poly_inflate, :libflint), Nothing,
+  ccall((:nmod_poly_inflate, libflint), Nothing,
           (Ref{T}, Ref{T}, UInt), z, x, UInt(n))
   return z
 end
@@ -678,7 +678,7 @@ end
 function deflate(x::T, n::Int) where T <: Zmodn_poly
   n < 0 && throw(DomainError(n, "Cannot deflate by a negative number."))
   z = parent(x)()
-  ccall((:nmod_poly_deflate, :libflint), Nothing,
+  ccall((:nmod_poly_deflate, libflint), Nothing,
           (Ref{T}, Ref{T}, UInt), z, x, UInt(n))
   return z
 end
@@ -697,7 +697,7 @@ end
 """
 function lift(R::FmpzPolyRing, y::nmod_poly)
   z = fmpz_poly()
-  ccall((:fmpz_poly_set_nmod_poly, :libflint), Nothing,
+  ccall((:fmpz_poly_set_nmod_poly, libflint), Nothing,
           (Ref{fmpz_poly}, Ref{nmod_poly}), z, y)
   z.parent = R
   return z
@@ -715,7 +715,7 @@ end
 """
 function isirreducible(x::nmod_poly)
   !isprime(modulus(x)) && error("Modulus not prime in isirreducible")
-  return Bool(ccall((:nmod_poly_is_irreducible, :libflint), Int32,
+  return Bool(ccall((:nmod_poly_is_irreducible, libflint), Int32,
           (Ref{nmod_poly}, ), x))
 end
 
@@ -731,7 +731,7 @@ end
 """
 function issquarefree(x::nmod_poly)
    !isprime(modulus(x)) && error("Modulus not prime in issquarefree")
-   return Bool(ccall((:nmod_poly_is_squarefree, :libflint), Int32,
+   return Bool(ccall((:nmod_poly_is_squarefree, libflint), Int32,
        (Ref{nmod_poly}, ), x))
 end
 
@@ -753,12 +753,12 @@ end
 function _factor(x::nmod_poly)
   !isprime(modulus(x)) && error("Modulus not prime in factor")
   fac = nmod_poly_factor(x.mod_n)
-  z = ccall((:nmod_poly_factor, :libflint), UInt,
+  z = ccall((:nmod_poly_factor, libflint), UInt,
           (Ref{nmod_poly_factor}, Ref{nmod_poly}), fac, x)
   res = Dict{nmod_poly,Int}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:nmod_poly_factor_get_nmod_poly, :libflint), Nothing,
+    ccall((:nmod_poly_factor_get_nmod_poly, libflint), Nothing,
             (Ref{nmod_poly}, Ref{nmod_poly_factor}, Int), f, fac, i-1)
     e = unsafe_load(fac.exp,i)
     res[f] = e
@@ -777,12 +777,12 @@ end
 
 function _factor_squarefree(x::nmod_poly)
   fac = nmod_poly_factor(x.mod_n)
-  ccall((:nmod_poly_factor_squarefree, :libflint), UInt,
+  ccall((:nmod_poly_factor_squarefree, libflint), UInt,
           (Ref{nmod_poly_factor}, Ref{nmod_poly}), fac, x)
   res = Dict{nmod_poly,Int}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:nmod_poly_factor_get_nmod_poly, :libflint), Nothing,
+    ccall((:nmod_poly_factor_get_nmod_poly, libflint), Nothing,
             (Ref{nmod_poly}, Ref{nmod_poly_factor}, Int), f, fac, i-1)
     e = unsafe_load(fac.exp,i)
     res[f] = e
@@ -800,13 +800,13 @@ function factor_distinct_deg(x::nmod_poly)
   degs = Vector{Int}(undef, degree(x))
   degss = [ pointer(degs) ]
   fac = nmod_poly_factor(x.mod_n)
-  ccall((:nmod_poly_factor_distinct_deg, :libflint), UInt,
+  ccall((:nmod_poly_factor_distinct_deg, libflint), UInt,
           (Ref{nmod_poly_factor}, Ref{nmod_poly}, Ptr{Ptr{Int}}),
           fac, x, degss)
   res = Dict{Int,nmod_poly}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:nmod_poly_factor_get_nmod_poly, :libflint), Nothing,
+    ccall((:nmod_poly_factor_get_nmod_poly, libflint), Nothing,
             (Ref{nmod_poly}, Ref{nmod_poly_factor}, Int), f, fac, i-1)
     res[degs[i]] = f
   end
@@ -847,7 +847,7 @@ function remove(z::nmod_poly, p::nmod_poly)
    check_parent(z,p)
    iszero(z) && error("Not yet implemented")
    z = deepcopy(z)
-   v = ccall((:nmod_poly_remove, :libflint), Int,
+   v = ccall((:nmod_poly_remove, libflint), Int,
                (Ref{nmod_poly}, Ref{nmod_poly}), z,  p)
    return v, z
 end
@@ -890,37 +890,37 @@ end
 ################################################################################
 
 function zero!(x::T) where T <: Zmodn_poly
-  ccall((:nmod_poly_zero, :libflint), Nothing,
+  ccall((:nmod_poly_zero, libflint), Nothing,
                    (Ref{T},), x)
   return x
 end
 
 function one!(a::T) where T <: Zmodn_poly
-  ccall((:nmod_poly_one, :libflint), Nothing, (Ref{T}, ), a)
+  ccall((:nmod_poly_one, libflint), Nothing, (Ref{T}, ), a)
   return a
 end
 
 function fit!(x::T, n::Int) where T <: Zmodn_poly
-  ccall((:nmod_poly_fit_length, :libflint), Nothing,
+  ccall((:nmod_poly_fit_length, libflint), Nothing,
                    (Ref{T}, Int), x, n)
   return nothing
 end
 
 function setcoeff!(x::T, n::Int, y::UInt) where T <: Zmodn_poly
-  ccall((:nmod_poly_set_coeff_ui, :libflint), Nothing,
+  ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
                    (Ref{T}, Int, UInt), x, n, y)
   return x
 end
 
 function setcoeff!(x::T, n::Int, y::Int) where T <: Zmodn_poly
-  ccall((:nmod_poly_set_coeff_ui, :libflint), Nothing,
+  ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
                    (Ref{T}, Int, UInt), x, n, mod(y, x.mod_n))
   return x
 end
 
 function setcoeff!(x::T, n::Int, y::fmpz) where T <: Zmodn_poly
-  r = ccall((:fmpz_fdiv_ui, :libflint), UInt, (Ref{fmpz}, UInt), y, x.mod_n)
-  ccall((:nmod_poly_set_coeff_ui, :libflint), Nothing,
+  r = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt), y, x.mod_n)
+  ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
                    (Ref{T}, Int, UInt), x, n, r)
   return x
 end
@@ -930,31 +930,31 @@ setcoeff!(x::T, n::Int, y::Integer) where T <: Zmodn_poly = setcoeff!(x, n, fmpz
 setcoeff!(x::nmod_poly, n::Int, y::nmod) = setcoeff!(x, n, y.data)
 
 function add!(z::T, x::T, y::T) where T <: Zmodn_poly
-  ccall((:nmod_poly_add, :libflint), Nothing,
+  ccall((:nmod_poly_add, libflint), Nothing,
           (Ref{T}, Ref{T},  Ref{T}), z, x, y)
   return z
 end
 
 function addeq!(z::T, y::T) where T <: Zmodn_poly
-  ccall((:nmod_poly_add, :libflint), Nothing,
+  ccall((:nmod_poly_add, libflint), Nothing,
           (Ref{T}, Ref{T},  Ref{T}), z, z, y)
   return z
 end
 
 function sub!(z::T, x::T, y::T) where T <: Zmodn_poly
-  ccall((:nmod_poly_sub, :libflint), Nothing,
+  ccall((:nmod_poly_sub, libflint), Nothing,
           (Ref{T}, Ref{T},  Ref{T}), z, x, y)
   return z
 end
 
 function mul!(z::T, x::T, y::T) where T <: Zmodn_poly
-  ccall((:nmod_poly_mul, :libflint), Nothing,
+  ccall((:nmod_poly_mul, libflint), Nothing,
           (Ref{T}, Ref{T},  Ref{T}), z, x, y)
   return z
 end
 
 function mul!(z::T, x::T, y::UInt) where T <: Zmodn_poly
-  ccall((:nmod_poly_scalar_mul_nmod, :libflint), Nothing,
+  ccall((:nmod_poly_scalar_mul_nmod, libflint), Nothing,
             (Ref{T}, Ref{T}, UInt), z, x, y)
   return z
 end
@@ -997,7 +997,7 @@ function (R::NmodPolyRing)()
 end
 
 function (R::NmodPolyRing)(x::fmpz)
-  r = ccall((:fmpz_fdiv_ui, :libflint), UInt, (Ref{fmpz}, UInt), x, R.n)
+  r = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt), x, R.n)
   z = nmod_poly(R.n, r)
   z.parent = R
   return z

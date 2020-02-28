@@ -45,58 +45,58 @@ end
 
 function coeff(x::fq_nmod, n::Int)
    n < 0 && throw(DomainError(n, "Index must be non-negative"))
-   return ccall((:nmod_poly_get_coeff_ui, :libflint), UInt,
+   return ccall((:nmod_poly_get_coeff_ui, libflint), UInt,
                 (Ref{fq_nmod}, Int), x, n)
 end
 
 function zero(a::FqNmodFiniteField)
    d = a()
-   ccall((:fq_nmod_zero, :libflint), Nothing,
+   ccall((:fq_nmod_zero, libflint), Nothing,
          (Ref{fq_nmod}, Ref{FqNmodFiniteField}), d, a)
    return d
 end
 
 function one(a::FqNmodFiniteField)
    d = a()
-   ccall((:fq_nmod_one, :libflint), Nothing,
+   ccall((:fq_nmod_one, libflint), Nothing,
          (Ref{fq_nmod}, Ref{FqNmodFiniteField}), d, a)
    return d
 end
 
 function gen(a::FqNmodFiniteField)
    d = a()
-   ccall((:fq_nmod_gen, :libflint), Nothing,
+   ccall((:fq_nmod_gen, libflint), Nothing,
          (Ref{fq_nmod}, Ref{FqNmodFiniteField}), d, a)
    return d
 end
 
-iszero(a::fq_nmod) = ccall((:fq_nmod_is_zero, :libflint), Bool,
+iszero(a::fq_nmod) = ccall((:fq_nmod_is_zero, libflint), Bool,
                      (Ref{fq_nmod}, Ref{FqNmodFiniteField}), a, a.parent)
 
-isone(a::fq_nmod) = ccall((:fq_nmod_is_one, :libflint), Bool,
+isone(a::fq_nmod) = ccall((:fq_nmod_is_one, libflint), Bool,
                     (Ref{fq_nmod}, Ref{FqNmodFiniteField}), a, a.parent)
 
 isgen(a::fq_nmod) = a == gen(parent(a)) # there is no isgen in flint
 
-isunit(a::fq_nmod) = ccall((:fq_nmod_is_invertible, :libflint), Bool,
+isunit(a::fq_nmod) = ccall((:fq_nmod_is_invertible, libflint), Bool,
                      (Ref{fq_nmod}, Ref{FqNmodFiniteField}), a, a.parent)
 
 function characteristic(a::FqNmodFiniteField)
    d = fmpz()
-   ccall((:__fq_nmod_ctx_prime, :libflint), Nothing,
+   ccall((:__fq_nmod_ctx_prime, libflint), Nothing,
          (Ref{fmpz}, Ref{FqNmodFiniteField}), d, a)
    return d
 end
 
 function order(a::FqNmodFiniteField)
    d = fmpz()
-   ccall((:fq_nmod_ctx_order, :libflint), Nothing,
+   ccall((:fq_nmod_ctx_order, libflint), Nothing,
          (Ref{fmpz}, Ref{FqNmodFiniteField}), d, a)
    return d
 end
 
 function degree(a::FqNmodFiniteField)
-   return ccall((:fq_nmod_ctx_degree, :libflint), Int,
+   return ccall((:fq_nmod_ctx_degree, libflint), Int,
                 (Ref{FqNmodFiniteField},), a)
 end
 
@@ -121,12 +121,12 @@ canonical_unit(x::fq_nmod) = x
 ###############################################################################
 
 function show(io::IO, x::fq_nmod)
-   cstr = ccall((:fq_nmod_get_str_pretty, :libflint), Ptr{UInt8},
+   cstr = ccall((:fq_nmod_get_str_pretty, libflint), Ptr{UInt8},
                 (Ref{fq_nmod}, Ref{FqNmodFiniteField}), x, x.parent)
 
    print(io, unsafe_string(cstr))
 
-   ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), cstr)
+   ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
 end
 
 function show(io::IO, a::FqNmodFiniteField)
@@ -148,7 +148,7 @@ show_minus_one(::Type{fq_nmod}) = true
 
 function -(x::fq_nmod)
    z = parent(x)()
-   ccall((:fq_nmod_neg, :libflint), Nothing,
+   ccall((:fq_nmod_neg, libflint), Nothing,
        (Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}), z, x, x.parent)
    return z
 end
@@ -162,7 +162,7 @@ end
 function +(x::fq_nmod, y::fq_nmod)
    check_parent(x, y)
    z = parent(y)()
-   ccall((:fq_nmod_add, :libflint), Nothing,
+   ccall((:fq_nmod_add, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                                                        z, x, y, y.parent)
    return z
@@ -171,7 +171,7 @@ end
 function -(x::fq_nmod, y::fq_nmod)
    check_parent(x, y)
    z = parent(y)()
-   ccall((:fq_nmod_sub, :libflint), Nothing,
+   ccall((:fq_nmod_sub, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                                                        z, x, y, y.parent)
    return z
@@ -180,7 +180,7 @@ end
 function *(x::fq_nmod, y::fq_nmod)
    check_parent(x, y)
    z = parent(y)()
-   ccall((:fq_nmod_mul, :libflint), Nothing,
+   ccall((:fq_nmod_mul, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                                                        z, x, y, y.parent)
    return z
@@ -194,7 +194,7 @@ end
 
 function *(x::Int, y::fq_nmod)
    z = parent(y)()
-   ccall((:fq_nmod_mul_si, :libflint), Nothing,
+   ccall((:fq_nmod_mul_si, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Int, Ref{FqNmodFiniteField}),
                                                z, y, x, y.parent)
    return z
@@ -208,7 +208,7 @@ end
 
 function *(x::fmpz, y::fq_nmod)
    z = parent(y)()
-   ccall((:fq_nmod_mul_fmpz, :libflint), Nothing,
+   ccall((:fq_nmod_mul_fmpz, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Ref{fmpz}, Ref{FqNmodFiniteField}),
                                                     z, y, x, y.parent)
    return z
@@ -244,7 +244,7 @@ function ^(x::fq_nmod, y::Int)
       y = -y
    end
    z = parent(x)()
-   ccall((:fq_nmod_pow_ui, :libflint), Nothing,
+   ccall((:fq_nmod_pow_ui, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Int, Ref{FqNmodFiniteField}),
                                                z, x, y, x.parent)
    return z
@@ -256,7 +256,7 @@ function ^(x::fq_nmod, y::fmpz)
       y = -y
    end
    z = parent(x)()
-   ccall((:fq_nmod_pow, :libflint), Nothing,
+   ccall((:fq_nmod_pow, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Ref{fmpz}, Ref{FqNmodFiniteField}),
                                                     z, x, y, x.parent)
    return z
@@ -270,7 +270,7 @@ end
 
 function ==(x::fq_nmod, y::fq_nmod)
    check_parent(x, y)
-   ccall((:fq_nmod_equal, :libflint), Bool,
+   ccall((:fq_nmod_equal, libflint), Bool,
        (Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}), x, y, y.parent)
 end
 
@@ -297,7 +297,7 @@ end
 function inv(x::fq_nmod)
    iszero(x) && throw(DivideError())
    z = parent(x)()
-   ccall((:fq_nmod_inv, :libflint), Nothing,
+   ccall((:fq_nmod_inv, libflint), Nothing,
        (Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}), z, x, x.parent)
    return z
 end
@@ -312,7 +312,7 @@ function divexact(x::fq_nmod, y::fq_nmod)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    z = parent(y)()
-   ccall((:fq_nmod_div, :libflint), Nothing,
+   ccall((:fq_nmod_div, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                                                        z, x, y, y.parent)
    return z
@@ -350,28 +350,28 @@ divexact(x::fmpz, y::fq_nmod) = divexact(parent(y)(x), y)
 
 function pth_root(x::fq_nmod)
    z = parent(x)()
-   ccall((:fq_nmod_pth_root, :libflint), Nothing,
+   ccall((:fq_nmod_pth_root, libflint), Nothing,
        (Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}), z, x, x.parent)
    return z
 end
 
 function tr(x::fq_nmod)
    z = fmpz()
-   ccall((:fq_nmod_trace, :libflint), Nothing,
+   ccall((:fq_nmod_trace, libflint), Nothing,
          (Ref{fmpz}, Ref{fq_nmod}, Ref{FqNmodFiniteField}), z, x, x.parent)
    return parent(x)(z)
 end
 
 function norm(x::fq_nmod)
    z = fmpz()
-   ccall((:fq_nmod_norm, :libflint), Nothing,
+   ccall((:fq_nmod_norm, libflint), Nothing,
          (Ref{fmpz}, Ref{fq_nmod}, Ref{FqNmodFiniteField}), z, x, x.parent)
    return parent(x)(z)
 end
 
 function frobenius(x::fq_nmod, n = 1)
    z = parent(x)()
-   ccall((:fq_nmod_frobenius, :libflint), Nothing,
+   ccall((:fq_nmod_frobenius, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Int, Ref{FqNmodFiniteField}),
                                                z, x, n, x.parent)
    return z
@@ -384,27 +384,27 @@ end
 ###############################################################################
 
 function zero!(z::fq_nmod)
-   ccall((:fq_nmod_zero, :libflint), Nothing,
+   ccall((:fq_nmod_zero, libflint), Nothing,
         (Ref{fq_nmod}, Ref{FqNmodFiniteField}), z, z.parent)
    return z
 end
 
 function mul!(z::fq_nmod, x::fq_nmod, y::fq_nmod)
-   ccall((:fq_nmod_mul, :libflint), Nothing,
+   ccall((:fq_nmod_mul, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                                                        z, x, y, y.parent)
    return z
 end
 
 function addeq!(z::fq_nmod, x::fq_nmod)
-   ccall((:fq_nmod_add, :libflint), Nothing,
+   ccall((:fq_nmod_add, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                                                        z, z, x, x.parent)
    return z
 end
 
 function add!(z::fq_nmod, x::fq_nmod, y::fq_nmod)
-   ccall((:fq_nmod_add, :libflint), Nothing,
+   ccall((:fq_nmod_add, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                                                        z, x, y, x.parent)
    return z
@@ -497,9 +497,9 @@ function modulus(k::FqNmodFiniteField)
     p::Int = characteristic(k)
     R = PolynomialRing(ResidueRing(ZZ, p), "T")[1]
     Q = R()
-    P = ccall((:fq_nmod_ctx_modulus, :libflint), Ref{nmod_poly},
+    P = ccall((:fq_nmod_ctx_modulus, libflint), Ref{nmod_poly},
                  (Ref{FqNmodFiniteField},), k)
-    ccall((:nmod_poly_set, :libflint), Nothing,
+    ccall((:nmod_poly_set, libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}),
           Q, P)
 

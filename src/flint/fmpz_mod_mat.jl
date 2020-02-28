@@ -48,7 +48,7 @@ end
 @inline function getindex(a::T, i::Int, j::Int) where T <: Zmod_fmpz_mat
   @boundscheck Generic._checkbounds(a, i, j)
   u = fmpz()
-  ccall((:fmpz_mod_mat_get_entry, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_get_entry, libflint), Nothing,
               (Ref{fmpz}, Ref{T}, Int, Int), u, a, i - 1 , j - 1)
   return fmpz_mod(u, base_ring(a)) # no reduction needed
 end
@@ -56,7 +56,7 @@ end
 # as above, but as a plain fmpz, no bounds checking
 function getindex_raw(a::T, i::Int, j::Int) where T <: Zmod_fmpz_mat
   u = fmpz()
-  ccall((:fmpz_mod_mat_get_entry, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_get_entry, libflint), Nothing,
                  (Ref{fmpz}, Ref{T}, Int, Int), u, a, i - 1, j - 1)
   return u
 end
@@ -79,7 +79,7 @@ end
 
 # as per setindex! but no reduction mod n and no bounds checking
 @inline function setindex_raw!(a::T, u::fmpz, i::Int, j::Int) where T <: Zmod_fmpz_mat
-  ccall((:fmpz_mod_mat_set_entry, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_set_entry, libflint), Nothing,
         (Ref{T}, Int, Int, Ref{fmpz}), a, i - 1, j - 1, u)
 end
 
@@ -88,7 +88,7 @@ function deepcopy_internal(a::fmpz_mod_mat, dict::IdDict)
   if isdefined(a, :base_ring)
     z.base_ring = a.base_ring
   end
-  ccall((:fmpz_mod_mat_set, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_set, libflint), Nothing,
           (Ref{fmpz_mod_mat}, Ref{fmpz_mod_mat}), z, a)
   return z
 end
@@ -114,12 +114,12 @@ zero(a::FmpzModMatSpace) = a()
 function one(a::FmpzModMatSpace)
   (nrows(a) != ncols(a)) && error("Matrices must be square")
   z = a()
-  ccall((:fmpz_mod_mat_one, :libflint), Nothing, (Ref{fmpz_mod_mat}, ), z)
+  ccall((:fmpz_mod_mat_one, libflint), Nothing, (Ref{fmpz_mod_mat}, ), z)
   return z
 end
 
 function iszero(a::T) where T <: Zmod_fmpz_mat
-  r = ccall((:fmpz_mod_mat_is_zero, :libflint), Cint, (Ref{T}, ), a)
+  r = ccall((:fmpz_mod_mat_is_zero, libflint), Cint, (Ref{T}, ), a)
   return Bool(r)
 end
 
@@ -130,7 +130,7 @@ end
 ################################################################################
 
 ==(a::T, b::T) where T <: Zmod_fmpz_mat = (a.base_ring == b.base_ring) &&
-        Bool(ccall((:fmpz_mod_mat_equal, :libflint), Cint,
+        Bool(ccall((:fmpz_mod_mat_equal, libflint), Cint,
                 (Ref{T}, Ref{T}), a, b))
 
 isequal(a::T, b::T) where T <: Zmod_fmpz_mat = ==(a, b)
@@ -143,14 +143,14 @@ isequal(a::T, b::T) where T <: Zmod_fmpz_mat = ==(a, b)
 
 function transpose(a::T) where T <: Zmod_fmpz_mat
   z = similar(a, ncols(a), nrows(a))
-  ccall((:fmpz_mod_mat_transpose, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_transpose, libflint), Nothing,
           (Ref{T}, Ref{T}), z, a)
   return z
 end
 
 function transpose!(a::T) where T <: Zmod_fmpz_mat
   !issquare(a) && error("Matrix must be a square matrix")
-  ccall((:fmpz_mod_mat_transpose, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_transpose, libflint), Nothing,
           (Ref{T}, Ref{T}), a, a)
 end
 
@@ -163,7 +163,7 @@ end
 #= Not currently implemented in Flint
 
 function swap_rows!(x::T, i::Int, j::Int) where T <: Zmod_fmpz_mat
-  ccall((:fmpz_mod_mat_swap_rows, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_swap_rows, libflint), Nothing,
         (Ref{T}, Ptr{Nothing}, Int, Int), x, C_NULL, i - 1, j - 1)
   return x
 end
@@ -175,7 +175,7 @@ function swap_rows(x::T, i::Int, j::Int) where T <: Zmod_fmpz_mat
 end
 
 function swap_cols!(x::T, i::Int, j::Int) where T <: Zmod_fmpz_mat
-  ccall((:fmpz_mod_mat_swap_cols, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_swap_cols, libflint), Nothing,
         (Ref{T}, Ptr{Nothing}, Int, Int), x, C_NULL, i - 1, j - 1)
   return x
 end
@@ -187,7 +187,7 @@ function swap_cols(x::T, i::Int, j::Int) where T <: Zmod_fmpz_mat
 end
 
 function reverse_rows!(x::T) where T <: Zmod_fmpz_mat
-   ccall((:fmpz_mod_mat_invert_rows, :libflint), Nothing,
+   ccall((:fmpz_mod_mat_invert_rows, libflint), Nothing,
          (Ref{T}, Ptr{Nothing}), x, C_NULL)
    return x
 end
@@ -195,7 +195,7 @@ end
 reverse_rows(x::T) where T <: Zmod_fmpz_mat = reverse_rows!(deepcopy(x))
 
 function reverse_cols!(x::T) where T <: Zmod_fmpz_mat
-   ccall((:fmpz_mod_mat_invert_cols, :libflint), Nothing,
+   ccall((:fmpz_mod_mat_invert_cols, libflint), Nothing,
          (Ref{T}, Ptr{Nothing}), x, C_NULL)
    return x
 end
@@ -212,7 +212,7 @@ reverse_cols(x::T) where T <: Zmod_fmpz_mat = reverse_cols!(deepcopy(x))
 
 function -(x::T) where T <: Zmod_fmpz_mat
   z = similar(x)
-  ccall((:fmpz_mod_mat_neg, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_neg, libflint), Nothing,
           (Ref{T}, Ref{T}), z, x)
   return z
 end
@@ -226,7 +226,7 @@ end
 function +(x::T, y::T) where T <: Zmod_fmpz_mat
   check_parent(x,y)
   z = similar(x)
-  ccall((:fmpz_mod_mat_add, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_add, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   return z
 end
@@ -234,7 +234,7 @@ end
 function -(x::T, y::T) where T <: Zmod_fmpz_mat
   check_parent(x,y)
   z = similar(x)
-  ccall((:fmpz_mod_mat_sub, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_sub, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   return z
 end
@@ -243,7 +243,7 @@ function *(x::T, y::T) where T <: Zmod_fmpz_mat
   (base_ring(x) != base_ring(y)) && error("Base ring must be equal")
   (ncols(x) != nrows(y)) && error("Dimensions are wrong")
   z = similar(x, nrows(x), ncols(y))
-  ccall((:fmpz_mod_mat_mul, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_mul, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   return z
 end
@@ -256,17 +256,17 @@ end
 ################################################################################
 
 function mul!(a::T, b::T, c::T) where T <: Zmod_fmpz_mat
-  ccall((:fmpz_mod_mat_mul, :libflint), Nothing, (Ref{T}, Ref{T}, Ref{T}), a, b, c)
+  ccall((:fmpz_mod_mat_mul, libflint), Nothing, (Ref{T}, Ref{T}, Ref{T}), a, b, c)
   return a
 end
 
 function add!(a::T, b::T, c::T) where T <: Zmod_fmpz_mat
-  ccall((:fmpz_mod_mat_add, :libflint), Nothing, (Ref{T}, Ref{T}, Ref{T}), a, b, c)
+  ccall((:fmpz_mod_mat_add, libflint), Nothing, (Ref{T}, Ref{T}, Ref{T}), a, b, c)
   return a
 end
 
 function zero!(a::T) where T <: Zmod_fmpz_mat
-  ccall((:fmpz_mod_mat_zero, :libflint), Nothing, (Ref{T}, ), a)
+  ccall((:fmpz_mod_mat_zero, libflint), Nothing, (Ref{T}, ), a)
   return a
 end
 
@@ -278,7 +278,7 @@ end
 
 function *(x::T, y::Int) where T <: Zmod_fmpz_mat
   z = similar(x)
-  ccall((:fmpz_mod_mat_scalar_mul_si, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_scalar_mul_si, libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, y)
   return z
 end
@@ -287,7 +287,7 @@ end
 
 function *(x::T, y::fmpz) where T <: Zmod_fmpz_mat
   z = similar(x)
-  ccall((:fmpz_mod_mat_scalar_mul_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_scalar_mul_fmpz, libflint), Nothing,
 	(Ref{T}, Ref{T}, Ref{fmpz}), z, x, y)
   return z
 end
@@ -321,7 +321,7 @@ function ^(x::T, y::Int) where T <: Zmod_fmpz_mat
      y = -y
   end
   z = similar(x)
-  ccall((:fmpz_mod_mat_pow, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_pow, libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, y)
   return z
 end
@@ -342,7 +342,7 @@ end
 ################################################################################
 
 function strong_echelon_form!(a::T) where T <: Zmod_fmpz_mat
-  ccall((:fmpz_mod_mat_strong_echelon_form, :libflint), Nothing, (Ref{T}, ), a)
+  ccall((:fmpz_mod_mat_strong_echelon_form, libflint), Nothing, (Ref{T}, ), a)
 end
 
 @doc Markdown.doc"""
@@ -359,7 +359,7 @@ function strong_echelon_form(a::fmpz_mod_mat)
 end
 
 function howell_form!(a::T) where T <: Zmod_fmpz_mat
-  ccall((:fmpz_mod_mat_howell_form, :libflint), Nothing, (Ref{T}, ), a)
+  ccall((:fmpz_mod_mat_howell_form, libflint), Nothing, (Ref{T}, ), a)
 end
 
 @doc Markdown.doc"""
@@ -386,7 +386,7 @@ function tr(a::T) where T <: Zmod_fmpz_mat
   !issquare(a) && error("Matrix must be a square matrix")
   R = base_ring(a)
   r = fmpz()
-  ccall((:fmpz_mod_mat_trace, :libflint), Nothing, (Ref{fmpz}, Ref{T}), r, a)
+  ccall((:fmpz_mod_mat_trace, libflint), Nothing, (Ref{fmpz}, Ref{T}), r, a)
   return fmpz_mod(r, R)
 end
 
@@ -401,7 +401,7 @@ end
 function det(a::fmpz_mod_mat)
   !issquare(a) && error("Matrix must be a square matrix")
   if isprime(a.n)
-     r = ccall((:fmpz_mod_mat_det, :libflint), UInt, (Ref{fmpz_mod_mat}, ), a)
+     r = ccall((:fmpz_mod_mat_det, libflint), UInt, (Ref{fmpz_mod_mat}, ), a)
      return base_ring(a)(r)
   else
      try
@@ -423,7 +423,7 @@ end
 #= Not implemented in Flint yet
 
 function rank(a::T) where T <: Zmod_fmpz_mat
-  r = ccall((:fmpz_mod_mat_rank, :libflint), Int, (Ref{T}, ), a)
+  r = ccall((:fmpz_mod_mat_rank, libflint), Int, (Ref{T}, ), a)
   return r
 end
 
@@ -440,7 +440,7 @@ end
 function inv(a::T) where T <: Zmod_fmpz_mat
   !issquare(a) && error("Matrix must be a square matrix")
   z = similar(a)
-  r = ccall((:fmpz_mod_mat_inv, :libflint), Int,
+  r = ccall((:fmpz_mod_mat_inv, libflint), Int,
           (Ref{T}, Ref{T}), z, a)
   !Bool(r) && error("Matrix not invertible")
   return z
@@ -461,7 +461,7 @@ function solve(x::T, y::T) where T <: Zmod_fmpz_mat
   !issquare(x)&& error("First argument not a square matrix in solve")
   (y.r != x.r) || y.c != 1 && ("Not a column vector in solve")
   z = similar(y)
-  r = ccall((:fmpz_mod_mat_solve, :libflint), Int,
+  r = ccall((:fmpz_mod_mat_solve, libflint), Int,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   !Bool(r) && error("Singular matrix in solve")
   return z
@@ -478,7 +478,7 @@ end
 #= Not implemented in Flint yet
 
 function lu!(P::Generic.Perm, x::T) where T <: Zmod_fmpz_mat
-  rank = Int(ccall((:fmpz_mod_mat_lu, :libflint), Cint, (Ptr{Int}, Ref{T}, Cint),
+  rank = Int(ccall((:fmpz_mod_mat_lu, libflint), Cint, (Ptr{Int}, Ref{T}, Cint),
            P.d, x, 0))
 
   for i in 1:length(P.d)
@@ -546,7 +546,7 @@ function Base.view(x::fmpz_mod_mat, r1::Int, c1::Int, r2::Int, c2::Int)
   z = fmpz_mod_mat()
   z.base_ring = x.base_ring
   z.view_parent = x
-  ccall((:fmpz_mod_mat_window_init, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_window_init, libflint), Nothing,
           (Ref{fmpz_mod_mat}, Ref{fmpz_mod_mat}, Int, Int, Int, Int),
           z, x, r1 - 1, c1 - 1, r2, c2)
   finalizer(_fmpz_mod_mat_window_clear_fn, z)
@@ -558,7 +558,7 @@ function Base.view(x::T, r::UnitRange{Int}, c::UnitRange{Int}) where T <: Zmod_f
 end
 
 function _fmpz_mod_mat_window_clear_fn(a::fmpz_mod_mat)
-  ccall((:fmpz_mod_mat_window_clear, :libflint), Nothing, (Ref{fmpz_mod_mat}, ), a)
+  ccall((:fmpz_mod_mat_window_clear, libflint), Nothing, (Ref{fmpz_mod_mat}, ), a)
 end
 
 function sub(x::T, r1::Int, c1::Int, r2::Int, c2::Int) where T <: Zmod_fmpz_mat
@@ -583,7 +583,7 @@ function hcat(x::T, y::T) where T <: Zmod_fmpz_mat
   (base_ring(x) != base_ring(y)) && error("Matrices must have same base ring")
   (x.r != y.r) && error("Matrices must have same number of rows")
   z = similar(x, nrows(x), ncols(x) + ncols(y))
-  ccall((:fmpz_mod_mat_concat_horizontal, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_concat_horizontal, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   return z
 end
@@ -592,7 +592,7 @@ function vcat(x::T, y::T) where T <: Zmod_fmpz_mat
   (base_ring(x) != base_ring(y)) && error("Matrices must have same base ring")
   (x.c != y.c) && error("Matrices must have same number of columns")
   z = similar(x, nrows(x) + nrows(y), ncols(x))
-  ccall((:fmpz_mod_mat_concat_vertical, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_concat_vertical, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}), z, x, y)
   return z
 end
@@ -629,13 +629,13 @@ end
 function lift(a::T) where {T <: Zmod_fmpz_mat}
   z = fmpz_mat(nrows(a), ncols(a))
   z.base_ring = FlintZZ
-  ccall((:fmpz_mat_set_fmpz_mod_mat, :libflint), Nothing,
+  ccall((:fmpz_mat_set_fmpz_mod_mat, libflint), Nothing,
           (Ref{fmpz_mat}, Ref{T}), z, a)
   return z
 end
 
 function lift!(z::fmpz_mat, a::T) where T <: Zmod_fmpz_mat
-  ccall((:fmpz_mat_set_fmpz_mod_mat, :libflint), Nothing,
+  ccall((:fmpz_mat_set_fmpz_mod_mat, libflint), Nothing,
           (Ref{fmpz_mat}, Ref{T}), z, a)
   return z
 end
@@ -653,7 +653,7 @@ end
 function charpoly(R::FmpzModPolyRing, a::fmpz_mod_mat)
   m = deepcopy(a)
   p = R()
-  ccall((:fmpz_mod_mat_charpoly, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_charpoly, libflint), Nothing,
           (Ref{fmpz_mod_poly}, Ref{fmpz_mod_mat}), p, m)
   return p
 end
@@ -670,7 +670,7 @@ end
 
 function minpoly(R::FmpzModPolyRing, a::fmpz_mod_mat)
   p = R()
-  ccall((:fmpz_mod_mat_minpoly, :libflint), Nothing,
+  ccall((:fmpz_mod_mat_minpoly, libflint), Nothing,
           (Ref{fmpz_mod_poly}, Ref{fmpz_mod_mat}), p, a)
   return p
 end
