@@ -3,7 +3,7 @@ function acb_calc_func_wrap(res::Ptr{acb}, x::Ptr{acb}, param::Ptr{Nothing}, ord
     xx.parent = AcbField(prec)
     F = unsafe_pointer_to_objref(param)
     w = F(xx)
-    ccall((:acb_set, :libarb), Ptr{Nothing}, (Ptr{acb}, Ref{acb}), res, w)
+    ccall((:acb_set, libarb), Ptr{Nothing}, (Ptr{acb}, Ref{acb}), res, w)
     return zero(Cint)
 end
 
@@ -40,7 +40,7 @@ function integrate(C::AcbField, F, a, b;
    end
 
    ctol = mag_struct(0, 0)
-   ccall((:mag_init, :libarb), Nothing, (Ref{mag_struct},), ctol)
+   ccall((:mag_init, libarb), Nothing, (Ref{mag_struct},), ctol)
 
    if abs_tol === -1.0
       ccall((:mag_set_ui_2exp_si, libarb), Nothing, (Ref{mag_struct}, UInt, Int), ctol, 1, -prec(C))
@@ -54,7 +54,7 @@ function integrate(C::AcbField, F, a, b;
 
    res = C()
 
-   status = ccall((:acb_calc_integrate, :libarb), UInt,
+   status = ccall((:acb_calc_integrate, libarb), UInt,
                   (Ref{acb},                       #res
                    Ptr{Nothing},                      #func
                    Any,                            #params
@@ -66,7 +66,7 @@ function integrate(C::AcbField, F, a, b;
                    Int),
       res, acb_calc_func_wrap_c(), F, lower, upper, cgoal, ctol, opts, prec(C))
 
-   ccall((:mag_clear, :libarb), Nothing, (Ref{mag_struct},), ctol)
+   ccall((:mag_clear, libarb), Nothing, (Ref{mag_struct},), ctol)
 
    if status == ARB_CALC_SUCCESS
       nothing

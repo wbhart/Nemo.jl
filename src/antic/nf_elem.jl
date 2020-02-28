@@ -95,14 +95,14 @@ end
 function coeff(x::nf_elem, n::Int)
    n < 0 && throw(DomainError(n, "Index must be non-negative"))
    z = fmpq()
-   ccall((:nf_elem_get_coeff_fmpq, :libantic), Nothing,
+   ccall((:nf_elem_get_coeff_fmpq, libantic), Nothing,
      (Ref{fmpq}, Ref{nf_elem}, Int, Ref{AnticNumberField}), z, x, n, parent(x))
    return z
 end
 
 function num_coeff!(z::fmpz, x::nf_elem, n::Int)
    n < 0 && throw(DomainError(n, "Index must be non-negative"))
-   ccall((:nf_elem_get_coeff_fmpz, :libantic), Nothing,
+   ccall((:nf_elem_get_coeff_fmpz, libantic), Nothing,
      (Ref{fmpz}, Ref{nf_elem}, Int, Ref{AnticNumberField}), z, x, n, parent(x))
    return z
 end
@@ -113,7 +113,7 @@ end
 """
 function gen(a::AnticNumberField)
    r = nf_elem(a)
-   ccall((:nf_elem_gen, :libantic), Nothing,
+   ccall((:nf_elem_gen, libantic), Nothing,
          (Ref{nf_elem}, Ref{AnticNumberField}), r, a)
    return r
 end
@@ -124,7 +124,7 @@ end
 """
 function one(a::AnticNumberField)
    r = nf_elem(a)
-   ccall((:nf_elem_one, :libantic), Nothing,
+   ccall((:nf_elem_one, libantic), Nothing,
          (Ref{nf_elem}, Ref{AnticNumberField}), r, a)
    return r
 end
@@ -135,7 +135,7 @@ end
 """
 function zero(a::AnticNumberField)
    r = nf_elem(a)
-   ccall((:nf_elem_zero, :libantic), Nothing,
+   ccall((:nf_elem_zero, libantic), Nothing,
          (Ref{nf_elem}, Ref{AnticNumberField}), r, a)
    return r
 end
@@ -146,7 +146,7 @@ end
 > number field, otherwise return `false`.
 """
 function isgen(a::nf_elem)
-   return ccall((:nf_elem_is_gen, :libantic), Bool,
+   return ccall((:nf_elem_is_gen, libantic), Bool,
                 (Ref{nf_elem}, Ref{AnticNumberField}), a, a.parent)
 end
 
@@ -156,7 +156,7 @@ end
 > identity of the number field, i.e. one, otherwise return `false`.
 """
 function isone(a::nf_elem)
-   return ccall((:nf_elem_is_one, :libantic), Bool,
+   return ccall((:nf_elem_is_one, libantic), Bool,
                 (Ref{nf_elem}, Ref{AnticNumberField}), a, a.parent)
 end
 
@@ -166,7 +166,7 @@ end
 > identity of the number field, i.e. zero, otherwise return `false`.
 """
 function iszero(a::nf_elem)
-   return ccall((:nf_elem_is_zero, :libantic), Bool,
+   return ccall((:nf_elem_is_zero, libantic), Bool,
                 (Ref{nf_elem}, Ref{AnticNumberField}), a, a.parent)
 end
 
@@ -183,7 +183,7 @@ isunit(a::nf_elem) = !iszero(a)
 > return `false`.
 """
 function isinteger(a::nf_elem)
-   b = ccall((:nf_elem_is_integer, :libantic), Cint,
+   b = ccall((:nf_elem_is_integer, libantic), Cint,
              (Ref{nf_elem}, Ref{AnticNumberField}), a, a.parent)
    return Bool(b)
 end
@@ -194,7 +194,7 @@ end
 > otherwise `false`.
 """
 function isrational(a::nf_elem)
-   b = ccall((:nf_elem_is_rational, :libantic), Cint,
+   b = ccall((:nf_elem_is_rational, libantic), Cint,
              (Ref{nf_elem}, Ref{AnticNumberField}), a, a.parent)
    return Bool(b)
 end
@@ -206,7 +206,7 @@ end
 """
 function denominator(a::nf_elem)
    z = fmpz()
-   ccall((:nf_elem_get_den, :libantic), Nothing,
+   ccall((:nf_elem_get_den, libantic), Nothing,
          (Ref{fmpz}, Ref{nf_elem}, Ref{AnticNumberField}),
          z, a, a.parent)
    return z
@@ -216,14 +216,14 @@ function elem_from_mat_row(a::AnticNumberField, b::fmpz_mat, i::Int, d::fmpz)
    Generic._checkbounds(nrows(b), i) || throw(BoundsError())
    ncols(b) == degree(a) || error("Wrong number of columns")
    z = a()
-   ccall((:nf_elem_set_fmpz_mat_row, :libantic), Nothing,
+   ccall((:nf_elem_set_fmpz_mat_row, libantic), Nothing,
         (Ref{nf_elem}, Ref{fmpz_mat}, Int, Ref{fmpz}, Ref{AnticNumberField}),
         z, b, i - 1, d, a)
    return z
 end
 
 function elem_to_mat_row!(a::fmpz_mat, i::Int, d::fmpz, b::nf_elem)
-   ccall((:nf_elem_get_fmpz_mat_row, :libantic), Nothing,
+   ccall((:nf_elem_get_fmpz_mat_row, libantic), Nothing,
          (Ref{fmpz_mat}, Int, Ref{fmpz}, Ref{nf_elem}, Ref{AnticNumberField}),
          a, i - 1, d, b, b.parent)
    nothing
@@ -301,11 +301,11 @@ function show(io::IO, a::AnticNumberField)
 end
 
 function show(io::IO, x::nf_elem)
-   cstr = ccall((:nf_elem_get_str_pretty, :libantic), Ptr{UInt8},
+   cstr = ccall((:nf_elem_get_str_pretty, libantic), Ptr{UInt8},
                 (Ref{nf_elem}, Ptr{UInt8}, Ref{AnticNumberField}),
                  x, string(var(parent(x))), parent(x))
    s = unsafe_string(cstr)
-   ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), cstr)
+   ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
 
    s = replace(s, "/" => "//")
 
@@ -327,7 +327,7 @@ canonical_unit(x::nf_elem) = x
 
 function -(a::nf_elem)
    r = a.parent()
-   ccall((:nf_elem_neg, :libantic), Nothing,
+   ccall((:nf_elem_neg, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}),
          r, a, a.parent)
    return r
@@ -342,7 +342,7 @@ end
 function +(a::nf_elem, b::nf_elem)
    check_parent(a, b)
    r = a.parent()
-   ccall((:nf_elem_add, :libantic), Nothing,
+   ccall((:nf_elem_add, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -351,7 +351,7 @@ end
 function -(a::nf_elem, b::nf_elem)
    check_parent(a, b)
    r = a.parent()
-   ccall((:nf_elem_sub, :libantic), Nothing,
+   ccall((:nf_elem_sub, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -360,7 +360,7 @@ end
 function *(a::nf_elem, b::nf_elem)
    check_parent(a, b)
    r = a.parent()
-   ccall((:nf_elem_mul, :libantic), Nothing,
+   ccall((:nf_elem_mul, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -374,7 +374,7 @@ end
 
 function +(a::nf_elem, b::Int)
    r = a.parent()
-   ccall((:nf_elem_add_si, :libantic), Nothing,
+   ccall((:nf_elem_add_si, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Int, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -382,7 +382,7 @@ end
 
 function +(a::nf_elem, b::fmpz)
    r = a.parent()
-   ccall((:nf_elem_add_fmpz, :libantic), Nothing,
+   ccall((:nf_elem_add_fmpz, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpz}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -390,7 +390,7 @@ end
 
 function +(a::nf_elem, b::fmpq)
    r = a.parent()
-   ccall((:nf_elem_add_fmpq, :libantic), Nothing,
+   ccall((:nf_elem_add_fmpq, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -398,7 +398,7 @@ end
 
 function -(a::nf_elem, b::Int)
    r = a.parent()
-   ccall((:nf_elem_sub_si, :libantic), Nothing,
+   ccall((:nf_elem_sub_si, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Int, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -406,7 +406,7 @@ end
 
 function -(a::nf_elem, b::fmpz)
    r = a.parent()
-   ccall((:nf_elem_sub_fmpz, :libantic), Nothing,
+   ccall((:nf_elem_sub_fmpz, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpz}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -414,7 +414,7 @@ end
 
 function -(a::nf_elem, b::fmpq)
    r = a.parent()
-   ccall((:nf_elem_sub_fmpq, :libantic), Nothing,
+   ccall((:nf_elem_sub_fmpq, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -422,7 +422,7 @@ end
 
 function -(a::Int, b::nf_elem)
    r = b.parent()
-   ccall((:nf_elem_si_sub, :libantic), Nothing,
+   ccall((:nf_elem_si_sub, libantic), Nothing,
          (Ref{nf_elem}, Int, Ref{nf_elem}, Ref{AnticNumberField}),
          r, a, b, b.parent)
    return r
@@ -430,7 +430,7 @@ end
 
 function -(a::fmpz, b::nf_elem)
    r = b.parent()
-   ccall((:nf_elem_fmpz_sub, :libantic), Nothing,
+   ccall((:nf_elem_fmpz_sub, libantic), Nothing,
          (Ref{nf_elem}, Ref{fmpz}, Ref{nf_elem}, Ref{AnticNumberField}),
          r, a, b, b.parent)
    return r
@@ -438,7 +438,7 @@ end
 
 function -(a::fmpq, b::nf_elem)
    r = b.parent()
-   ccall((:nf_elem_fmpq_sub, :libantic), Nothing,
+   ccall((:nf_elem_fmpq_sub, libantic), Nothing,
          (Ref{nf_elem}, Ref{fmpq}, Ref{nf_elem}, Ref{AnticNumberField}),
          r, a, b, b.parent)
    return r
@@ -464,7 +464,7 @@ end
 
 function *(a::nf_elem, b::Int)
    r = a.parent()
-   ccall((:nf_elem_scalar_mul_si, :libantic), Nothing,
+   ccall((:nf_elem_scalar_mul_si, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Int, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -472,7 +472,7 @@ end
 
 function *(a::nf_elem, b::fmpz)
    r = a.parent()
-   ccall((:nf_elem_scalar_mul_fmpz, :libantic), Nothing,
+   ccall((:nf_elem_scalar_mul_fmpz, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpz}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -480,7 +480,7 @@ end
 
 function *(a::nf_elem, b::fmpq)
    r = a.parent()
-   ccall((:nf_elem_scalar_mul_fmpq, :libantic), Nothing,
+   ccall((:nf_elem_scalar_mul_fmpq, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -526,7 +526,7 @@ end
 
 function ^(a::nf_elem, n::Int)
    r = a.parent()
-   ccall((:nf_elem_pow, :libantic), Nothing,
+   ccall((:nf_elem_pow, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Int, Ref{AnticNumberField}),
          r, a, abs(n), a.parent)
    if n < 0
@@ -543,7 +543,7 @@ end
 
 function ==(a::nf_elem, b::nf_elem)
    check_parent(a, b)
-   return ccall((:nf_elem_equal, :libantic), Bool,
+   return ccall((:nf_elem_equal, libantic), Bool,
            (Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}), a, b, a.parent)
 end
 
@@ -554,28 +554,28 @@ end
 ###############################################################################
 
 function ==(a::nf_elem, b::fmpz)
-   b = ccall((:nf_elem_equal_fmpz, :libantic), Cint,
+   b = ccall((:nf_elem_equal_fmpz, libantic), Cint,
              (Ref{nf_elem}, Ref{fmpz}, Ref{AnticNumberField}),
               a, b, a.parent)
    return Bool(b)
 end
 
 function ==(a::nf_elem, b::fmpq)
-   b = ccall((:nf_elem_equal_fmpq, :libantic), Cint,
+   b = ccall((:nf_elem_equal_fmpq, libantic), Cint,
              (Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}),
               a, b, a.parent)
    return Bool(b)
 end
 
 function ==(a::nf_elem, b::Int)
-   b = ccall((:nf_elem_equal_si, :libantic), Cint,
+   b = ccall((:nf_elem_equal_si, libantic), Cint,
              (Ref{nf_elem}, Int, Ref{AnticNumberField}),
               a, b, a.parent)
    return Bool(b)
 end
 
 function ==(a::nf_elem, b::UInt)
-   b = ccall((:nf_elem_equal_ui, :libantic), Cint,
+   b = ccall((:nf_elem_equal_ui, libantic), Cint,
              (Ref{nf_elem}, UInt, Ref{AnticNumberField}),
               a, b, a.parent)
    return Bool(b)
@@ -610,7 +610,7 @@ end
 function inv(a::nf_elem)
    iszero(a) && throw(DivideError())
    r = a.parent()
-   ccall((:nf_elem_inv, :libantic), Nothing,
+   ccall((:nf_elem_inv, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}),
          r, a, a.parent)
    return r
@@ -626,7 +626,7 @@ function divexact(a::nf_elem, b::nf_elem)
    iszero(b) && throw(DivideError())
    check_parent(a, b)
    r = a.parent()
-   ccall((:nf_elem_div, :libantic), Nothing,
+   ccall((:nf_elem_div, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -641,7 +641,7 @@ end
 function divexact(a::nf_elem, b::Int)
    b == 0 && throw(DivideError())
    r = a.parent()
-   ccall((:nf_elem_scalar_div_si, :libantic), Nothing,
+   ccall((:nf_elem_scalar_div_si, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Int, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -650,7 +650,7 @@ end
 function divexact(a::nf_elem, b::fmpz)
    iszero(b) && throw(DivideError())
    r = a.parent()
-   ccall((:nf_elem_scalar_div_fmpz, :libantic), Nothing,
+   ccall((:nf_elem_scalar_div_fmpz, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpz}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -661,7 +661,7 @@ divexact(a::nf_elem, b::Integer) = divexact(a, fmpz(b))
 function divexact(a::nf_elem, b::fmpq)
    iszero(b) && throw(DivideError())
    r = a.parent()
-   ccall((:nf_elem_scalar_div_fmpq, :libantic), Nothing,
+   ccall((:nf_elem_scalar_div_fmpq, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}),
          r, a, b, a.parent)
    return r
@@ -707,7 +707,7 @@ end
 """
 function norm(a::nf_elem)
    z = fmpq()
-   ccall((:nf_elem_norm, :libantic), Nothing,
+   ccall((:nf_elem_norm, libantic), Nothing,
          (Ref{fmpq}, Ref{nf_elem}, Ref{AnticNumberField}),
          z, a, a.parent)
    return z
@@ -719,7 +719,7 @@ end
 """
 function tr(a::nf_elem)
    z = fmpq()
-   ccall((:nf_elem_trace, :libantic), Nothing,
+   ccall((:nf_elem_trace, libantic), Nothing,
          (Ref{fmpq}, Ref{nf_elem}, Ref{AnticNumberField}),
          z, a, a.parent)
    return z
@@ -735,7 +735,7 @@ function representation_matrix(a::nf_elem)
   K = parent(a)
   z = fmpq_mat(degree(K), degree(K))
   z.base_ring = FlintQQ
-  ccall((:nf_elem_rep_mat, :libantic), Nothing,
+  ccall((:nf_elem_rep_mat, libantic), Nothing,
         (Ref{fmpq_mat}, Ref{nf_elem}, Ref{AnticNumberField}), z, a, K)
   return z
 end
@@ -752,7 +752,7 @@ function representation_matrix_q(a::nf_elem)
   z = fmpz_mat(degree(K), degree(K))
   z.base_ring = FlintZZ
   d = fmpz()
-  ccall((:nf_elem_rep_mat_fmpz_mat_den, :libantic), Nothing,
+  ccall((:nf_elem_rep_mat_fmpz_mat_den, libantic), Nothing,
         (Ref{fmpz_mat}, Ref{fmpz}, Ref{nf_elem}, Ref{AnticNumberField}),
         z, d, a, K)
   return z, d
@@ -765,13 +765,13 @@ end
 ###############################################################################
 
 function zero!(a::nf_elem)
-   ccall((:nf_elem_zero, :libantic), Nothing,
+   ccall((:nf_elem_zero, libantic), Nothing,
          (Ref{nf_elem}, Ref{AnticNumberField}), a, parent(a))
    return a
 end
 
 function mul!(z::nf_elem, x::nf_elem, y::nf_elem)
-   ccall((:nf_elem_mul, :libantic), Nothing,
+   ccall((:nf_elem_mul, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}),
                                                   z, x, y, parent(x))
    return z
@@ -786,21 +786,21 @@ end
 > eliminates associated garbage collection.
 """
 function mul_red!(z::nf_elem, x::nf_elem, y::nf_elem, red::Bool)
-   ccall((:nf_elem_mul_red, :libantic), Nothing,
+   ccall((:nf_elem_mul_red, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}, Cint),
                                                 z, x, y, parent(x), red)
    return z
 end
 
 function addeq!(z::nf_elem, x::nf_elem)
-   ccall((:nf_elem_add, :libantic), Nothing,
+   ccall((:nf_elem_add, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}),
                                                   z, z, x, parent(x))
    return z
 end
 
 function add!(a::nf_elem, b::nf_elem, c::nf_elem)
-   ccall((:nf_elem_add, :libantic), Nothing,
+   ccall((:nf_elem_add, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}),
          a, b, c, a.parent)
   return a
@@ -814,7 +814,7 @@ end
 > functions automatically reduce their outputs.
 """
 function reduce!(x::nf_elem)
-   ccall((:nf_elem_reduce, :libantic), Nothing,
+   ccall((:nf_elem_reduce, libantic), Nothing,
          (Ref{nf_elem}, Ref{AnticNumberField}), x, parent(x))
    return x
 end
@@ -826,21 +826,21 @@ end
 ###############################################################################
 
 function add!(c::nf_elem, a::nf_elem, b::fmpq)
-   ccall((:nf_elem_add_fmpq, :libantic), Nothing,
+   ccall((:nf_elem_add_fmpq, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
 end
 
 function add!(c::nf_elem, a::nf_elem, b::fmpz)
-   ccall((:nf_elem_add_fmpz, :libantic), Nothing,
+   ccall((:nf_elem_add_fmpz, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpz}, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
 end
 
 function add!(c::nf_elem, a::nf_elem, b::Int)
-   ccall((:nf_elem_add_si, :libantic), Nothing,
+   ccall((:nf_elem_add_si, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Int, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
@@ -849,21 +849,21 @@ end
 add!(c::nf_elem, a::nf_elem, b::Integer) = add!(c, a, fmpz(b))
 
 function sub!(c::nf_elem, a::nf_elem, b::fmpq)
-   ccall((:nf_elem_sub_fmpq, :libantic), Nothing,
+   ccall((:nf_elem_sub_fmpq, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
 end
 
 function sub!(c::nf_elem, a::nf_elem, b::fmpz)
-   ccall((:nf_elem_sub_fmpz, :libantic), Nothing,
+   ccall((:nf_elem_sub_fmpz, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpz}, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
 end
 
 function sub!(c::nf_elem, a::nf_elem, b::Int)
-   ccall((:nf_elem_sub_si, :libantic), Nothing,
+   ccall((:nf_elem_sub_si, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Int, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
@@ -872,21 +872,21 @@ end
 sub!(c::nf_elem, a::nf_elem, b::Integer) = sub!(c, a, fmpz(b))
 
 function sub!(c::nf_elem, a::fmpq, b::nf_elem)
-   ccall((:nf_elem_fmpq_sub, :libantic), Nothing,
+   ccall((:nf_elem_fmpq_sub, libantic), Nothing,
          (Ref{nf_elem}, Ref{fmpq}, Ref{nf_elem}, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
 end
 
 function sub!(c::nf_elem, a::fmpz, b::nf_elem)
-   ccall((:nf_elem_fmpz_sub, :libantic), Nothing,
+   ccall((:nf_elem_fmpz_sub, libantic), Nothing,
          (Ref{nf_elem}, Ref{fmpz}, Ref{nf_elem}, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
 end
 
 function sub!(c::nf_elem, a::Int, b::nf_elem)
-   ccall((:nf_elem_si_sub, :libantic), Nothing,
+   ccall((:nf_elem_si_sub, libantic), Nothing,
          (Ref{nf_elem}, Int, Ref{nf_elem}, Ref{AnticNumberField}),
          c, a, b, b.parent)
    return c
@@ -895,21 +895,21 @@ end
 sub!(c::nf_elem, a::Integer, b::nf_elem) = sub!(c, fmpz(a), b)
 
 function mul!(c::nf_elem, a::nf_elem, b::fmpq)
-   ccall((:nf_elem_scalar_mul_fmpq, :libantic), Nothing,
+   ccall((:nf_elem_scalar_mul_fmpq, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
 end
 
 function mul!(c::nf_elem, a::nf_elem, b::fmpz)
-   ccall((:nf_elem_scalar_mul_fmpz, :libantic), Nothing,
+   ccall((:nf_elem_scalar_mul_fmpz, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Ref{fmpz}, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
 end
 
 function mul!(c::nf_elem, a::nf_elem, b::Int)
-   ccall((:nf_elem_scalar_mul_si, :libantic), Nothing,
+   ccall((:nf_elem_scalar_mul_si, libantic), Nothing,
          (Ref{nf_elem}, Ref{nf_elem}, Int, Ref{AnticNumberField}),
          c, a, b, a.parent)
    return c
@@ -1073,7 +1073,7 @@ promote_rule(::Type{nf_elem}, ::Type{fmpq_poly}) = nf_elem
 """
 function (a::AnticNumberField)()
    z = nf_elem(a)
-   ccall((:nf_elem_set_si, :libantic), Nothing,
+   ccall((:nf_elem_set_si, libantic), Nothing,
          (Ref{nf_elem}, Int, Ref{AnticNumberField}), z, 0, a)
    return z
 end
@@ -1085,7 +1085,7 @@ end
 """
 function (a::AnticNumberField)(c::Int)
    z = nf_elem(a)
-   ccall((:nf_elem_set_si, :libantic), Nothing,
+   ccall((:nf_elem_set_si, libantic), Nothing,
          (Ref{nf_elem}, Int, Ref{AnticNumberField}), z, c, a)
    return z
 end
@@ -1094,14 +1094,14 @@ end
 
 function (a::AnticNumberField)(c::fmpz)
    z = nf_elem(a)
-   ccall((:nf_elem_set_fmpz, :libantic), Nothing,
+   ccall((:nf_elem_set_fmpz, libantic), Nothing,
          (Ref{nf_elem}, Ref{fmpz}, Ref{AnticNumberField}), z, c, a)
    return z
 end
 
 function (a::AnticNumberField)(c::fmpq)
    z = nf_elem(a)
-   ccall((:nf_elem_set_fmpq, :libantic), Nothing,
+   ccall((:nf_elem_set_fmpq, libantic), Nothing,
          (Ref{nf_elem}, Ref{fmpq}, Ref{AnticNumberField}), z, c, a)
    return z
 end
@@ -1119,7 +1119,7 @@ function (a::AnticNumberField)(pol::fmpq_poly)
    if length(pol) >= length(a.pol)
       pol = mod(pol, a.pol)
    end
-   ccall((:nf_elem_set_fmpq_poly, :libantic), Nothing,
+   ccall((:nf_elem_set_fmpq_poly, libantic), Nothing,
          (Ref{nf_elem}, Ref{fmpq_poly}, Ref{AnticNumberField}), z, pol, a)
    return z
 end
@@ -1127,7 +1127,7 @@ end
 function (a::FmpqPolyRing)(b::nf_elem)
    parent(parent(b).pol) != a && error("Cannot coerce from number field to polynomial ring")
    r = a()
-   ccall((:nf_elem_get_fmpq_poly, :libantic), Nothing,
+   ccall((:nf_elem_get_fmpq_poly, libantic), Nothing,
          (Ref{fmpq_poly}, Ref{nf_elem}, Ref{AnticNumberField}), r, b, parent(b))
    return r
 end

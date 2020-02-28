@@ -34,7 +34,7 @@ characteristic(R::GFPFmpzPolyRing) = characteristic(base_ring(R))
 
 function *(x::gfp_fmpz_poly, y::fmpz)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_scalar_mul_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_scalar_mul_fmpz, libflint), Nothing,
           (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}, Ref{fmpz}), z, x, y)
   return z
 end
@@ -54,7 +54,7 @@ end
 
 function +(x::gfp_fmpz_poly, y::Int)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_add_si, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_add_si, libflint), Nothing,
     (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}, Int), z, x, y)
   return z
 end
@@ -63,7 +63,7 @@ end
 
 function +(x::gfp_fmpz_poly, y::fmpz)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_add_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_add_fmpz, libflint), Nothing,
     (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}, Ref{fmpz}), z, x, y)
   return z
 end
@@ -83,28 +83,28 @@ end
 
 function -(x::gfp_fmpz_poly, y::Int)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_sub_si, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_sub_si, libflint), Nothing,
     (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}, Int), z, x, y)
   return z
 end
 
 function -(x::Int, y::gfp_fmpz_poly)
   z = parent(y)()
-  ccall((:fmpz_mod_poly_si_sub, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_si_sub, libflint), Nothing,
     (Ref{gfp_fmpz_poly}, Int, Ref{gfp_fmpz_poly}), z, x, y)
   return z
 end
 
 function -(x::gfp_fmpz_poly, y::fmpz)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_sub_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_sub_fmpz, libflint), Nothing,
     (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}, Ref{fmpz}), z, x, y)
   return z
 end
 
 function -(x::fmpz, y::gfp_fmpz_poly)
   z = parent(y)()
-  ccall((:fmpz_mod_poly_fmpz_sub, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_fmpz_sub, libflint), Nothing,
     (Ref{gfp_fmpz_poly}, Ref{fmpz}, Ref{gfp_fmpz_poly}), z, x, y)
   return z
 end
@@ -135,7 +135,7 @@ function ==(x::gfp_fmpz_poly, y::gfp_fmpz_elem)
      return false
   elseif length(x) == 1 
      u = fmpz()
-     ccall((:fmpz_mod_poly_get_coeff_fmpz, :libflint), Nothing, 
+     ccall((:fmpz_mod_poly_get_coeff_fmpz, libflint), Nothing, 
             (Ref{fmpz}, Ref{gfp_fmpz_poly}, Int), u, x, 0)
      return u == y
   else
@@ -155,7 +155,7 @@ function divexact(x::gfp_fmpz_poly, y::gfp_fmpz_elem)
   base_ring(x) != parent(y) && error("Elements must have same parent")
   iszero(y) && throw(DivideError())
   q = parent(x)()
-  ccall((:fmpz_mod_poly_scalar_div_fmpz, :libflint), Nothing, 
+  ccall((:fmpz_mod_poly_scalar_div_fmpz, libflint), Nothing, 
           (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}, Ref{fmpz}), 
                q, x, y.data)
   return q
@@ -191,7 +191,7 @@ end
 """
 function lift(R::FmpzPolyRing, y::gfp_fmpz_poly)
    z = fmpz_poly()
-   ccall((:fmpz_mod_poly_get_fmpz_poly, :libflint), Nothing,
+   ccall((:fmpz_mod_poly_get_fmpz_poly, libflint), Nothing,
           (Ref{fmpz_poly}, Ref{gfp_fmpz_poly}), z, y)
    z.parent = R
   return z
@@ -208,7 +208,7 @@ end
 > Return `true` if $x$ is irreducible, otherwise return `false`.
 """
 function isirreducible(x::gfp_fmpz_poly)
-  return Bool(ccall((:fmpz_mod_poly_is_irreducible, :libflint), Int32,
+  return Bool(ccall((:fmpz_mod_poly_is_irreducible, libflint), Int32,
           (Ref{gfp_fmpz_poly}, ), x))
 end
 
@@ -223,7 +223,7 @@ end
 > Return `true` if $x$ is squarefree, otherwise return `false`.
 """
 function issquarefree(x::gfp_fmpz_poly)
-   return Bool(ccall((:fmpz_mod_poly_is_squarefree, :libflint), Int32, 
+   return Bool(ccall((:fmpz_mod_poly_is_squarefree, libflint), Int32, 
       (Ref{gfp_fmpz_poly}, ), x))
 end
 
@@ -244,12 +244,12 @@ end
 
 function _factor(x::gfp_fmpz_poly)
   fac = gfp_fmpz_poly_factor(parent(x).n)
-  ccall((:fmpz_mod_poly_factor, :libflint), UInt,
+  ccall((:fmpz_mod_poly_factor, libflint), UInt,
           (Ref{gfp_fmpz_poly_factor}, Ref{gfp_fmpz_poly}), fac, x)
   res = Dict{gfp_fmpz_poly, Int}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, :libflint), Nothing,
+    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, libflint), Nothing,
          (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly_factor}, Int), f, fac, i - 1)
     e = unsafe_load(fac.exp, i)
     res[f] = e
@@ -268,12 +268,12 @@ end
 
 function _factor_squarefree(x::gfp_fmpz_poly)
   fac = gfp_fmpz_poly_factor(parent(x).n)
-  ccall((:fmpz_mod_poly_factor_squarefree, :libflint), UInt,
+  ccall((:fmpz_mod_poly_factor_squarefree, libflint), UInt,
           (Ref{gfp_fmpz_poly_factor}, Ref{gfp_fmpz_poly}), fac, x)
   res = Dict{gfp_fmpz_poly, Int}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, :libflint), Nothing,
+    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, libflint), Nothing,
          (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly_factor}, Int), f, fac, i - 1)
     e = unsafe_load(fac.exp, i)
     res[f] = e
@@ -290,13 +290,13 @@ function factor_distinct_deg(x::gfp_fmpz_poly)
   degs = Vector{Int}(undef, degree(x))
   degss = [ pointer(degs) ]
   fac = gfp_fmpz_poly_factor(parent(x).n)
-  ccall((:fmpz_mod_poly_factor_distinct_deg, :libflint), UInt,
+  ccall((:fmpz_mod_poly_factor_distinct_deg, libflint), UInt,
           (Ref{gfp_fmpz_poly_factor}, Ref{gfp_fmpz_poly}, Ptr{Ptr{Int}}),
           fac, x, degss)
   res = Dict{Int, gfp_fmpz_poly}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, :libflint), Nothing,
+    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, libflint), Nothing,
          (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly_factor}, Int), f, fac, i - 1)
     res[degs[i]] = f
   end

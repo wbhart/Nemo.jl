@@ -103,7 +103,7 @@ parent_type(::Type{qadic}) = FlintQadicField
 
 function Base.deepcopy_internal(a::qadic, dict::IdDict{Any, Any})
    z = parent(a)()
-   ccall((:qadic_set, :libflint), Nothing,
+   ccall((:qadic_set, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}), z, a, parent(a))
    z.N = a.N
    return z
@@ -115,7 +115,7 @@ function Base.hash(a::qadic, h::UInt)
 end
 
 function degree(R::FlintQadicField)
-   return ccall((:qadic_ctx_degree, :libflint), Int, (Ref{FlintQadicField}, ), R)
+   return ccall((:qadic_ctx_degree, libflint), Int, (Ref{FlintQadicField}, ), R)
 end
 
 @doc Markdown.doc"""
@@ -124,7 +124,7 @@ end
 """
 function prime(R::FlintQadicField)
    z = fmpz()
-   ccall((:padic_ctx_pow_ui, :libflint), Nothing,
+   ccall((:padic_ctx_pow_ui, libflint), Nothing,
          (Ref{fmpz}, UInt, Ref{FlintQadicField}), z, 1, R)
    return z
 end
@@ -143,7 +143,7 @@ precision(a::qadic) = a.N
 > will return $n$.
 """
 function valuation(a::qadic)
-    iszero(a) ? precision(a) : ccall((:qadic_val, :libflint), Int, (Ref{qadic}, ), a)
+    iszero(a) ? precision(a) : ccall((:qadic_val, libflint), Int, (Ref{qadic}, ), a)
 end
 
 @doc Markdown.doc"""
@@ -153,7 +153,7 @@ end
 function lift(R::FmpqPolyRing, a::qadic)
    ctx = parent(a)
    r = R()
-   ccall((:padic_poly_get_fmpq_poly, :libflint), Nothing,
+   ccall((:padic_poly_get_fmpq_poly, libflint), Nothing,
          (Ref{fmpq_poly}, Ref{qadic}, Ref{FlintQadicField}), r, a, ctx)
    return r
 end
@@ -165,7 +165,7 @@ end
 function lift(R::FmpzPolyRing, a::qadic)
    ctx = parent(a)
    r = R()
-   res = Bool(ccall((:padic_poly_get_fmpz_poly, :libflint), Cint,
+   res = Bool(ccall((:padic_poly_get_fmpz_poly, libflint), Cint,
                     (Ref{fmpz_poly}, Ref{qadic}, Ref{FlintQadicField}), r, a, ctx))
    !res && error("Unable to lift")
    return r
@@ -177,7 +177,7 @@ end
 """
 function zero(R::FlintQadicField)
    z = qadic(R.prec_max)
-   ccall((:qadic_zero, :libflint), Nothing, (Ref{qadic},), z)
+   ccall((:qadic_zero, libflint), Nothing, (Ref{qadic},), z)
    z.parent = R
    return z
 end
@@ -188,7 +188,7 @@ end
 """
 function one(R::FlintQadicField)
    z = qadic(R.prec_max)
-   ccall((:qadic_one, :libflint), Nothing, (Ref{qadic},), z)
+   ccall((:qadic_one, libflint), Nothing, (Ref{qadic},), z)
    z.parent = R
    return z
 end
@@ -198,7 +198,7 @@ end
 > Return `true` if the given p-adic field element is zero, otherwise return
 > `false`.
 """
-iszero(a::qadic) = Bool(ccall((:qadic_is_zero, :libflint), Cint,
+iszero(a::qadic) = Bool(ccall((:qadic_is_zero, libflint), Cint,
                               (Ref{qadic},), a))
 
 @doc Markdown.doc"""
@@ -206,7 +206,7 @@ iszero(a::qadic) = Bool(ccall((:qadic_is_zero, :libflint), Cint,
 > Return `true` if the given p-adic field element is one, otherwise return
 > `false`.
 """
-isone(a::qadic) = Bool(ccall((:qadic_is_one, :libflint), Cint,
+isone(a::qadic) = Bool(ccall((:qadic_is_one, libflint), Cint,
                              (Ref{qadic},), a))
 
 @doc Markdown.doc"""
@@ -214,7 +214,7 @@ isone(a::qadic) = Bool(ccall((:qadic_is_one, :libflint), Cint,
 > Return `true` if the given p-adic field element is invertible, i.e. nonzero,
 > otherwise return `false`.
 """
-isunit(a::qadic) = !Bool(ccall((:qadic_is_zero, :libflint), Cint,
+isunit(a::qadic) = !Bool(ccall((:qadic_is_zero, libflint), Cint,
                               (Ref{qadic},), a))
 
 characteristic(R::FlintQadicField) = 0
@@ -233,14 +233,14 @@ function show(io::IO, x::qadic)
    end
    len = degree(parent(x)) + 1
    c = R()
-   ccall((:padic_poly_get_coeff_padic, :libflint), Nothing, (Ref{padic}, Ref{qadic}, Int, Ref{FlintQadicField}), c, x, len, parent(x))
+   ccall((:padic_poly_get_coeff_padic, libflint), Nothing, (Ref{padic}, Ref{qadic}, Int, Ref{FlintQadicField}), c, x, len, parent(x))
    while iszero(c)
      len = len - 1
-     ccall((:padic_poly_get_coeff_padic, :libflint), Nothing, (Ref{padic}, Ref{qadic}, Int, Ref{FlintQadicField}), c, x, len, parent(x))
+     ccall((:padic_poly_get_coeff_padic, libflint), Nothing, (Ref{padic}, Ref{qadic}, Int, Ref{FlintQadicField}), c, x, len, parent(x))
    end
 
    for i = 1:len
-     ccall((:padic_poly_get_coeff_padic, :libflint), Nothing, (Ref{padic}, Ref{qadic}, Int, Ref{FlintQadicField}), c, x, len - i + 1, parent(x))
+     ccall((:padic_poly_get_coeff_padic, libflint), Nothing, (Ref{padic}, Ref{qadic}, Int, Ref{FlintQadicField}), c, x, len - i + 1, parent(x))
      bracket = true
      if !iszero(c)
        if i != 1
@@ -257,7 +257,7 @@ function show(io::IO, x::qadic)
        end
      end
    end
-   ccall((:padic_poly_get_coeff_padic, :libflint), Nothing, (Ref{padic}, Ref{qadic}, Int, Ref{FlintQadicField}), c, x, 0, parent(x))
+   ccall((:padic_poly_get_coeff_padic, libflint), Nothing, (Ref{padic}, Ref{qadic}, Int, Ref{FlintQadicField}), c, x, 0, parent(x))
    if !iszero(c)
      if len + 1 != 1
        print(io, " + ")
@@ -298,7 +298,7 @@ function -(x::qadic)
    end
    ctx = parent(x)
    z = qadic(x.N)
-   ccall((:qadic_neg, :libflint), Nothing,
+   ccall((:qadic_neg, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}),
                      z, x, ctx)
    z.parent = ctx
@@ -316,7 +316,7 @@ function +(x::qadic, y::qadic)
    ctx = parent(x)
    z = qadic(min(x.N, y.N))
    z.parent = ctx
-   ccall((:qadic_add, :libflint), Nothing,
+   ccall((:qadic_add, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}),
                z, x, y, ctx)
    return z
@@ -327,7 +327,7 @@ function -(x::qadic, y::qadic)
    ctx = parent(x)
    z = qadic(min(x.N, y.N))
    z.parent = ctx
-   ccall((:qadic_sub, :libflint), Nothing,
+   ccall((:qadic_sub, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}),
                   z, x, y, ctx)
    return z
@@ -338,7 +338,7 @@ function *(x::qadic, y::qadic)
    ctx = parent(x)
    z = qadic(min(x.N + valuation(y), y.N + valuation(x)))
    z.parent = ctx
-   ccall((:qadic_mul, :libflint), Nothing,
+   ccall((:qadic_mul, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}),
                z, x, y, ctx)
    return z
@@ -396,10 +396,10 @@ function ==(a::qadic, b::qadic)
    check_parent(a, b)
    ctx = parent(a)
    z = qadic(min(a.N, b.N))
-   ccall((:qadic_sub, :libflint), Nothing,
+   ccall((:qadic_sub, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}),
                z, a, b, ctx)
-   return Bool(ccall((:qadic_is_zero, :libflint), Cint,
+   return Bool(ccall((:qadic_is_zero, libflint), Cint,
                 (Ref{qadic},), z))
 end
 
@@ -443,7 +443,7 @@ function ^(a::qadic, n::fmpz)
    end
    z = qadic(a.N + (Int(n) - 1)*valuation(a))
    z.parent = ctx
-   ccall((:qadic_pow, :libflint), Nothing,
+   ccall((:qadic_pow, libflint), Nothing,
                  (Ref{qadic}, Ref{qadic}, Ref{fmpz}, Ref{FlintQadicField}),
                z, a, n, ctx)
    return z
@@ -493,7 +493,7 @@ function inv(a::qadic)
    ctx = parent(a)
    z = qadic(a.N - 2*valuation(a))
    z.parent = ctx
-   ccall((:qadic_inv, :libflint), Cint,
+   ccall((:qadic_inv, libflint), Cint,
          (Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}), z, a, ctx)
    return z
 end
@@ -560,7 +560,7 @@ function Base.sqrt(a::qadic)
    ctx = parent(a)
    z = qadic(a.N - div(av, 2))
    z.parent = ctx
-   res = Bool(ccall((:qadic_sqrt, :libflint), Cint,
+   res = Bool(ccall((:qadic_sqrt, libflint), Cint,
                     (Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}), z, a, ctx))
    !res && error("Square root of p-adic does not exist")
    return z
@@ -584,7 +584,7 @@ function Base.exp(a::qadic)
    ctx = parent(a)
    z = qadic(a.N)
    z.parent = ctx
-   res = Bool(ccall((:qadic_exp, :libflint), Cint,
+   res = Bool(ccall((:qadic_exp, libflint), Cint,
                     (Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}), z, a, ctx))
    !res && error("Unable to compute exponential")
    return z
@@ -603,7 +603,7 @@ function log(a::qadic)
    ctx = parent(a)
    z = qadic(a.N)
    z.parent = ctx
-   res = Bool(ccall((:qadic_log, :libflint), Cint,
+   res = Bool(ccall((:qadic_log, libflint), Cint,
                     (Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}), z, a, ctx))
    !res && error("Unable to compute logarithm")
    return z
@@ -622,7 +622,7 @@ function teichmuller(a::qadic)
    ctx = parent(a)
    z = qadic(a.N)
    z.parent = ctx
-   ccall((:qadic_teichmuller, :libflint), Nothing,
+   ccall((:qadic_teichmuller, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}), z, a, ctx)
    return z
 end
@@ -636,7 +636,7 @@ function frobenius(a::qadic, e::Int = 1)
    ctx = parent(a)
    z = qadic(a.N)
    z.parent = ctx
-   ccall((:qadic_frobenius, :libflint), Nothing,
+   ccall((:qadic_frobenius, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Int, Ref{FlintQadicField}), z, a, e, ctx)
    return z
 end
@@ -650,7 +650,7 @@ end
 function zero!(z::qadic)
    z.N = parent(z).prec_max
    ctx = parent(z)
-   ccall((:qadic_zero, :libflint), Nothing,
+   ccall((:qadic_zero, libflint), Nothing,
          (Ref{qadic}, Ref{FlintQadicField}), z, ctx)
    return z
 end
@@ -658,7 +658,7 @@ end
 function mul!(z::qadic, x::qadic, y::qadic)
    z.N = min(x.N + valuation(y), y.N + valuation(x))
    ctx = parent(x)
-   ccall((:qadic_mul, :libflint), Nothing,
+   ccall((:qadic_mul, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}),
                z, x, y, ctx)
    return z
@@ -667,7 +667,7 @@ end
 function addeq!(x::qadic, y::qadic)
    x.N = min(x.N, y.N)
    ctx = parent(x)
-   ccall((:qadic_add, :libflint), Nothing,
+   ccall((:qadic_add, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}),
                x, x, y, ctx)
    return x
@@ -676,7 +676,7 @@ end
 function add!(z::qadic, x::qadic, y::qadic)
    z.N = min(x.N, y.N)
    ctx = parent(x)
-   ccall((:qadic_add, :libflint), Nothing,
+   ccall((:qadic_add, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}),
                z, x, y, ctx)
    return z
@@ -712,7 +712,7 @@ end
 
 function gen(R::FlintQadicField)
    z = qadic(R.prec_max)
-   ccall((:qadic_gen, :libflint), Nothing,
+   ccall((:qadic_gen, libflint), Nothing,
          (Ref{qadic}, Ref{FlintQadicField}), z, R)
    z.parent = R
    return z
@@ -726,7 +726,7 @@ function (R::FlintQadicField)(a::UInt)
    end
    v = valuation(a, prime(R))
    z = qadic(R.prec_max + v)
-   ccall((:qadic_set_ui, :libflint), Nothing,
+   ccall((:qadic_set_ui, libflint), Nothing,
          (Ref{qadic}, UInt, Ref{FlintQadicField}), z, a, R)
    z.parent = R
    return z
@@ -740,7 +740,7 @@ function (R::FlintQadicField)(a::Int)
    end
    v = valuation(a, prime(R))
    z = qadic(R.prec_max + v)
-   ccall((:padic_poly_set_si, :libflint), Nothing,
+   ccall((:padic_poly_set_si, libflint), Nothing,
          (Ref{qadic}, Int, Ref{FlintQadicField}), z,a, R)
    z.parent = R
    return z
@@ -754,7 +754,7 @@ function (R::FlintQadicField)(n::fmpz)
       N = valuation(n, p)
    end
    z = qadic(N + R.prec_max)
-   ccall((:padic_poly_set_fmpz, :libflint), Nothing,
+   ccall((:padic_poly_set_fmpz, libflint), Nothing,
          (Ref{qadic}, Ref{fmpz}, Ref{FlintQadicField}), z, n, R)
    z.parent = R
    return z
@@ -772,7 +772,7 @@ function (R::FlintQadicField)(n::fmpq)
      N = -remove(m, p)[1]
    end
    z = qadic(N + R.prec_max)
-   ccall((:padic_poly_set_fmpq, :libflint), Nothing,
+   ccall((:padic_poly_set_fmpq, libflint), Nothing,
          (Ref{qadic}, Ref{fmpq}, Ref{FlintQadicField}), z, n, R)
    z.parent = R
    return z
@@ -780,7 +780,7 @@ end
 
 function (R::FlintQadicField)(n::fmpz_poly)
    z = qadic(R.prec_max)
-   ccall((:padic_poly_set_fmpz_poly, :libflint), Nothing,
+   ccall((:padic_poly_set_fmpz_poly, libflint), Nothing,
          (Ref{qadic}, Ref{fmpz_poly}, Ref{FlintQadicField}), z, n, R)
    z.parent = R
    return z
@@ -799,7 +799,7 @@ function (R::FlintQadicField)(n::fmpq_poly)
      N = -remove(m, p)[1]
    end
    z = qadic(N + R.prec_max)
-   ccall((:padic_poly_set_fmpq_poly, :libflint), Nothing,
+   ccall((:padic_poly_set_fmpq_poly, libflint), Nothing,
          (Ref{qadic}, Ref{fmpq_poly}, Ref{FlintQadicField}), z, n, R)
    z.parent = R
    return z

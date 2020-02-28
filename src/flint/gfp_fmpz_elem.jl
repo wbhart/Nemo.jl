@@ -149,7 +149,7 @@ function *(x::gfp_fmpz_elem, y::gfp_fmpz_elem)
    check_parent(x, y)
    R = parent(x)
    d = fmpz()
-   ccall((:fmpz_mod_mul, :libflint), Nothing,
+   ccall((:fmpz_mod_mul, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
 				                d, x.data, y.data, R.ninv)
    return gfp_fmpz_elem(d, R)
@@ -201,7 +201,7 @@ function ^(x::gfp_fmpz_elem, y::Int)
       y = -y
    end
    d = fmpz()
-   ccall((:fmpz_mod_pow_ui, :libflint), Nothing,
+   ccall((:fmpz_mod_pow_ui, libflint), Nothing,
 	 (Ref{fmpz}, Ref{fmpz}, UInt, Ref{fmpz_mod_ctx_struct}),
 						 d, x.data, y, R.ninv)
    return gfp_fmpz_elem(d, R)
@@ -243,7 +243,7 @@ function inv(x::gfp_fmpz_elem)
    iszero(x) && throw(DivideError())
    s = fmpz()
    g = fmpz()
-   ccall((:fmpz_gcdinv, :libflint), Nothing,
+   ccall((:fmpz_gcdinv, libflint), Nothing,
 	 (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
 					         g, s, x.data, R.n)
    return gfp_fmpz_elem(s, R)
@@ -279,14 +279,14 @@ end
 ###############################################################################
 
 function zero!(z::gfp_fmpz_elem)
-   ccall((:fmpz_set_ui, :libflint), Nothing,
+   ccall((:fmpz_set_ui, libflint), Nothing,
 	 (Ref{fmpz}, UInt), z.data, UInt(0))
    return z
 end
 
 function mul!(z::gfp_fmpz_elem, x::gfp_fmpz_elem, y::gfp_fmpz_elem)
    R = parent(z)
-   ccall((:fmpz_mod_mul, :libflint), Nothing,
+   ccall((:fmpz_mod_mul, libflint), Nothing,
 	 (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
 					   z.data, x.data, y.data, R.ninv)
    return z
@@ -294,7 +294,7 @@ end
 
 function addeq!(z::gfp_fmpz_elem, x::gfp_fmpz_elem)
    R = parent(z)
-   ccall((:fmpz_mod_add, :libflint), Nothing,
+   ccall((:fmpz_mod_add, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
 		                          z.data, z.data, x.data, R.ninv)
    return z
@@ -302,7 +302,7 @@ end
 
 function add!(z::gfp_fmpz_elem, x::gfp_fmpz_elem, y::gfp_fmpz_elem)
    R = parent(z)
-   ccall((:fmpz_mod_add, :libflint), Nothing,
+   ccall((:fmpz_mod_add, libflint), Nothing,
 	 (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
 					 z.data, x.data, y.data, R.ninv)
    return z
@@ -355,7 +355,7 @@ end
 
 function (R::GaloisFmpzField)(a::fmpz)
    d = fmpz()
-   ccall((:fmpz_mod, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
+   ccall((:fmpz_mod, libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
 				              d, a, R.n)
    return gfp_fmpz_elem(d, R)
 end

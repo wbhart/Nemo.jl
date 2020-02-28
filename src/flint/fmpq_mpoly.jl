@@ -32,7 +32,7 @@ function check_parent(a::fmpq_mpoly, b::fmpq_mpoly)
       error("Incompatible polynomial rings in polynomial operation")
 end
 
-nvars(a::FmpqMPolyRing) = ccall((:fmpq_mpoly_ctx_nvars, :libflint), Int,
+nvars(a::FmpqMPolyRing) = ccall((:fmpq_mpoly_ctx_nvars, libflint), Int,
                                 (Ref{FmpqMPolyRing}, ), a)
 
 base_ring(a::FmpqMPolyRing) = a.base_ring
@@ -40,7 +40,7 @@ base_ring(a::FmpqMPolyRing) = a.base_ring
 base_ring(f::fmpq_mpoly) = f.parent.base_ring
 
 function ordering(a::FmpqMPolyRing)
-   b = ccall((:fmpq_mpoly_ctx_ord, :libflint), Cint, (Ref{FmpqMPolyRing}, ), a)
+   b = ccall((:fmpq_mpoly_ctx_ord, libflint), Cint, (Ref{FmpqMPolyRing}, ), a)
    return flint_orderings[b + 1]
 end
 
@@ -48,7 +48,7 @@ function gens(R::FmpqMPolyRing)
    A = Vector{fmpq_mpoly}(undef, R.nvars)
    for i = 1:R.nvars
       z = R()
-      ccall((:fmpq_mpoly_gen, :libflint), Nothing,
+      ccall((:fmpq_mpoly_gen, libflint), Nothing,
             (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}), z, i - 1, R)
       A[i] = z
    end
@@ -59,7 +59,7 @@ function gen(R::FmpqMPolyRing, i::Int)
    n = nvars(R)
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
    z = R()
-   ccall((:fmpq_mpoly_gen, :libflint), Nothing,
+   ccall((:fmpq_mpoly_gen, libflint), Nothing,
          (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}), z, i - 1, R)
    return z
 end
@@ -68,7 +68,7 @@ function isgen(a::fmpq_mpoly, i::Int)
    n = nvars(parent(a))
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
    R = parent(a)
-   return Bool(ccall((:fmpq_mpoly_is_gen, :libflint), Cint,
+   return Bool(ccall((:fmpq_mpoly_is_gen, libflint), Cint,
                      (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
                      a, i - 1, a.parent))
 end
@@ -83,39 +83,39 @@ end
 
 function deepcopy_internal(a::fmpq_mpoly, dict::IdDict)
    z = parent(a)()
-   ccall((:fmpq_mpoly_set, :libflint), Nothing,
+   ccall((:fmpq_mpoly_set, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
          z, a, a.parent)
    return z
 end
 
 function length(a::fmpq_mpoly)
-   n = ccall((:fmpq_mpoly_length, :libflint), Int, (Ref{fmpq_mpoly}, ), a)
+   n = ccall((:fmpq_mpoly_length, libflint), Int, (Ref{fmpq_mpoly}, ), a)
    return n
 end
 
 function one(R::FmpqMPolyRing)
    z = R()
-   ccall((:fmpq_mpoly_one, :libflint), Nothing,
+   ccall((:fmpq_mpoly_one, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, R)
    return z
 end
 
 function zero(R::FmpqMPolyRing)
    z = R()
-   ccall((:fmpq_mpoly_zero, :libflint), Nothing,
+   ccall((:fmpq_mpoly_zero, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), z, R)
    return z
 end
 
 function isone(a::fmpq_mpoly)
-   b = ccall((:fmpq_mpoly_is_one, :libflint), Cint,
+   b = ccall((:fmpq_mpoly_is_one, libflint), Cint,
              (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
    return Bool(b)
 end
 
 function iszero(a::fmpq_mpoly)
-   b = ccall((:fmpq_mpoly_is_zero, :libflint), Cint,
+   b = ccall((:fmpq_mpoly_is_zero, libflint), Cint,
              (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
    return Bool(b)
 end
@@ -133,21 +133,21 @@ function isunit(a::fmpq_mpoly)
 end
 
 function isconstant(a::fmpq_mpoly)
-   b = ccall((:fmpq_mpoly_is_fmpq, :libflint), Cint,
+   b = ccall((:fmpq_mpoly_is_fmpq, libflint), Cint,
              (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, parent(a))
    return Bool(b)
 end
 
 function content(a::fmpq_mpoly)
   c = fmpq()
-  ccall((:fmpq_mpoly_content, :libflint), Nothing,
+  ccall((:fmpq_mpoly_content, libflint), Nothing,
         (Ref{fmpq}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), c, a, parent(a))
   return c
 end
 
 function denominator(a::fmpq_mpoly)
   c = fmpz()
-  ccall((:fmpq_mpoly_get_denominator, :libflint), Nothing,
+  ccall((:fmpq_mpoly_get_denominator, libflint), Nothing,
         (Ref{fmpz}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), c, a, parent(a))
   return c
 end
@@ -164,7 +164,7 @@ function coeff(a::fmpq_mpoly, i::Int)
    z = fmpq()
    n = length(a)
    (i < 1 || i > n) && error("Index must be between 1 and $(length(a))")
-   ccall((:fmpq_mpoly_get_term_coeff_fmpq, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_term_coeff_fmpq, libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
          z, a, i - 1, a.parent)
    return z
@@ -174,7 +174,7 @@ function coeff(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
    !isone(length(b)) && error("Second argument must be a monomial")
    z = fmpq()
-   ccall((:fmpq_mpoly_get_coeff_fmpq_monomial, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_coeff_fmpq_monomial, libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
          z, a, b, parent(a))
    return z
@@ -190,7 +190,7 @@ end
 function degree(a::fmpq_mpoly, i::Int)
    n = nvars(parent(a))
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
-   d = ccall((:fmpq_mpoly_degree_si, :libflint), Int,
+   d = ccall((:fmpq_mpoly_degree_si, libflint), Int,
              (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}), a, i - 1, a.parent)
    return d
 end
@@ -200,7 +200,7 @@ function degree_fmpz(a::fmpq_mpoly, i::Int)
    n = nvars(parent(a))
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
    d = fmpz()
-   ccall((:fmpq_mpoly_degree_fmpz, :libflint), Nothing,
+   ccall((:fmpq_mpoly_degree_fmpz, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
          d, a, i - 1, a.parent)
    return d
@@ -208,7 +208,7 @@ end
 
 # Return true if degrees fit into an Int
 function degrees_fit_int(a::fmpq_mpoly)
-   b = ccall((:fmpq_mpoly_degrees_fit_si, :libflint), Cint,
+   b = ccall((:fmpq_mpoly_degrees_fit_si, libflint), Cint,
              (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
    return Bool(b)
 end
@@ -216,7 +216,7 @@ end
 # Return an array of the max degrees in each variable
 function degrees(a::fmpq_mpoly)
    degs = Vector{Int}(undef, nvars(parent(a)))
-   ccall((:fmpq_mpoly_degrees_si, :libflint), Nothing,
+   ccall((:fmpq_mpoly_degrees_si, libflint), Nothing,
          (Ptr{Int}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
          degs, a, a.parent)
    return degs
@@ -229,7 +229,7 @@ function degrees_fmpz(a::fmpq_mpoly)
    for i in 1:n
       degs[i] = fmpz()
    end
-   ccall((:fmpq_mpoly_degrees_fmpz, :libflint), Nothing,
+   ccall((:fmpq_mpoly_degrees_fmpz, libflint), Nothing,
          (Ptr{Ref{fmpz}}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
          degs, a, a.parent)
    return degs
@@ -237,14 +237,14 @@ end
 
 # Return true if degree fits into an Int
 function total_degree_fits_int(a::fmpq_mpoly)
-      b = ccall((:fmpq_mpoly_total_degree_fits_si, :libflint), Cint,
+      b = ccall((:fmpq_mpoly_total_degree_fits_si, libflint), Cint,
                 (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
       return Bool(b)
    end
 
 # Total degree as an Int
 function total_degree(a::fmpq_mpoly)
-   d = ccall((:fmpq_mpoly_total_degree_si, :libflint), Int,
+   d = ccall((:fmpq_mpoly_total_degree_si, libflint), Int,
              (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
    return d
 end
@@ -252,7 +252,7 @@ end
 # Total degree as an fmpz
 function total_degree_fmpz(a::fmpq_mpoly)
    d = fmpz()
-   ccall((:fmpq_mpoly_total_degree_fmpz, :libflint), Nothing,
+   ccall((:fmpq_mpoly_total_degree_fmpz, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
             d, a, a.parent)
    return d
@@ -278,7 +278,7 @@ function coeff(a::fmpq_mpoly, vars::Vector{Int}, exps::Vector{Int})
          error("Exponent cannot be negative")
       end
    end
-   ccall((:fmpq_mpoly_get_coeff_vars_ui, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_coeff_vars_ui, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ptr{Int},
           Ptr{Int}, Int, Ref{FmpqMPolyRing}),
           z, a, vars, exps, length(vars), a.parent)
@@ -295,12 +295,12 @@ function show(io::IO, x::fmpq_mpoly)
    if length(x) == 0
       print(io, "0")
    else
-      cstr = ccall((:fmpq_mpoly_get_str_pretty, :libflint), Ptr{UInt8},
+      cstr = ccall((:fmpq_mpoly_get_str_pretty, libflint), Ptr{UInt8},
           (Ref{fmpq_mpoly}, Ptr{Ptr{UInt8}}, Ref{FmpqMPolyRing}),
           x, [string(s) for s in symbols(parent(x))], x.parent)
       print(io, unsafe_string(cstr))
 
-      ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), cstr)
+      ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
    end
 end
 
@@ -331,7 +331,7 @@ end
 
 function -(a::fmpq_mpoly)
    z = parent(a)()
-   ccall((:fmpq_mpoly_neg, :libflint), Nothing,
+   ccall((:fmpq_mpoly_neg, libflint), Nothing,
        (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
        z, a, a.parent)
    return z
@@ -340,7 +340,7 @@ end
 function +(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
    z = parent(a)()
-   ccall((:fmpq_mpoly_add, :libflint), Nothing,
+   ccall((:fmpq_mpoly_add, libflint), Nothing,
        (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
        z, a, b, a.parent)
    return z
@@ -349,7 +349,7 @@ end
 function -(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
    z = parent(a)()
-   ccall((:fmpq_mpoly_sub, :libflint), Nothing,
+   ccall((:fmpq_mpoly_sub, libflint), Nothing,
        (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
        z, a, b, a.parent)
    return z
@@ -358,7 +358,7 @@ end
 function *(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
    z = parent(a)()
-   ccall((:fmpq_mpoly_mul, :libflint), Nothing,
+   ccall((:fmpq_mpoly_mul, libflint), Nothing,
        (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
        z, a, b, a.parent)
    return z
@@ -375,7 +375,7 @@ for (jT, cN, cT) in ((fmpq, :fmpq, Ref{fmpq}), (fmpz, :fmpz, Ref{fmpz}),
    @eval begin
       function +(a::fmpq_mpoly, b::($jT))
          z = parent(a)()
-         ccall(($(string(:fmpq_mpoly_add_, cN)), :libflint), Nothing,
+         ccall(($(string(:fmpq_mpoly_add_, cN)), libflint), Nothing,
                (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, ($cT), Ref{FmpqMPolyRing}),
                z, a, b, parent(a))
          return z
@@ -385,7 +385,7 @@ for (jT, cN, cT) in ((fmpq, :fmpq, Ref{fmpq}), (fmpz, :fmpz, Ref{fmpz}),
 
       function -(a::fmpq_mpoly, b::($jT))
          z = parent(a)()
-         ccall(($(string(:fmpq_mpoly_sub_, cN)), :libflint), Nothing,
+         ccall(($(string(:fmpq_mpoly_sub_, cN)), libflint), Nothing,
                (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, ($cT), Ref{FmpqMPolyRing}),
                z, a, b, parent(a))
          return z
@@ -395,7 +395,7 @@ for (jT, cN, cT) in ((fmpq, :fmpq, Ref{fmpq}), (fmpz, :fmpz, Ref{fmpz}),
 
       function *(a::fmpq_mpoly, b::($jT))
          z = parent(a)()
-         ccall(($(string(:fmpq_mpoly_scalar_mul_, cN)), :libflint), Nothing,
+         ccall(($(string(:fmpq_mpoly_scalar_mul_, cN)), libflint), Nothing,
                (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, ($cT), Ref{FmpqMPolyRing}),
                z, a, b, parent(a))
          return z
@@ -405,7 +405,7 @@ for (jT, cN, cT) in ((fmpq, :fmpq, Ref{fmpq}), (fmpz, :fmpz, Ref{fmpz}),
 
       function divexact(a::fmpq_mpoly, b::($jT))
          z = parent(a)()
-         ccall(($(string(:fmpq_mpoly_scalar_div_, cN)), :libflint), Nothing,
+         ccall(($(string(:fmpq_mpoly_scalar_div_, cN)), libflint), Nothing,
                (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, ($cT), Ref{FmpqMPolyRing}),
                z, a, b, parent(a))
          return z
@@ -456,7 +456,7 @@ divexact(a::fmpq_mpoly, b::Rational{<:Integer}) = divexact(a, fmpq(b))
 function ^(a::fmpq_mpoly, b::Int)
    b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    z = parent(a)()
-   ccall((:fmpq_mpoly_pow_ui, :libflint), Nothing,
+   ccall((:fmpq_mpoly_pow_ui, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
          z, a, b, parent(a))
    return z
@@ -465,7 +465,7 @@ end
 function ^(a::fmpq_mpoly, b::fmpz)
    b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    z = parent(a)()
-   ccall((:fmpq_mpoly_pow_fmpz, :libflint), Nothing,
+   ccall((:fmpq_mpoly_pow_fmpz, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{fmpz}, Ref{FmpqMPolyRing}),
          z, a, b, parent(a))
    return z
@@ -480,7 +480,7 @@ end
 function gcd(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
    z = parent(a)()
-   r = Bool(ccall((:fmpq_mpoly_gcd, :libflint), Cint,
+   r = Bool(ccall((:fmpq_mpoly_gcd, libflint), Cint,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
          z, a, b, a.parent))
    r == false && error("Unable to compute gcd")
@@ -495,14 +495,14 @@ end
 
 function ==(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
-   return Bool(ccall((:fmpq_mpoly_equal, :libflint), Cint,
+   return Bool(ccall((:fmpq_mpoly_equal, libflint), Cint,
                (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
                a, b, a.parent))
 end
 
 function Base.isless(a::fmpq_mpoly, b::fmpq_mpoly)
    (!ismonomial(a) || !ismonomial(b)) && error("Not monomials in comparison")
-   return ccall((:fmpq_mpoly_cmp, :libflint), Cint,
+   return ccall((:fmpq_mpoly_cmp, libflint), Cint,
                (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
                a, b, a.parent) < 0
 end
@@ -514,7 +514,7 @@ end
 ###############################################################################
 
 function ==(a::fmpq_mpoly, b::fmpq)
-   return Bool(ccall((:fmpq_mpoly_equal_fmpq, :libflint), Cint,
+   return Bool(ccall((:fmpq_mpoly_equal_fmpq, libflint), Cint,
                      (Ref{fmpq_mpoly}, Ref{fmpq}, Ref{FmpqMPolyRing}),
                      a, b, a.parent))
 end
@@ -522,7 +522,7 @@ end
 ==(a::fmpq, b::fmpq_mpoly) = b == a
 
 function ==(a::fmpq_mpoly, b::fmpz)
-   return Bool(ccall((:fmpq_mpoly_equal_fmpz, :libflint), Cint,
+   return Bool(ccall((:fmpq_mpoly_equal_fmpz, libflint), Cint,
                      (Ref{fmpq_mpoly}, Ref{fmpz}, Ref{FmpqMPolyRing}),
                      a, b, a.parent))
 end
@@ -530,7 +530,7 @@ end
 ==(a::fmpz, b::fmpq_mpoly) = b == a
 
 function ==(a::fmpq_mpoly, b::Int)
-   return Bool(ccall((:fmpq_mpoly_equal_si, :libflint), Cint,
+   return Bool(ccall((:fmpq_mpoly_equal_si, libflint), Cint,
                (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
                a, b, a.parent))
 end
@@ -560,7 +560,7 @@ function divides(a::fmpq_mpoly, b::fmpq_mpoly)
       return false, zero(parent(a))
    end
    z = parent(a)()
-   d = ccall((:fmpq_mpoly_divides, :libflint), Cint,
+   d = ccall((:fmpq_mpoly_divides, libflint), Cint,
        (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
        z, a, b, a.parent)
    return isone(d), z
@@ -575,7 +575,7 @@ end
 function div(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
    q = parent(a)()
-   ccall((:fmpq_mpoly_div, :libflint), Nothing,
+   ccall((:fmpq_mpoly_div, libflint), Nothing,
        (Ref{fmpq_mpoly}, Ref{fmpq_mpoly},
         Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
        q, a, b, a.parent)
@@ -586,7 +586,7 @@ function divrem(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
    q = parent(a)()
    r = parent(a)()
-   ccall((:fmpq_mpoly_divrem, :libflint), Nothing,
+   ccall((:fmpq_mpoly_divrem, libflint), Nothing,
        (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Ref{fmpq_mpoly},
         Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}),
        q, r, a, b, a.parent)
@@ -597,7 +597,7 @@ function divrem(a::fmpq_mpoly, b::Array{fmpq_mpoly, 1})
    len = length(b)
    q = [parent(a)() for i in 1:len]
    r = parent(a)()
-   ccall((:fmpq_mpoly_divrem_ideal, :libflint), Nothing,
+   ccall((:fmpq_mpoly_divrem_ideal, libflint), Nothing,
          (Ptr{Ref{fmpq_mpoly}}, Ref{fmpq_mpoly}, Ref{fmpq_mpoly},
           Ptr{Ref{fmpq_mpoly}}, Int, Ref{FmpqMPolyRing}),
        q, r, a, b, len, a.parent)
@@ -627,7 +627,7 @@ function derivative(a::fmpq_mpoly, i::Int)
    n = nvars(parent(a))
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
    z = parent(a)()
-   ccall((:fmpq_mpoly_derivative, :libflint), Nothing,
+   ccall((:fmpq_mpoly_derivative, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
          z, a, i - 1, parent(a))
    return z
@@ -637,7 +637,7 @@ function integral(a::fmpq_mpoly, i::Int)
    n = nvars(parent(a))
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
    z = parent(a)()
-   ccall((:fmpq_mpoly_integral, :libflint), Nothing,
+   ccall((:fmpq_mpoly_integral, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
          z, a, i - 1, parent(a))
    return z
@@ -652,7 +652,7 @@ end
 function evaluate(a::fmpq_mpoly, b::Vector{fmpq})
    length(b) != nvars(parent(a)) && error("Vector size incorrect in evaluate")
    z = fmpq()
-   GC.@preserve b ccall((:fmpq_mpoly_evaluate_all_fmpq, :libflint), Nothing,
+   GC.@preserve b ccall((:fmpq_mpoly_evaluate_all_fmpq, libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq_mpoly}, Ptr{fmpq}, Ref{FmpqMPolyRing}),
             z, a, b, parent(a))
    return z
@@ -728,27 +728,27 @@ end
 ###############################################################################
 
 function zero!(a::fmpq_mpoly)
-    ccall((:fmpq_mpoly_zero, :libflint), Nothing,
+    ccall((:fmpq_mpoly_zero, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
     return a
 end
 
 function add!(a::fmpq_mpoly, b::fmpq_mpoly, c::fmpq_mpoly)
-   ccall((:fmpq_mpoly_add, :libflint), Nothing,
+   ccall((:fmpq_mpoly_add, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly},
           Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, b, c, a.parent)
    return a
 end
 
 function addeq!(a::fmpq_mpoly, b::fmpq_mpoly)
-   ccall((:fmpq_mpoly_add, :libflint), Nothing,
+   ccall((:fmpq_mpoly_add, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly},
           Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a, b, a.parent)
    return a
 end
 
 function mul!(a::fmpq_mpoly, b::fmpq_mpoly, c::fmpq_mpoly)
-   ccall((:fmpq_mpoly_mul, :libflint), Nothing,
+   ccall((:fmpq_mpoly_mul, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly},
           Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, b, c, a.parent)
    return a
@@ -758,10 +758,10 @@ end
 # must be removed with combine_like_terms!
 function setcoeff!(a::fmpq_mpoly, n::Int, c::fmpq)
    if n > length(a)
-      ccall((:fmpq_mpoly_resize, :libflint), Nothing,
+      ccall((:fmpq_mpoly_resize, libflint), Nothing,
             (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}), a, n, a.parent)
    end
-   ccall((:fmpq_mpoly_set_term_coeff_fmpq, :libflint), Nothing,
+   ccall((:fmpq_mpoly_set_term_coeff_fmpq, libflint), Nothing,
          (Ref{fmpq_mpoly}, Int, Ref{fmpq}, Ref{FmpqMPolyRing}),
          a, n - 1, c, a.parent)
    return a
@@ -783,7 +783,7 @@ setcoeff!(a::fmpq_mpoly, i::Int, c::Rational{<:Integer}) =
 # Remove zero terms and combine adjacent terms if they have the same monomial
 # no sorting is performed
 function combine_like_terms!(a::fmpq_mpoly)
-   ccall((:fmpq_mpoly_combine_like_terms, :libflint), Nothing,
+   ccall((:fmpq_mpoly_combine_like_terms, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
    return a
 end
@@ -796,14 +796,14 @@ end
 
 # Return true if the exponents of the i-th exp. vector fit into UInts
 function exponent_vector_fits_ui(a::fmpq_mpoly, i::Int)
-   b = ccall((:fmpq_mpoly_term_exp_fits_ui, :libflint), Cint,
+   b = ccall((:fmpq_mpoly_term_exp_fits_ui, libflint), Cint,
              (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}), a, i - 1, a.parent)
       return Bool(b)
 end
 
 # Return true if the exponents of the i-th exp. vector fit into UInts
 function exponent_vector_fits_int(a::fmpq_mpoly, i::Int)
-   b = ccall((:fmpq_mpoly_term_exp_fits_si, :libflint), Cint,
+   b = ccall((:fmpq_mpoly_term_exp_fits_si, libflint), Cint,
              (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}), a, i - 1, a.parent)
    return Bool(b)
 end
@@ -811,7 +811,7 @@ end
 # Return Julia array of UInt's corresponding to exponent vector of i-th term
 function exponent_vector_ui(a::fmpq_mpoly, i::Int)
    z = Vector{UInt}(undef, nvars(parent(a)))
-   ccall((:fmpq_mpoly_get_term_exp_ui, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_term_exp_ui, libflint), Nothing,
          (Ptr{UInt}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
       z, a, i - 1, parent(a))
    return z
@@ -822,7 +822,7 @@ function exponent_vector(a::fmpq_mpoly, i::Int)
    exponent_vector_fits_int(a, i) ||
       throw(DomainError(term(a, i), "exponents don't fit in `Int` (try exponent_vector_fmpz)"))
    z = Vector{Int}(undef, nvars(parent(a)))
-   ccall((:fmpq_mpoly_get_term_exp_si, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_term_exp_si, libflint), Nothing,
          (Ptr{Int}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
       z, a, i - 1, parent(a))
    return z
@@ -835,7 +835,7 @@ function exponent_vector_fmpz(a::fmpq_mpoly, i::Int)
    for j in 1:n
       z[j] = fmpz()
    end
-   ccall((:fmpq_mpoly_get_term_exp_fmpz, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_term_exp_fmpz, libflint), Nothing,
          (Ptr{Ref{fmpz}}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
          z, a, i - 1, parent(a))
    return z
@@ -851,10 +851,10 @@ end
 # they don't fit into 31/63 bits
 function set_exponent_vector!(a::fmpq_mpoly, n::Int, exps::Vector{UInt})
    if n > length(a)
-      ccall((:fmpq_mpoly_resize, :libflint), Nothing,
+      ccall((:fmpq_mpoly_resize, libflint), Nothing,
             (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}), a, n, a.parent)
    end
-   ccall((:fmpq_mpoly_set_term_exp_ui, :libflint), Nothing,
+   ccall((:fmpq_mpoly_set_term_exp_ui, libflint), Nothing,
          (Ref{fmpq_mpoly}, Int, Ptr{UInt}, Ref{FmpqMPolyRing}),
       a, n - 1, exps, parent(a))
    return a
@@ -865,10 +865,10 @@ end
 # no check is performed
 function set_exponent_vector!(a::fmpq_mpoly, n::Int, exps::Vector{Int})
    if n > length(a)
-      ccall((:fmpq_mpoly_resize, :libflint), Nothing,
+      ccall((:fmpq_mpoly_resize, libflint), Nothing,
             (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}), a, n, a.parent)
    end
-   ccall((:fmpq_mpoly_set_term_exp_ui, :libflint), Nothing,
+   ccall((:fmpq_mpoly_set_term_exp_ui, libflint), Nothing,
          (Ref{fmpq_mpoly}, Int, Ptr{Int}, Ref{FmpqMPolyRing}),
       a, n - 1, exps, parent(a))
    return a
@@ -878,10 +878,10 @@ end
 # No sort is performed, so this is unsafe
 function set_exponent_vector!(a::fmpq_mpoly, n::Int, exps::Vector{fmpz})
    if n > length(a)
-      ccall((:fmpq_mpoly_resize, :libflint), Nothing,
+      ccall((:fmpq_mpoly_resize, libflint), Nothing,
             (Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}), a, n, a.parent)
    end
-   @GC.preserve exps ccall((:fmpq_mpoly_set_term_exp_fmpz, :libflint), Nothing,
+   @GC.preserve exps ccall((:fmpq_mpoly_set_term_exp_fmpz, libflint), Nothing,
          (Ref{fmpq_mpoly}, Int, Ptr{fmpz}, Ref{FmpqMPolyRing}),
       a, n - 1, exps, parent(a))
    return a
@@ -890,7 +890,7 @@ end
 # Return j-th coordinate of i-th exponent vector
 function exponent(a::fmpq_mpoly, i::Int, j::Int)
    (j < 1 || j > nvars(parent(a))) && error("Invalid variable index")
-   return ccall((:fmpq_mpoly_get_term_var_exp_ui, :libflint), Int,
+   return ccall((:fmpq_mpoly_get_term_var_exp_ui, libflint), Int,
                 (Ref{fmpq_mpoly}, Int, Int, Ref{FmpqMPolyRing}),
                  a, i - 1, j - 1, a.parent)
 end
@@ -899,7 +899,7 @@ end
 # Return zero if there is no such term
 function coeff(a::fmpq_mpoly, exps::Vector{UInt})
    z = fmpq()
-   ccall((:fmpq_mpoly_get_coeff_fmpq_ui, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_coeff_fmpq_ui, libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq_mpoly}, Ptr{UInt}, Ref{FmpqMPolyRing}),
       z, a, exps, parent(a))
    return z
@@ -909,7 +909,7 @@ end
 # Return zero if there is no such term
 function coeff(a::fmpq_mpoly, exps::Vector{Int})
    z = fmpq()
-   ccall((:fmpq_mpoly_get_coeff_fmpq_ui, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_coeff_fmpq_ui, libflint), Nothing,
          (Ref{fmpq}, Ref{fmpq_mpoly}, Ptr{Int}, Ref{FmpqMPolyRing}),
       z, a, exps, parent(a))
    return z
@@ -918,7 +918,7 @@ end
 # Set the coefficient of the term with the given exponent vector to the
 # given fmpq. Removal of a zero term is performed.
 function setcoeff!(a::fmpq_mpoly, exps::Vector{UInt}, b::fmpq)
-   ccall((:fmpq_mpoly_set_coeff_fmpq_ui, :libflint), Nothing,
+   ccall((:fmpq_mpoly_set_coeff_fmpq_ui, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq}, Ptr{UInt}, Ref{FmpqMPolyRing}),
       a, b, exps, parent(a))
    return a
@@ -927,7 +927,7 @@ end
 # Set the coefficient of the term with the given exponent vector to the
 # given fmpq. Removal of a zero term is performed.
 function setcoeff!(a::fmpq_mpoly, exps::Vector{Int}, b::fmpq)
-   ccall((:fmpq_mpoly_set_coeff_fmpq_ui, :libflint), Nothing,
+   ccall((:fmpq_mpoly_set_coeff_fmpq_ui, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq}, Ptr{Int}, Ref{FmpqMPolyRing}),
       a, b, exps, parent(a))
    return a
@@ -953,7 +953,7 @@ setcoeff!(a::fmpq_mpoly, exps::Vector{Int}, b::Integer) =
 # out of order. Note that like terms are not combined and zeros are not
 # removed. For that, call combine_like_terms!
 function sort_terms!(a::fmpq_mpoly)
-   ccall((:fmpq_mpoly_sort_terms, :libflint), Nothing,
+   ccall((:fmpq_mpoly_sort_terms, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{FmpqMPolyRing}), a, a.parent)
    return a
 end
@@ -961,7 +961,7 @@ end
 # Return the i-th term of the polynomial, as a polynomial
 function term(a::fmpq_mpoly, i::Int)
    z = parent(a)()
-   ccall((:fmpq_mpoly_get_term, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_term, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
           z, a, i - 1, a.parent)
    return z
@@ -970,7 +970,7 @@ end
 # Return the i-th monomial of the polynomial, as a polynomial
 function monomial(a::fmpq_mpoly, i::Int)
    z = parent(a)()
-   ccall((:fmpq_mpoly_get_term_monomial, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_term_monomial, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
           z, a, i - 1, a.parent)
    return z
@@ -978,7 +978,7 @@ end
 
 # Sets the given polynomial m to the i-th monomial of the polynomial
 function monomial!(m::fmpq_mpoly, a::fmpq_mpoly, i::Int)
-   ccall((:fmpq_mpoly_get_term_monomial, :libflint), Nothing,
+   ccall((:fmpq_mpoly_get_term_monomial, libflint), Nothing,
          (Ref{fmpq_mpoly}, Ref{fmpq_mpoly}, Int, Ref{FmpqMPolyRing}),
           m, a, i - 1, a.parent)
    return m

@@ -40,7 +40,7 @@ zero(m::gfp_mat, R::GaloisField, r::Int, c::Int) = similar(m, R, r, c)
 
 @inline function getindex(a::gfp_mat, i::Int, j::Int)
   @boundscheck Generic._checkbounds(a, i, j)
-  u = ccall((:nmod_mat_get_entry, :libflint), UInt,
+  u = ccall((:nmod_mat_get_entry, libflint), UInt,
             (Ref{gfp_mat}, Int, Int), a, i - 1 , j - 1)
   return gfp_elem(u, base_ring(a)) # no reduction needed
 end
@@ -56,7 +56,7 @@ function deepcopy_internal(a::gfp_mat, dict::IdDict)
   if isdefined(a, :base_ring)
     z.base_ring = a.base_ring
   end
-  ccall((:nmod_mat_set, :libflint), Nothing,
+  ccall((:nmod_mat_set, libflint), Nothing,
           (Ref{gfp_mat}, Ref{gfp_mat}), z, a)
   return z
 end
@@ -72,7 +72,7 @@ zero(a::GFPMatSpace) = a()
 function one(a::GFPMatSpace)
   (nrows(a) != ncols(a)) && error("Matrices must be square")
   z = a()
-  ccall((:nmod_mat_one, :libflint), Nothing, (Ref{gfp_mat}, ), z)
+  ccall((:nmod_mat_one, libflint), Nothing, (Ref{gfp_mat}, ), z)
   return z
 end
 
@@ -97,12 +97,12 @@ end
 
 function rref(a::gfp_mat)
   z = deepcopy(a)
-  r = ccall((:nmod_mat_rref, :libflint), Int, (Ref{gfp_mat}, ), z)
+  r = ccall((:nmod_mat_rref, libflint), Int, (Ref{gfp_mat}, ), z)
   return r, z
 end
 
 function rref!(a::gfp_mat)
-  r = ccall((:nmod_mat_rref, :libflint), Int, (Ref{gfp_mat}, ), a)
+  r = ccall((:nmod_mat_rref, libflint), Int, (Ref{gfp_mat}, ), a)
   return r
 end
 
@@ -154,7 +154,7 @@ end
 
 function det(a::gfp_mat)
   !issquare(a) && error("Matrix must be a square matrix")
-  r = ccall((:nmod_mat_det, :libflint), UInt, (Ref{gfp_mat}, ), a)
+  r = ccall((:nmod_mat_det, libflint), UInt, (Ref{gfp_mat}, ), a)
   return base_ring(a)(r)
 end
 
@@ -184,7 +184,7 @@ function Base.view(x::gfp_mat, r1::Int, c1::Int, r2::Int, c2::Int)
   z = gfp_mat()
   z.base_ring = x.base_ring
   z.view_parent = x
-  ccall((:nmod_mat_window_init, :libflint), Nothing,
+  ccall((:nmod_mat_window_init, libflint), Nothing,
           (Ref{gfp_mat}, Ref{gfp_mat}, Int, Int, Int, Int),
           z, x, r1 - 1, c1 - 1, r2, c2)
   finalizer(_gfp_mat_window_clear_fn, z)
@@ -192,7 +192,7 @@ function Base.view(x::gfp_mat, r1::Int, c1::Int, r2::Int, c2::Int)
 end
 
 function _gfp_mat_window_clear_fn(a::gfp_mat)
-  ccall((:nmod_mat_window_clear, :libflint), Nothing, (Ref{gfp_mat}, ), a)
+  ccall((:nmod_mat_window_clear, libflint), Nothing, (Ref{gfp_mat}, ), a)
 end
 
 ################################################################################
@@ -225,7 +225,7 @@ end
 function lift(a::gfp_mat)
   z = fmpz_mat(nrows(a), ncols(a))
   z.base_ring = FlintZZ
-  ccall((:fmpz_mat_set_nmod_mat, :libflint), Nothing,
+  ccall((:fmpz_mat_set_nmod_mat, libflint), Nothing,
           (Ref{fmpz_mat}, Ref{gfp_mat}), z, a)
   return z
 end
@@ -239,7 +239,7 @@ end
 function charpoly(R::GFPPolyRing, a::gfp_mat)
   m = deepcopy(a)
   p = R()
-  ccall((:nmod_mat_charpoly, :libflint), Nothing,
+  ccall((:nmod_mat_charpoly, libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_mat}), p, m)
   return p
 end
@@ -252,7 +252,7 @@ end
 
 function minpoly(R::GFPPolyRing, a::gfp_mat)
   p = R()
-  ccall((:nmod_mat_minpoly, :libflint), Nothing,
+  ccall((:nmod_mat_minpoly, libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_mat}), p, a)
   return p
 end

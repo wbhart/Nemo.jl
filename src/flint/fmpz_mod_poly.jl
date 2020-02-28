@@ -36,17 +36,17 @@ end
 ################################################################################
 
 function length(x::T) where {T <: Zmodn_fmpz_poly}
-  return ccall((:fmpz_mod_poly_length, :libflint), Int, (Ref{T}, ), x)
+  return ccall((:fmpz_mod_poly_length, libflint), Int, (Ref{T}, ), x)
 end
 
 function degree(x::T) where {T <: Zmodn_fmpz_poly}
-  return ccall((:fmpz_mod_poly_degree, :libflint), Int, (Ref{T}, ), x)
+  return ccall((:fmpz_mod_poly_degree, libflint), Int, (Ref{T}, ), x)
 end
 
 function coeff(x::T, n::Int) where {T <: Zmodn_fmpz_poly}
   n < 0 && throw(DomainError(n, "Index must be non-negative"))
   z = fmpz()
-  ccall((:fmpz_mod_poly_get_coeff_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_get_coeff_fmpz, libflint), Nothing,
         (Ref{fmpz}, Ref{T}, Int), z, x, n)
   return base_ring(x)(z)
 end
@@ -61,7 +61,7 @@ isgen(a::Zmodn_fmpz_poly) = (degree(a) == 1 &&
                               iszero(coeff(a,0)) && isone(coeff(a,1)))
 
 function iszero(a::T) where {T <: Zmodn_fmpz_poly}
-  return Bool(ccall((:fmpz_mod_poly_is_zero, :libflint), Cint, (Ref{T}, ), a))
+  return Bool(ccall((:fmpz_mod_poly_is_zero, libflint), Cint, (Ref{T}, ), a))
 end
 
 var(R::ZmodNFmpzPolyRing) = R.S
@@ -160,7 +160,7 @@ canonical_unit(a::Zmodn_fmpz_poly) = canonical_unit(lead(a))
 
 function -(x::T) where {T <: Zmodn_fmpz_poly}
   z = parent(x)()
-  ccall((:fmpz_mod_poly_neg, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_neg, libflint), Nothing,
           (Ref{T}, Ref{T}), z, x)
   return z
 end
@@ -174,7 +174,7 @@ end
 function +(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   check_parent(x,y)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_add, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_add, libflint), Nothing,
           (Ref{T}, Ref{T},  Ref{T}),
                z, x, y)
   return z
@@ -183,7 +183,7 @@ end
 function -(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   check_parent(x,y)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_sub, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_sub, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}),
               z, x, y)
   return z
@@ -192,7 +192,7 @@ end
 function *(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   check_parent(x,y)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_mul, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_mul, libflint), Nothing,
           (Ref{T}, Ref{T},  Ref{T}),
               z, x, y)
   return z
@@ -206,7 +206,7 @@ end
 
 function *(x::fmpz_mod_poly, y::fmpz)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_scalar_mul_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_scalar_mul_fmpz, libflint), Nothing,
           (Ref{fmpz_mod_poly}, Ref{fmpz_mod_poly}, Ref{fmpz}), z, x, y)
   return z
 end
@@ -226,7 +226,7 @@ end
 
 function +(x::fmpz_mod_poly, y::Int)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_add_si, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_add_si, libflint), Nothing,
     (Ref{fmpz_mod_poly}, Ref{fmpz_mod_poly}, Int), z, x, y)
   return z
 end
@@ -235,7 +235,7 @@ end
 
 function +(x::fmpz_mod_poly, y::fmpz)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_add_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_add_fmpz, libflint), Nothing,
     (Ref{fmpz_mod_poly}, Ref{fmpz_mod_poly}, Ref{fmpz}), z, x, y)
   return z
 end
@@ -255,28 +255,28 @@ end
 
 function -(x::fmpz_mod_poly, y::Int)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_sub_si, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_sub_si, libflint), Nothing,
     (Ref{fmpz_mod_poly}, Ref{fmpz_mod_poly}, Int), z, x, y)
   return z
 end
 
 function -(x::Int, y::fmpz_mod_poly)
   z = parent(y)()
-  ccall((:fmpz_mod_poly_si_sub, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_si_sub, libflint), Nothing,
     (Ref{fmpz_mod_poly}, Int, Ref{fmpz_mod_poly}), z, x, y)
   return z
 end
 
 function -(x::fmpz_mod_poly, y::fmpz)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_sub_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_sub_fmpz, libflint), Nothing,
     (Ref{fmpz_mod_poly}, Ref{fmpz_mod_poly}, Ref{fmpz}), z, x, y)
   return z
 end
 
 function -(x::fmpz, y::fmpz_mod_poly)
   z = parent(y)()
-  ccall((:fmpz_mod_poly_fmpz_sub, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_fmpz_sub, libflint), Nothing,
     (Ref{fmpz_mod_poly}, Ref{fmpz}, Ref{fmpz_mod_poly}), z, x, y)
   return z
 end
@@ -304,7 +304,7 @@ end
 function ^(x::T, y::Int) where {T <: Zmodn_fmpz_poly}
   y < 0 && throw(DomainError(y, "Exponent must be non-negative"))
   z = parent(x)()
-  ccall((:fmpz_mod_poly_pow, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_pow, libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, y)
   return z
 end
@@ -317,7 +317,7 @@ end
 
 function ==(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   check_parent(x, y)
-  return Bool(ccall((:fmpz_mod_poly_equal, :libflint), Int32,
+  return Bool(ccall((:fmpz_mod_poly_equal, libflint), Int32,
              (Ref{T}, Ref{T}), x, y))
 end
 
@@ -333,7 +333,7 @@ function ==(x::fmpz_mod_poly, y::fmpz_mod)
      return false
   elseif length(x) == 1
      u = fmpz()
-     ccall((:fmpz_mod_poly_get_coeff_fmpz, :libflint), Nothing,
+     ccall((:fmpz_mod_poly_get_coeff_fmpz, libflint), Nothing,
             (Ref{fmpz}, Ref{fmpz_mod_poly}, Int), u, x, 0)
      return u == y
   else
@@ -358,7 +358,7 @@ function truncate(a::T, n::Int) where {T <: Zmodn_fmpz_poly}
     return z
   end
 
-  ccall((:fmpz_mod_poly_truncate, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_truncate, libflint), Nothing,
           (Ref{T}, Int), z, n)
   return z
 end
@@ -368,7 +368,7 @@ function mullow(x::T, y::T, n::Int) where {T <: Zmodn_fmpz_poly}
   n < 0 && throw(DomainError(n, "Index must be non-negative"))
 
   z = parent(x)()
-  ccall((:fmpz_mod_poly_mullow, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_mullow, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}, Int),
                 z, x, y, n)
   return z
@@ -383,7 +383,7 @@ end
 function reverse(x::T, len::Int) where {T <: Zmodn_fmpz_poly}
   len < 0 && throw(DomainError(n, "Index must be non-negative"))
   z = parent(x)()
-  ccall((:fmpz_mod_poly_reverse, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_reverse, libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, len)
   return z
 end
@@ -397,7 +397,7 @@ end
 function shift_left(x::T, len::Int) where {T <: Zmodn_fmpz_poly}
   len < 0 && throw(DomainError(len, "Shift must be non-negative"))
   z = parent(x)()
-  ccall((:fmpz_mod_poly_shift_left, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_shift_left, libflint), Nothing,
           (Ref{T}, Ref{T}, Int), z, x, len)
   return z
 end
@@ -405,7 +405,7 @@ end
 function shift_right(x::T, len::Int) where {T <: Zmodn_fmpz_poly}
   len < 0 && throw(DomainError(len, "Shift must be non-negative"))
   z = parent(x)()
-  ccall((:fmpz_mod_poly_shift_right, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_shift_right, libflint), Nothing,
             (Ref{T}, Ref{T}, Int), z, x, len)
   return z
 end
@@ -422,7 +422,7 @@ function divexact(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   d = fmpz()
   q = parent(x)()
   r = parent(x)()
-  ccall((:fmpz_mod_poly_divrem_f, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_divrem_f, libflint), Nothing,
         (Ref{fmpz}, Ref{T}, Ref{T}, Ref{T}, Ref{T}),
                d, q, r, x, y)
   d != 1 && error("Impossible inverse in divexact")
@@ -441,7 +441,7 @@ function divexact(x::fmpz_mod_poly, y::fmpz_mod)
   base_ring(x) != parent(y) && error("Elements must have same parent")
   iszero(y) && throw(DivideError())
   q = parent(x)()
-  ccall((:fmpz_mod_poly_scalar_div_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_scalar_div_fmpz, libflint), Nothing,
           (Ref{fmpz_mod_poly}, Ref{fmpz_mod_poly}, Ref{fmpz}),
                q, x, y.data)
   return q
@@ -450,7 +450,7 @@ end
 function divexact(x::T, y::fmpz) where {T <: Zmodn_fmpz_poly}
   iszero(y) && throw(DivideError())
   q = parent(x)()
-  ccall((:fmpz_mod_poly_scalar_div_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_scalar_div_fmpz, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{fmpz}),
                q, x, y)
   return q
@@ -459,7 +459,7 @@ end
 function divexact(x::T, y::Int) where {T <: Zmodn_fmpz_poly}
   y == 0 && throw(DivideError())
   q = parent(x)()
-  ccall((:fmpz_mod_poly_scalar_div_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_scalar_div_fmpz, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{fmpz}),
                q, x, fmpz(y))
   return q
@@ -477,7 +477,7 @@ function divrem(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   q = parent(x)()
   r = parent(x)()
   d = fmpz()
-  ccall((:fmpz_mod_poly_divrem_f, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_divrem_f, libflint), Nothing,
         (Ref{fmpz}, Ref{T}, Ref{T}, Ref{T}, Ref{T}),
           d, q, r, x, y)
   d > 1 && error("Impossible inverse in divrem")
@@ -524,7 +524,7 @@ function gcd(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   check_parent(x, y)
   z = parent(x)()
   f = fmpz()
-  ccall((:fmpz_mod_poly_gcd_f, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_gcd_f, libflint), Nothing,
           (Ref{fmpz}, Ref{T}, Ref{T}, Ref{T}),
               f, z, x, y)
   f > 1 && error("Impossible inverse: $(f) divides modulus")
@@ -537,7 +537,7 @@ function gcdx(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   s = parent(x)()
   t = parent(x)()
   f = fmpz()
-  ccall((:fmpz_mod_poly_xgcd_f, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_xgcd_f, libflint), Nothing,
         (Ref{fmpz}, Ref{T}, Ref{T}, Ref{T},
          Ref{T}, Ref{T}), f, g, s, t, x, y)
   f > 1 && error("Impossible inverse: $(f) divides modulus")
@@ -550,7 +550,7 @@ function gcdinv(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   g = parent(x)()
   s = parent(x)()
   f = fmpz()
-  ccall((:fmpz_mod_poly_gcdinv_f, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_gcdinv_f, libflint), Nothing,
           (Ref{fmpz}, Ref{T}, Ref{T}, Ref{T}, Ref{T}),
           f, g, s, x, y)
   f > 1 && error("Impossible inverse: $(f) divides modulus")
@@ -570,7 +570,7 @@ function invmod(x::T, y::T) where {T <: Zmodn_fmpz_poly}
     return parent(x)(inv(eval(x, coeff(y, 0))))
   end
   z = parent(x)()
-  r = ccall((:fmpz_mod_poly_invmod, :libflint), Int32,
+  r = ccall((:fmpz_mod_poly_invmod, libflint), Int32,
             (Ref{T}, Ref{T}, Ref{T}),
                z, x, y)
   r == 0 ? error("Impossible inverse in invmod") : return z
@@ -580,7 +580,7 @@ function mulmod(x::T, y::T, z::T) where {T <: Zmodn_fmpz_poly}
   check_parent(x, y)
   check_parent(y, z)
   w = parent(x)()
-  ccall((:fmpz_mod_poly_mulmod, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_mulmod, libflint), Nothing,
         (Ref{T}, Ref{T}, Ref{T}, Ref{T}),
         w, x, y, z)
   return w
@@ -598,7 +598,7 @@ function powmod(x::T, e::Int, y::T) where {T <: Zmodn_fmpz_poly}
     e = -e
   end
 
-  ccall((:fmpz_mod_poly_powmod_ui_binexp, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_powmod_ui_binexp, libflint), Nothing,
         (Ref{T}, Ref{T}, Int, Ref{T}), z, x, e, y)
 
   return z
@@ -619,7 +619,7 @@ function powmod(x::T, e::fmpz, y::T) where {T <: Zmodn_fmpz_poly}
     e = -e
   end
 
-  ccall((:fmpz_mod_poly_powmod_fmpz_binexp, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_powmod_fmpz_binexp, libflint), Nothing,
         (Ref{T}, Ref{T}, Ref{fmpz}, Ref{T}),
             z, x, e, y)
   return z
@@ -636,7 +636,7 @@ function resultant(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   z = parent(x)()
   !isprobable_prime(modulus(x)) && error("Modulus not prime in resultant")
   r = fmpz()
-  ccall((:fmpz_mod_poly_resultant, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_resultant, libflint), Nothing,
           (Ref{fmpz}, Ref{T}, Ref{T}), r, x, y)
   return base_ring(x)(r)
 end
@@ -650,7 +650,7 @@ end
 function evaluate(x::fmpz_mod_poly, y::fmpz_mod)
   base_ring(x) != parent(y) && error("Elements must have same parent")
   z = fmpz()
-  ccall((:fmpz_mod_poly_evaluate_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_evaluate_fmpz, libflint), Nothing,
               (Ref{fmpz}, Ref{fmpz_mod_poly}, Ref{fmpz}), z, x, y.data)
   return parent(y)(z)
 end
@@ -663,7 +663,7 @@ end
 
 function derivative(x::T) where {T <: Zmodn_fmpz_poly}
   z = parent(x)()
-  ccall((:fmpz_mod_poly_derivative, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_derivative, libflint), Nothing,
         (Ref{T}, Ref{T}), z, x)
   return z
 end
@@ -693,7 +693,7 @@ end
 function compose(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   check_parent(x,y)
   z = parent(x)()
-  ccall((:fmpz_mod_poly_compose, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_compose, libflint), Nothing,
           (Ref{T}, Ref{T}, Ref{T}),
                z, x, y)
   return z
@@ -713,7 +713,7 @@ end
 """
 function lift(R::FmpzPolyRing, y::fmpz_mod_poly)
    z = fmpz_poly()
-   ccall((:fmpz_mod_poly_get_fmpz_poly, :libflint), Nothing,
+   ccall((:fmpz_mod_poly_get_fmpz_poly, libflint), Nothing,
           (Ref{fmpz_poly}, Ref{fmpz_mod_poly}), z, y)
    z.parent = R
   return z
@@ -731,7 +731,7 @@ end
 """
 function isirreducible(x::fmpz_mod_poly)
   !isprobable_prime(modulus(x)) && error("Modulus not prime in isirreducible")
-  return Bool(ccall((:fmpz_mod_poly_is_irreducible, :libflint), Int32,
+  return Bool(ccall((:fmpz_mod_poly_is_irreducible, libflint), Int32,
           (Ref{fmpz_mod_poly}, ), x))
 end
 
@@ -747,7 +747,7 @@ end
 """
 function issquarefree(x::fmpz_mod_poly)
    !isprobable_prime(modulus(x)) && error("Modulus not prime in issquarefree")
-   return Bool(ccall((:fmpz_mod_poly_is_squarefree, :libflint), Int32,
+   return Bool(ccall((:fmpz_mod_poly_is_squarefree, libflint), Int32,
       (Ref{fmpz_mod_poly}, ), x))
 end
 
@@ -769,12 +769,12 @@ end
 
 function _factor(x::fmpz_mod_poly)
   fac = fmpz_mod_poly_factor(parent(x).n)
-  ccall((:fmpz_mod_poly_factor, :libflint), UInt,
+  ccall((:fmpz_mod_poly_factor, libflint), UInt,
           (Ref{fmpz_mod_poly_factor}, Ref{fmpz_mod_poly}), fac, x)
   res = Dict{fmpz_mod_poly, Int}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, :libflint), Nothing,
+    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, libflint), Nothing,
          (Ref{fmpz_mod_poly}, Ref{fmpz_mod_poly_factor}, Int), f, fac, i - 1)
     e = unsafe_load(fac.exp, i)
     res[f] = e
@@ -794,12 +794,12 @@ end
 
 function _factor_squarefree(x::fmpz_mod_poly)
   fac = fmpz_mod_poly_factor(parent(x).n)
-  ccall((:fmpz_mod_poly_factor_squarefree, :libflint), UInt,
+  ccall((:fmpz_mod_poly_factor_squarefree, libflint), UInt,
           (Ref{fmpz_mod_poly_factor}, Ref{fmpz_mod_poly}), fac, x)
   res = Dict{fmpz_mod_poly, Int}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, :libflint), Nothing,
+    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, libflint), Nothing,
          (Ref{fmpz_mod_poly}, Ref{fmpz_mod_poly_factor}, Int), f, fac, i - 1)
     e = unsafe_load(fac.exp, i)
     res[f] = e
@@ -817,13 +817,13 @@ function factor_distinct_deg(x::fmpz_mod_poly)
   degs = Vector{Int}(undef, degree(x))
   degss = [ pointer(degs) ]
   fac = fmpz_mod_poly_factor(parent(x).n)
-  ccall((:fmpz_mod_poly_factor_distinct_deg, :libflint), UInt,
+  ccall((:fmpz_mod_poly_factor_distinct_deg, libflint), UInt,
           (Ref{fmpz_mod_poly_factor}, Ref{fmpz_mod_poly}, Ptr{Ptr{Int}}),
           fac, x, degss)
   res = Dict{Int, fmpz_mod_poly}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, :libflint), Nothing,
+    ccall((:fmpz_mod_poly_factor_get_fmpz_mod_poly, libflint), Nothing,
          (Ref{fmpz_mod_poly}, Ref{fmpz_mod_poly_factor}, Int), f, fac, i - 1)
     res[degs[i]] = f
   end
@@ -837,31 +837,31 @@ end
 ################################################################################
 
 function zero!(x::T) where {T <: Zmodn_fmpz_poly}
-  ccall((:fmpz_mod_poly_zero, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_zero, libflint), Nothing,
                    (Ref{T}, ), x)
   return x
 end
 
 function fit!(x::T, n::Int) where {T <: Zmodn_fmpz_poly}
-  ccall((:fmpz_mod_poly_fit_length, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_fit_length, libflint), Nothing,
                    (Ref{T}, Int), x, n)
   return nothing
 end
 
 function setcoeff!(x::T, n::Int, y::UInt) where {T <: Zmodn_fmpz_poly}
-  ccall((:fmpz_mod_poly_set_coeff_ui, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_set_coeff_ui, libflint), Nothing,
                    (Ref{T}, Int, UInt), x, n, y)
   return x
 end
 
 function setcoeff!(x::T, n::Int, y::Int) where {T <: Zmodn_fmpz_poly}
-  ccall((:fmpz_mod_poly_set_coeff_si, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_set_coeff_si, libflint), Nothing,
                    (Ref{T}, Int, UInt), x, n, y)
   return x
 end
 
 function setcoeff!(x::T, n::Int, y::fmpz) where {T <: Zmodn_fmpz_poly}
-  ccall((:fmpz_mod_poly_set_coeff_fmpz, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
                    (Ref{T}, Int, Ref{fmpz}), x, n, y)
   return x
 end
@@ -871,25 +871,25 @@ setcoeff!(x::T, n::Int, y::Integer) where {T <: Zmodn_fmpz_poly} = setcoeff!(x, 
 setcoeff!(x::fmpz_mod_poly, n::Int, y::fmpz_mod) = setcoeff!(x, n, y.data)
 
 function add!(z::T, x::T, y::T) where {T <: Zmodn_fmpz_poly}
-  ccall((:fmpz_mod_poly_add, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_add, libflint), Nothing,
      (Ref{T}, Ref{T},  Ref{T}), z, x, y)
   return z
 end
 
 function addeq!(z::T, y::T) where {T <: Zmodn_fmpz_poly}
-  ccall((:fmpz_mod_poly_add, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_add, libflint), Nothing,
      (Ref{T}, Ref{T},  Ref{T}), z, z, y)
   return z
 end
 
 function sub!(z::T, x::T, y::T) where {T <: Zmodn_fmpz_poly}
-  ccall((:fmpz_mod_poly_sub, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_sub, libflint), Nothing,
      (Ref{T}, Ref{T},  Ref{T}), z, x, y)
   return z
 end
 
 function mul!(z::T, x::T, y::T) where {T <: Zmodn_fmpz_poly}
-  ccall((:fmpz_mod_poly_mul, :libflint), Nothing,
+  ccall((:fmpz_mod_poly_mul, libflint), Nothing,
      (Ref{T}, Ref{T},  Ref{T}), z, x, y)
   return z
 end

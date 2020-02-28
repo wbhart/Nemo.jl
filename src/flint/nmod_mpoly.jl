@@ -35,7 +35,7 @@ base_ring(f::nmod_mpoly) = f.parent.base_ring
 
 function ordering(a::NmodMPolyRing)
 b = a.ord
-#   b = ccall((:nmod_mpoly_ctx_ord, :libflint), Cint, (Ref{NmodMPolyRing}, ), a)
+#   b = ccall((:nmod_mpoly_ctx_ord, libflint), Cint, (Ref{NmodMPolyRing}, ), a)
    return flint_orderings[b + 1]
 end
 
@@ -43,7 +43,7 @@ function gens(R::NmodMPolyRing)
    A = Vector{nmod_mpoly}(undef, R.nvars)
    for i = 1:R.nvars
       z = R()
-      ccall((:nmod_mpoly_gen, :libflint), Nothing,
+      ccall((:nmod_mpoly_gen, libflint), Nothing,
             (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), z, i - 1, R)
       A[i] = z
    end
@@ -54,7 +54,7 @@ function gen(R::NmodMPolyRing, i::Int)
    n = nvars(R)
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
    z = R()
-   ccall((:nmod_mpoly_gen, :libflint), Nothing,
+   ccall((:nmod_mpoly_gen, libflint), Nothing,
          (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), z, i - 1, R)
    return z
 end
@@ -63,7 +63,7 @@ function isgen(a::nmod_mpoly, i::Int)
    n = nvars(parent(a))
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
    R = parent(a)
-#   return Bool(ccall((:nmod_mpoly_is_gen, :libflint), Cint,
+#   return Bool(ccall((:nmod_mpoly_is_gen, libflint), Cint,
 #                     (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
 #                     a, i - 1, R))
    g = gen(parent(a), i)
@@ -80,40 +80,40 @@ end
 
 function deepcopy_internal(a::nmod_mpoly, dict::IdDict)
    z = parent(a)()
-   ccall((:nmod_mpoly_set, :libflint), Nothing,
+   ccall((:nmod_mpoly_set, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
          z, a, a.parent)
    return z
 end
 
 function length(a::nmod_mpoly)
-   n = ccall((:nmod_mpoly_length, :libflint), Int, (Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
+   n = ccall((:nmod_mpoly_length, libflint), Int, (Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
          a, a.parent)
    return n
 end
 
 function one(R::NmodMPolyRing)
    z = R()
-   ccall((:nmod_mpoly_one, :libflint), Nothing,
+   ccall((:nmod_mpoly_one, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), z, R)
    return z
 end
 
 function zero(R::NmodMPolyRing)
    z = R()
-   ccall((:nmod_mpoly_zero, :libflint), Nothing,
+   ccall((:nmod_mpoly_zero, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), z, R)
    return z
 end
 
 function isone(a::nmod_mpoly)
-   b = ccall((:nmod_mpoly_is_one, :libflint), Cint,
+   b = ccall((:nmod_mpoly_is_one, libflint), Cint,
              (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
    return Bool(b)
 end
 
 function iszero(a::nmod_mpoly)
-   b = ccall((:nmod_mpoly_is_zero, :libflint), Cint,
+   b = ccall((:nmod_mpoly_is_zero, libflint), Cint,
              (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
    return Bool(b)
 end
@@ -131,7 +131,7 @@ function isunit(a::nmod_mpoly)
 end
 
 function isconstant(a::nmod_mpoly)
-   b = ccall((:nmod_mpoly_is_ui, :libflint), Cint,
+   b = ccall((:nmod_mpoly_is_ui, libflint), Cint,
              (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, parent(a))
    return Bool(b)
 end
@@ -147,7 +147,7 @@ characteristic(R::NmodMPolyRing) = characteristic(base_ring(R))
 function coeff(a::nmod_mpoly, i::Int)
    n = length(a)
    (i < 1 || i > n) && error("Index must be between 1 and $(length(a))")
-   z = ccall((:nmod_mpoly_get_term_coeff_ui, :libflint), UInt,
+   z = ccall((:nmod_mpoly_get_term_coeff_ui, libflint), UInt,
          (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
          a, i - 1, a.parent)
    return base_ring(parent(a))(z)
@@ -156,7 +156,7 @@ end
 function coeff(a::nmod_mpoly, b::nmod_mpoly)
    check_parent(a, b)
    !isone(length(b)) && error("Second argument must be a monomial")
-   z = ccall((:nmod_mpoly_get_coeff_ui_monomial, :libflint), UInt,
+   z = ccall((:nmod_mpoly_get_coeff_ui_monomial, libflint), UInt,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
          a, b, parent(a))
    return base_ring(parent(a))(z)
@@ -172,7 +172,7 @@ end
 function degree(a::nmod_mpoly, i::Int)
    n = nvars(parent(a))
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
-   d = ccall((:nmod_mpoly_degree_si, :libflint), Int,
+   d = ccall((:nmod_mpoly_degree_si, libflint), Int,
              (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), a, i - 1, a.parent)
    return d
 end
@@ -182,7 +182,7 @@ function degree_fmpz(a::nmod_mpoly, i::Int)
    n = nvars(parent(a))
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
    d = fmpz()
-   ccall((:nmod_mpoly_degree_fmpz, :libflint), Nothing,
+   ccall((:nmod_mpoly_degree_fmpz, libflint), Nothing,
          (Ref{fmpz}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
          d, a, i - 1, a.parent)
    return d
@@ -190,7 +190,7 @@ end
 
 # Return true if degrees fit into an Int
 function degrees_fit_int(a::nmod_mpoly)
-   b = ccall((:nmod_mpoly_degrees_fit_si, :libflint), Cint,
+   b = ccall((:nmod_mpoly_degrees_fit_si, libflint), Cint,
              (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
    return Bool(b)
 end
@@ -198,7 +198,7 @@ end
 # Return an array of the max degrees in each variable
 function degrees(a::nmod_mpoly)
    degs = Vector{Int}(undef, nvars(parent(a)))
-   ccall((:nmod_mpoly_degrees_si, :libflint), Nothing,
+   ccall((:nmod_mpoly_degrees_si, libflint), Nothing,
          (Ptr{Int}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
          degs, a, a.parent)
    return degs
@@ -211,7 +211,7 @@ function degrees_fmpz(a::nmod_mpoly)
    for i in 1:n
       degs[i] = fmpz()
    end
-   ccall((:nmod_mpoly_degrees_fmpz, :libflint), Nothing,
+   ccall((:nmod_mpoly_degrees_fmpz, libflint), Nothing,
          (Ptr{Ref{fmpz}}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
          degs, a, a.parent)
    return degs
@@ -219,14 +219,14 @@ end
 
 # Return true if degree fits into an Int
 function total_degree_fits_int(a::nmod_mpoly)
-      b = ccall((:nmod_mpoly_total_degree_fits_si, :libflint), Cint,
+      b = ccall((:nmod_mpoly_total_degree_fits_si, libflint), Cint,
                 (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
       return Bool(b)
    end
 
 # Total degree as an Int
 function total_degree(a::nmod_mpoly)
-   d = ccall((:nmod_mpoly_total_degree_si, :libflint), Int,
+   d = ccall((:nmod_mpoly_total_degree_si, libflint), Int,
              (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
    return d
 end
@@ -234,7 +234,7 @@ end
 # Total degree as an fmpz
 function total_degree_fmpz(a::nmod_mpoly)
    d = fmpz()
-   ccall((:nmod_mpoly_total_degree_fmpz, :libflint), Nothing,
+   ccall((:nmod_mpoly_total_degree_fmpz, libflint), Nothing,
          (Ref{fmpz}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
             d, a, a.parent)
    return d
@@ -260,7 +260,7 @@ function coeff(a::nmod_mpoly, vars::Vector{Int}, exps::Vector{Int})
          error("Exponent cannot be negative")
       end
    end
-   ccall((:nmod_mpoly_get_coeff_vars_ui, :libflint), Nothing,
+   ccall((:nmod_mpoly_get_coeff_vars_ui, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ptr{Int},
           Ptr{Int}, Int, Ref{NmodMPolyRing}),
           z, a, vars, exps, length(vars), a.parent)
@@ -277,12 +277,12 @@ function show(io::IO, x::nmod_mpoly)
    if length(x) == 0
       print(io, "0")
    else
-      cstr = ccall((:nmod_mpoly_get_str_pretty, :libflint), Ptr{UInt8},
+      cstr = ccall((:nmod_mpoly_get_str_pretty, libflint), Ptr{UInt8},
           (Ref{nmod_mpoly}, Ptr{Ptr{UInt8}}, Ref{NmodMPolyRing}),
           x, [string(s) for s in symbols(parent(x))], x.parent)
       print(io, unsafe_string(cstr))
 
-      ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), cstr)
+      ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
    end
 end
 
@@ -313,7 +313,7 @@ end
 
 function -(a::nmod_mpoly)
    z = parent(a)()
-   ccall((:nmod_mpoly_neg, :libflint), Nothing,
+   ccall((:nmod_mpoly_neg, libflint), Nothing,
        (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
        z, a, a.parent)
    return z
@@ -322,7 +322,7 @@ end
 function +(a::nmod_mpoly, b::nmod_mpoly)
    check_parent(a, b)
    z = parent(a)()
-   ccall((:nmod_mpoly_add, :libflint), Nothing,
+   ccall((:nmod_mpoly_add, libflint), Nothing,
        (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
        z, a, b, a.parent)
    return z
@@ -331,7 +331,7 @@ end
 function -(a::nmod_mpoly, b::nmod_mpoly)
    check_parent(a, b)
    z = parent(a)()
-   ccall((:nmod_mpoly_sub, :libflint), Nothing,
+   ccall((:nmod_mpoly_sub, libflint), Nothing,
        (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
        z, a, b, a.parent)
    return z
@@ -340,7 +340,7 @@ end
 function *(a::nmod_mpoly, b::nmod_mpoly)
    check_parent(a, b)
    z = parent(a)()
-   ccall((:nmod_mpoly_mul, :libflint), Nothing,
+   ccall((:nmod_mpoly_mul, libflint), Nothing,
        (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
        z, a, b, a.parent)
    return z
@@ -356,7 +356,7 @@ for (jT, cN, cT) in ((UInt, :ui, UInt),)
    @eval begin
       function +(a::nmod_mpoly, b::($jT))
          z = parent(a)()
-         ccall(($(string(:nmod_mpoly_add_, cN)), :libflint), Nothing,
+         ccall(($(string(:nmod_mpoly_add_, cN)), libflint), Nothing,
                (Ref{nmod_mpoly}, Ref{nmod_mpoly}, ($cT), Ref{NmodMPolyRing}),
                z, a, b, parent(a))
          return z
@@ -366,7 +366,7 @@ for (jT, cN, cT) in ((UInt, :ui, UInt),)
 
       function -(a::nmod_mpoly, b::($jT))
          z = parent(a)()
-         ccall(($(string(:nmod_mpoly_sub_, cN)), :libflint), Nothing,
+         ccall(($(string(:nmod_mpoly_sub_, cN)), libflint), Nothing,
                (Ref{nmod_mpoly}, Ref{nmod_mpoly}, ($cT), Ref{NmodMPolyRing}),
                z, a, b, parent(a))
          return z
@@ -376,7 +376,7 @@ for (jT, cN, cT) in ((UInt, :ui, UInt),)
 
       function *(a::nmod_mpoly, b::($jT))
          z = parent(a)()
-         ccall(($(string(:nmod_mpoly_scalar_mul_, cN)), :libflint), Nothing,
+         ccall(($(string(:nmod_mpoly_scalar_mul_, cN)), libflint), Nothing,
                (Ref{nmod_mpoly}, Ref{nmod_mpoly}, ($cT), Ref{NmodMPolyRing}),
                z, a, b, parent(a))
          return z
@@ -386,7 +386,7 @@ for (jT, cN, cT) in ((UInt, :ui, UInt),)
 
       function divexact(a::nmod_mpoly, b::($jT))
          z = parent(a)()
-         ccall(($(string(:nmod_mpoly_scalar_div_, cN)), :libflint), Nothing,
+         ccall(($(string(:nmod_mpoly_scalar_div_, cN)), libflint), Nothing,
                (Ref{nmod_mpoly}, Ref{nmod_mpoly}, ($cT), Ref{NmodMPolyRing}),
                z, a, b, parent(a))
          return z
@@ -417,7 +417,7 @@ divexact(a::nmod_mpoly, b::Integer) = divexact(a, base_ring(parent(a))(b))
 function ^(a::nmod_mpoly, b::Int)
    b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    z = parent(a)()
-   ccall((:nmod_mpoly_pow_ui, :libflint), Nothing,
+   ccall((:nmod_mpoly_pow_ui, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
          z, a, b, parent(a))
    return z
@@ -426,7 +426,7 @@ end
 function ^(a::nmod_mpoly, b::fmpz)
    b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    z = parent(a)()
-   ccall((:nmod_mpoly_pow_fmpz, :libflint), Nothing,
+   ccall((:nmod_mpoly_pow_fmpz, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{fmpz}, Ref{NmodMPolyRing}),
          z, a, b, parent(a))
    return z
@@ -441,7 +441,7 @@ end
 function gcd(a::nmod_mpoly, b::nmod_mpoly)
    check_parent(a, b)
    z = parent(a)()
-   r = Bool(ccall((:nmod_mpoly_gcd, :libflint), Cint,
+   r = Bool(ccall((:nmod_mpoly_gcd, libflint), Cint,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
          z, a, b, a.parent))
    r == false && error("Unable to compute gcd")
@@ -456,14 +456,14 @@ end
 
 function ==(a::nmod_mpoly, b::nmod_mpoly)
    check_parent(a, b)
-   return Bool(ccall((:nmod_mpoly_equal, :libflint), Cint,
+   return Bool(ccall((:nmod_mpoly_equal, libflint), Cint,
                (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
                a, b, a.parent))
 end
 
 function Base.isless(a::nmod_mpoly, b::nmod_mpoly)
    (!ismonomial(a) || !ismonomial(b)) && error("Not monomials in comparison")
-   return ccall((:nmod_mpoly_cmp, :libflint), Cint,
+   return ccall((:nmod_mpoly_cmp, libflint), Cint,
                (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
                a, b, a.parent) < 0
 end
@@ -475,7 +475,7 @@ end
 ###############################################################################
 
 function ==(a::nmod_mpoly, b::nmod)
-   return Bool(ccall((:nmod_mpoly_equal_ui, :libflint), Cint,
+   return Bool(ccall((:nmod_mpoly_equal_ui, libflint), Cint,
                      (Ref{nmod_mpoly}, UInt, Ref{NmodMPolyRing}),
                      a, b.data, a.parent))
 end
@@ -483,7 +483,7 @@ end
 ==(a::nmod, b::nmod_mpoly) = b == a
 
 function ==(a::nmod_mpoly, b::UInt)
-   return Bool(ccall((:nmod_mpoly_equal_ui, :libflint), Cint,
+   return Bool(ccall((:nmod_mpoly_equal_ui, libflint), Cint,
                (Ref{nmod_mpoly}, UInt, Ref{NmodMPolyRing}),
                a, b, a.parent))
 end
@@ -513,7 +513,7 @@ function divides(a::nmod_mpoly, b::nmod_mpoly)
       return false, zero(parent(a))
    end
    z = parent(a)()
-   d = ccall((:nmod_mpoly_divides, :libflint), Cint,
+   d = ccall((:nmod_mpoly_divides, libflint), Cint,
        (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
        z, a, b, a.parent)
    return isone(d), z
@@ -528,7 +528,7 @@ end
 function div(a::nmod_mpoly, b::nmod_mpoly)
    check_parent(a, b)
    q = parent(a)()
-   ccall((:nmod_mpoly_div, :libflint), Nothing,
+   ccall((:nmod_mpoly_div, libflint), Nothing,
        (Ref{nmod_mpoly}, Ref{nmod_mpoly},
         Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
        q, a, b, a.parent)
@@ -539,7 +539,7 @@ function divrem(a::nmod_mpoly, b::nmod_mpoly)
    check_parent(a, b)
    q = parent(a)()
    r = parent(a)()
-   ccall((:nmod_mpoly_divrem, :libflint), Nothing,
+   ccall((:nmod_mpoly_divrem, libflint), Nothing,
        (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Ref{nmod_mpoly},
         Ref{nmod_mpoly}, Ref{NmodMPolyRing}),
        q, r, a, b, a.parent)
@@ -550,7 +550,7 @@ function divrem(a::nmod_mpoly, b::Array{nmod_mpoly, 1})
    len = length(b)
    q = [parent(a)() for i in 1:len]
    r = parent(a)()
-   ccall((:nmod_mpoly_divrem_ideal, :libflint), Nothing,
+   ccall((:nmod_mpoly_divrem_ideal, libflint), Nothing,
          (Ptr{Ref{nmod_mpoly}}, Ref{nmod_mpoly}, Ref{nmod_mpoly},
           Ptr{Ref{nmod_mpoly}}, Int, Ref{NmodMPolyRing}),
        q, r, a, b, len, a.parent)
@@ -580,7 +580,7 @@ function derivative(a::nmod_mpoly, i::Int)
    n = nvars(parent(a))
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
    z = parent(a)()
-   ccall((:nmod_mpoly_derivative, :libflint), Nothing,
+   ccall((:nmod_mpoly_derivative, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
          z, a, i - 1, parent(a))
    return z
@@ -590,7 +590,7 @@ function integral(a::nmod_mpoly, i::Int)
    n = nvars(parent(a))
    (i <= 0 || i > n) && error("Index must be between 1 and $n")
    z = parent(a)()
-   ccall((:nmod_mpoly_integral, :libflint), Nothing,
+   ccall((:nmod_mpoly_integral, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
          z, a, i - 1, parent(a))
    return z
@@ -605,7 +605,7 @@ end
 function evaluate(a::nmod_mpoly, b::Vector{nmod})
    length(b) != nvars(parent(a)) && error("Vector size incorrect in evaluate")
    b2 = [d.data for d in b]
-   z = ccall((:nmod_mpoly_evaluate_all_ui, :libflint), UInt,
+   z = ccall((:nmod_mpoly_evaluate_all_ui, libflint), UInt,
          (Ref{nmod_mpoly}, Ptr{UInt}, Ref{NmodMPolyRing}),
             a, b2, parent(a))
    return base_ring(parent(a))(z)
@@ -699,27 +699,27 @@ end
 ###############################################################################
 
 function zero!(a::nmod_mpoly)
-    ccall((:nmod_mpoly_zero, :libflint), Nothing,
+    ccall((:nmod_mpoly_zero, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
     return a
 end
 
 function add!(a::nmod_mpoly, b::nmod_mpoly, c::nmod_mpoly)
-   ccall((:nmod_mpoly_add, :libflint), Nothing,
+   ccall((:nmod_mpoly_add, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly},
           Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, b, c, a.parent)
    return a
 end
 
 function addeq!(a::nmod_mpoly, b::nmod_mpoly)
-   ccall((:nmod_mpoly_add, :libflint), Nothing,
+   ccall((:nmod_mpoly_add, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly},
           Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a, b, a.parent)
    return a
 end
 
 function mul!(a::nmod_mpoly, b::nmod_mpoly, c::nmod_mpoly)
-   ccall((:nmod_mpoly_mul, :libflint), Nothing,
+   ccall((:nmod_mpoly_mul, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly},
           Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, b, c, a.parent)
    return a
@@ -729,10 +729,10 @@ end
 # must be removed with combine_like_terms!
 function setcoeff!(a::nmod_mpoly, n::Int, c::nmod)
    if n > length(a)
-      ccall((:nmod_mpoly_resize, :libflint), Nothing,
+      ccall((:nmod_mpoly_resize, libflint), Nothing,
             (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), a, n, a.parent)
    end
-   ccall((:nmod_mpoly_set_term_coeff_ui, :libflint), Nothing,
+   ccall((:nmod_mpoly_set_term_coeff_ui, libflint), Nothing,
          (Ref{nmod_mpoly}, Int, UInt, Ref{NmodMPolyRing}),
          a, n - 1, c.data, a.parent)
    return a
@@ -749,7 +749,7 @@ setcoeff!(a::nmod_mpoly, i::Int, c::fmpz) = setcoeff!(a, i, base_ring(parent(a))
 # Remove zero terms and combine adjacent terms if they have the same monomial
 # no sorting is performed
 function combine_like_terms!(a::nmod_mpoly)
-   ccall((:nmod_mpoly_combine_like_terms, :libflint), Nothing,
+   ccall((:nmod_mpoly_combine_like_terms, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
    return a
 end
@@ -762,14 +762,14 @@ end
 
 # Return true if the exponents of the i-th exp. vector fit into UInts
 function exponent_vector_fits_ui(a::nmod_mpoly, i::Int)
-   b = ccall((:nmod_mpoly_term_exp_fits_ui, :libflint), Cint,
+   b = ccall((:nmod_mpoly_term_exp_fits_ui, libflint), Cint,
              (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), a, i - 1, a.parent)
       return Bool(b)
 end
 
 # Return true if the exponents of the i-th exp. vector fit into UInts
 function exponent_vector_fits_int(a::nmod_mpoly, i::Int)
-   b = ccall((:nmod_mpoly_term_exp_fits_si, :libflint), Cint,
+   b = ccall((:nmod_mpoly_term_exp_fits_si, libflint), Cint,
              (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), a, i - 1, a.parent)
    return Bool(b)
 end
@@ -777,7 +777,7 @@ end
 # Return Julia array of UInt's corresponding to exponent vector of i-th term
 function exponent_vector_ui(a::nmod_mpoly, i::Int)
    z = Vector{UInt}(undef, nvars(parent(a)))
-   ccall((:nmod_mpoly_get_term_exp_ui, :libflint), Nothing,
+   ccall((:nmod_mpoly_get_term_exp_ui, libflint), Nothing,
          (Ptr{UInt}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
       z, a, i - 1, parent(a))
    return z
@@ -788,7 +788,7 @@ function exponent_vector(a::nmod_mpoly, i::Int)
    exponent_vector_fits_int(a, i) ||
       throw(DomainError(term(a, i), "exponents don't fit in `Int` (try exponent_vector_fmpz)"))
    z = Vector{Int}(undef, nvars(parent(a)))
-   ccall((:nmod_mpoly_get_term_exp_si, :libflint), Nothing,
+   ccall((:nmod_mpoly_get_term_exp_si, libflint), Nothing,
          (Ptr{Int}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
       z, a, i - 1, parent(a))
    return z
@@ -801,7 +801,7 @@ function exponent_vector_fmpz(a::nmod_mpoly, i::Int)
    for j in 1:n
       z[j] = fmpz()
    end
-   ccall((:nmod_mpoly_get_term_exp_fmpz, :libflint), Nothing,
+   ccall((:nmod_mpoly_get_term_exp_fmpz, libflint), Nothing,
          (Ptr{Ref{fmpz}}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
          z, a, i - 1, parent(a))
    return z
@@ -817,10 +817,10 @@ end
 # they don't fit into 31/63 bits
 function set_exponent_vector!(a::nmod_mpoly, n::Int, exps::Vector{UInt})
    if n > length(a)
-      ccall((:nmod_mpoly_resize, :libflint), Nothing,
+      ccall((:nmod_mpoly_resize, libflint), Nothing,
             (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), a, n, a.parent)
    end
-   ccall((:nmod_mpoly_set_term_exp_ui, :libflint), Nothing,
+   ccall((:nmod_mpoly_set_term_exp_ui, libflint), Nothing,
          (Ref{nmod_mpoly}, Int, Ptr{UInt}, Ref{NmodMPolyRing}),
       a, n - 1, exps, parent(a))
    return a
@@ -831,10 +831,10 @@ end
 # no check is performed
 function set_exponent_vector!(a::nmod_mpoly, n::Int, exps::Vector{Int})
    if n > length(a)
-      ccall((:nmod_mpoly_resize, :libflint), Nothing,
+      ccall((:nmod_mpoly_resize, libflint), Nothing,
             (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), a, n, a.parent)
    end
-   ccall((:nmod_mpoly_set_term_exp_ui, :libflint), Nothing,
+   ccall((:nmod_mpoly_set_term_exp_ui, libflint), Nothing,
          (Ref{nmod_mpoly}, Int, Ptr{Int}, Ref{NmodMPolyRing}),
       a, n - 1, exps, parent(a))
    return a
@@ -844,10 +844,10 @@ end
 # No sort is performed, so this is unsafe
 function set_exponent_vector!(a::nmod_mpoly, n::Int, exps::Vector{fmpz})
    if n > length(a)
-      ccall((:nmod_mpoly_resize, :libflint), Nothing,
+      ccall((:nmod_mpoly_resize, libflint), Nothing,
             (Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}), a, n, a.parent)
    end
-   @GC.preserve exps ccall((:nmod_mpoly_set_term_exp_fmpz, :libflint), Nothing,
+   @GC.preserve exps ccall((:nmod_mpoly_set_term_exp_fmpz, libflint), Nothing,
          (Ref{nmod_mpoly}, Int, Ptr{fmpz}, Ref{NmodMPolyRing}),
       a, n - 1, exps, parent(a))
    return a
@@ -856,7 +856,7 @@ end
 # Return j-th coordinate of i-th exponent vector
 function exponent(a::nmod_mpoly, i::Int, j::Int)
    (j < 1 || j > nvars(parent(a))) && error("Invalid variable index")
-   return ccall((:nmod_mpoly_get_term_var_exp_ui, :libflint), Int,
+   return ccall((:nmod_mpoly_get_term_var_exp_ui, libflint), Int,
                 (Ref{nmod_mpoly}, Int, Int, Ref{NmodMPolyRing}),
                  a, i - 1, j - 1, a.parent)
 end
@@ -864,7 +864,7 @@ end
 # Return the coefficient of the term with the given exponent vector
 # Return zero if there is no such term
 function coeff(a::nmod_mpoly, exps::Vector{UInt})
-   z = ccall((:nmod_mpoly_get_coeff_ui_ui, :libflint), UInt,
+   z = ccall((:nmod_mpoly_get_coeff_ui_ui, libflint), UInt,
          (Ref{nmod_mpoly}, Ptr{UInt}, Ref{NmodMPolyRing}),
       a, exps, parent(a))
    return base_ring(parent(a))(z)
@@ -873,7 +873,7 @@ end
 # Return the coefficient of the term with the given exponent vector
 # Return zero if there is no such term
 function coeff(a::nmod_mpoly, exps::Vector{Int})
-   z = ccall((:nmod_mpoly_get_coeff_ui_ui, :libflint), UInt,
+   z = ccall((:nmod_mpoly_get_coeff_ui_ui, libflint), UInt,
          (Ref{nmod_mpoly}, Ptr{Int}, Ref{NmodMPolyRing}),
       a, exps, parent(a))
    return base_ring(parent(a))(z)
@@ -882,7 +882,7 @@ end
 # Set the coefficient of the term with the given exponent vector to the
 # given fmpz. Removal of a zero term is performed.
 function setcoeff!(a::nmod_mpoly, exps::Vector{UInt}, b::nmod)
-   ccall((:nmod_mpoly_set_coeff_ui_ui, :libflint), Nothing,
+   ccall((:nmod_mpoly_set_coeff_ui_ui, libflint), Nothing,
          (Ref{nmod_mpoly}, UInt, Ptr{UInt}, Ref{NmodMPolyRing}),
       a, b.data, exps, parent(a))
    return a
@@ -891,7 +891,7 @@ end
 # Set the coefficient of the term with the given exponent vector to the
 # given fmpz. Removal of a zero term is performed.
 function setcoeff!(a::nmod_mpoly, exps::Vector{Int}, b::nmod)
-   ccall((:nmod_mpoly_set_coeff_fmpz_ui, :libflint), Nothing,
+   ccall((:nmod_mpoly_set_coeff_fmpz_ui, libflint), Nothing,
          (Ref{nmod_mpoly}, UInt, Ptr{Int}, Ref{NmodMPolyRing}),
       a, b.data, exps, parent(a))
    return a
@@ -907,7 +907,7 @@ setcoeff!(a::nmod_mpoly, exps::Vector{Int}, b::Integer) =
 # out of order. Note that like terms are not combined and zeros are not
 # removed. For that, call combine_like_terms!
 function sort_terms!(a::nmod_mpoly)
-   ccall((:nmod_mpoly_sort_terms, :libflint), Nothing,
+   ccall((:nmod_mpoly_sort_terms, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{NmodMPolyRing}), a, a.parent)
    return a
 end
@@ -915,7 +915,7 @@ end
 # Return the i-th term of the polynomial, as a polynomial
 function term(a::nmod_mpoly, i::Int)
    z = parent(a)()
-   ccall((:nmod_mpoly_get_term, :libflint), Nothing,
+   ccall((:nmod_mpoly_get_term, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
           z, a, i - 1, a.parent)
    return z
@@ -924,7 +924,7 @@ end
 # Return the i-th monomial of the polynomial, as a polynomial
 function monomial(a::nmod_mpoly, i::Int)
    z = parent(a)()
-   ccall((:nmod_mpoly_get_term_monomial, :libflint), Nothing,
+   ccall((:nmod_mpoly_get_term_monomial, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
           z, a, i - 1, a.parent)
    return z
@@ -932,7 +932,7 @@ end
 
 # Sets the given polynomial m to the i-th monomial of the polynomial
 function monomial!(m::nmod_mpoly, a::nmod_mpoly, i::Int)
-   ccall((:nmod_mpoly_get_term_monomial, :libflint), Nothing,
+   ccall((:nmod_mpoly_get_term_monomial, libflint), Nothing,
          (Ref{nmod_mpoly}, Ref{nmod_mpoly}, Int, Ref{NmodMPolyRing}),
           m, a, i - 1, a.parent)
    return m

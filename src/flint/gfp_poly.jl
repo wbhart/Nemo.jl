@@ -35,7 +35,7 @@ lead_isunit(a::gfp_poly) = !iszero(a)
 function Base.hash(a::gfp_poly, h::UInt)
    b = 0x74cec61d2911ace3%UInt
    for i in 0:length(a) - 1
-      u = ccall((:nmod_poly_get_coeff_ui, :libflint), UInt, (Ref{gfp_poly}, Int), a, i)
+      u = ccall((:nmod_poly_get_coeff_ui, libflint), UInt, (Ref{gfp_poly}, Int), a, i)
       b = xor(b, xor(hash(u, h), h))
       b = (b << 1) | (b >> (sizeof(Int)*8 - 1))
    end
@@ -119,7 +119,7 @@ function ==(x::gfp_poly, y::gfp_elem)
   if length(x) > 1
     return false
   elseif length(x) == 1
-    u = ccall((:nmod_poly_get_coeff_ui, :libflint), UInt,
+    u = ccall((:nmod_poly_get_coeff_ui, libflint), UInt,
             (Ref{gfp_poly}, Int), x, 0)
     return u == y
   else
@@ -139,7 +139,7 @@ function divexact(x::gfp_poly, y::gfp_poly)
   check_parent(x, y)
   iszero(y) && throw(DivideError())
   z = parent(x)()
-  ccall((:nmod_poly_div, :libflint), Nothing,
+  ccall((:nmod_poly_div, libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}), z, x, y)
   return z
 end
@@ -167,7 +167,7 @@ function divrem(x::gfp_poly, y::gfp_poly)
   iszero(y) && throw(DivideError())
   q = parent(x)()
   r = parent(x)()
-  ccall((:nmod_poly_divrem, :libflint), Nothing,
+  ccall((:nmod_poly_divrem, libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}),
           q, r, x, y)
   return q, r
@@ -177,7 +177,7 @@ function div(x::gfp_poly, y::gfp_poly)
   check_parent(x,y)
   iszero(y) && throw(DivideError())
   q = parent(x)()
-  ccall((:nmod_poly_div, :libflint), Nothing,
+  ccall((:nmod_poly_div, libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}),
           q, x, y)
   return q
@@ -193,7 +193,7 @@ function rem(x::gfp_poly, y::gfp_poly)
   check_parent(x,y)
   iszero(y) && throw(DivideError())
   z = parent(x)()
-  ccall((:nmod_poly_rem, :libflint), Nothing,
+  ccall((:nmod_poly_rem, libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}), z, x, y)
   return z
 end
@@ -207,7 +207,7 @@ end
 function gcd(x::gfp_poly, y::gfp_poly)
   check_parent(x,y)
   z = parent(x)()
-  ccall((:nmod_poly_gcd, :libflint), Nothing,
+  ccall((:nmod_poly_gcd, libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}), z, x, y)
   return z
 end
@@ -217,7 +217,7 @@ function gcdx(x::gfp_poly, y::gfp_poly)
   g = parent(x)()
   s = parent(x)()
   t = parent(x)()
-  ccall((:nmod_poly_xgcd, :libflint), Nothing,
+  ccall((:nmod_poly_xgcd, libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly},
            Ref{gfp_poly}), g, s, t, x, y)
   return g,s,t
@@ -228,7 +228,7 @@ function gcdinv(x::gfp_poly, y::gfp_poly)
   length(y) <= 1 && error("Length of second argument must be >= 2")
   g = parent(x)()
   s = parent(x)()
-  ccall((:nmod_poly_gcdinv, :libflint), Nothing,
+  ccall((:nmod_poly_gcdinv, libflint), Nothing,
           (Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}, Ref{gfp_poly}),
           g, s, x, y)
   return g,s
@@ -244,7 +244,7 @@ function resultant(x::gfp_poly, y::gfp_poly,  check::Bool = true)
   if check
     check_parent(x,y)
   end
-  r = ccall((:nmod_poly_resultant, :libflint), UInt,
+  r = ccall((:nmod_poly_resultant, libflint), UInt,
           (Ref{gfp_poly}, Ref{gfp_poly}), x, y)
   return base_ring(x)(r)
 end
@@ -257,7 +257,7 @@ end
 
 function evaluate(x::gfp_poly, y::gfp_elem)
   base_ring(x) != parent(y) && error("Elements must have same parent")
-  z = ccall((:nmod_poly_evaluate_nmod, :libflint), UInt,
+  z = ccall((:nmod_poly_evaluate_nmod, libflint), UInt,
               (Ref{gfp_poly}, UInt), x, y.data)
   return parent(y)(z)
 end
@@ -280,7 +280,7 @@ function interpolate(R::GFPPolyRing, x::Array{gfp_elem, 1},
 
     ay[i] = y[i].data
   end
-  ccall((:nmod_poly_interpolate_nmod_vec, :libflint), Nothing,
+  ccall((:nmod_poly_interpolate_nmod_vec, libflint), Nothing,
           (Ref{gfp_poly}, Ptr{UInt}, Ptr{UInt}, Int),
           z, ax, ay, length(x))
   return z
@@ -300,7 +300,7 @@ end
 """
 function lift(R::FmpzPolyRing, y::gfp_poly)
   z = fmpz_poly()
-  ccall((:fmpz_poly_set_nmod_poly, :libflint), Nothing,
+  ccall((:fmpz_poly_set_nmod_poly, libflint), Nothing,
           (Ref{fmpz_poly}, Ref{gfp_poly}), z, y)
   z.parent = R
   return z
@@ -317,7 +317,7 @@ end
 > Return `true` if $x$ is irreducible, otherwise return `false`.
 """
 function isirreducible(x::gfp_poly)
-  return Bool(ccall((:nmod_poly_is_irreducible, :libflint), Int32,
+  return Bool(ccall((:nmod_poly_is_irreducible, libflint), Int32,
           (Ref{gfp_poly}, ), x))
 end
 
@@ -332,7 +332,7 @@ end
 > Return `true` if $x$ is squarefree, otherwise return `false`.
 """
 function issquarefree(x::gfp_poly)
-   return Bool(ccall((:nmod_poly_is_squarefree, :libflint), Int32,
+   return Bool(ccall((:nmod_poly_is_squarefree, libflint), Int32,
        (Ref{gfp_poly}, ), x))
 end
 
@@ -353,12 +353,12 @@ end
 
 function _factor(x::gfp_poly)
   fac = gfp_poly_factor(x.mod_n)
-  z = ccall((:nmod_poly_factor, :libflint), UInt,
+  z = ccall((:nmod_poly_factor, libflint), UInt,
           (Ref{gfp_poly_factor}, Ref{gfp_poly}), fac, x)
   res = Dict{gfp_poly, Int}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:nmod_poly_factor_get_nmod_poly, :libflint), Nothing,
+    ccall((:nmod_poly_factor_get_nmod_poly, libflint), Nothing,
             (Ref{gfp_poly}, Ref{gfp_poly_factor}, Int), f, fac, i-1)
     e = unsafe_load(fac.exp,i)
     res[f] = e
@@ -376,12 +376,12 @@ end
 
 function _factor_squarefree(x::gfp_poly)
   fac = gfp_poly_factor(x.mod_n)
-  ccall((:nmod_poly_factor_squarefree, :libflint), UInt,
+  ccall((:nmod_poly_factor_squarefree, libflint), UInt,
           (Ref{gfp_poly_factor}, Ref{gfp_poly}), fac, x)
   res = Dict{gfp_poly, Int}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:nmod_poly_factor_get_nmod_poly, :libflint), Nothing,
+    ccall((:nmod_poly_factor_get_nmod_poly, libflint), Nothing,
             (Ref{gfp_poly}, Ref{gfp_poly_factor}, Int), f, fac, i-1)
     e = unsafe_load(fac.exp,i)
     res[f] = e
@@ -398,13 +398,13 @@ function factor_distinct_deg(x::gfp_poly)
   degs = Vector{Int}(undef, degree(x))
   degss = [ pointer(degs) ]
   fac = gfp_poly_factor(x.mod_n)
-  ccall((:nmod_poly_factor_distinct_deg, :libflint), UInt,
+  ccall((:nmod_poly_factor_distinct_deg, libflint), UInt,
           (Ref{gfp_poly_factor}, Ref{gfp_poly}, Ptr{Ptr{Int}}),
           fac, x, degss)
   res = Dict{Int, gfp_poly}()
   for i in 1:fac.num
     f = parent(x)()
-    ccall((:nmod_poly_factor_get_nmod_poly, :libflint), Nothing,
+    ccall((:nmod_poly_factor_get_nmod_poly, libflint), Nothing,
             (Ref{gfp_poly}, Ref{gfp_poly_factor}, Int), f, fac, i-1)
     res[degs[i]] = f
   end
@@ -428,7 +428,7 @@ function remove(z::gfp_poly, p::gfp_poly)
    check_parent(z,p)
    iszero(z) && error("Not yet implemented")
    z = deepcopy(z)
-   v = ccall((:nmod_poly_remove, :libflint), Int,
+   v = ccall((:nmod_poly_remove, libflint), Int,
                (Ref{gfp_poly}, Ref{gfp_poly}), z,  p)
    return v, z
 end
@@ -479,7 +479,7 @@ function (R::GFPPolyRing)()
 end
 
 function (R::GFPPolyRing)(x::fmpz)
-  r = ccall((:fmpz_fdiv_ui, :libflint), UInt, (Ref{fmpz}, UInt), x, R.n)
+  r = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt), x, R.n)
   z = gfp_poly(R.n, r)
   z.parent = R
   return z

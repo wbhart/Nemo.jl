@@ -156,7 +156,7 @@ end
 function *(x::nmod, y::nmod)
    check_parent(x, y)
    R = parent(x)
-   d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
+   d = ccall((:n_mulmod2_preinv, libflint), UInt, (UInt, UInt, UInt, UInt),
              x.data, y.data, R.n, R.ninv)
    return nmod(d, R)
 end
@@ -177,11 +177,11 @@ end
 function *(x::Int, y::nmod)
    R = parent(y)
    if x < 0
-      d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
+      d = ccall((:n_mulmod2_preinv, libflint), UInt, (UInt, UInt, UInt, UInt),
              UInt(-x), y.data, R.n, R.ninv)
       return -nmod(d, R)
    else
-      d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
+      d = ccall((:n_mulmod2_preinv, libflint), UInt, (UInt, UInt, UInt, UInt),
              UInt(x), y.data, R.n, R.ninv)
       return nmod(d, R)
    end
@@ -191,7 +191,7 @@ end
 
 function *(x::UInt, y::nmod)
    R = parent(y)
-   d = ccall((:n_mulmod2_preinv, :libflint), UInt, (UInt, UInt, UInt, UInt),
+   d = ccall((:n_mulmod2_preinv, libflint), UInt, (UInt, UInt, UInt, UInt),
              UInt(x), y.data, R.n, R.ninv)
    return nmod(d, R)
 end
@@ -218,7 +218,7 @@ function ^(x::nmod, y::Int)
       x = inv(x)
       y = -y
    end
-   d = ccall((:n_powmod2_preinv, :libflint), UInt, (UInt, Int, UInt, UInt),
+   d = ccall((:n_powmod2_preinv, libflint), UInt, (UInt, Int, UInt, UInt),
              UInt(x.data), y, R.n, R.ninv)
    return nmod(d, R)
 end
@@ -262,7 +262,7 @@ function inv(x::nmod)
    end
    #s = [UInt(0)]
    s = Ref{UInt}()
-   g = ccall((:n_gcdinv, :libflint), UInt, (Ptr{UInt}, UInt, UInt),
+   g = ccall((:n_gcdinv, libflint), UInt, (Ptr{UInt}, UInt, UInt),
          s, x.data, R.n)
    g != 1 && error("Impossible inverse in ", R)
    return nmod(s[], R)
@@ -299,7 +299,7 @@ function divides(a::nmod, b::nmod)
    end
    ub = divexact(B, gb)
    # The Julia invmod function does not give the correct result for me
-   b1 = ccall((:n_invmod, :libflint), UInt, (UInt, UInt),
+   b1 = ccall((:n_invmod, libflint), UInt, (UInt, UInt),
            ub, divexact(m, gb))
    rr = R(q)*b1
    return true, rr
@@ -412,7 +412,7 @@ function (R::NmodRing)(a::Int)
       d += n
    end
    if d >= n
-      d = ccall((:n_mod2_preinv, :libflint), UInt, (UInt, UInt, UInt),
+      d = ccall((:n_mod2_preinv, libflint), UInt, (UInt, UInt, UInt),
              d, n, ninv)
    end
    return nmod(d, R)
@@ -421,13 +421,13 @@ end
 function (R::NmodRing)(a::UInt)
    n = R.n
    ninv = R.ninv
-   a = ccall((:n_mod2_preinv, :libflint), UInt, (UInt, UInt, UInt),
+   a = ccall((:n_mod2_preinv, libflint), UInt, (UInt, UInt, UInt),
              a, n, ninv)
    return nmod(a, R)
 end
 
 function (R::NmodRing)(a::fmpz)
-   d = ccall((:fmpz_fdiv_ui, :libflint), UInt, (Ref{fmpz}, UInt),
+   d = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt),
              a, R.n)
    return nmod(d, R)
 end

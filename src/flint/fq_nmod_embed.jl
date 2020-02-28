@@ -12,7 +12,7 @@
 
 function linear_factor(x::fq_nmod_poly)
     y = parent(x)()
-    ccall((:fq_nmod_poly_factor_split_single, :libflint), Nothing, (Ref{fq_nmod_poly},
+    ccall((:fq_nmod_poly_factor_split_single, libflint), Nothing, (Ref{fq_nmod_poly},
           Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}), y, x, base_ring(x))
     return y
 end
@@ -31,7 +31,7 @@ function embed_gens(k::FqNmodFiniteField, K::FqNmodFiniteField)
     PR = PolynomialRing(R, "T")[1]
     P = PR()
 
-    ccall((:fq_nmod_embed_gens, :libflint), Nothing, (Ref{fq_nmod}, Ref{fq_nmod},
+    ccall((:fq_nmod_embed_gens, libflint), Nothing, (Ref{fq_nmod}, Ref{fq_nmod},
     Ref{nmod_poly}, Ref{FqNmodFiniteField}, Ref{FqNmodFiniteField}), a, b,
     P, k, K)
 
@@ -57,7 +57,7 @@ function embed_matrices(k::FqNmodFiniteField, K::FqNmodFiniteField)
     s1 = S1()
     s2 = S2()
 
-    ccall((:fq_nmod_embed_matrices, :libflint), Nothing, (Ref{nmod_mat},
+    ccall((:fq_nmod_embed_matrices, libflint), Nothing, (Ref{nmod_mat},
     Ref{nmod_mat}, Ref{fq_nmod}, Ref{FqNmodFiniteField}, Ref{fq_nmod},
     Ref{FqNmodFiniteField}, Ref{nmod_poly}), s1, s2, a, k, b, K, P)
     return s1, s2
@@ -73,14 +73,14 @@ function embed_matrices_pre(a::fq_nmod, b::fq_nmod, P::nmod_poly)
     s1 = S1()
     s2 = S2()
 
-    ccall((:fq_nmod_embed_matrices, :libflint), Nothing, (Ref{nmod_mat},
+    ccall((:fq_nmod_embed_matrices, libflint), Nothing, (Ref{nmod_mat},
     Ref{nmod_mat}, Ref{fq_nmod}, Ref{FqNmodFiniteField}, Ref{fq_nmod},
     Ref{FqNmodFiniteField}, Ref{nmod_poly}), s1, s2, a, k, b, K, P)
     return s1, s2
 end
 
 function coeff!(x::fq_nmod, j::Int, c::Int)
-    ccall((:nmod_poly_set_coeff_ui, :libflint), Nothing,
+    ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
           (Ref{fq_nmod}, Int, UInt), x, j, c)
 end
 

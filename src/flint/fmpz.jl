@@ -132,7 +132,7 @@ end
 
 function deepcopy_internal(a::fmpz, dict::IdDict)
    z = fmpz()
-   ccall((:fmpz_set, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, a)
+   ccall((:fmpz_set, libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, a)
    return z
 end
 
@@ -157,14 +157,14 @@ zero(::Type{fmpz}) = fmpz(0)
     sign(a::fmpz)
 > Returns the sign of $a$, i.e. $+1$, $0$ or $-1$.
 """
-sign(a::fmpz) = fmpz(ccall((:fmpz_sgn, :libflint), Cint, (Ref{fmpz},), a))
+sign(a::fmpz) = fmpz(ccall((:fmpz_sgn, libflint), Cint, (Ref{fmpz},), a))
 
 @doc Markdown.doc"""
     fits(::Type{Int}, a::fmpz)
 > Returns `true` if the given integer fits into an `Int`, otherwise returns
 > `false`.
 """
-fits(::Type{Int}, a::fmpz) = ccall((:fmpz_fits_si, :libflint), Bool,
+fits(::Type{Int}, a::fmpz) = ccall((:fmpz_fits_si, libflint), Bool,
                                    (Ref{fmpz},), a)
 
 @doc Markdown.doc"""
@@ -173,32 +173,32 @@ fits(::Type{Int}, a::fmpz) = ccall((:fmpz_fits_si, :libflint), Bool,
 > `false`.
 """
 fits(::Type{UInt}, a::fmpz) = sign(a) < 0 ? false :
-              ccall((:fmpz_abs_fits_ui, :libflint), Bool, (Ref{fmpz},), a)
+              ccall((:fmpz_abs_fits_ui, libflint), Bool, (Ref{fmpz},), a)
 
 @doc Markdown.doc"""
     size(a::fmpz)
 > Returns the number of limbs required to store the absolute value of $a$.
 """
-size(a::fmpz) = Int(ccall((:fmpz_size, :libflint), Cint, (Ref{fmpz},), a))
+size(a::fmpz) = Int(ccall((:fmpz_size, libflint), Cint, (Ref{fmpz},), a))
 
 @doc Markdown.doc"""
     isunit(a::fmpz)
 > Return `true` if the given integer is a unit, i.e. $\pm 1$, otherwise return
 > `false`.
 """
-isunit(a::fmpz) = ccall((:fmpz_is_pm1, :libflint), Bool, (Ref{fmpz},), a)
+isunit(a::fmpz) = ccall((:fmpz_is_pm1, libflint), Bool, (Ref{fmpz},), a)
 
 @doc Markdown.doc"""
     iszero(a::fmpz)
 > Return `true` if the given integer is zero, otherwise return `false`.
 """
-iszero(a::fmpz) = ccall((:fmpz_is_zero, :libflint), Bool, (Ref{fmpz},), a)
+iszero(a::fmpz) = ccall((:fmpz_is_zero, libflint), Bool, (Ref{fmpz},), a)
 
 @doc Markdown.doc"""
     isone(a::fmpz)
 > Return `true` if the given integer is one, otherwise return `false`.
 """
-isone(a::fmpz) = ccall((:fmpz_is_one, :libflint), Bool, (Ref{fmpz},), a)
+isone(a::fmpz) = ccall((:fmpz_is_one, libflint), Bool, (Ref{fmpz},), a)
 
 @doc Markdown.doc"""
     denominator(a::fmpz)
@@ -216,8 +216,8 @@ function numerator(a::fmpz)
    return a
 end
 
-isodd(a::fmpz)  = ccall((:fmpz_is_odd,  :libflint), Cint, (Ref{fmpz},), a) % Bool
-iseven(a::fmpz) = ccall((:fmpz_is_even, :libflint), Cint, (Ref{fmpz},), a) % Bool
+isodd(a::fmpz)  = ccall((:fmpz_is_odd,  libflint), Cint, (Ref{fmpz},), a) % Bool
+iseven(a::fmpz) = ccall((:fmpz_is_even, libflint), Cint, (Ref{fmpz},), a) % Bool
 
 ###############################################################################
 #
@@ -253,19 +253,19 @@ canonical_unit(x::fmpz) = x < 0 ? fmpz(-1) : fmpz(1)
 
 function -(x::fmpz)
     z = fmpz()
-    ccall((:__fmpz_neg, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
+    ccall((:__fmpz_neg, libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
     return z
 end
 
 function ~(x::fmpz)
     z = fmpz()
-    ccall((:fmpz_complement, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
+    ccall((:fmpz_complement, libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
     return z
 end
 
 function abs(x::fmpz)
     z = fmpz()
-    ccall((:fmpz_abs, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
+    ccall((:fmpz_abs, libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
     return z
 end
 
@@ -287,7 +287,7 @@ for (fJ, fC) in ((:+, :add), (:-,:sub), (:*, :mul),
     @eval begin
         function ($fJ)(x::fmpz, y::fmpz)
             z = fmpz()
-            ccall(($(string(:fmpz_, fC)), :libflint), Nothing,
+            ccall(($(string(:fmpz_, fC)), libflint), Nothing,
                   (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
             return z
         end
@@ -302,7 +302,7 @@ for (fJ, fC) in ((:fdiv, :fdiv_q), (:cdiv, :cdiv_q), (:tdiv, :tdiv_q),
         function ($fJ)(x::fmpz, y::fmpz)
             iszero(y) && throw(DivideError())
             z = fmpz()
-            ccall(($(string(:fmpz_, fC)), :libflint), Nothing,
+            ccall(($(string(:fmpz_, fC)), libflint), Nothing,
                   (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
             return z
         end
@@ -313,7 +313,7 @@ function divexact(x::fmpz, y::fmpz)
     iszero(y) && throw(DivideError())
     z = fmpz()
     r = fmpz()
-    ccall((:fmpz_tdiv_qr, :libflint), Nothing,
+    ccall((:fmpz_tdiv_qr, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, r, x, y)
     r != 0 && throw(ArgumentError("Not an exact division"))
     return z
@@ -323,7 +323,7 @@ function rem(x::fmpz, c::fmpz)
     iszero(c) && throw(DivideError())
     q = fmpz()
     r = fmpz()
-    ccall((:fmpz_tdiv_qr, :libflint), Nothing,
+    ccall((:fmpz_tdiv_qr, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), q, r, x, c)
     return r
 end
@@ -337,10 +337,10 @@ end
 function +(x::fmpz, c::Int)
     z = fmpz()
     if c >= 0
-       ccall((:fmpz_add_ui, :libflint), Nothing,
+       ccall((:fmpz_add_ui, libflint), Nothing,
              (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     else
-       ccall((:fmpz_sub_ui, :libflint), Nothing,
+       ccall((:fmpz_sub_ui, libflint), Nothing,
              (Ref{fmpz}, Ref{fmpz}, Int), z, x, -c)
     end
     return z
@@ -351,10 +351,10 @@ end
 function -(x::fmpz, c::Int)
     z = fmpz()
     if c >= 0
-       ccall((:fmpz_sub_ui, :libflint), Nothing,
+       ccall((:fmpz_sub_ui, libflint), Nothing,
              (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     else
-       ccall((:fmpz_add_ui, :libflint), Nothing,
+       ccall((:fmpz_add_ui, libflint), Nothing,
              (Ref{fmpz}, Ref{fmpz}, Int), z, x, -c)
     end
     return z
@@ -363,20 +363,20 @@ end
 function -(c::Int, x::fmpz)
     z = fmpz()
     if c >= 0
-       ccall((:fmpz_sub_ui, :libflint), Nothing,
+       ccall((:fmpz_sub_ui, libflint), Nothing,
              (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     else
-       ccall((:fmpz_add_ui, :libflint), Nothing,
+       ccall((:fmpz_add_ui, libflint), Nothing,
              (Ref{fmpz}, Ref{fmpz}, Int), z, x, -c)
     end
-    ccall((:__fmpz_neg, :libflint), Nothing,
+    ccall((:__fmpz_neg, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}), z, z)
     return z
 end
 
 function *(x::fmpz, c::Int)
     z = fmpz()
-    ccall((:fmpz_mul_si, :libflint), Nothing,
+    ccall((:fmpz_mul_si, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     return z
 end
@@ -414,7 +414,7 @@ divexact(x::Integer, y::fmpz) = divexact(fmpz(x), y)
 function tdivpow2(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     z = fmpz()
-    ccall((:fmpz_tdiv_q_2exp, :libflint), Nothing,
+    ccall((:fmpz_tdiv_q_2exp, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     return z
 end
@@ -422,7 +422,7 @@ end
 function fdivpow2(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     z = fmpz()
-    ccall((:fmpz_fdiv_q_2exp, :libflint), Nothing,
+    ccall((:fmpz_fdiv_q_2exp, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     return z
 end
@@ -430,7 +430,7 @@ end
 function fmodpow2(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     z = fmpz()
-    ccall((:fmpz_fdiv_r_2exp, :libflint), Nothing,
+    ccall((:fmpz_fdiv_r_2exp, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     return z
 end
@@ -438,7 +438,7 @@ end
 function cdivpow2(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     z = fmpz()
-    ccall((:fmpz_cdiv_q_2exp, :libflint), Nothing,
+    ccall((:fmpz_cdiv_q_2exp, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     return z
 end
@@ -446,7 +446,7 @@ end
 function tdiv(x::fmpz, c::Int)
     c == 0 && throw(DivideError())
     z = fmpz()
-    ccall((:fmpz_tdiv_q_si, :libflint), Nothing,
+    ccall((:fmpz_tdiv_q_si, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     return z
 end
@@ -454,7 +454,7 @@ end
 function fdiv(x::fmpz, c::Int)
     c == 0 && throw(DivideError())
     z = fmpz()
-    ccall((:fmpz_fdiv_q_si, :libflint), Nothing,
+    ccall((:fmpz_fdiv_q_si, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     return z
 end
@@ -462,7 +462,7 @@ end
 function cdiv(x::fmpz, c::Int)
     c == 0 && throw(DivideError())
     z = fmpz()
-    ccall((:fmpz_cdiv_q_si, :libflint), Nothing,
+    ccall((:fmpz_cdiv_q_si, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     return z
 end
@@ -498,7 +498,7 @@ function divrem(x::fmpz, y::fmpz)
     iszero(y) && throw(DivideError())
     z1 = fmpz()
     z2 = fmpz()
-    ccall((:fmpz_tdiv_qr, :libflint), Nothing,
+    ccall((:fmpz_tdiv_qr, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z1, z2, x, y)
     z1, z2
 end
@@ -507,7 +507,7 @@ function tdivrem(x::fmpz, y::fmpz)
     iszero(y) && throw(DivideError())
     z1 = fmpz()
     z2 = fmpz()
-    ccall((:fmpz_tdiv_qr, :libflint), Nothing,
+    ccall((:fmpz_tdiv_qr, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z1, z2, x, y)
     z1, z2
 end
@@ -516,7 +516,7 @@ function fdivrem(x::fmpz, y::fmpz)
     iszero(y) && throw(DivideError())
     z1 = fmpz()
     z2 = fmpz()
-    ccall((:fmpz_fdiv_qr, :libflint), Nothing,
+    ccall((:fmpz_fdiv_qr, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z1, z2, x, y)
     z1, z2
 end
@@ -538,7 +538,7 @@ function ^(x::fmpz, y::Int)
       deepcopy(x)
    else
       z = fmpz()
-      ccall((:fmpz_pow_ui, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
+      ccall((:fmpz_pow_ui, libflint), Nothing, (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(y))
       z
    end
 end
@@ -550,7 +550,7 @@ end
 ###############################################################################
 
 function cmp(x::fmpz, y::fmpz)
-    Int(ccall((:fmpz_cmp, :libflint), Cint,
+    Int(ccall((:fmpz_cmp, libflint), Cint,
               (Ref{fmpz}, Ref{fmpz}), x, y))
 end
 
@@ -565,7 +565,7 @@ end
 >(x::fmpz, y::fmpz) = cmp(x,y) > 0
 
 function cmpabs(x::fmpz, y::fmpz)
-    Int(ccall((:fmpz_cmpabs, :libflint), Cint,
+    Int(ccall((:fmpz_cmpabs, libflint), Cint,
               (Ref{fmpz}, Ref{fmpz}), x, y))
 end
 
@@ -582,7 +582,7 @@ isless(x::Integer, y::fmpz) = fmpz(x) < y
 ###############################################################################
 
 function cmp(x::fmpz, y::Int)
-    Int(ccall((:fmpz_cmp_si, :libflint), Cint, (Ref{fmpz}, Int), x, y))
+    Int(ccall((:fmpz_cmp_si, libflint), Cint, (Ref{fmpz}, Int), x, y))
 end
 
 ==(x::fmpz, y::Int) = cmp(x,y) == 0
@@ -606,7 +606,7 @@ end
 >(x::Int, y::fmpz) = cmp(y,x) < 0
 
 function cmp(x::fmpz, y::UInt)
-    Int(ccall((:fmpz_cmp_ui, :libflint), Cint, (Ref{fmpz}, UInt), x, y))
+    Int(ccall((:fmpz_cmp_ui, libflint), Cint, (Ref{fmpz}, UInt), x, y))
 end
 
 ==(x::fmpz, y::UInt) = cmp(x,y) == 0
@@ -643,7 +643,7 @@ function <<(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     c == 0 && return x
     z = fmpz()
-    ccall((:fmpz_mul_2exp, :libflint), Nothing,
+    ccall((:fmpz_mul_2exp, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     return z
 end
@@ -656,7 +656,7 @@ function >>(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
     c == 0 && return x
     z = fmpz()
-    ccall((:fmpz_fdiv_q_2exp, :libflint), Nothing,
+    ccall((:fmpz_fdiv_q_2exp, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int), z, x, c)
     return z
 end
@@ -675,7 +675,7 @@ end
 function mod(x::fmpz, y::fmpz)
    y == 0 && throw(DivideError())
    r = fmpz()
-   ccall((:fmpz_fdiv_r, :libflint), Nothing,
+   ccall((:fmpz_fdiv_r, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), r, x, y)
    return r
 end
@@ -687,7 +687,7 @@ end
 """
 function mod(x::fmpz, c::UInt)
     c == 0 && throw(DivideError())
-    ccall((:fmpz_fdiv_ui, :libflint), Base.GMP.Limb, (Ref{fmpz}, Base.GMP.Limb), x, c)
+    ccall((:fmpz_fdiv_ui, libflint), Base.GMP.Limb, (Ref{fmpz}, Base.GMP.Limb), x, c)
 end
 
 @doc Markdown.doc"""
@@ -701,7 +701,7 @@ function powmod(x::fmpz, p::fmpz, m::fmpz)
        p = -p
     end
     r = fmpz()
-    ccall((:fmpz_powm, :libflint), Nothing,
+    ccall((:fmpz_powm, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
           r, x, p, m)
     return r
@@ -718,7 +718,7 @@ function powmod(x::fmpz, p::Int, m::fmpz)
        p = -p
     end
     r = fmpz()
-    ccall((:fmpz_powm_ui, :libflint), Nothing,
+    ccall((:fmpz_powm_ui, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Int, Ref{fmpz}),
           r, x, p, m)
     return r
@@ -734,7 +734,7 @@ function invmod(x::fmpz, m::fmpz)
     if isone(m)
         return fmpz(0)
     end
-    if ccall((:fmpz_invmod, :libflint), Cint,
+    if ccall((:fmpz_invmod, libflint), Cint,
              (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, m) == 0
        error("Impossible inverse in invmod")
     end
@@ -750,7 +750,7 @@ end
 function sqrtmod(x::fmpz, m::fmpz)
     m <= 0 && throw(DomainError(m, "Modulus must be non-negative"))
     z = fmpz()
-    if (ccall((:fmpz_sqrtmod, :libflint), Cint,
+    if (ccall((:fmpz_sqrtmod, libflint), Cint,
               (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, m) == 0)
         error("no square root exists")
     end
@@ -765,7 +765,7 @@ end
 """
 function crt(r1::fmpz, m1::fmpz, r2::fmpz, m2::fmpz, signed=false)
    z = fmpz()
-   ccall((:fmpz_CRT, :libflint), Nothing,
+   ccall((:fmpz_CRT, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Cint),
           z, r1, m1, r2, m2, signed)
    return z
@@ -781,7 +781,7 @@ function crt(r1::fmpz, m1::fmpz, r2::Int, m2::Int, signed = false)
    z = fmpz()
    r2 < 0 && throw(DomainError(r2, "Second residue must be non-negative"))
    m2 < 0 && throw(DomainError(m2, "Second modulus must be non-negative"))
-   ccall((:fmpz_CRT_ui, :libflint), Nothing,
+   ccall((:fmpz_CRT_ui, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Int, Int, Cint),
           z, r1, m1, r2, m2, signed)
    return z
@@ -800,7 +800,7 @@ end
 function flog(x::fmpz, c::fmpz)
     c <= 0 && throw(DomainError(c, "Base must be non-negative"))
     x <= 0 && throw(DomainError(x, "Argument must be non-negative"))
-    return ccall((:fmpz_flog, :libflint), Int,
+    return ccall((:fmpz_flog, libflint), Int,
                  (Ref{fmpz}, Ref{fmpz}), x, c)
 end
 
@@ -811,7 +811,7 @@ end
 function clog(x::fmpz, c::fmpz)
     c <= 0 && throw(DomainError(c, "Base must be non-negative"))
     x <= 0 && throw(DomainError(x, "Argument must be non-negative"))
-    return ccall((:fmpz_clog, :libflint), Int,
+    return ccall((:fmpz_clog, libflint), Int,
                  (Ref{fmpz}, Ref{fmpz}), x, c)
 end
 
@@ -821,7 +821,7 @@ end
 """
 function flog(x::fmpz, c::Int)
     c <= 0 && throw(DomainError(c, "Base must be non-negative"))
-    return ccall((:fmpz_flog_ui, :libflint), Int,
+    return ccall((:fmpz_flog_ui, libflint), Int,
                  (Ref{fmpz}, Int), x, c)
 end
 
@@ -831,7 +831,7 @@ end
 """
 function clog(x::fmpz, c::Int)
     c <= 0 && throw(DomainError(c, "Base must be non-negative"))
-    return ccall((:fmpz_clog_ui, :libflint), Int,
+    return ccall((:fmpz_clog_ui, libflint), Int,
                  (Ref{fmpz}, Int), x, c)
 end
 
@@ -848,7 +848,7 @@ end
 """
 function gcd(x::fmpz, y::fmpz)
    z = fmpz()
-   ccall((:fmpz_gcd, :libflint), Nothing,
+   ccall((:fmpz_gcd, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
    return z
 end
@@ -867,11 +867,11 @@ function gcd(x::Array{fmpz, 1})
    end
 
    z = fmpz()
-   ccall((:fmpz_gcd, :libflint), Nothing,
+   ccall((:fmpz_gcd, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x[1], x[2])
 
    for i in 3:length(x)
-      ccall((:fmpz_gcd, :libflint), Nothing,
+      ccall((:fmpz_gcd, libflint), Nothing,
             (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, z, x[i])
       if isone(z)
          return z
@@ -888,7 +888,7 @@ end
 """
 function lcm(x::fmpz, y::fmpz)
    z = fmpz()
-   ccall((:fmpz_lcm, :libflint), Nothing,
+   ccall((:fmpz_lcm, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
    return z
 end
@@ -906,11 +906,11 @@ function lcm(x::Array{fmpz, 1})
    end
 
    z = fmpz()
-   ccall((:fmpz_lcm, :libflint), Nothing,
+   ccall((:fmpz_lcm, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x[1], x[2])
 
    for i in 3:length(x)
-      ccall((:fmpz_lcm, :libflint), Nothing,
+      ccall((:fmpz_lcm, libflint), Nothing,
             (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, z, x[i])
    end
 
@@ -954,7 +954,7 @@ function gcdinv(a::fmpz, b::fmpz)
    b < a && throw(DomainError((a, b), "First argument must be smaller than second argument"))
    g = fmpz()
    s = fmpz()
-   ccall((:fmpz_gcdinv, :libflint), Nothing,
+   ccall((:fmpz_gcdinv, libflint), Nothing,
         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
         g, s, a, b)
    return g, s
@@ -981,7 +981,7 @@ gcdinv(a::Integer, b::fmpz) = gcdinv(fmpz(a), b)
 function isqrt(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
-    ccall((:fmpz_sqrt, :libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
+    ccall((:fmpz_sqrt, libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), z, x)
     return z
 end
 
@@ -994,7 +994,7 @@ function isqrtrem(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     s = fmpz()
     r = fmpz()
-    ccall((:fmpz_sqrtrem, :libflint), Nothing,
+    ccall((:fmpz_sqrtrem, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), s, r, x)
     return s, r
 end
@@ -1008,7 +1008,7 @@ function Base.sqrt(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     s = fmpz()
     r = fmpz()
-    ccall((:fmpz_sqrtrem, :libflint), Nothing,
+    ccall((:fmpz_sqrtrem, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), s, r, x)
     r != 0 && error("Not a square in sqrt")
     return s
@@ -1023,7 +1023,7 @@ function root(x::fmpz, n::Int)
    x < 0 && iseven(n) && throw(DomainError((x, n), "Argument `x` must be positive if exponent `n` is even"))
    n <= 0 && throw(DomainError(n, "Exponent must be positive"))
    z = fmpz()
-   ccall((:fmpz_root, :libflint), Nothing,
+   ccall((:fmpz_root, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, n)
    return z
 end
@@ -1036,11 +1036,11 @@ end
 
 function _factor(a::fmpz)
    F = fmpz_factor()
-   ccall((:fmpz_factor, :libflint), Nothing, (Ref{fmpz_factor}, Ref{fmpz}), F, a)
+   ccall((:fmpz_factor, libflint), Nothing, (Ref{fmpz_factor}, Ref{fmpz}), F, a)
    res = Dict{fmpz, Int}()
    for i in 1:F.num
      z = fmpz()
-     ccall((:fmpz_factor_get_fmpz, :libflint), Nothing,
+     ccall((:fmpz_factor_get_fmpz, libflint), Nothing,
            (Ref{fmpz}, Ref{fmpz_factor}, Int), z, F, i - 1)
      res[z] = unsafe_load(F.exp, i)
    end
@@ -1056,7 +1056,7 @@ end
 function _ecm(a::fmpz, B1::UInt, B2::UInt, ncrv::UInt,
              rnd = _flint_rand_states[Threads.threadid()])
   f = fmpz()
-  r = ccall((:fmpz_factor_ecm, :libflint), Int32,
+  r = ccall((:fmpz_factor_ecm, libflint), Int32,
             (Ref{fmpz}, UInt, UInt, UInt, Ptr{Cvoid}, Ref{fmpz}),
             f, ncrv, B1, B2, rnd.ptr, a)
   return r, f
@@ -1098,12 +1098,12 @@ end
 
 function _factor_trial_range(N::fmpz, start::Int = 0, np::Int = 10^5)
    F = fmpz_factor()
-   ccall((:fmpz_factor_trial_range, :libflint), Nothing,
+   ccall((:fmpz_factor_trial_range, libflint), Nothing,
          (Ref{Nemo.fmpz_factor}, Ref{fmpz}, UInt, UInt), F, N, start, np)
    res = Dict{fmpz, Int}()
    for i in 1:F.num
      z = fmpz()
-     ccall((:fmpz_factor_get_fmpz, :libflint), Nothing,
+     ccall((:fmpz_factor_get_fmpz, libflint), Nothing,
            (Ref{fmpz}, Ref{Nemo.fmpz_factor}, Int), z, F, i - 1)
      res[z] = unsafe_load(F.exp, i)
    end
@@ -1136,7 +1136,7 @@ end
 """
 function divisible(x::fmpz, y::fmpz)
    iszero(y) && throw(DivideError())
-   Bool(ccall((:fmpz_divisible, :libflint), Cint,
+   Bool(ccall((:fmpz_divisible, libflint), Cint,
               (Ref{fmpz}, Ref{fmpz}), x, y))
 end
 
@@ -1147,7 +1147,7 @@ end
 """
 function divisible(x::fmpz, y::Int)
    y == 0 && throw(DivideError())
-   Bool(ccall((:fmpz_divisible_si, :libflint), Cint,
+   Bool(ccall((:fmpz_divisible_si, libflint), Cint,
               (Ref{fmpz}, Int), x, y))
 end
 
@@ -1155,10 +1155,10 @@ end
     issquare(x::fmpz)
 > Return `true` if $x$ is a square, otherwise return `false`.
 """
-issquare(x::fmpz) = Bool(ccall((:fmpz_is_square, :libflint), Cint,
+issquare(x::fmpz) = Bool(ccall((:fmpz_is_square, libflint), Cint,
                                (Ref{fmpz},), x))
 
-isprime(x::UInt) = Bool(ccall((:n_is_prime, :libflint), Cint, (UInt,), x))
+isprime(x::UInt) = Bool(ccall((:n_is_prime, libflint), Cint, (UInt,), x))
 
 @doc Markdown.doc"""
     isprime(x::fmpz)
@@ -1166,7 +1166,7 @@ isprime(x::UInt) = Bool(ccall((:n_is_prime, :libflint), Cint, (UInt,), x))
 """
 function isprime(x::fmpz)
   !isprobable_prime(x) && return false
-  return Bool(ccall((:fmpz_is_prime, :libflint), Cint, (Ref{fmpz},), x))
+  return Bool(ccall((:fmpz_is_prime, libflint), Cint, (Ref{fmpz},), x))
 end
 
 @doc Markdown.doc"""
@@ -1186,7 +1186,7 @@ end
 > `false`. No counterexamples are known to this test, but it is conjectured
 > that infinitely many exist.
 """
-isprobable_prime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, :libflint), Cint,
+isprobable_prime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, libflint), Cint,
                                       (Ref{fmpz},), x))
 
 @doc Markdown.doc"""
@@ -1196,7 +1196,7 @@ isprobable_prime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, :libflint), Cint,
 function remove(x::fmpz, y::fmpz)
    iszero(y) && throw(DivideError())
    z = fmpz()
-   num = ccall((:fmpz_remove, :libflint), Int,
+   num = ccall((:fmpz_remove, libflint), Int,
                (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
    return num, z
 end
@@ -1234,7 +1234,7 @@ function divisor_lenstra(n::fmpz, r::fmpz, m::fmpz)
    m <= r && throw(DomainError((m, r), "Modulus must be bigger than residue class"))
    n <= m && throw(DomainError((n, m), "Argument must be bigger than modulus"))
    z = fmpz()
-   if !Bool(ccall((:fmpz_divisor_in_residue_class_lenstra, :libflint),
+   if !Bool(ccall((:fmpz_divisor_in_residue_class_lenstra, libflint),
        Cint, (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, n, r, m))
       z = 0
    end
@@ -1249,7 +1249,7 @@ end
 function factorial(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
-    ccall((:fmpz_fac_ui, :libflint), Nothing, (Ref{fmpz}, UInt), z, UInt(x))
+    ccall((:fmpz_fac_ui, libflint), Nothing, (Ref{fmpz}, UInt), z, UInt(x))
     return z
 end
 
@@ -1261,7 +1261,7 @@ end
 function rising_factorial(x::fmpz, n::Int)
     n < 0 && throw(DomainError(n, "Argument must be non-negative"))
     z = fmpz()
-    ccall((:fmpz_rfac_ui, :libflint), Nothing,
+    ccall((:fmpz_rfac_ui, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, UInt), z, x, UInt(n))
     return z
 end
@@ -1287,7 +1287,7 @@ function rising_factorial(x::Int, n::Int)
                           rising_factorial(-x - n + 1, n)
        end
     else
-       ccall((:fmpz_rfac_uiui, :libflint), Nothing,
+       ccall((:fmpz_rfac_uiui, libflint), Nothing,
              (Ref{fmpz}, UInt, UInt), z, x, n)
     end
     return Int(z)
@@ -1301,7 +1301,7 @@ end
 function primorial(x::Int)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
-    ccall((:fmpz_primorial, :libflint), Nothing,
+    ccall((:fmpz_primorial, libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
     return Int(z)
 end
@@ -1314,7 +1314,7 @@ end
 function primorial(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
-    ccall((:fmpz_primorial, :libflint), Nothing,
+    ccall((:fmpz_primorial, libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
     return z
 end
@@ -1326,7 +1326,7 @@ end
 """
 function fibonacci(x::Int)
     z = fmpz()
-    ccall((:fmpz_fib_ui, :libflint), Nothing,
+    ccall((:fmpz_fib_ui, libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(abs(x)))
     return x < 0 ? (iseven(x) ? -Int(z) : Int(z)) : Int(z)
 end
@@ -1338,7 +1338,7 @@ end
 """
 function fibonacci(x::fmpz)
     z = fmpz()
-    ccall((:fmpz_fib_ui, :libflint), Nothing,
+    ccall((:fmpz_fib_ui, libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(abs(x)))
     return x < 0 ? (iseven(x) ? -z : z) : z
 end
@@ -1350,7 +1350,7 @@ end
 function bell(x::Int)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
-    ccall((:arith_bell_number, :libflint), Nothing,
+    ccall((:arith_bell_number, libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
     return Int(z)
 end
@@ -1362,7 +1362,7 @@ end
 function bell(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
     z = fmpz()
-    ccall((:arith_bell_number, :libflint), Nothing,
+    ccall((:arith_bell_number, libflint), Nothing,
           (Ref{fmpz}, UInt), z, UInt(x))
     return z
 end
@@ -1376,7 +1376,7 @@ function binomial(n::fmpz, k::fmpz)
     n < 0 && return fmpz(0)
     k < 0 && return fmpz(0)
     z = fmpz()
-    ccall((:fmpz_bin_uiui, :libflint), Nothing,
+    ccall((:fmpz_bin_uiui, libflint), Nothing,
           (Ref{fmpz}, UInt, UInt), z, UInt(n), UInt(k))
     return z
 end
@@ -1388,7 +1388,7 @@ end
 """
 function moebius_mu(x::fmpz)
    x <= 0 && throw(DomainError(x, "Argument must be positive"))
-   return Int(ccall((:fmpz_moebius_mu, :libflint), Cint,
+   return Int(ccall((:fmpz_moebius_mu, libflint), Cint,
                     (Ref{fmpz},), x))
 end
 
@@ -1409,7 +1409,7 @@ function jacobi_symbol(x::fmpz, y::fmpz)
    if x < 0 || x >= y
       x = mod(x, y)
    end
-   return Int(ccall((:fmpz_jacobi, :libflint), Cint,
+   return Int(ccall((:fmpz_jacobi, libflint), Cint,
                     (Ref{fmpz}, Ref{fmpz}), x, y))
 end
 
@@ -1423,7 +1423,7 @@ function jacobi_symbol(x::Int, y::Int)
    if x < 0 || x >= y
       x = mod(x, y)
    end
-   return Int(ccall((:n_jacobi, :libflint), Cint, (Int, UInt), x, UInt(y)))
+   return Int(ccall((:n_jacobi, libflint), Cint, (Int, UInt), x, UInt(y)))
 end
 
 @doc Markdown.doc"""
@@ -1435,7 +1435,7 @@ function divisor_sigma(x::fmpz, y::Int)
    x <= 0 && throw(DomainError(x, "Argument must be positive"))
    y < 0 && throw(DomainError(y, "Power must be non-negative"))
    z = fmpz()
-   ccall((:fmpz_divisor_sigma, :libflint), Nothing,
+   ccall((:fmpz_divisor_sigma, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, y)
    return z
 end
@@ -1463,7 +1463,7 @@ divisor_sigma(x::Int, y::Int) = Int(divisor_sigma(fmpz(x), y))
 function euler_phi(x::fmpz)
    x <= 0 && throw(DomainError(x, "Argument must be positive"))
    z = fmpz()
-   ccall((:fmpz_euler_phi, :libflint), Nothing,
+   ccall((:fmpz_euler_phi, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}), z, x)
    return z
 end
@@ -1489,7 +1489,7 @@ function number_of_partitions(x::Int)
    if x < 0
       return 0
    end
-   ccall((:partitions_fmpz_ui, :libarb), Nothing,
+   ccall((:partitions_fmpz_ui, libarb), Nothing,
          (Ref{fmpz}, UInt), z, x)
    return Int(z)
 end
@@ -1507,7 +1507,7 @@ function number_of_partitions(x::fmpz)
    if x < 0
       return z
    end
-   ccall((:partitions_fmpz_fmpz, :libarb), Nothing,
+   ccall((:partitions_fmpz_fmpz, libarb), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, 0)
    return z
 end
@@ -1548,16 +1548,16 @@ hex(n::fmpz) = base(n, 16)
 """
 function base(n::fmpz, b::Integer)
     2 <= b <= 62 || error("invalid base: $b")
-    p = ccall((:fmpz_get_str,:libflint), Ptr{UInt8},
+    p = ccall((:fmpz_get_str,libflint), Ptr{UInt8},
               (Ptr{UInt8}, Cint, Ref{fmpz}), C_NULL, b, n)
     s = unsafe_string(p)
-    ccall((:flint_free, :libflint), Nothing, (Ptr{UInt8},), p)
+    ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), p)
     return s
 end
 
 function ndigits_internal(x::fmpz, b::Integer = 10)
     # fmpz_sizeinbase might return an answer 1 too big
-    n = Int(ccall((:fmpz_sizeinbase, :libflint), UInt,
+    n = Int(ccall((:fmpz_sizeinbase, libflint), UInt,
                   (Ref{fmpz}, Int32), x, b))
     abs(x) < fmpz(b)^(n - 1) ? n - 1 : n
 end
@@ -1572,7 +1572,7 @@ ndigits(x::fmpz, b::Integer = 10) = iszero(x) ? 1 : ndigits_internal(x, b)
     nbits(x::fmpz)
 > Return the number of binary bits of $x$. We return zero if $x = 0$.
 """
-nbits(x::fmpz) = iszero(x) ? 0 : Int(ccall((:fmpz_sizeinbase, :libflint), UInt,
+nbits(x::fmpz) = iszero(x) ? 0 : Int(ccall((:fmpz_sizeinbase, libflint), UInt,
                   (Ref{fmpz}, Int32), x, 2))  # docu states: always correct
                                 #if base is power of 2
 
@@ -1586,7 +1586,7 @@ nbits(x::fmpz) = iszero(x) ? 0 : Int(ccall((:fmpz_sizeinbase, :libflint), UInt,
     popcount(x::fmpz)
 > Return the number of ones in the binary representation of $x$.
 """
-popcount(x::fmpz) = Int(ccall((:fmpz_popcnt, :libflint), UInt,
+popcount(x::fmpz) = Int(ccall((:fmpz_popcnt, libflint), UInt,
                               (Ref{fmpz},), x))
 
 @doc Markdown.doc"""
@@ -1607,7 +1607,7 @@ nextpow2(x::fmpz) = x < 0 ? -nextpow2(-x) :
     trailing_zeros(x::fmpz)
 > Count the trailing zeros in the binary representation of $x$.
 """
-trailing_zeros(x::fmpz) = ccall((:fmpz_val2, :libflint), Int,
+trailing_zeros(x::fmpz) = ccall((:fmpz_val2, libflint), Int,
                                 (Ref{fmpz},), x)
 
 ###############################################################################
@@ -1623,7 +1623,7 @@ trailing_zeros(x::fmpz) = ccall((:fmpz_val2, :libflint), Int,
 """
 function clrbit!(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Second argument must be non-negative"))
-    ccall((:fmpz_clrbit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
+    ccall((:fmpz_clrbit, libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 
 @doc Markdown.doc"""
@@ -1633,7 +1633,7 @@ end
 """
 function setbit!(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Second argument must be non-negative"))
-    ccall((:fmpz_setbit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
+    ccall((:fmpz_setbit, libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 
 @doc Markdown.doc"""
@@ -1643,7 +1643,7 @@ end
 """
 function combit!(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Second argument must be non-negative"))
-    ccall((:fmpz_combit, :libflint), Nothing, (Ref{fmpz}, Int), x, c)
+    ccall((:fmpz_combit, libflint), Nothing, (Ref{fmpz}, Int), x, c)
 end
 
 ###############################################################################
@@ -1653,31 +1653,31 @@ end
 ###############################################################################
 
 function mul!(z::fmpz, x::fmpz, y::fmpz)
-   ccall((:fmpz_mul, :libflint), Nothing,
+   ccall((:fmpz_mul, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
    return z
 end
 
 function addmul!(z::fmpz, x::fmpz, y::fmpz, c::fmpz)
-   ccall((:fmpz_addmul, :libflint), Nothing,
+   ccall((:fmpz_addmul, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
    return z
 end
 
 function addeq!(z::fmpz, x::fmpz)
-   ccall((:fmpz_add, :libflint), Nothing,
+   ccall((:fmpz_add, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, z, x)
    return z
 end
 
 function add!(z::fmpz, x::fmpz, y::fmpz)
-   ccall((:fmpz_add, :libflint), Nothing,
+   ccall((:fmpz_add, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
    return z
 end
 
 function zero!(z::fmpz)
-   ccall((:fmpz_zero, :libflint), Nothing,
+   ccall((:fmpz_zero, libflint), Nothing,
          (Ref{fmpz},), z)
    return z
 end
@@ -1715,7 +1715,7 @@ function parse(::Type{fmpz}, s::String, base::Int = 10)
     sgn = s[1] == '-' ? -1 : 1
     i = 1 + (sgn == -1)
     z = fmpz()
-    err = ccall((:fmpz_set_str, :libflint),
+    err = ccall((:fmpz_set_str, libflint),
                Int32, (Ref{fmpz}, Ptr{UInt8}, Int32),
                z, string(SubString(s, i)), base)
     err == 0 || error("Invalid big integer: $(repr(s))")
@@ -1739,7 +1739,7 @@ end
 function rand_bits(::FlintIntegerRing, b::Int)
    b >= 0 || throw(DomainError(b, "Bit count must be non-negative"))
    z = fmpz()
-   ccall((:fmpz_randbits, :libflint), Nothing,(Ref{fmpz}, Ptr{Cvoid}, Int),
+   ccall((:fmpz_randbits, libflint), Nothing,(Ref{fmpz}, Ptr{Cvoid}, Int),
          z, _flint_rand_states[Threads.threadid()].ptr, b)
    return z
 end
@@ -1770,7 +1770,7 @@ convert(::Type{fmpz}, a::Integer) = fmpz(a)
 
 function (::Type{BigInt})(a::fmpz)
    r = BigInt()
-   ccall((:fmpz_get_mpz, :libflint), Nothing, (Ref{BigInt}, Ref{fmpz}), r, a)
+   ccall((:fmpz_get_mpz, libflint), Nothing, (Ref{BigInt}, Ref{fmpz}), r, a)
    return r
 end
 
@@ -1778,21 +1778,21 @@ convert(::Type{BigInt}, a::fmpz) = BigInt(a)
 
 function (::Type{Int})(a::fmpz)
    (a > typemax(Int) || a < typemin(Int)) && throw(InexactError(:convert, Int, a))
-   return ccall((:fmpz_get_si, :libflint), Int, (Ref{fmpz},), a)
+   return ccall((:fmpz_get_si, libflint), Int, (Ref{fmpz},), a)
 end
 
 convert(::Type{Int}, a::fmpz) = Int(a)
 
 function (::Type{UInt})(a::fmpz)
    (a > typemax(UInt) || a < 0) && throw(InexactError(:convert, UInt, a))
-   return ccall((:fmpz_get_ui, :libflint), UInt, (Ref{fmpz}, ), a)
+   return ccall((:fmpz_get_ui, libflint), UInt, (Ref{fmpz}, ), a)
 end
 
 convert(::Type{UInt}, a::fmpz) = UInt(a)
 
 function (::Type{Float64})(n::fmpz)
     # rounds to zero
-    ccall((:fmpz_get_d, :libflint), Float64, (Ref{fmpz},), n)
+    ccall((:fmpz_get_d, libflint), Float64, (Ref{fmpz},), n)
 end
 
 convert(::Type{Float64}, n::fmpz) = Float64(n)

@@ -40,14 +40,14 @@ function normalise(a::fq_nmod_rel_series, len::Int)
    ctx = base_ring(a)
    if len > 0
       c = base_ring(a)()
-      ccall((:fq_nmod_poly_get_coeff, :libflint), Nothing,
+      ccall((:fq_nmod_poly_get_coeff, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                                                          c, a, len - 1, ctx)
    end
    while len > 0 && iszero(c)
       len -= 1
       if len > 0
-         ccall((:fq_nmod_poly_get_coeff, :libflint), Nothing,
+         ccall((:fq_nmod_poly_get_coeff, libflint), Nothing,
             (Ref{fq_nmod}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                                                          c, a, len - 1, ctx)
       end
@@ -56,7 +56,7 @@ function normalise(a::fq_nmod_rel_series, len::Int)
 end
 
 function pol_length(x::fq_nmod_rel_series)
-   return ccall((:fq_nmod_poly_length, :libflint), Int,
+   return ccall((:fq_nmod_poly_length, libflint), Int,
                 (Ref{fq_nmod_rel_series}, Ref{FqNmodFiniteField}), x, base_ring(x))
 end
 
@@ -67,7 +67,7 @@ function polcoeff(x::fq_nmod_rel_series, n::Int)
    if n < 0
       return z
    end
-   ccall((:fq_nmod_poly_get_coeff, :libflint), Nothing,
+   ccall((:fq_nmod_poly_get_coeff, libflint), Nothing,
          (Ref{fq_nmod}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                                                       z, x, n, base_ring(x))
    return z
@@ -104,7 +104,7 @@ function renormalize!(z::fq_nmod_rel_series)
       z.val = zprec
    else
       z.val = zval + i
-      ccall((:fq_nmod_poly_shift_right, :libflint), Nothing,
+      ccall((:fq_nmod_poly_shift_right, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                                                       z, z, i, base_ring(z))
    end
@@ -134,7 +134,7 @@ show_minus_one(::Type{fq_nmod_rel_series}) = show_minus_one(fq_nmod)
 
 function -(x::fq_nmod_rel_series)
    z = parent(x)()
-   ccall((:fq_nmod_poly_neg, :libflint), Nothing,
+   ccall((:fq_nmod_poly_neg, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Ref{FqNmodFiniteField}),
                z, x, base_ring(x))
    z.prec = x.prec
@@ -160,31 +160,31 @@ function +(a::fq_nmod_rel_series, b::fq_nmod_rel_series)
    ctx = base_ring(a)
    if a.val < b.val
       lenz = max(lena, lenb + b.val - a.val)
-      ccall((:fq_nmod_poly_set_trunc, :libflint), Nothing,
+      ccall((:fq_nmod_poly_set_trunc, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             z, b, max(0, lenz - b.val + a.val), ctx)
-      ccall((:fq_nmod_poly_shift_left, :libflint), Nothing,
+      ccall((:fq_nmod_poly_shift_left, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             z, z, b.val - a.val, ctx)
-      ccall((:fq_nmod_poly_add_series, :libflint), Nothing,
+      ccall((:fq_nmod_poly_add_series, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                z, z, a, lenz, ctx)
    elseif b.val < a.val
       lenz = max(lena + a.val - b.val, lenb)
-      ccall((:fq_nmod_poly_set_trunc, :libflint), Nothing,
+      ccall((:fq_nmod_poly_set_trunc, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             z, a, max(0, lenz - a.val + b.val), ctx)
-      ccall((:fq_nmod_poly_shift_left, :libflint), Nothing,
+      ccall((:fq_nmod_poly_shift_left, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             z, z, a.val - b.val, ctx)
-      ccall((:fq_nmod_poly_add_series, :libflint), Nothing,
+      ccall((:fq_nmod_poly_add_series, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                z, z, b, lenz, ctx)
    else
       lenz = max(lena, lenb)
-      ccall((:fq_nmod_poly_add_series, :libflint), Nothing,
+      ccall((:fq_nmod_poly_add_series, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                z, a, b, lenz, ctx)
@@ -208,34 +208,34 @@ function -(a::fq_nmod_rel_series, b::fq_nmod_rel_series)
    ctx = base_ring(a)
    if a.val < b.val
       lenz = max(lena, lenb + b.val - a.val)
-      ccall((:fq_nmod_poly_set_trunc, :libflint), Nothing,
+      ccall((:fq_nmod_poly_set_trunc, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             z, b, max(0, lenz - b.val + a.val), ctx)
-      ccall((:fq_nmod_poly_shift_left, :libflint), Nothing,
+      ccall((:fq_nmod_poly_shift_left, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             z, z, b.val - a.val, ctx)
-      ccall((:fq_nmod_poly_neg, :libflint), Nothing,
+      ccall((:fq_nmod_poly_neg, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Ref{FqNmodFiniteField}),
             z, z, ctx)
-      ccall((:fq_nmod_poly_add_series, :libflint), Nothing,
+      ccall((:fq_nmod_poly_add_series, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                z, z, a, lenz, ctx)
    elseif b.val < a.val
       lenz = max(lena + a.val - b.val, lenb)
-      ccall((:fq_nmod_poly_set_trunc, :libflint), Nothing,
+      ccall((:fq_nmod_poly_set_trunc, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             z, a, max(0, lenz - a.val + b.val), ctx)
-      ccall((:fq_nmod_poly_shift_left, :libflint), Nothing,
+      ccall((:fq_nmod_poly_shift_left, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             z, z, a.val - b.val, ctx)
-      ccall((:fq_nmod_poly_sub_series, :libflint), Nothing,
+      ccall((:fq_nmod_poly_sub_series, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                z, z, b, lenz, ctx)
    else
       lenz = max(lena, lenb)
-      ccall((:fq_nmod_poly_sub_series, :libflint), Nothing,
+      ccall((:fq_nmod_poly_sub_series, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                z, a, b, lenz, ctx)
@@ -262,7 +262,7 @@ function *(a::fq_nmod_rel_series, b::fq_nmod_rel_series)
       return z
    end
    lenz = min(lena + lenb - 1, prec)
-   ccall((:fq_nmod_poly_mullow, :libflint), Nothing,
+   ccall((:fq_nmod_poly_mullow, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                z, a, b, lenz, base_ring(a))
@@ -279,7 +279,7 @@ function *(x::fq_nmod, y::fq_nmod_rel_series)
    z = parent(y)()
    z.prec = y.prec
    z.val = y.val
-   ccall((:fq_nmod_poly_scalar_mul_fq_nmod, :libflint), Nothing,
+   ccall((:fq_nmod_poly_scalar_mul_fq_nmod, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                z, y, x, base_ring(y))
@@ -316,7 +316,7 @@ function shift_right(x::fq_nmod_rel_series, len::Int)
       z.prec = max(0, x.prec - len)
       z.val = max(0, xval - len)
       zlen = min(xlen + xval - len, xlen)
-      ccall((:fq_nmod_poly_shift_right, :libflint), Nothing,
+      ccall((:fq_nmod_poly_shift_right, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Int, Ref{FqNmodFiniteField}),
                z, x, xlen - zlen, base_ring(x))
@@ -347,7 +347,7 @@ function truncate(x::fq_nmod_rel_series, prec::Int)
       z.prec = prec
    else
       z.val = xval
-      ccall((:fq_nmod_poly_set_trunc, :libflint), Nothing,
+      ccall((:fq_nmod_poly_set_trunc, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Int, Ref{FqNmodFiniteField}),
                z, x, min(prec - xval, xlen), base_ring(x))
@@ -415,7 +415,7 @@ function ==(x::fq_nmod_rel_series, y::fq_nmod_rel_series)
    if xlen != ylen
       return false
    end
-   return Bool(ccall((:fq_nmod_poly_equal_trunc, :libflint), Cint,
+   return Bool(ccall((:fq_nmod_poly_equal_trunc, libflint), Cint,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Int, Ref{FqNmodFiniteField}),
                x, y, xlen, base_ring(x)))
@@ -428,7 +428,7 @@ function isequal(x::fq_nmod_rel_series, y::fq_nmod_rel_series)
    if x.prec != y.prec || x.val != y.val || pol_length(x) != pol_length(y)
       return false
    end
-   return Bool(ccall((:fq_nmod_poly_equal, :libflint), Cint,
+   return Bool(ccall((:fq_nmod_poly_equal, libflint), Cint,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Int, Ref{FqNmodFiniteField}),
                x, y, pol_length(x), base_ring(x)))
@@ -457,7 +457,7 @@ function divexact(x::fq_nmod_rel_series, y::fq_nmod_rel_series)
    z.val = xval - yval
    z.prec = prec + z.val
    if prec != 0
-      ccall((:fq_nmod_poly_div_series, :libflint), Nothing,
+      ccall((:fq_nmod_poly_div_series, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                z, x, y, prec, base_ring(x))
@@ -477,7 +477,7 @@ function divexact(x::fq_nmod_rel_series, y::fq_nmod)
    z.prec = x.prec
    z.prec = x.prec
    z.val = x.val
-   ccall((:fq_nmod_poly_scalar_div_fq_nmod, :libflint), Nothing,
+   ccall((:fq_nmod_poly_scalar_div_fq_nmod, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                z, x, y, base_ring(x))
@@ -496,7 +496,7 @@ function inv(a::fq_nmod_rel_series)
    ainv = parent(a)()
    ainv.prec = a.prec
    ainv.val = 0
-   ccall((:fq_nmod_poly_inv_series, :libflint), Nothing,
+   ccall((:fq_nmod_poly_inv_series, libflint), Nothing,
          (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                ainv, a, a.prec, base_ring(a))
    return ainv
@@ -509,28 +509,28 @@ end
 ###############################################################################
 
 function zero!(x::fq_nmod_rel_series)
-  ccall((:fq_nmod_poly_zero, :libflint), Nothing,
+  ccall((:fq_nmod_poly_zero, libflint), Nothing,
                    (Ref{fq_nmod_rel_series}, Ref{FqNmodFiniteField}), x, base_ring(x))
   x.prec = parent(x).prec_max
   return x
 end
 
 function fit!(z::fq_nmod_rel_series, n::Int)
-   ccall((:fq_nmod_poly_fit_length, :libflint), Nothing,
+   ccall((:fq_nmod_poly_fit_length, libflint), Nothing,
          (Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
          z, n, base_ring(z))
    return nothing
 end
 
 function setcoeff!(z::fq_nmod_rel_series, n::Int, x::fmpz)
-   ccall((:fq_nmod_poly_set_coeff_fmpz, :libflint), Nothing,
+   ccall((:fq_nmod_poly_set_coeff_fmpz, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Int, Ref{fmpz}, Ref{FqNmodFiniteField}),
                z, n, x, base_ring(z))
    return z
 end
 
 function setcoeff!(z::fq_nmod_rel_series, n::Int, x::fq_nmod)
-   ccall((:fq_nmod_poly_set_coeff, :libflint), Nothing,
+   ccall((:fq_nmod_poly_set_coeff, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Int, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                z, n, x, base_ring(z))
    return z
@@ -550,7 +550,7 @@ function mul!(z::fq_nmod_rel_series, a::fq_nmod_rel_series, b::fq_nmod_rel_serie
    if lena <= 0 || lenb <= 0
       lenz = 0
    end
-   ccall((:fq_nmod_poly_mullow, :libflint), Nothing,
+   ccall((:fq_nmod_poly_mullow, libflint), Nothing,
          (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
           Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                z, a, b, lenz, base_ring(z))
@@ -568,31 +568,31 @@ function addeq!(a::fq_nmod_rel_series, b::fq_nmod_rel_series)
    if a.val < b.val
       z = fq_nmod_rel_series(base_ring(a))
       lenz = max(lena, lenb + b.val - a.val)
-      ccall((:fq_nmod_poly_set_trunc, :libflint), Nothing,
+      ccall((:fq_nmod_poly_set_trunc, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             z, b, max(0, lenz - b.val + a.val), ctx)
-      ccall((:fq_nmod_poly_shift_left, :libflint), Nothing,
+      ccall((:fq_nmod_poly_shift_left, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             z, z, b.val - a.val, ctx)
-      ccall((:fq_nmod_poly_add_series, :libflint), Nothing,
+      ccall((:fq_nmod_poly_add_series, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                a, a, z, lenz, ctx)
    elseif b.val < a.val
       lenz = max(lena + a.val - b.val, lenb)
-      ccall((:fq_nmod_poly_truncate, :libflint), Nothing,
+      ccall((:fq_nmod_poly_truncate, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             a, max(0, lenz - a.val + b.val), ctx)
-      ccall((:fq_nmod_poly_shift_left, :libflint), Nothing,
+      ccall((:fq_nmod_poly_shift_left, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
             a, a, a.val - b.val, ctx)
-      ccall((:fq_nmod_poly_add_series, :libflint), Nothing,
+      ccall((:fq_nmod_poly_add_series, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                a, a, b, lenz, ctx)
    else
       lenz = max(lena, lenb)
-      ccall((:fq_nmod_poly_add_series, :libflint), Nothing,
+      ccall((:fq_nmod_poly_add_series, libflint), Nothing,
                 (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series},
                  Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                a, a, b, lenz, ctx)
@@ -615,7 +615,7 @@ function add!(c::fq_nmod_rel_series, a::fq_nmod_rel_series, b::fq_nmod_rel_serie
 
    lenc = max(lena, lenb)
    c.prec = prec
-   ccall((:fq_nmod_poly_add_series, :libflint), Nothing,
+   ccall((:fq_nmod_poly_add_series, libflint), Nothing,
      (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
                c, a, b, lenc, ctx)
    return c

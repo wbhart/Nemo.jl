@@ -146,7 +146,7 @@ function polcoeff(a::fmpz_laurent_series, n::Int)
       return fmpz(0)
    end
    z = fmpz()
-   ccall((:fmpz_poly_get_coeff_fmpz, :libflint), Nothing,
+   ccall((:fmpz_poly_get_coeff_fmpz, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz_laurent_series}, Int), z, a, n)
    return z
 end
@@ -580,7 +580,7 @@ function *(a::fmpz_laurent_series, b::fmpz_laurent_series)
    lenb = pol_length(b)
    lenz = div(prec + sz - 1, sz)
    z = parent(a)()
-   ccall((:fmpz_poly_mullow, :libflint), Nothing,
+   ccall((:fmpz_poly_mullow, libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
                z, a, b, lenz)
    set_prec!(z, prec + zval)
@@ -725,7 +725,7 @@ function mullow(a::fmpz_laurent_series, b::fmpz_laurent_series, n::Int)
    prec = min(precision(a), precision(b))
    z = parent(a)()
    lenz = min(lena + lenb - 1, div(n + s - 1, s))
-   ccall((:fmpz_poly_mullow, :libflint), Nothing,
+   ccall((:fmpz_poly_mullow, libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
                z, a, b, lenz)
    set_prec!(z, prec)
@@ -988,7 +988,7 @@ function divexact(a::fmpz_laurent_series, b::fmpz_laurent_series)
    lenb = pol_length(b)
    lenz = div(prec + sz - 1, sz)
    z = parent(a)()
-   ccall((:fmpz_poly_div_series, :libflint), Nothing,
+   ccall((:fmpz_poly_div_series, libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
                z, a, b, lenz)
    set_prec!(z, prec + zval)
@@ -1059,7 +1059,7 @@ function inv(a::fmpz_laurent_series)
    set_scale!(ainv, sa)
    !isunit(a1) && error("Unable to invert power series")
    z = parent(a)()
-   ccall((:fmpz_poly_inv_series, :libflint), Nothing,
+   ccall((:fmpz_poly_inv_series, libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
                ainv, a, lenz)
    ainv = rescale!(ainv)
@@ -1095,7 +1095,7 @@ function sqrt(a::fmpz_laurent_series)
    zlen = div(prec + s - 1, s)
    set_prec!(asqrt, prec + aval2)
    set_val!(asqrt, aval2)
-   flag = Bool(ccall((:fmpz_poly_sqrt_series, :libflint), Cint,
+   flag = Bool(ccall((:fmpz_poly_sqrt_series, libflint), Cint,
           (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
                 asqrt, a, zlen))
    flag == false && error("Not a square in sqrt")
@@ -1168,7 +1168,7 @@ end
 ###############################################################################
 
 function zero!(a::fmpz_laurent_series)
-  ccall((:fmpz_poly_zero, :libflint), Nothing,
+  ccall((:fmpz_poly_zero, libflint), Nothing,
                    (Ref{fmpz_laurent_series},), a)
    set_prec!(a, parent(a).prec_max)
    set_val!(a, parent(a).prec_max)
@@ -1177,7 +1177,7 @@ function zero!(a::fmpz_laurent_series)
 end
 
 function setcoeff!(c::fmpz_laurent_series, n::Int, a::fmpz)
-   ccall((:fmpz_poly_set_coeff_fmpz, :libflint), Nothing,
+   ccall((:fmpz_poly_set_coeff_fmpz, libflint), Nothing,
                 (Ref{fmpz_laurent_series}, Int, Ref{fmpz}),
                c, n, a)
    return c
@@ -1203,7 +1203,7 @@ function mul!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_se
    lena = min(lena*sa, prec)
    lenb = min(lenb*sb, prec)
    if lena == 0 || lenb == 0
-      ccall((:fmpz_poly_zero, :libflint), Nothing,
+      ccall((:fmpz_poly_zero, libflint), Nothing,
                 (Ref{fmpz_laurent_series},), c)
       set_prec!(c, prec + aval + bval)
       set_val!(c, aval + bval)
@@ -1218,7 +1218,7 @@ function mul!(c::fmpz_laurent_series, a::fmpz_laurent_series, b::fmpz_laurent_se
       lena = pol_length(a)
       lenb = pol_length(b)
       lenc = min(lena + lenb - 1, div(prec + sz - 1, sz))
-      ccall((:fmpz_poly_mullow, :libflint), Nothing,
+      ccall((:fmpz_poly_mullow, libflint), Nothing,
          (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int), c, a, b, lenc)
    end
    set_val!(c, aval + bval)
@@ -1311,7 +1311,7 @@ function eta_qexp(x::fmpz_laurent_series)
    z = parent(x)()
    zscale = valuation(x)
    prec = max_precision(parent(x))
-   ccall((:fmpz_poly_eta_qexp, :libflint), Nothing,
+   ccall((:fmpz_poly_eta_qexp, libflint), Nothing,
                                           (Ref{fmpz_laurent_series}, Int, Int), z, 1, div(prec + zscale - 1, zscale))
    set_scale!(z, zscale)
    set_val!(z, 0)
