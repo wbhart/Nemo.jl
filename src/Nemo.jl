@@ -28,7 +28,8 @@ import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh,
 import LinearAlgebra: det, norm, nullspace, rank, transpose!, hessenberg, tr,
                       lu, lu!, eigvals
 
-import AbstractAlgebra: nullspace
+import AbstractAlgebra: nullspace, @show_name, @show_special, 
+                        find_name, get_special, set_special, @declare_other, @show_special_elem
 
 # We don't want the QQ, ZZ, FiniteField, NumberField from AbstractAlgebra
 # as they are for parents of Julia types or naive implementations

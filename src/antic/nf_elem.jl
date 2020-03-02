@@ -292,10 +292,8 @@ end
 ###############################################################################
 
 function show(io::IO, a::AnticNumberField)
-   s = get_special(a, :show)
-   if !(s === nothing)
-     return s(io, a)
-   end
+   @show_name(io, a)
+   @show_special(io, a)
    print(io, "Number field over Rational Field")
    print(io, " with defining polynomial ", a.pol)
 end
