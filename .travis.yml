@@ -14,9 +14,6 @@ branches:
   only:
   - master
 
-matrix:
-  allow_failures:
-    - julia: nightly
 notifications:
   - email: false
 # Use the default script
@@ -31,6 +28,8 @@ env:
       - DOCUMENTER_DEBUG=true
 
 jobs:
+  allow_failures:
+    - julia: nightly
    include:
      - stage: "Test"
        julia: 1.0
