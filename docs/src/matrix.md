@@ -34,6 +34,11 @@ All matrix element types belong to the abstract type `MatElem` and all of
 the matrix space types belong to the abstract type `MatSpace`. This enables
 one to write generic functions that can accept any Nemo matrix type.
 
+Note that the preferred way to create matrices is not to use the type
+constructors but to use the `matrix` function, see also the
+[Constructors](https://nemocas.github.io/AbstractAlgebra.jl/latest/matrix_spaces/#Constructors-1)
+section of the AbstractAlgebra manual.
+
 ## Matrix functionality
 
 All matrix spaces in Nemo follow the AbstractAlgebra.jl matrix interface:
