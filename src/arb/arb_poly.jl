@@ -160,7 +160,7 @@ end
 > In the former case, $z$ is set to the integer polynomial.
 """
 function unique_integer(x::arb_poly)
-  z = FmpzPolyRing(var(parent(x)))()
+  z = FmpzPolyRing(FlintZZ, var(parent(x)))()
   unique = ccall((:arb_poly_get_unique_fmpz_poly, libarb), Int,
     (Ref{fmpz_poly}, Ref{arb_poly}), z, x)
   return (unique != 0, z)

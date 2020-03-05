@@ -28,6 +28,11 @@
    l = R([1, 2, 3])
 
    @test isa(l, PolyElem)
+
+   @test PolynomialRing(FlintIntegerRing(), "x")[1] != PolynomialRing(FlintIntegerRing(), "y")[1]
+
+   R = FlintIntegerRing()
+   @test PolynomialRing(R, "x", cached = true)[1] === PolynomialRing(R, "x", cached = true)[1]
 end
 
 @testset "fmpz_poly.printing..." begin

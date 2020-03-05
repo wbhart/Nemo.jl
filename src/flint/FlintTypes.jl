@@ -171,20 +171,20 @@ mutable struct FmpzPolyRing <: PolyRing{fmpz}
    base_ring::FlintIntegerRing
    S::Symbol
 
-   function FmpzPolyRing(s::Symbol, cached::Bool = true)
-      if cached && haskey(FmpzPolyID, s)
-         return FmpzPolyID[s]
+   function FmpzPolyRing(R::FlintIntegerRing, s::Symbol, cached::Bool = true)
+      if cached && haskey(FmpzPolyID, (R, s))
+         return FmpzPolyID[R, s]
       else
-         z = new(FlintZZ, s)
+         z = new(R, s)
          if cached
-            FmpzPolyID[s] = z
+            FmpzPolyID[R, s] = z
          end
          return z
       end
    end
 end
 
-const FmpzPolyID = Dict{Symbol, FmpzPolyRing}()
+const FmpzPolyID = Dict{Tuple{FlintIntegerRing, Symbol}, FmpzPolyRing}()
 
 mutable struct fmpz_poly <: PolyElem{fmpz}
    coeffs::Ptr{Nothing}
@@ -275,19 +275,19 @@ mutable struct FmpqPolyRing <: PolyRing{fmpq}
    S::Symbol
 
    function FmpqPolyRing(R::FlintRationalField, s::Symbol, cached::Bool = true)
-      if cached && haskey(FmpqPolyID, s)
-         return FmpqPolyID[s]
+      if cached && haskey(FmpqPolyID, (R, s))
+         return FmpqPolyID[R, s]
       else
          z = new(R, s)
          if cached
-            FmpqPolyID[s] = z
+            FmpqPolyID[R, s] = z
          end
          return z
       end
    end
 end
 
-const FmpqPolyID = Dict{Symbol, FmpqPolyRing}()
+const FmpqPolyID = Dict{Tuple{FlintRationalField, Symbol}, FmpqPolyRing}()
 
 mutable struct fmpq_poly <: PolyElem{fmpq}
    coeffs::Ptr{Int}

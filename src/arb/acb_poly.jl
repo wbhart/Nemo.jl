@@ -174,7 +174,7 @@ end
 > in case it is, otherwise sets $t$ to `false`.
 """
 function unique_integer(x::acb_poly)
-  z = FmpzPolyRing(var(parent(x)))()
+  z = FmpzPolyRing(FlintZZ, var(parent(x)))()
   unique = ccall((:acb_poly_get_unique_fmpz_poly, libarb), Int,
     (Ref{fmpz_poly}, Ref{acb_poly}), z, x)
   return (unique != 0, z)

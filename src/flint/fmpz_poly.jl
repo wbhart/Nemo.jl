@@ -896,7 +896,7 @@ end
 function PolynomialRing(R::FlintIntegerRing, s::AbstractString; cached = true)
    S = Symbol(s)
 
-   parent_obj = FmpzPolyRing(S, cached)
+   parent_obj = FmpzPolyRing(R, S, cached)
 
    return parent_obj, parent_obj([fmpz(0), fmpz(1)])
 end

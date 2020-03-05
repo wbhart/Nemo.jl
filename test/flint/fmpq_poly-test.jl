@@ -74,6 +74,11 @@
    p = S([ZZ(1), ZZ(2), ZZ(3)])
 
    @test isa(p, PolyElem)
+   
+   @test PolynomialRing(FlintRationalField(), "x")[1] != PolynomialRing(FlintRationalField(), "y")[1]
+
+   R = FlintRationalField()
+   @test PolynomialRing(R, "x", cached = true)[1] === PolynomialRing(R, "x", cached = true)[1]
 end
 
 @testset "fmpq_poly.printing..." begin
