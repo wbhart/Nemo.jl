@@ -236,14 +236,6 @@ function elem_to_mat_row!(a::fmpz_mat, i::Int, d::fmpz, b::nf_elem)
 """
 degree(a::AnticNumberField) = a.pol_length-1
 
-@doc Markdown.doc"""
-    signature(a::AnticNumberField)
-> Return the signature of the given number field, i.e. a tuple $r, s$
-> consisting of $r$, the number of real embeddings and $s$, half the number of
-> complex embeddings.
-"""
-signature(a::AnticNumberField) = signature(a.pol)
-
 function deepcopy_internal(d::nf_elem, dict::IdDict)
    z = nf_elem(parent(d), d)
    return z
@@ -254,6 +246,7 @@ end
 #   Deal with "Special"
 #
 ###############################################################################
+
 function set_special(K::AnticNumberField, P::Pair{Symbol, <: Any}...)
   d = _get_Special_of_nf(K, false)
   if d === nothing

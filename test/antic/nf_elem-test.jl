@@ -140,8 +140,6 @@ end
 
    @test degree(K) == 3
 
-   @test signature(K) == (1, 1)
-
    @test !isinteger(d)
    @test !isrational(d)
    @test isinteger(K(2))
