@@ -451,12 +451,6 @@ setbit!(::fmpz, ::Int)
 combit!(::fmpz, ::Int)
 ```
 
-### Random generation
-
-```@docs
-rand_bits(::FlintIntegerRing, ::Int)
-```
-
 **Examples**
 
 ```julia
@@ -466,3 +460,21 @@ p = popcount(a)
 b = nextpow2(a)
 combit!(a, 2)
 ```
+
+### Random generation
+
+```@docs
+rand_bits(::FlintIntegerRing, ::Int)
+```
+
+```@docs
+rand_prime(::FlintIntegerRing, ::Int, ::Bool)
+```
+
+**Examples**
+
+```julia
+a = rand_bits(ZZ, 23)
+b = rand_prime(ZZ, 7)
+```
+

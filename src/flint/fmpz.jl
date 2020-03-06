@@ -42,7 +42,11 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        moebius_mu, primorial, rising_factorial, number_of_partitions,
        canonical_unit, needs_parentheses, displayed_with_minus_in_front,
        show_minus_one, addeq!, mul!, isunit, isequal,
+<<<<<<< HEAD
        iszero, rand, rand_bits, binomial, factorial
+=======
+       iszero, rand, binomial, factorial, rand_prime
+>>>>>>> 8147bacf... Add Flint rand_prime function.
 
 ###############################################################################
 #
@@ -1741,6 +1745,20 @@ function rand_bits(::FlintIntegerRing, b::Int)
    z = fmpz()
    ccall((:fmpz_randbits, libflint), Nothing,(Ref{fmpz}, Ptr{Cvoid}, Int),
          z, _flint_rand_states[Threads.threadid()].ptr, b)
+   return z
+end
+
+@doc Markdown.doc"""
+    rand_prime(::FlintIntegerRing, n::Int, proved::Bool=true)
+> Returns a random prime number with the given number of bits. If only a
+> probable prime is required, one can pass `proved=false`.
+"""
+function rand_prime(::FlintIntegerRing, n::Int, proved::Bool = true,
+			          rnd = _flint_rand_states[Threads.threadid()])
+   n < 2 && throw(DomainError(n, "No primes with that many bits"))
+   z = fmpz()
+   ccall((:fmpz_randprime, libflint), Nothing,
+	 (Ref{fmpz}, Ptr{Cvoid}, Int, Cint), z, rnd.ptr, n, Cint(proved))
    return z
 end
 
