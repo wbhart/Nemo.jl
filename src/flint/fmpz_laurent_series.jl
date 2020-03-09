@@ -112,7 +112,7 @@ scale(a::fmpz_laurent_series) = a.scale
 max_precision(R::FmpzLaurentSeriesRing) = R.prec_max
 
 @doc Markdown.doc"""
-   exp_gcd(a::fmpz_laurent_series)
+    exp_gcd(a::fmpz_laurent_series)
 > Return the GCD of the exponents of the polynomial underlying the given Laurent series.
 """
 function exp_gcd(a::fmpz_laurent_series)
@@ -1045,7 +1045,7 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-   inv(a::fmpz_laurent_series)
+    inv(a::fmpz_laurent_series)
 > Return the inverse of the power series $a$, i.e. $1/a$.
 """
 function inv(a::fmpz_laurent_series)
@@ -1073,7 +1073,7 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-   sqrt(a::fmpz_laurent_series)
+    sqrt(a::fmpz_laurent_series)
 > Return the square root of the power series $a$.
 """
 function sqrt(a::fmpz_laurent_series)
@@ -1397,7 +1397,7 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-   LaurentSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; cached=true)
+    LaurentSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; cached=true)
 > Return a tuple $(S, x)$ consisting of the parent object `S` of a Laurent series
 > ring over ZZ and a generator `x` for the Laurent series ring.
 > The maximum precision of the series in the ring is set to `prec`. This is taken as a

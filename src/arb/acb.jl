@@ -1102,7 +1102,7 @@ function modeta(x::acb)
 end
 
 @doc Markdown.doc"""
-   modweber_f(x::acb)
+    modweber_f(x::acb)
 > Return the modular Weber function
 > $\mathfrak{f}(\tau) = \frac{\eta^2(\tau)}{\eta(\tau/2)\eta(2\tau)},$
 > at $x$ in the complex upper half plane.
@@ -1114,7 +1114,7 @@ function modweber_f(x::acb)
 end
 
 @doc Markdown.doc"""
-   modweber_f1(x::acb)
+    modweber_f1(x::acb)
 > Return the modular Weber function
 > $\mathfrak{f}_1(\tau) = \frac{\eta(\tau/2)}{\eta(\tau)},$
 > at $x$ in the complex upper half plane.
@@ -1125,7 +1125,7 @@ function modweber_f1(x::acb)
 end
 
 @doc Markdown.doc"""
-   modweber_f2(x::acb)
+    modweber_f2(x::acb)
 > Return the modular Weber function
 > $$\mathfrak{f}_2(\tau) = \frac{\sqrt{2}\eta(2\tau)}{\eta(\tau)}$
 > at $x$ in the complex upper half plane.
