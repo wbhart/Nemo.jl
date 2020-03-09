@@ -10,6 +10,9 @@ CC = AcbField(64)
 
    @test elem_type(AcbField) == acb
    @test parent_type(acb) == AcbField
+
+   @test AcbField(10, cached = true) === AcbField(10, cached = true)
+   @test AcbField(11, cached = false) !== AcbField(11, cached = false)
 end
 
 @testset "acb.printing..." begin

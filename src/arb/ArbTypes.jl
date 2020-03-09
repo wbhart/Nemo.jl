@@ -75,7 +75,7 @@ end
 mutable struct ArbField <: Field
   prec::Int
 
-  function ArbField(p::Int = 256, cached::Bool = true)
+  function ArbField(p::Int = 256; cached::Bool = true)
     arb_check_prec(p)
     if cached && haskey(ArbFieldID, p)
       return ArbFieldID[p]
@@ -157,7 +157,7 @@ end
 mutable struct AcbField <: Field
   prec::Int
 
-  function AcbField(p::Int = 256, cached::Bool = true)
+  function AcbField(p::Int = 256; cached::Bool = true)
     arb_check_prec(p)
     if cached && haskey(AcbFieldID, p)
       return AcbFieldID[p]

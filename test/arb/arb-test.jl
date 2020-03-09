@@ -8,6 +8,9 @@ RR = ArbField(64)
    @test elem_type(ArbField) == arb
    @test parent_type(arb) == ArbField
    @test base_ring(RR) == Union{}
+
+   @test ArbField(10, cached = true) === ArbField(10, cached = true)
+   @test ArbField(11, cached = false) !== ArbField(11, cached = false)
 end
 
 @testset "arb.printing..." begin
