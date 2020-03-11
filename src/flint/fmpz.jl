@@ -1745,11 +1745,11 @@ function rand_bits(::FlintIntegerRing, b::Int)
 end
 
 @doc Markdown.doc"""
-    rand_prime(::FlintIntegerRing, n::Int, proved::Bool=true)
+    rand_bits_prime(::FlintIntegerRing, n::Int, proved::Bool=true)
 > Return a random prime number with the given number of bits. If only a
 > probable prime is required, one can pass `proved=false`.
 """
-function rand_prime(::FlintIntegerRing, n::Int, proved::Bool = true)
+function rand_bits_prime(::FlintIntegerRing, n::Int, proved::Bool = true)
    n < 2 && throw(DomainError(n, "No primes with that many bits"))
    z = fmpz()
    ccall((:fmpz_randprime, libflint), Nothing,

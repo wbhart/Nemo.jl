@@ -468,7 +468,7 @@ rand_bits(::FlintIntegerRing, ::Int)
 ```
 
 ```@docs
-rand_prime(::FlintIntegerRing, ::Int, ::Bool)
+rand_bits_prime(::FlintIntegerRing, ::Int, ::Bool)
 ```
 
 **Examples**
