@@ -1749,12 +1749,12 @@ end
 > Return a random prime number with the given number of bits. If only a
 > probable prime is required, one can pass `proved=false`.
 """
-function rand_prime(::FlintIntegerRing, n::Int, proved::Bool = true,
-			          rnd = _flint_rand_states[Threads.threadid()])
+function rand_prime(::FlintIntegerRing, n::Int, proved::Bool = true)
    n < 2 && throw(DomainError(n, "No primes with that many bits"))
    z = fmpz()
    ccall((:fmpz_randprime, libflint), Nothing,
-	 (Ref{fmpz}, Ptr{Cvoid}, Int, Cint), z, rnd.ptr, n, Cint(proved))
+	 (Ref{fmpz}, Ptr{Cvoid}, Int, Cint),
+	  z, _flint_rand_states[Threads.threadid()].ptr, n, Cint(proved))
    return z
 end
 
