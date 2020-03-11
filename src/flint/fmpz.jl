@@ -1746,7 +1746,7 @@ end
 
 @doc Markdown.doc"""
     rand_prime(::FlintIntegerRing, n::Int, proved::Bool=true)
-> Returns a random prime number with the given number of bits. If only a
+> Return a random prime number with the given number of bits. If only a
 > probable prime is required, one can pass `proved=false`.
 """
 function rand_prime(::FlintIntegerRing, n::Int, proved::Bool = true,
