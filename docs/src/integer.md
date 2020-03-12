@@ -475,6 +475,5 @@ rand_bits_prime(::FlintIntegerRing, ::Int, ::Bool)
 
 ```julia
 a = rand_bits(ZZ, 23)
-b = rand_prime(ZZ, 7)
+b = rand_bits_prime(ZZ, 7)
 ```
-
