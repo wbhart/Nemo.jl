@@ -447,7 +447,7 @@ function lu!(P::Generic.Perm, x::fq_mat)
   return rank
 end
 
-function lu(x::fq_mat, P = PermGroup(nrows(x)))
+function lu(x::fq_mat, P = SymmetricGroup(nrows(x)))
    m = nrows(x)
    n = ncols(x)
    P.n != m && error("Permutation does not match matrix")

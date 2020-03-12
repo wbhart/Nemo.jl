@@ -481,7 +481,7 @@ function lu!(P::Generic.Perm, x::T) where T <: Zmodn_mat
   return rank
 end
 
-function lu(x::T, P = PermGroup(nrows(x))) where T <: Zmodn_mat
+function lu(x::T, P = SymmetricGroup(nrows(x))) where T <: Zmodn_mat
   m = nrows(x)
   n = ncols(x)
   P.n != m && error("Permutation does not match matrix")

@@ -515,7 +515,7 @@ function lu!(P::Generic.Perm, x::arb_mat)
   return nrows(x)
 end
 
-function lu(x::arb_mat, P = PermGroup(nrows(x)))
+function lu(x::arb_mat, P = SymmetricGroup(nrows(x)))
   p = P()
   R = base_ring(x)
   L = similar(x)

@@ -40,7 +40,7 @@ parent objects of the given rings and structures.
      - `nmod_mat` (`NmodMatSpace`)
      - `fq_nmod_mat` (`FqNmodMatSpace`)
      - `fq_mat` (`FqMatSpace`)
-     - `perm` (`PermGroup`)
+     - `perm` (`SymmetricGroup`)
 
   - Antic
      - `nf_elem` (`AnticNumberField`)

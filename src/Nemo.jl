@@ -306,7 +306,7 @@ end
 #
 ################################################################################
 
-version() = v"0.16.5-dev"
+version() = v"0.17.0"
 
 function versioninfo()
   print("Nemo version $(version())\n")
@@ -354,7 +354,7 @@ end
 ###############################################################################
 
 export PowerSeriesRing, PolynomialRing, SparsePolynomialRing, MatrixSpace,
-       FractionField, ResidueRing, Partition, PermGroup, YoungTableau,
+       FractionField, ResidueRing, Partition, SymmetricGroup, YoungTableau,
        AllParts, SkewDiagram, AllPerms, Perm, LaurentSeriesRing,
        LaurentSeriesField, PuiseuxSeriesRing, ResidueField
 
