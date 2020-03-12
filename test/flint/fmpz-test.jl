@@ -44,6 +44,16 @@ end
       @test abs(t) < fmpz(2)^bits
       @test bits < 1 || abs(t) >= fmpz(2)^(bits - 1)
    end
+
+   for i = 1:100
+      nbits = rand(2:100)
+      n = rand_bits_prime(FlintZZ, nbits)
+      @test ndigits(n, 2) == nbits
+      @test isprime(n)
+   end
+   @test_throws DomainError rand_bits_prime(FlintZZ, -1)
+   @test_throws DomainError rand_bits_prime(FlintZZ, 0)
+   @test_throws DomainError rand_bits_prime(FlintZZ, 1)
 end
 
 @testset "fmpz.printing..." begin
