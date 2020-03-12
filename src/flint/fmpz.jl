@@ -42,7 +42,7 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        moebius_mu, primorial, rising_factorial, number_of_partitions,
        canonical_unit, needs_parentheses, displayed_with_minus_in_front,
        show_minus_one, addeq!, mul!, isunit, isequal,
-       iszero, rand, rand_bits, binomial, factorial, rand_prime
+       iszero, rand, rand_bits, binomial, factorial, rand_bits_prime
 
 ###############################################################################
 #
