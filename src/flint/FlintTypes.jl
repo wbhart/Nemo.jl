@@ -3795,7 +3795,7 @@ mutable struct gfp_mat <: MatElem{gfp_elem}
     for i = 1:r
       for j = 1:c
         ccall((:fmpz_mod_ui, libflint), Nothing,
-              (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), t, arr[(i - 1) * c + j], n)
+              (Ref{fmpz}, Ref{fmpz}, UInt), t, arr[(i - 1) * c + j], n)
         setindex!(z, t, i, j)
       end
     end
