@@ -10,6 +10,8 @@ using Libdl
 
 using Random
 
+using LoadFlint
+
 import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh,
              bin, binomial, ceil, checkbounds, conj, convert, cmp, cos, cosh,
              cospi, cot, coth, dec, deepcopy, deepcopy_internal, denominator,
@@ -85,19 +87,18 @@ const pkgdir = realpath(joinpath(dirname(@__DIR__)))
 const libdir = joinpath(pkgdir, "deps", "usr", "lib")
 const bindir = joinpath(pkgdir, "deps", "usr", "bin")
 if Sys.iswindows()
-   const libgmp = joinpath(pkgdir, "deps", "usr", "bin", "libgmp-10")
    const libmpfr = joinpath(pkgdir, "deps", "usr", "bin", "libmpfr-6")
-   const libflint = joinpath(pkgdir, "deps", "usr", "bin", "libflint")
    const libarb = joinpath(pkgdir, "deps", "usr", "bin", "libarb")
    const libantic = joinpath(pkgdir, "deps", "usr", "bin", "libantic")
 
 else
-   const libgmp = joinpath(pkgdir, "deps", "usr", "lib", "libgmp")
    const libmpfr = joinpath(pkgdir, "deps", "usr", "lib", "libmpfr")
-   const libflint = joinpath(pkgdir, "deps", "usr", "lib", "libflint")
    const libarb = joinpath(pkgdir, "deps", "usr", "lib", "libarb")
    const libantic = joinpath(pkgdir, "deps", "usr", "lib", "libantic")
 end
+
+const libflint = LoadFlint.libflint
+const libgmp = LoadFlint.libgmp
 
 function flint_abort()
   error("Problem in the Flint-Subsystem")
@@ -239,23 +240,6 @@ function __init__()
    else
       push!(Libdl.DL_LOAD_PATH, libdir)
       push!(Libdl.DL_LOAD_PATH, bindir)
-   end
-
-   if !Sys.iswindows()
-     if !__isthreaded[]
-         ccall((:__gmp_set_memory_functions, libgmp), Nothing,
-            (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
-            cglobal(:jl_gc_counted_malloc),
-            cglobal(:jl_gc_counted_realloc_with_old_size),
-            cglobal(:jl_gc_counted_free_with_size))
-
-         ccall((:__flint_set_memory_functions, libflint), Nothing,
-            (Ptr{Nothing},Ptr{Nothing},Ptr{Nothing},Ptr{Nothing}),
-            cglobal(:jl_malloc),
-            cglobal(:jl_calloc),
-            cglobal(:jl_realloc),
-            cglobal(:jl_free))
-      end
    end
 
    ccall((:flint_set_abort, libflint), Nothing,
