@@ -14,9 +14,9 @@ parent_type(::Type{fmpz_mod}) = FmpzModRing
 
 elem_type(::Type{FmpzModRing}) = fmpz_mod
 
-base_ring(a::FmpzModRing) = Union{}
+base_ring(a::FmpzModRing) = FlintZZ
 
-base_ring(a::fmpz_mod) = Union{}
+base_ring(a::fmpz_mod) = FlintZZ
 
 parent(a::fmpz_mod) = a.parent
 

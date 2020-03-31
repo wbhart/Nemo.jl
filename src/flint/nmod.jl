@@ -14,9 +14,9 @@ parent_type(::Type{nmod}) = NmodRing
 
 elem_type(::Type{NmodRing}) = nmod
 
-base_ring(a::NmodRing) = Union{}
+base_ring(a::NmodRing) = FlintZZ
 
-base_ring(a::nmod) = Union{}
+base_ring(a::nmod) = FlintZZ
 
 parent(a::nmod) = a.parent
 

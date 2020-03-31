@@ -7,6 +7,8 @@
    @test elem_type(Nemo.NmodRing) == Nemo.nmod
    @test parent_type(Nemo.nmod) == Nemo.NmodRing
 
+   @test base_ring(R) == FlintZZ
+
    @test isa(R, Nemo.NmodRing)
 
    @test isa(R(), Nemo.nmod)
