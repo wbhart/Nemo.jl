@@ -1100,8 +1100,8 @@ end
 (a::AnticNumberField)(c::Rational) = a(fmpq(c))
 
 function (a::AnticNumberField)(b::nf_elem)
-   parent(b) != a && error("Cannot coerce number field element")
-   return b
+   parent(b) == a && return b
+   force_coerce(a, b)
 end
 
 function (a::AnticNumberField)(pol::fmpq_poly)
