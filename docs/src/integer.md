@@ -282,8 +282,8 @@ root(::fmpz, ::Int)
 ```julia
 a = ZZ(13)
 
-b = sqrt(a)
-s, r = sqrtrem(a)
+b = isqrt(a)
+s, r = isqrtrem(a)
 c = root(a, 3)
 ```
 
