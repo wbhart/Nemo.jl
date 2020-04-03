@@ -301,8 +301,10 @@ end
 ################################################################################
 
 if VERSION >= v"1.4"
-   ver = Pkg.dependencies()[Base.UUID("2edaba10-b0f1-5616-af89-8c11ac63239a")]
-   if occursin("/dev/", ver.source)
+   deps = Pkg.dependencies()
+   if !haskey(deps, Base.UUID("2edaba10-b0f1-5616-af89-8c11ac63239a"))
+      version() = "building"
+   elseif occursin("/dev/", ver.source)
       version() = VersionNumber("$(ver.version)-dev")
    else
       version() = VersionNumber("$(ver.version)")
