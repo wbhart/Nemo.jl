@@ -331,6 +331,7 @@ end
 ###############################################################################
 
 function +(a::nf_elem, b::nf_elem)
+   parent(a) == parent(b) || return force_op(+, a, b)::nf_elem
    check_parent(a, b)
    r = a.parent()
    ccall((:nf_elem_add, libantic), Nothing,
@@ -340,6 +341,7 @@ function +(a::nf_elem, b::nf_elem)
 end
 
 function -(a::nf_elem, b::nf_elem)
+   parent(a) == parent(b) || return force_op(-, a, b)::nf_elem
    check_parent(a, b)
    r = a.parent()
    ccall((:nf_elem_sub, libantic), Nothing,
@@ -349,6 +351,7 @@ function -(a::nf_elem, b::nf_elem)
 end
 
 function *(a::nf_elem, b::nf_elem)
+   parent(a) == parent(b) || return force_op(*, a, b)::nf_elem
    check_parent(a, b)
    r = a.parent()
    ccall((:nf_elem_mul, libantic), Nothing,
@@ -533,6 +536,7 @@ end
 ###############################################################################
 
 function ==(a::nf_elem, b::nf_elem)
+   parent(a) == parent(b) || return force_op(==, a, b)::Bool
    check_parent(a, b)
    return ccall((:nf_elem_equal, libantic), Bool,
            (Ref{nf_elem}, Ref{nf_elem}, Ref{AnticNumberField}), a, b, a.parent)
@@ -615,6 +619,7 @@ end
 
 function divexact(a::nf_elem, b::nf_elem)
    iszero(b) && throw(DivideError())
+   parent(a) == parent(b) || return force_op(divexact, a, b)::nf_elem
    check_parent(a, b)
    r = a.parent()
    ccall((:nf_elem_div, libantic), Nothing,
@@ -1100,8 +1105,8 @@ end
 (a::AnticNumberField)(c::Rational) = a(fmpq(c))
 
 function (a::AnticNumberField)(b::nf_elem)
-   parent(b) != a && error("Cannot coerce number field element")
-   return b
+   parent(b) == a && return b
+   force_coerce(a, b)
 end
 
 function (a::AnticNumberField)(pol::fmpq_poly)
