@@ -19,6 +19,8 @@ using Random
 
 using LoadFlint
 
+using Pkg
+
 import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh,
              bin, binomial, ceil, checkbounds, conj, convert, cmp, cos, cosh,
              cospi, cot, coth, dec, deepcopy, deepcopy_internal, denominator,
@@ -298,7 +300,28 @@ end
 #
 ################################################################################
 
-version() = v"0.17.1-dev"
+if VERSION >= v"1.4"
+   deps = Pkg.dependencies()
+   if !haskey(deps, Base.UUID("2edaba10-b0f1-5616-af89-8c11ac63239a"))
+      version() = "building"
+   else
+      ver = deps[Base.UUID("2edaba10-b0f1-5616-af89-8c11ac63239a")]
+      if occursin("/dev/", ver.source)
+         version() = VersionNumber("$(ver.version)-dev")
+      else
+         version() = VersionNumber("$(ver.version)")
+      end
+   end
+else
+   ver = Pkg.installed()["Nemo"]
+   dir = dirname(@__DIR__)
+   if occursin("/dev/", dir)
+      version() = VersionNumber("$(ver)-dev")
+   else
+      version() = VersionNumber("$(ver)")
+   end
+end
+
 
 function versioninfo()
   print("Nemo version $(version())\n")
