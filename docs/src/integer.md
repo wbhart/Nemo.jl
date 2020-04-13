@@ -32,9 +32,9 @@ all the integer ring parent object types belong to the abstract type `Ring`.
 Nemo integers implement the whole of the ring and Euclidean ring interfaces of
 AbstractAlgebra.jl.
 
-[https://nemocas.github.io/AbstractAlgebra.jl/rings.html](https://nemocas.github.io/AbstractAlgebra.jl/rings.html)
+[https://nemocas.github.io/AbstractAlgebra.jl/latest/rings.html](https://nemocas.github.io/AbstractAlgebra.jl/latest/rings.html)
 
-[https://nemocas.github.io/AbstractAlgebra.jl/euclidean.html](https://nemocas.github.io/AbstractAlgebra.jl/euclidean.html)
+[https://nemocas.github.io/AbstractAlgebra.jl/latest/euclidean.html](https://nemocas.github.io/AbstractAlgebra.jl/latest/euclidean.html)
 
 Below, we describe the functionality that is specific to the Nemo/Flint integer ring.
 

@@ -142,11 +142,11 @@ very much like the quotient $R[x]/(x^p)$ of the polynomial ring over $R$.
 
 Power series rings in Nemo implement the AbstractAlgebra.jl series interface:
 
-[https://nemocas.github.io/AbstractAlgebra.jl/series_rings.html](https://nemocas.github.io/AbstractAlgebra.jl/series_rings.html)
+[https://nemocas.github.io/AbstractAlgebra.jl/latest/series_rings.html](https://nemocas.github.io/AbstractAlgebra.jl/latest/series_rings.html)
 
 In addition, generic power series and Laurent series are provided by AbstractAlgebra.jl:
 
-[https://nemocas.github.io/AbstractAlgebra.jl/series.html](https://nemocas.github.io/AbstractAlgebra.jl/series.html)
+[https://nemocas.github.io/AbstractAlgebra.jl/latest/series.html](https://nemocas.github.io/AbstractAlgebra.jl/latest/series.html)
 
 Power series rings in Nemo also implement this generic functionality. We list below only
 the functionality that differs from this generic functionality, for specific rings
