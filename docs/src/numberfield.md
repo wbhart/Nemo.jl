@@ -40,7 +40,7 @@ element type, making the two libraries tightly integrated.
 
 The number fields in Nemo implement the full AbstractAlgebra.jl field interface.
 
-[https://nemocas.github.io/AbstractAlgebra.jl/latest/fields.html](https://nemocas.github.io/AbstractAlgebra.jl/latest/fields.html)
+[https://nemocas.github.io/AbstractAlgebra.jl/latest/fields](https://nemocas.github.io/AbstractAlgebra.jl/latest/fields)
 
 Below, we document the additional functionality provided for number field elements.
 
