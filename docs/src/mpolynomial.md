@@ -45,9 +45,7 @@ polynomial interface:
 Generic multivariate polynomials are also available, and Nemo multivariate polynomial
 types also implement all of the same functionality.
 
-[https://nemocas.github.io/AbstractAlgebra.jl/latest/mpolynomial.](https://nemocas.git
-hub.io/AbstractAlgebra.jl/latest/mpolynomial.)
+[https://nemocas.github.io/AbstractAlgebra.jl/latest/mpolynomial](https://nemocas.github.io/AbstractAlgebra.jl/latest/mpolynomial).
 
 We describe here only functions that are in addition to that guaranteed by
 AbstractAlgebra.jl, for specific coefficient rings.
-
