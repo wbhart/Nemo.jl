@@ -313,7 +313,7 @@ if VERSION >= v"1.4"
       end
    end
 else
-   ver = Pkg.installed()["Nemo"]
+   ver = Pkg.API.__installed(PKGMODE_MANIFEST)["Nemo"]
    dir = dirname(@__DIR__)
    if occursin("/dev/", dir)
       version() = VersionNumber("$(ver)-dev")
