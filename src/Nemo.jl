@@ -256,7 +256,7 @@ function __init__()
          (Ptr{Nothing},), @cfunction(flint_abort, Nothing, ()))
 
    if isinteractive() &&
-         !any(x -> x.name in ("Hecke", "Oscar"), keys(Base.package_locks)) &&
+         !any(x -> x.name in ("Hecke", "Oscar", "Singular"), keys(Base.package_locks)) &&
          get(ENV, "NEMO_PRINT_BANNER", "true") != "false"
 
       println("")
