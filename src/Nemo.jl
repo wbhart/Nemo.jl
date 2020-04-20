@@ -21,20 +21,22 @@ using LoadFlint
 
 using Pkg
 
-import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh,
-             bin, binomial, ceil, checkbounds, conj, convert, cmp, cos, cosh,
-             cospi, cot, coth, dec, deepcopy, deepcopy_internal, denominator,
-             div, divrem, expm1, exp, factorial, floor, gcd, gcdx, getindex,
-             hash, hcat, hex, hypot, intersect, inv, invmod, isequal, iseven,
-             isfinite, isinteger, isless, isodd, isqrt, isreal, iszero, lcm,
-             ldexp, length,
-             log, log1p, mod, ndigits, numerator, oct, one, parent, parse,
-             precision,
-             rand, Rational, rem, reverse,
-             setindex!, show, similar, sign, sin, sinh, sinpi, size, sqrt, string,
-             tan, tanh, trailing_zeros, transpose, truncate,
-             typed_hvcat, typed_hcat, vcat, xor, zero, zeros, +, -, *, ==, ^,
-             &, |, <<, >>, ~, <=, >=, <, >, //, /, !=
+import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh, bin, binomial,
+             ceil, checkbounds, conj, convert, cmp, cos, cosh, cospi, cot,
+             coth, dec, deepcopy, deepcopy_internal, denominator, div, divrem,
+             expm1, exp, factorial, floor, gcd, gcdx, getindex, hash, hcat,
+             hex, hypot, intersect, inv, invmod, isequal, iseven, isfinite,
+             isinteger, isless, isodd, isone, isqrt, isreal, iszero, lcm,
+             ldexp, length, log, log1p, mod, ndigits, numerator, oct, one,
+             parent, parse, precision, rand, Rational, rem, reverse, setindex!,
+             show, similar, sign, sin, sincos, sinh, sinpi, size, sqrt, string,
+             tan, tanh, trailing_zeros, transpose, truncate, typed_hvcat,
+             typed_hcat, vcat, xor, zero, zeros, +, -, *, ==, ^, &, |, <<, >>,
+             ~, <=, >=, <, >, //, /, !=
+
+if VERSION >= v"1.5.0-DEV.639"
+  import Base: contains
+end
 
 import LinearAlgebra: det, norm, nullspace, rank, transpose!, hessenberg, tr,
                       lu, lu!, eigvals
@@ -72,18 +74,6 @@ export CyclotomicField, MaximalRealSubfield, NumberField, ComplexField, PadicFie
 
 # Things/constants which are also defined in AbstractAlgebra:
 export ZZ, QQ, RealField, FiniteField, NumberField
-
-if VERSION >= v"0.6.0-dev.2024" # julia started exporting iszero (again?)
-   import Base: iszero
-end
-
-if VERSION >= v"0.7.0-DEV.264" # julia started exporting sincos
-   import Base: sincos
-end
-
-if VERSION >= v"0.7.0-DEV.1144"
-    import Base: isone
-end
 
 ###############################################################################
 #
