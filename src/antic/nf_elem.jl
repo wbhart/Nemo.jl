@@ -51,6 +51,56 @@ end
 
 show_minus_one(::Type{nf_elem}) = false
 
+function needs_parentheses(a::nf_elem)
+   iszero(a) && return false
+   d = degree(parent(a))
+   if d == 1
+      return false
+   end
+   if d == 2
+     return sign(coeff(a, 0))^2 + sign(coeff(a, 1))^2 == 2
+   end
+   nnz = 0
+   for i = 0:a.elem_length
+      if !iszero(coeff(a, i))
+         nnz += 1
+      end
+      if nnz > 1
+         return true
+      end
+   end
+   return nnz > 1
+end
+
+function displayed_with_minus_in_front(a::nf_elem)
+   d = degree(parent(a))
+   if d == 1
+      return coeff(a, 0) < 0
+   end
+   if d == 2
+      s1 = sign(coeff(a, 0))
+      s2 = sign(coeff(a, 1))
+      s1*s2 == 0 && s1 <= 0 && s2 <= 0 && return true
+      return false
+   end
+   nnz = 0
+   minus = false
+   for i = 0:a.elem_length
+      s = sign(coeff(a, i))
+      if s != 0
+         if nnz == 0
+            minus = s < 0
+         end
+         nnz += 1
+      end
+   end
+   if nnz == 1
+      return minus
+   else
+      return false
+   end
+end
+
 characteristic(::AnticNumberField) = 0
 
 ###############################################################################
@@ -303,10 +353,6 @@ function show(io::IO, x::nf_elem)
    print(io, s)
 
 end
-
-needs_parentheses(::Nemo.nf_elem) = true
-
-displayed_with_minus_in_front(::nf_elem) = false
 
 canonical_unit(x::nf_elem) = x
 
