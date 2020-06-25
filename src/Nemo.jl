@@ -81,24 +81,26 @@ export ZZ, QQ, RealField, FiniteField, NumberField
 #
 ###############################################################################
 
+if VERSION > v"1.3.0-rc4"
+  # this should do the dlopen for 1.3 and later
+  # and imports the libxxx variables
+  using Arb_jll
+  using Antic_jll
+else
+  deps_dir = joinpath(@__DIR__, "..", "deps")
+  include(joinpath(deps_dir,"deps.jl"))
+end
+
 iswindows64() = (Sys.iswindows() ? true : false) && (Int == Int64)
 
 const pkgdir = realpath(joinpath(dirname(@__DIR__)))
-const libdir = joinpath(pkgdir, "deps", "usr", "lib")
-const bindir = joinpath(pkgdir, "deps", "usr", "bin")
-if Sys.iswindows()
-   const libmpfr = joinpath(pkgdir, "deps", "usr", "bin", "libmpfr-6")
-   const libarb = joinpath(pkgdir, "deps", "usr", "bin", "libarb")
-   const libantic = joinpath(pkgdir, "deps", "usr", "bin", "libantic")
 
-else
-   const libmpfr = joinpath(pkgdir, "deps", "usr", "lib", "libmpfr")
-   const libarb = joinpath(pkgdir, "deps", "usr", "lib", "libarb")
-   const libantic = joinpath(pkgdir, "deps", "usr", "lib", "libantic")
-end
+#const libdir = joinpath(pkgdir, "deps", "usr", "lib")
+#const bindir = joinpath(pkgdir, "deps", "usr", "bin")
 
 const libflint = LoadFlint.libflint
 const libgmp = LoadFlint.libgmp
+const libmpfr = LoadFlint.libmpfr
 
 function flint_abort()
   error("Problem in the Flint-Subsystem")
@@ -217,7 +219,13 @@ end
 
 const __isthreaded = Ref(false)
 
+
 function __init__()
+  if VERSION < v"1.3.0-rc4"
+    # this does the dlopen for 1.0-1.2
+    check_deps()
+  end
+
    # In case libgmp picks up the wrong libgmp later on, we "unset" the jl_*
    # functions from the julia :libgmp.
 
@@ -226,20 +234,6 @@ function __init__()
    if __isthreaded[]
       ccall((:__gmp_set_memory_functions, :libgmp), Nothing,
             (Int, Int, Int), 0, 0, 0)
-   end
-
-   if "HOSTNAME" in keys(ENV) && ENV["HOSTNAME"] == "juliabox"
-       push!(Libdl.DL_LOAD_PATH, "/usr/local/lib")
-   elseif Sys.islinux()
-       push!(Libdl.DL_LOAD_PATH, libdir)
-       Libdl.dlopen(libgmp)
-       Libdl.dlopen(libmpfr)
-       Libdl.dlopen(libflint)
-       Libdl.dlopen(libarb)
-       Libdl.dlopen(libantic)
-   else
-      push!(Libdl.DL_LOAD_PATH, libdir)
-      push!(Libdl.DL_LOAD_PATH, bindir)
    end
 
    ccall((:flint_set_abort, libflint), Nothing,
