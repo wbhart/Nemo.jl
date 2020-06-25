@@ -38,6 +38,10 @@ if VERSION >= v"1.5.0-DEV.639"
   import Base: contains
 end
 
+if VERSION >= v"1.6.0-DEV.292"
+  import Base: sincospi
+end
+
 import LinearAlgebra: det, norm, nullspace, rank, transpose!, hessenberg, tr,
                       lu, lu!, eigvals
 
