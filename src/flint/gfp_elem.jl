@@ -24,6 +24,8 @@ function check_parent(a::gfp_elem, b::gfp_elem)
    a.parent != b.parent && error("Operations on distinct Galois fields not supported")
 end
 
+isdomain_type(::Type{gfp_elem}) = true
+
 ###############################################################################
 #
 #   Basic manipulation

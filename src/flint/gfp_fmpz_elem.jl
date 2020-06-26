@@ -24,6 +24,8 @@ function check_parent(a::gfp_fmpz_elem, b::gfp_fmpz_elem)
    a.parent != b.parent && error("Operations on distinct residue rings not supported")
 end
 
+isdomain_type(::Type{gfp_fmpz_elem}) = true
+
 ###############################################################################
 #
 #   Basic manipulation
