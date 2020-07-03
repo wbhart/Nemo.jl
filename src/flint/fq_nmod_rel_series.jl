@@ -566,7 +566,7 @@ function addeq!(a::fq_nmod_rel_series, b::fq_nmod_rel_series)
    lenb = min(lenb, prec - b.val)
    ctx = base_ring(a)
    if a.val < b.val
-      z = fq_nmod_rel_series(base_ring(a))
+      z = parent(a)()
       lenz = max(lena, lenb + b.val - a.val)
       ccall((:fq_nmod_poly_set_trunc, libflint), Nothing,
             (Ref{fq_nmod_rel_series}, Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
