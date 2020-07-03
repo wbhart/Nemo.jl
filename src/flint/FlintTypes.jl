@@ -1666,6 +1666,8 @@ mutable struct FqNmodFiniteField <: FinField
          ccall((:fq_nmod_ctx_init_modulus, libflint), Nothing,
             (Ref{FqNmodFiniteField}, Ref{gfp_poly}, Ptr{UInt8}),
 	      z, f, string(s))
+         z.overfields = Dict{Int, Array{FinFieldMorphism, 1}}()
+         z.subfields = Dict{Int, Array{FinFieldMorphism, 1}}()
          if cached
             FqNmodFiniteFieldIDGFPPol[parent(f), f, s] = z
          end
