@@ -182,6 +182,10 @@ end
    @test frobenius(a, 3) == 3*x^4+3*x^3+3*x^2+x+4
 
    @test pth_root(a) == 4*x^4+3*x^3+4*x^2+5*x+2
+
+   @test sqrt(a^2) == a
+
+   @test issquare(a^2)
 end
 
 @testset "fq.rand..." begin

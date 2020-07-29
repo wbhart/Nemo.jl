@@ -132,6 +132,14 @@ frobenius(::fq, ::Int)
 ```
 
 ```@docs
+sqrt(::fq)
+```
+
+```@docs
+issquare(::fq)
+```
+
+```@docs
 pth_root(::fq)
 ```
 
@@ -147,4 +155,6 @@ c = norm(a)
 d = frobenius(a)
 f = frobenius(a, 3)
 g = pth_root(a)
+h = sqrt(a^2)
+j = issquare(a)
 ```

@@ -406,8 +406,29 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
+    sqrt(x::fq)
+> Return the square root of $x$ in the finite field. If $x$ is not a square
+> an exception is raised.
+"""
+function sqrt(x::fq)
+   z = parent(x)()
+   ccall((:fq_sqrt, libflint), Nothing,
+         (Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, x.parent)
+   return z
+end
+
+@doc Markdown.doc"""
+    issquare(x::fq)
+> Returns `true` if $x$ is a square in the finite field (includes zero).
+"""
+function issquare(x::fq)
+   ccall((:fq_is_square, libflint), Bool,
+         (Ref{fq}, Ref{FqFiniteField}), x, x.parent)
+end
+
+@doc Markdown.doc"""
     pth_root(x::fq)
-> Return the $p$-th root of $a$ in the finite field of characteristic $p$. This
+> Return the $p$-th root of $x$ in the finite field of characteristic $p$. This
 > is the inverse operation to the Frobenius map $\sigma_p$.
 """
 function pth_root(x::fq)

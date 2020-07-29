@@ -1600,6 +1600,7 @@ mutable struct FqNmodFiniteField <: FinField
    ninv :: Int
    norm :: Int
    sparse_modulus :: Int
+   is_conway::Int
    a :: Ptr{Nothing}
    j :: Ptr{Nothing}
    len :: Int
@@ -1753,6 +1754,7 @@ end
 mutable struct FqFiniteField <: FinField
    p::Int # fmpz
    sparse_modulus::Int
+   is_conway::Int
    a::Ptr{Nothing}
    j::Ptr{Nothing}
    len::Int
