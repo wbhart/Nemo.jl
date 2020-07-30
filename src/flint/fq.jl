@@ -412,8 +412,9 @@ end
 """
 function sqrt(x::fq)
    z = parent(x)()
-   ccall((:fq_sqrt, libflint), Nothing,
+   res = ccall((:fq_sqrt, libflint), Bool,
          (Ref{fq}, Ref{fq}, Ref{FqFiniteField}), z, x, x.parent)
+   res || error("Not a square in sqrt") 
    return z
 end
 

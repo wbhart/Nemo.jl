@@ -185,6 +185,8 @@ end
 
    @test sqrt(a^2) == a
 
+   @test_throws ErrorException sqrt(x*a^2)
+
    @test issquare(a^2)
 end
 

@@ -350,8 +350,9 @@ divexact(x::fmpz, y::fq_nmod) = divexact(parent(y)(x), y)
 
 function sqrt(x::fq_nmod)
    z = parent(x)()
-   ccall((:fq_nmod_sqrt, libflint), Nothing,
+   res = ccall((:fq_nmod_sqrt, libflint), Bool,
          (Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}), z, x, x.parent)
+   res || error("Not a square in sqrt")
    return z
 end
 
