@@ -12,11 +12,11 @@ function *(a::fmpz, b::AbsSeriesElem)
    len = length(b)
    z = parent(b)()
    fit!(z, len)
-   set_prec!(z, precision(b))
+   z = set_precision!(z, precision(b))
    for i = 1:len
       z = setcoeff!(z, i - 1, a*coeff(b, i - 1))
    end
-   set_length!(z, normalise(z, len))
+   z = set_length!(z, normalise(z, len))
    return z
 end
 
@@ -48,7 +48,7 @@ function divexact(x::AbsSeriesElem, y::fmpz)
    lenx = length(x)
    z = parent(x)()
    fit!(z, lenx)
-   set_prec!(z, precision(x))
+   z = set_precision!(z, precision(x))
    for i = 1:lenx
       z = setcoeff!(z, i - 1, divexact(coeff(x, i - 1), y))
    end
@@ -79,12 +79,12 @@ function *(a::fmpz, b::RelSeriesElem)
    len = pol_length(b)
    z = parent(b)()
    fit!(z, len)
-   set_prec!(z, precision(b))
-   set_val!(z, valuation(b))
+   z = set_precision!(z, precision(b))
+   z = set_valuation!(z, valuation(b))
    for i = 1:len
       z = setcoeff!(z, i - 1, a*polcoeff(b, i - 1))
    end
-   set_length!(z, normalise(z, len))
+   z = set_length!(z, normalise(z, len))
    renormalize!(z)
    return z
 end
@@ -118,8 +118,8 @@ function divexact(x::RelSeriesElem, y::fmpz)
    lenx = pol_length(x)
    z = parent(x)()
    fit!(z, lenx)
-   set_prec!(z, precision(x))
-   set_val!(z, valuation(x))
+   z = set_precision!(z, precision(x))
+   z = set_valuation!(z, valuation(x))
    for i = 1:lenx
       z = setcoeff!(z, i - 1, divexact(polcoeff(x, i - 1), y))
    end
@@ -153,7 +153,7 @@ function *(a::fmpz, b::PolyElem)
    for i = 1:len
       z = setcoeff!(z, i - 1, a*coeff(b, i - 1))
    end
-   set_length!(z, normalise(z, len))
+   z = set_length!(z, normalise(z, len))
    return z
 end
 
@@ -187,7 +187,7 @@ function divexact(a::PolyElem, b::fmpz)
    for i = 1:length(a)
       z = setcoeff!(z, i - 1, divexact(coeff(a, i - 1), b))
    end
-   set_length!(z, length(a))
+   z = set_length!(z, length(a))
    return z
 end
 
@@ -200,7 +200,7 @@ function *(a::fmpz, b::PolyElem{fmpz})
    for i = 1:len
       z = setcoeff!(z, i - 1, a*coeff(b, i - 1))
    end
-   set_length!(z, normalise(z, len))
+   z = set_length!(z, normalise(z, len))
    return z
 end
 
@@ -218,7 +218,7 @@ function divexact(a::PolyElem{fmpz}, b::fmpz)
    for i = 1:length(a)
       z = setcoeff!(z, i - 1, divexact(coeff(a, i - 1), b))
    end
-   set_length!(z, length(a))
+   z = set_length!(z, length(a))
    return z
 end
 

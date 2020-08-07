@@ -22,8 +22,11 @@ elem_type(::Type{ArbPolyRing}) = arb_poly
 length(x::arb_poly) = ccall((:arb_poly_length, libarb), Int,
                                    (Ref{arb_poly},), x)
 
-set_length!(x::arb_poly, n::Int) = ccall((:_arb_poly_set_length, libarb), Nothing,
+function set_length!(x::arb_poly, n::Int)
+   ccall((:_arb_poly_set_length, libarb), Nothing,
                                    (Ref{arb_poly}, Int), x, n)
+   return x
+end
 
 degree(x::arb_poly) = length(x) - 1
 
@@ -210,7 +213,7 @@ function +(x::arb_poly, y::arb_poly)
   z = parent(x)()
   ccall((:arb_poly_add, libarb), Nothing,
               (Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Int),
-              z, x, y, prec(parent(x)))
+              z, x, y, precision(parent(x)))
   return z
 end
 
@@ -218,7 +221,7 @@ function *(x::arb_poly, y::arb_poly)
   z = parent(x)()
   ccall((:arb_poly_mul, libarb), Nothing,
               (Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Int),
-              z, x, y, prec(parent(x)))
+              z, x, y, precision(parent(x)))
   return z
 end
 
@@ -226,7 +229,7 @@ function -(x::arb_poly, y::arb_poly)
   z = parent(x)()
   ccall((:arb_poly_sub, libarb), Nothing,
               (Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Int),
-              z, x, y, prec(parent(x)))
+              z, x, y, precision(parent(x)))
   return z
 end
 
@@ -235,7 +238,7 @@ function ^(x::arb_poly, y::Int)
   z = parent(x)()
   ccall((:arb_poly_pow_ui, libarb), Nothing,
               (Ref{arb_poly}, Ref{arb_poly}, UInt, Int),
-              z, x, y, prec(parent(x)))
+              z, x, y, precision(parent(x)))
   return z
 end
 
@@ -303,7 +306,7 @@ function divrem(x::arb_poly, y::arb_poly)
    r = parent(x)()
    if (ccall((:arb_poly_divrem, libarb), Int,
          (Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Int),
-               q, r, x, y, prec(parent(x))) == 1)
+               q, r, x, y, precision(parent(x))) == 1)
       return (q, r)
    else
       throw(DivideError())
@@ -341,7 +344,7 @@ function mullow(x::arb_poly, y::arb_poly, n::Int)
    z = parent(x)()
    ccall((:arb_poly_mullow, libarb), Nothing,
          (Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Int, Int),
-            z, x, y, n, prec(parent(x)))
+            z, x, y, n, precision(parent(x)))
    return z
 end
 
@@ -369,7 +372,7 @@ function evaluate(x::arb_poly, y::arb)
    z = parent(y)()
    ccall((:arb_poly_evaluate, libarb), Nothing,
                 (Ref{arb}, Ref{arb_poly}, Ref{arb}, Int),
-                z, x, y, prec(parent(y)))
+                z, x, y, precision(parent(y)))
    return z
 end
 
@@ -383,7 +386,7 @@ function evaluate2(x::arb_poly, y::arb)
    w = parent(y)()
    ccall((:arb_poly_evaluate2, libarb), Nothing,
                 (Ref{arb}, Ref{arb}, Ref{arb_poly}, Ref{arb}, Int),
-                z, w, x, y, prec(parent(y)))
+                z, w, x, y, precision(parent(y)))
    return z, w
 end
 
@@ -391,7 +394,7 @@ function evaluate(x::arb_poly, y::acb)
    z = parent(y)()
    ccall((:arb_poly_evaluate_acb, libarb), Nothing,
                 (Ref{acb}, Ref{arb_poly}, Ref{acb}, Int),
-                z, x, y, prec(parent(y)))
+                z, x, y, precision(parent(y)))
    return z
 end
 
@@ -405,7 +408,7 @@ function evaluate2(x::arb_poly, y::acb)
    w = parent(y)()
    ccall((:arb_poly_evaluate2_acb, libarb), Nothing,
                 (Ref{acb}, Ref{acb}, Ref{arb_poly}, Ref{acb}, Int),
-                z, w, x, y, prec(parent(y)))
+                z, w, x, y, precision(parent(y)))
    return z, w
 end
 
@@ -463,7 +466,7 @@ function compose(x::arb_poly, y::arb_poly)
    z = parent(x)()
    ccall((:arb_poly_compose, libarb), Nothing,
                 (Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Int),
-                z, x, y, prec(parent(x)))
+                z, x, y, precision(parent(x)))
    return z
 end
 
@@ -476,14 +479,14 @@ end
 function derivative(x::arb_poly)
    z = parent(x)()
    ccall((:arb_poly_derivative, libarb), Nothing,
-                (Ref{arb_poly}, Ref{arb_poly}, Int), z, x, prec(parent(x)))
+                (Ref{arb_poly}, Ref{arb_poly}, Int), z, x, precision(parent(x)))
    return z
 end
 
 function integral(x::arb_poly)
    z = parent(x)()
    ccall((:arb_poly_integral, libarb), Nothing,
-                (Ref{arb_poly}, Ref{arb_poly}, Int), z, x, prec(parent(x)))
+                (Ref{arb_poly}, Ref{arb_poly}, Int), z, x, precision(parent(x)))
    return z
 end
 
@@ -528,7 +531,7 @@ function from_roots(R::ArbPolyRing, b::Array{arb, 1})
    z = R()
    tmp = arb_vec(b)
    ccall((:arb_poly_product_roots, libarb), Nothing,
-                (Ref{arb_poly}, Ptr{arb_struct}, Int, Int), z, tmp, length(b), prec(R))
+                (Ref{arb_poly}, Ptr{arb_struct}, Int, Int), z, tmp, length(b), precision(R))
    arb_vec_clear(tmp, length(b))
    return z
 end
@@ -541,7 +544,7 @@ function evaluate_fast(x::arb_poly, b::Array{arb, 1})
    tmp = arb_vec(b)
    ccall((:arb_poly_evaluate_vec_fast, libarb), Nothing,
                 (Ptr{arb_struct}, Ref{arb_poly}, Ptr{arb_struct}, Int, Int),
-            tmp, x, tmp, length(b), prec(parent(x)))
+            tmp, x, tmp, length(b), precision(parent(x)))
    res = array(base_ring(parent(x)), tmp, length(b))
    arb_vec_clear(tmp, length(b))
    return res
@@ -554,7 +557,7 @@ function interpolate_newton(R::ArbPolyRing, xs::Array{arb, 1}, ys::Array{arb, 1}
    ysv = arb_vec(ys)
    ccall((:arb_poly_interpolate_newton, libarb), Nothing,
                 (Ref{arb_poly}, Ptr{arb_struct}, Ptr{arb_struct}, Int, Int),
-            z, xsv, ysv, length(xs), prec(R))
+            z, xsv, ysv, length(xs), precision(R))
    arb_vec_clear(xsv, length(xs))
    arb_vec_clear(ysv, length(ys))
    return z
@@ -567,7 +570,7 @@ function interpolate_barycentric(R::ArbPolyRing, xs::Array{arb, 1}, ys::Array{ar
    ysv = arb_vec(ys)
    ccall((:arb_poly_interpolate_barycentric, libarb), Nothing,
                 (Ref{arb_poly}, Ptr{arb_struct}, Ptr{arb_struct}, Int, Int),
-            z, xsv, ysv, length(xs), prec(R))
+            z, xsv, ysv, length(xs), precision(R))
    arb_vec_clear(xsv, length(xs))
    arb_vec_clear(ysv, length(ys))
    return z
@@ -580,7 +583,7 @@ function interpolate_fast(R::ArbPolyRing, xs::Array{arb, 1}, ys::Array{arb, 1})
    ysv = arb_vec(ys)
    ccall((:arb_poly_interpolate_fast, libarb), Nothing,
                 (Ref{arb_poly}, Ptr{arb_struct}, Ptr{arb_struct}, Int, Int),
-            z, xsv, ysv, length(xs), prec(R))
+            z, xsv, ysv, length(xs), precision(R))
    arb_vec_clear(xsv, length(xs))
    arb_vec_clear(ysv, length(ys))
    return z
@@ -609,7 +612,7 @@ end
 """
 function roots_upper_bound(x::arb_poly)
    z = base_ring(x)()
-   p = prec(base_ring(x))
+   p = precision(base_ring(x))
    GC.@preserve x z begin
       t = ccall((:arb_rad_ptr, libarb), Ptr{mag_struct}, (Ref{arb}, ), z)
       ccall((:arb_poly_root_bound_fujiwara, libarb), Nothing,
@@ -656,21 +659,21 @@ end
 function mul!(z::arb_poly, x::arb_poly, y::arb_poly)
    ccall((:arb_poly_mul, libarb), Nothing,
                 (Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Int),
-                    z, x, y, prec(parent(z)))
+                    z, x, y, precision(parent(z)))
    return z
 end
 
 function addeq!(z::arb_poly, x::arb_poly)
    ccall((:arb_poly_add, libarb), Nothing,
                 (Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Int),
-                    z, z, x, prec(parent(z)))
+                    z, z, x, precision(parent(z)))
    return z
 end
 
 function add!(z::arb_poly, x::arb_poly, y::arb_poly)
    ccall((:arb_poly_add, libarb), Nothing,
                 (Ref{arb_poly}, Ref{arb_poly}, Ref{arb_poly}, Int),
-                    z, x, y, prec(parent(z)))
+                    z, x, y, precision(parent(z)))
    return z
 end
 
