@@ -976,7 +976,13 @@ function _eig_simple(A::acb_mat; check::Bool = true, alg = :default)
       throw(error("Algorithm $alg not supported"))
   end
 
-  check && b == 0 && throw(error("Could not isolate eigenvalues of matrix $A"))
+  if check && b == 0
+    if nrows(A) <= 10
+      throw(error("Could not isolate eigenvalues of matrix $A"))
+    else
+      throw(error("Could not isolate eigenvalues"))
+    end
+  end
   z = array(base_ring(A), v, n)
   acb_vec_clear(v, n)
   acb_vec_clear(v_approx, n)
