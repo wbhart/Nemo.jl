@@ -57,7 +57,7 @@ end
    S, x = PolynomialRing(R, "x")
    f = x^3 + 2x^2 + x + 1
 
-   @test string(f) == "x^3+2*x^2+x+1"
+   @test sprint(show, "text/plain", f) == "x^3 + 2*x^2 + x + 1"
 end
 
 @testset "fmpz_mod_poly.manipulation..." begin

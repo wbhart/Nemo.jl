@@ -94,19 +94,6 @@ canonical_unit(a::fq_nmod_poly) = canonical_unit(lead(a))
 #
 ################################################################################
 
-function show(io::IO, x::fq_nmod_poly)
-   if length(x) == 0
-      print(io, "0")
-   else
-      cstr = ccall((:fq_nmod_poly_get_str_pretty, libflint), Ptr{UInt8},
-                  (Ref{fq_nmod_poly}, Ptr{UInt8}, Ref{FqNmodFiniteField}),
-                  x, string(var(parent(x))),
-                  (x.parent).base_ring)
-      print(io, unsafe_string(cstr))
-      ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
-   end
-end
-
 function show(io::IO, R::FqNmodPolyRing)
   print(io, "Univariate Polynomial Ring in ")
   print(io, string(var(R)))
