@@ -114,17 +114,6 @@ characteristic(R::NmodPolyRing) = modulus(R)
 #
 ################################################################################
 
-function show(io::IO, x::T) where T <: Zmodn_poly
-  if length(x) == 0
-    print(io, "0")
-  else
-    cstr = ccall((:nmod_poly_get_str_pretty, libflint), Ptr{UInt8},
-            (Ref{T}, Ptr{UInt8}), x, string(var(parent(x))))
-    print(io, unsafe_string(cstr))
-    ccall((:flint_free, libflint), Nothing, (Ptr{UInt8}, ), cstr)
-  end
-end
-
 function show(io::IO, R::NmodPolyRing)
   print(io, "Univariate Polynomial Ring in ")
   print(io, string(var(R)))

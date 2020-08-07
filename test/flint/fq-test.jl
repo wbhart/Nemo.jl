@@ -47,7 +47,7 @@ end
 
    a = 3x^4 + 2x^3 + 4x^2 + x + 1
 
-   @test string(a) == "3*x^4+2*x^3+4*x^2+x+1"
+   @test sprint(show, "text/plain", a) == "3*x^4 + 2*x^3 + 4*x^2 + x + 1"
 end
 
 @testset "fq.manipulation..." begin

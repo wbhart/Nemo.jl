@@ -120,25 +120,31 @@ canonical_unit(x::fq_nmod) = x
 #
 ###############################################################################
 
-function show(io::IO, x::fq_nmod)
-   cstr = ccall((:fq_nmod_get_str_pretty, libflint), Ptr{UInt8},
-                (Ref{fq_nmod}, Ref{FqNmodFiniteField}), x, x.parent)
+function AbstractAlgebra.expressify(a::fq_nmod; context = nothing)
+   x = unsafe_string(reinterpret(Cstring, a.parent.var))
+   d = degree(a.parent)
 
-   print(io, unsafe_string(cstr))
-
-   ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
+   sum = Expr(:call, :+)
+   for k in (d - 1):-1:0
+        c = coeff(a, k)
+        if !iszero(c)
+            xk = k < 1 ? 1 : k == 1 ? x : Expr(:call, :^, x, k)
+            if isone(c)
+                push!(sum.args, Expr(:call, :*, xk))
+            else
+                push!(sum.args, Expr(:call, :*, expressify(c, context = context), xk))
+            end
+        end
+    end
+    return sum
 end
+
+show(io::IO, a::fq_nmod) = print(io, AbstractAlgebra.obj_to_string(a, context = io))
 
 function show(io::IO, a::FqNmodFiniteField)
    print(io, "Finite field of degree ", degree(a))
    print(io, " over F_", characteristic(a))
 end
-
-needs_parentheses(x::fq_nmod) = x.length > 1
-
-displayed_with_minus_in_front(x::fq_nmod) = false
-
-show_minus_one(::Type{fq_nmod}) = true
 
 ###############################################################################
 #

@@ -84,57 +84,6 @@ characteristic(R::ZmodNFmpzPolyRing) = modulus(R)
 #
 ################################################################################
 
-function show(io::IO, x::Zmodn_fmpz_poly)
-   len = length(x)
-   S = var(parent(x))
-
-   if len == 0
-      print(io, base_ring(x)(0))
-   else
-      for i = 1:len - 1
-         c = coeff(x, len - i)
-         bracket = needs_parentheses(c)
-         if !iszero(c)
-            if i != 1 && !displayed_with_minus_in_front(c)
-               print(io, "+")
-            end
-            if !isone(c) && (c != -1 || show_minus_one(typeof(c)))
-               if bracket
-                  print(io, "(")
-               end
-               show(io, c)
-               if bracket
-                  print(io, ")")
-               end
-               print(io, "*")
-            end
-            if c == -1 && !show_minus_one(typeof(c))
-               print(io, "-")
-            end
-            print(io, string(S))
-            if len - i != 1
-               print(io, "^")
-               print(io, len - i)
-            end
-         end
-      end
-      c = coeff(x, 0)
-      bracket = needs_parentheses(c)
-      if !iszero(c)
-         if len != 1 && !displayed_with_minus_in_front(c)
-            print(io, "+")
-         end
-         if bracket
-            print(io, "(")
-         end
-         show(io, c)
-         if bracket
-            print(io, ")")
-         end
-      end
-   end
-end
-
 function show(io::IO, R::ZmodNFmpzPolyRing)
   print(io, "Univariate Polynomial Ring in ")
   print(io, string(var(R)))

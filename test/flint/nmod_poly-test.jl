@@ -91,7 +91,7 @@ end
 
   a = x^3 + x + 1
 
-  @test string(a) == "x^3+x+1"
+  @test sprint(show, "text/plain", a) == "x^3 + x + 1"
 end
 
 @testset "nmod_poly.manipulation..." begin

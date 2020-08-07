@@ -291,19 +291,6 @@ end
 #
 ###############################################################################
 
-function show(io::IO, x::fmpq_mpoly)
-   if length(x) == 0
-      print(io, "0")
-   else
-      cstr = ccall((:fmpq_mpoly_get_str_pretty, libflint), Ptr{UInt8},
-          (Ref{fmpq_mpoly}, Ptr{Ptr{UInt8}}, Ref{FmpqMPolyRing}),
-          x, [string(s) for s in symbols(parent(x))], x.parent)
-      print(io, unsafe_string(cstr))
-
-      ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
-   end
-end
-
 function show(io::IO, p::FmpqMPolyRing)
    local max_vars = 5 # largest number of variables to print
    n = nvars(p)

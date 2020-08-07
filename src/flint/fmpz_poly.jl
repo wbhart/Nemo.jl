@@ -71,19 +71,6 @@ canonical_unit(a::fmpz_poly) = canonical_unit(lead(a))
 #
 ###############################################################################
 
-function show(io::IO, x::fmpz_poly)
-   if length(x) == 0
-      print(io, "0")
-   else
-      cstr = ccall((:fmpz_poly_get_str_pretty, libflint), Ptr{UInt8},
-          (Ref{fmpz_poly}, Ptr{UInt8}), x, string(var(parent(x))))
-
-      print(io, unsafe_string(cstr))
-
-      ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
-   end
-end
-
 function show(io::IO, p::FmpzPolyRing)
    print(io, "Univariate Polynomial Ring in ")
    print(io, string(var(p)))
