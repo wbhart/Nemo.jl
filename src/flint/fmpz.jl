@@ -172,7 +172,7 @@ fits(::Type{Int}, a::fmpz) = ccall((:fmpz_fits_si, libflint), Bool,
 > Returns `true` if the given integer fits into a `UInt`, otherwise returns
 > `false`.
 """
-fits(::Type{UInt}, a::fmpz) = sign(a) < 0 ? false :
+fits(::Type{UInt}, a::fmpz) = a < 0 ? false :
               ccall((:fmpz_abs_fits_ui, libflint), Bool, (Ref{fmpz},), a)
 
 @doc Markdown.doc"""
