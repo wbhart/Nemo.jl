@@ -20,7 +20,7 @@ platform:
 #    - /release-.*/
 
 allow_failures:
-    - julia_version: nightly
+  - julia_version: nightly
 
 notifications:
   - provider: Email
