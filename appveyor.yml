@@ -19,6 +19,9 @@ platform:
 #    - master
 #    - /release-.*/
 
+allow_failures:
+    - julia_version: nightly
+
 notifications:
   - provider: Email
     on_build_success: false
