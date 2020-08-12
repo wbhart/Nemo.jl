@@ -31,9 +31,10 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+# do not export div and divrem
 export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
-       bell, isprime, fdiv, cdiv, tdiv, div, rem, mod, gcd, lcm, invmod,
-       powmod, abs, divrem, isqrt, popcount, prevpow2, nextpow2, ndigits, dec,
+       bell, isprime, fdiv, cdiv, tdiv, rem, mod, gcd, lcm, invmod,
+       powmod, abs, isqrt, popcount, prevpow2, nextpow2, ndigits, dec,
        bin, oct, hex, base, one, zero, divexact, fits, sign, nbits, deepcopy,
        tdivpow2, fdivpow2, cdivpow2, flog, clog, cmpabs, clrbit!, setbit!,
        combit!, crt, divisible, divisor_lenstra, fdivrem, tdivrem, fmodpow2,
@@ -317,7 +318,7 @@ end
 # Metaprogram to define functions fdiv, cdiv, tdiv, div
 
 for (fJ, fC) in ((:fdiv, :fdiv_q), (:cdiv, :cdiv_q), (:tdiv, :tdiv_q),
-                 (:div, :tdiv_q))
+                 (:div, :fdiv_q))
     @eval begin
         function ($fJ)(x::fmpz, y::fmpz)
             iszero(y) && throw(DivideError())
@@ -327,6 +328,17 @@ for (fJ, fC) in ((:fdiv, :fdiv_q), (:cdiv, :cdiv_q), (:tdiv, :tdiv_q),
             return z
         end
     end
+end
+
+# N.B. we do not export the internal definition of div
+# which agrees with the internal definition of AbstractAlgebra
+# Here we set Base.div to a version that agrees with Base
+function Base.div(x::fmpz, y::fmpz)
+    iszero(y) && throw(DivideError())
+    z = fmpz()
+    ccall((:fmpz_tdiv_q, libflint), Nothing,
+	  (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
+    return z
 end
 
 function divexact(x::fmpz, y::fmpz)
@@ -502,7 +514,13 @@ mod(x::fmpz, y::Integer) = mod(x, fmpz(y))
 
 div(x::Integer, y::fmpz) = div(fmpz(x), y)
 
+# Note Base.div is different to Nemo.div
+Base.div(x::Integer, y::fmpz) = Base.div(fmpz(x), y)
+
 div(x::fmpz, y::Integer) = div(x, fmpz(y))
+
+# Note Base.div is different to Nemo.div
+Base.div(x::fmpz, y::Integer) = Base.div(x, fmpz(y))
 
 divrem(x::fmpz, y::Integer) = divrem(x, fmpz(y))
 
@@ -515,6 +533,16 @@ divrem(x::Integer, y::fmpz) = divrem(fmpz(x), y)
 ###############################################################################
 
 function divrem(x::fmpz, y::fmpz)
+    iszero(y) && throw(DivideError())
+    z1 = fmpz()
+    z2 = fmpz()
+    ccall((:fmpz_fdiv_qr, libflint), Nothing,
+          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z1, z2, x, y)
+    z1, z2
+end
+
+# N.B. Base.divrem differs from Nemo.divrem
+function Base.divrem(x::fmpz, y::fmpz)
     iszero(y) && throw(DivideError())
     z1 = fmpz()
     z2 = fmpz()

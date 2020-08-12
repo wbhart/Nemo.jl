@@ -337,7 +337,7 @@ end
 #
 ################################################################################
 
-function div(x::fq_nmod_poly, y::fq_nmod_poly)
+function Base.div(x::fq_nmod_poly, y::fq_nmod_poly)
    check_parent(x,y)
    z = parent(x)()
    ccall((:fq_nmod_poly_div_basecase, libflint), Nothing,
@@ -357,7 +357,7 @@ end
 
 mod(x::fq_nmod_poly, y::fq_nmod_poly) = rem(x, y)
 
-function divrem(x::fq_nmod_poly, y::fq_nmod_poly)
+function Base.divrem(x::fq_nmod_poly, y::fq_nmod_poly)
    check_parent(x,y)
    z = parent(x)()
    r = parent(x)()

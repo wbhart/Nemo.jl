@@ -559,7 +559,7 @@ end
 #
 ###############################################################################
 
-function div(a::fmpq_mpoly, b::fmpq_mpoly)
+function Base.div(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
    q = parent(a)()
    ccall((:fmpq_mpoly_div, libflint), Nothing,
@@ -569,7 +569,7 @@ function div(a::fmpq_mpoly, b::fmpq_mpoly)
    return q
 end
 
-function divrem(a::fmpq_mpoly, b::fmpq_mpoly)
+function Base.divrem(a::fmpq_mpoly, b::fmpq_mpoly)
    check_parent(a, b)
    q = parent(a)()
    r = parent(a)()
@@ -580,7 +580,7 @@ function divrem(a::fmpq_mpoly, b::fmpq_mpoly)
    return q, r
 end
 
-function divrem(a::fmpq_mpoly, b::Array{fmpq_mpoly, 1})
+function Base.divrem(a::fmpq_mpoly, b::Array{fmpq_mpoly, 1})
    len = length(b)
    q = [parent(a)() for i in 1:len]
    r = parent(a)()

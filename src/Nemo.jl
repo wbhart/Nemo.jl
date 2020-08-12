@@ -21,9 +21,10 @@ using LoadFlint
 
 using Pkg
 
+# N.B: do not import div, divrem from Base
 import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh, bin, binomial,
              ceil, checkbounds, conj, convert, cmp, cos, cosh, cospi, cot,
-             coth, dec, deepcopy, deepcopy_internal, denominator, div, divrem,
+             coth, dec, deepcopy, deepcopy_internal, denominator,
              expm1, exp, factorial, floor, gcd, gcdx, getindex, hash, hcat,
              hex, hypot, intersect, inv, invmod, isequal, iseven, isfinite,
              isinteger, isless, isodd, isone, isqrt, isreal, iszero, lcm,
@@ -422,6 +423,16 @@ const FiniteField = FlintFiniteField
 
 const RealField = ArbField
 const ComplexField = AcbField
+
+###############################################################################
+#
+#   Internal definitions
+#
+###############################################################################
+
+div(a, b) = Base.div(a, b)
+
+divrem(a, b) = Base.divrem(a, b)
 
 ###############################################################################
 #

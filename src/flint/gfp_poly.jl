@@ -162,7 +162,7 @@ end
 #
 ################################################################################
 
-function divrem(x::gfp_poly, y::gfp_poly)
+function Base.divrem(x::gfp_poly, y::gfp_poly)
   check_parent(x,y)
   iszero(y) && throw(DivideError())
   q = parent(x)()
@@ -173,7 +173,7 @@ function divrem(x::gfp_poly, y::gfp_poly)
   return q, r
 end
 
-function div(x::gfp_poly, y::gfp_poly)
+function Base.div(x::gfp_poly, y::gfp_poly)
   check_parent(x,y)
   iszero(y) && throw(DivideError())
   q = parent(x)()

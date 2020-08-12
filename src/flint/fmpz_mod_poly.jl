@@ -378,7 +378,7 @@ function divexact(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   return q
 end
 
-div(x::T, y::T) where {T <: Zmodn_fmpz_poly} = divexact(x,y)
+Base.div(x::T, y::T) where {T <: Zmodn_fmpz_poly} = divexact(x,y)
 
 ################################################################################
 #
@@ -420,7 +420,7 @@ end
 #
 ################################################################################
 
-function divrem(x::T, y::T) where {T <: Zmodn_fmpz_poly}
+function Base.divrem(x::T, y::T) where {T <: Zmodn_fmpz_poly}
   check_parent(x,y)
   iszero(y) && throw(DivideError())
   q = parent(x)()
