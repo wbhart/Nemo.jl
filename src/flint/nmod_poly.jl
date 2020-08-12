@@ -6,7 +6,7 @@
 
 export NmodPolyRing, nmod_poly, parent, base_ring, elem_type, length, zero,
        one, gen, isgen, iszero, var, deepcopy, show, truncate, mullow, reverse,
-       shift_left, shift_right, divexact, divrem, rem, gcd, resultant,
+       shift_left, shift_right, divexact, rem, gcd, resultant,
        evaluate, derivative, compose, interpolate, inflate, deflate, lift,
        isirreducible, issquarefree, factor, factor_squarefree,
        factor_distinct_deg, factor_shape, setcoeff!, canonical_unit,
@@ -431,7 +431,7 @@ end
 #
 ################################################################################
 
-function divrem(x::nmod_poly, y::nmod_poly)
+function Base.divrem(x::nmod_poly, y::nmod_poly)
   check_parent(x,y)
   iszero(y) && throw(DivideError())
   !lead_isunit(y) && error("Impossible inverse in divrem")
@@ -443,7 +443,7 @@ function divrem(x::nmod_poly, y::nmod_poly)
   return q, r
 end
 
-function div(x::nmod_poly, y::nmod_poly)
+function Base.div(x::nmod_poly, y::nmod_poly)
   check_parent(x,y)
   iszero(y) && throw(DivideError())
   !lead_isunit(y) && error("Impossible inverse in div")

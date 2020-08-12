@@ -401,7 +401,7 @@ end
 
 rem(x::fmpq_poly, y::fmpq_poly) = mod(x, y)
 
-function divrem(x::fmpq_poly, y::fmpq_poly)
+function Base.divrem(x::fmpq_poly, y::fmpq_poly)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    q = parent(x)()
@@ -418,7 +418,7 @@ end
 #
 ###############################################################################
 
-function div(x::fmpq_poly, y::fmpq_poly)
+function Base.div(x::fmpq_poly, y::fmpq_poly)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    z = parent(x)()

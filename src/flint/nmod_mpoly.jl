@@ -512,7 +512,7 @@ end
 #
 ###############################################################################
 
-function div(a::nmod_mpoly, b::nmod_mpoly)
+function Base.div(a::nmod_mpoly, b::nmod_mpoly)
    check_parent(a, b)
    q = parent(a)()
    ccall((:nmod_mpoly_div, libflint), Nothing,
@@ -522,7 +522,7 @@ function div(a::nmod_mpoly, b::nmod_mpoly)
    return q
 end
 
-function divrem(a::nmod_mpoly, b::nmod_mpoly)
+function Base.divrem(a::nmod_mpoly, b::nmod_mpoly)
    check_parent(a, b)
    q = parent(a)()
    r = parent(a)()
@@ -533,7 +533,7 @@ function divrem(a::nmod_mpoly, b::nmod_mpoly)
    return q, r
 end
 
-function divrem(a::nmod_mpoly, b::Array{nmod_mpoly, 1})
+function Base.divrem(a::nmod_mpoly, b::Array{nmod_mpoly, 1})
    len = length(b)
    q = [parent(a)() for i in 1:len]
    r = parent(a)()

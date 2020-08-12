@@ -323,7 +323,7 @@ divexact(x::acb_poly, y::Rational{T}) where {T <: Integer} = x * inv(base_ring(p
 #
 ###############################################################################
 
-function divrem(x::acb_poly, y::acb_poly)
+function Base.divrem(x::acb_poly, y::acb_poly)
    iszero(y) && throw(DivideError())
    q = parent(x)()
    r = parent(x)()

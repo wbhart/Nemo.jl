@@ -341,7 +341,7 @@ function divexact(x::fmpz_poly, y::fmpz_poly)
    return z
 end
 
-function divrem(x::fmpz_poly, y::fmpz_poly)
+function Base.divrem(x::fmpz_poly, y::fmpz_poly)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    z = parent(x)()

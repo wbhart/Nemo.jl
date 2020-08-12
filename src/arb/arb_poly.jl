@@ -300,7 +300,7 @@ divexact(x::arb_poly, y::Rational{T}) where {T <: Integer} = x * inv(base_ring(p
 #
 ###############################################################################
 
-function divrem(x::arb_poly, y::arb_poly)
+function Base.divrem(x::arb_poly, y::arb_poly)
    iszero(y) && throw(DivideError())
    q = parent(x)()
    r = parent(x)()
