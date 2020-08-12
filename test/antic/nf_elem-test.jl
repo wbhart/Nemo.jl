@@ -202,8 +202,8 @@ end
       K, a = NumberField(x^2 - n, "a")
       for k in 1:5
          z = rand(K, -10:10)
-         for i in 0:100
-            for j in 1:100
+         for i in 0:20
+            for j in 1:20
                @assert z - i == z - K(i)
                @assert z + i == z + K(i)
                @assert i + z == K(i) + z
