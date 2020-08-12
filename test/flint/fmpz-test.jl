@@ -156,6 +156,15 @@ end
    @test tdiv(b, a) == 2
 
    @test div(b, a) == 2
+
+   @test div(-fmpz(2), fmpz(3)) == 0
+   @test Nemo.div(-fmpz(2), fmpz(3)) == -1
+
+   @test div(-2, fmpz(3)) == 0
+   @test Nemo.div(-2, fmpz(3)) == -1
+
+   @test div(-fmpz(2), 3) == 0
+   @test Nemo.div(-fmpz(2), 3) == -1
 end
 
 @testset "fmpz.remainder..." begin
@@ -434,6 +443,14 @@ end
    @test tdivrem(fmpz(12), fmpz(5)) == (fmpz(2), fmpz(2))
 
    @test divrem(fmpz(12), fmpz(5)) == (fmpz(2), fmpz(2))
+
+   @test divrem(-fmpz(2), fmpz(3)) == (fmpz(0), -fmpz(2))
+   @test divrem(-2, fmpz(3)) == (fmpz(0), -fmpz(2))
+   @test divrem(-fmpz(2), 3) == (fmpz(0), -fmpz(2))
+
+   @test Nemo.divrem(-fmpz(2), fmpz(3)) == (-fmpz(1), fmpz(1))
+   @test Nemo.divrem(-2, fmpz(3)) == (-fmpz(1), fmpz(1))
+   @test Nemo.divrem(-fmpz(2), 3) == (-fmpz(1), fmpz(1))
 end
 
 @testset "fmpz.roots..." begin

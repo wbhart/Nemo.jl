@@ -21,6 +21,8 @@ using LoadFlint
 
 using Pkg
 
+import AbstractAlgebra: div, divrem
+
 # N.B: do not import div, divrem from Base
 import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh, bin, binomial,
              ceil, checkbounds, conj, convert, cmp, cos, cosh, cospi, cot,
@@ -426,7 +428,7 @@ const ComplexField = AcbField
 
 ###############################################################################
 #
-#   Internal definitions
+#   Internal/External definitions
 #
 ###############################################################################
 
