@@ -11,6 +11,10 @@ Claus Fieker with contributions from others.
 - [http://nemocas.org/](http://nemocas.org)(Website)
 - [http://nemocas.github.io/Nemo.jl/latest/](http://nemocas.github.io/Nemo.jl/latest/) (Online documentation)
 
+The official Nemo repository is at:
+
+- [https://github.com/Nemocas/Nemo.jl](https://github.com/Nemocas/Nemo.jl)
+
 Nemo currently provides:
 
 * Wrappers of MPIR, Flint, Arb and Antic
