@@ -126,6 +126,10 @@ Function                    | Return | Rounding
 `tdivrem(a::fmpz, b::fmpz)` | q, r   | towards zero
 `fdivrem(a::fmpz, b::fmpz)` | q, r   | towards minus infinity 
 
+N.B: the internal definition of `Nemo.div` and `Nemo.divrem` are the same as
+`fdiv` and `fdivrem`. The definitions in the table are of `Base.div` and
+`Base.divrem` which agree with Julia's definitions of `div` and `divrem`.
+
 Nemo also offers the following ad hoc division operators. The notation and
 description is as for the other Euclidean division functions.
 
@@ -137,6 +141,10 @@ Function                    | Return | Rounding
 `tdiv(a::fmpz, b::Int)`     | q      | towards zero
 `fdiv(a::fmpz, b::Int)`     | q      | towards minus infinity
 `cdiv(a::fmpz, b::Int)`     | q      | towards plus infinity
+
+N.B: the internal definition of `Nemo.div` is the same as `fdiv`. The
+definition in the table is `Base.div` which agrees with Julia's
+definition of `div`.
 
 The following functions are also available, for the case where one is dividing
 by a power of $2$. In other words, for Euclidean division of the form
