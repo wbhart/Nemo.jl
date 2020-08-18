@@ -136,9 +136,18 @@ julia> @time divexact((u*exp(x*u)), (exp(u)-1));
 ## Building dependencies from source
 
 Nemo depends on various C libraries which are installed using binaries by default.
-Building from source can be enabled by setting the environment variable `NEMO_SOURCE_BUILD=1`
-and then doing `Pkg.build("Nemo")` or `Pkg.add("Nemo")` depending on whether Nemo
-was already installed.
+With julia version >= 1.3, the use of these binaries can be overridden by putting the following into the file `~/.julia/artifacts/Overrides.toml`:
+```toml
+[e134572f-a0d5-539d-bddf-3cad8db41a82]
+FLINT = "/prefix/for/libflint"
+
+[d9960996-1013-53c9-9ba4-74a4155039c3]
+Arb = "/prefix/for/libarb"
+
+[e21ec000-9f72-519e-ba6d-10061e575a27]
+Antic = "/prefix/for/libantic"
+```
+(If only a specific library should be overridden, only the specific entry should be added.)
 
 ## Experimental threading support for flint
 
