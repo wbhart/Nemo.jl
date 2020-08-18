@@ -440,6 +440,30 @@ end
    end
 end
 
+@testset "fmpz_mpoly.sqrt..." begin
+   for num_vars = 1:4
+      var_names = ["x$j" for j in 1:num_vars]
+      ord = rand_ordering()
+
+      S, varlist = PolynomialRing(FlintZZ, var_names, ordering = ord)
+
+      for iter = 1:10
+         f = rand(S, 0:4, 0:5, -10:10)
+
+         g = sqrt(f^2)
+
+         @test g^2 == f^2
+         @test issquare(f^2)
+
+         if f != 0
+            x = var_names[rand(1:num_vars)]
+            @test_throws ErrorException sqrt(f^2*(x^2 - x))
+            @test !issquare(f^2*(x^2 - x))
+         end
+      end
+   end
+end
+
 @testset "fmpz_mpoly.evaluation..." begin
    R = FlintZZ
 

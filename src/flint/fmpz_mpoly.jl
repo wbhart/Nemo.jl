@@ -562,6 +562,27 @@ end
 
 ###############################################################################
 #
+#   Square root
+#
+###############################################################################
+
+function sqrt(a::fmpz_mpoly)
+   q = parent(a)()
+   flag = ccall((:fmpz_mpoly_sqrt, libflint), Bool,
+                (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
+                q, a, a.parent)
+   !flag && error("Not a square in sqrt")
+   return q
+end
+
+function issquare(a::fmpz_mpoly)
+   return ccall((:fmpz_mpoly_is_square, libflint), Bool,
+                (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
+                 a, a.parent)
+end
+
+###############################################################################
+#
 #   Calculus
 #
 ###############################################################################
