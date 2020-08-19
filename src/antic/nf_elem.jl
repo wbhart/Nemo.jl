@@ -341,17 +341,13 @@ function show(io::IO, a::AnticNumberField)
    print(io, " with defining polynomial ", a.pol)
 end
 
-function show(io::IO, x::nf_elem)
-   cstr = ccall((:nf_elem_get_str_pretty, libantic), Ptr{UInt8},
-                (Ref{nf_elem}, Ptr{UInt8}, Ref{AnticNumberField}),
-                 x, string(var(parent(x))), parent(x))
-   s = unsafe_string(cstr)
-   ccall((:flint_free, libflint), Nothing, (Ptr{UInt8},), cstr)
+function AbstractAlgebra.expressify(a::nf_elem; context = nothing)
+   return AbstractAlgebra.expressify(parent(parent(a).pol)(a), var(parent(a)),
+                                     context = context)
+end
 
-   s = replace(s, "/" => "//")
-
-   print(io, s)
-
+function Base.show(io::IO, a::nf_elem)
+   print(io, AbstractAlgebra.obj_to_string(a, context = io))
 end
 
 canonical_unit(x::nf_elem) = x
