@@ -187,6 +187,13 @@ end
    @test_throws ArgumentError divexact(fmpz(24), fmpz(11))
 end
 
+@testset "fmpz.inverse..." begin
+   @test inv(fmpz(1)) == 1
+   @test inv(-fmpz(1)) == -1
+   @test_throws DivideError inv(fmpz(0))
+   @test_throws ArgumentError inv(fmpz(2))
+end
+
 @testset "fmpz.divides..." begin
    flag, q = divides(fmpz(12), fmpz(0))
    @test flag == false
