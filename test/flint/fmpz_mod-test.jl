@@ -2,6 +2,7 @@
    R = ResidueRing(ZZ, ZZ(13))
 
    @test_throws DomainError ResidueRing(ZZ, -ZZ(13))
+   @test_throws DomainError ResidueRing(ZZ, ZZ(0))
 
    @test elem_type(R) == Nemo.fmpz_mod
    @test elem_type(Nemo.FmpzModRing) == Nemo.fmpz_mod
