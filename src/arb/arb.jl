@@ -1821,10 +1821,10 @@ end
 ################################################################################
 
 @doc Markdown.doc"""
-      simplest_between(x::arb)
- 
+      simplest_rational_inside(x::arb)
+
 > Return the simplest fraction inside the ball `x`. A canonical fraction
-> `a_1/b_1` is defined to be simpler than `a_2/b_2` iff `b_1 < b_2` or > `b_1 =
+> `a_1/b_1` is defined to be simpler than `a_2/b_2` iff `b_1 < b_2` or `b_1 =
 > b_2` and `a_1 < a_2`.
 """
 function simplest_rational_inside(x::arb)
@@ -1834,7 +1834,7 @@ function simplest_rational_inside(x::arb)
 
    ccall((:arb_get_interval_fmpz_2exp, libarb), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{arb}), a, b, e, x)
-   !fits(Int, e) && throw(error("Result does not fit into an fmpq"))
+   !fits(Int, e) && error("Result does not fit into an fmpq")
    _e = Int(e)
    if e >= 0
       return a << _e

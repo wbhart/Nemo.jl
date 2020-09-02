@@ -690,5 +690,5 @@ simplest_rational_inside(::arb)
 
 ```julia
 RR = RealField(64)
-simplest_rational_inside(const_pi(R))
+simplest_rational_inside(const_pi(RR))
 ```
