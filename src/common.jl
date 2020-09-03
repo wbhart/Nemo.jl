@@ -4,7 +4,7 @@
 #
 ###############################################################################
 
-rand(x::Union{GaloisField,FinField,NmodRing}) = rand(Random.GLOBAL_RNG, x)
+rand(x::Union{GaloisField,NmodRing}) = rand(Random.GLOBAL_RNG, x)
 
 rand(x::Union{AnticNumberField,GaloisField,NmodRing,FlintIntegerRing,GaloisFmpzField}, v) =
     rand(Random.GLOBAL_RNG, x, v)
