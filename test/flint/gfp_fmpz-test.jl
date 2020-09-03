@@ -62,14 +62,24 @@ end
    R = GF(ZZ(13))
    @test rand(R) isa Nemo.gfp_fmpz_elem
    @test rand(R, 1:9) isa Nemo.gfp_fmpz_elem
+
    Random.seed!(rng, 0)
    s = rand(rng, R)
    @test s isa Nemo.gfp_fmpz_elem
    t = rand(rng, R, 1:9)
    @test t isa Nemo.gfp_fmpz_elem
+   s2 = rand(rng, R, 2)
+   @test s2 isa Vector{Nemo.gfp_fmpz_elem}
+   @test size(s2) == (2,)
+   s3 = rand(rng, R, 2, 3)
+   @test s3 isa Matrix{Nemo.gfp_fmpz_elem}
+   @test size(s3) == (2, 3)
+
    Random.seed!(rng, 0)
    @test s == rand(rng, R)
    @test t == rand(rng, R, 1:9)
+   @test s2 == rand(rng, R, 2)
+   @test s3 == rand(rng, R, 2, 3)
 end
 
 @testset "gfp_fmpz.printing..." begin
