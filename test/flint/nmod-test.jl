@@ -43,14 +43,26 @@ end
    R = ResidueRing(ZZ, 13)
    @test rand(R) isa Nemo.nmod
    @test rand(R, 1:9) isa Nemo.nmod
+   @test rand(R, 2) isa Vector{Nemo.nmod}
+   @test rand(R, 2, 3) isa Matrix{Nemo.nmod}
+
    Random.seed!(rng, 0)
    s = rand(rng, R)
    @test s isa Nemo.nmod
    t = rand(rng, R, 1:9)
    @test t isa Nemo.nmod
+   s2 = rand(rng, R, 2)
+   @test s2 isa Vector{Nemo.nmod}
+   @test size(s2) == (2,)
+   s3 = rand(rng, R, 2, 3)
+   @test s3 isa Matrix{Nemo.nmod}
+   @test size(s3) == (2, 3)
+
    Random.seed!(rng, 0)
    @test s == rand(rng, R)
    @test t == rand(rng, R, 1:9)
+   @test s2 == rand(rng, R, 2)
+   @test s3 == rand(rng, R, 2, 3)
 end
 
 @testset "nmod.printing..." begin

@@ -4,9 +4,9 @@
 #
 ###############################################################################
 
-rand(x::Union{GaloisField,NmodRing}) = rand(Random.GLOBAL_RNG, x)
+rand(x::Union{GaloisField}) = rand(Random.GLOBAL_RNG, x)
 
-rand(x::Union{AnticNumberField,GaloisField,NmodRing,FlintIntegerRing}, v) =
+rand(x::Union{AnticNumberField,GaloisField,FlintIntegerRing}, v) =
     rand(Random.GLOBAL_RNG, x, v)
 
 rand(x::Union{FlintPuiseuxSeriesRing,FlintPuiseuxSeriesField}, v1, v2, v...) =
