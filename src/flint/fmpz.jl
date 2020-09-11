@@ -75,6 +75,19 @@ base_ring(a::fmpz) = Union{}
 
 isdomain_type(::Type{fmpz}) = true
 
+###############################################################################
+#
+#   Misc.
+#
+###############################################################################
+
+# `length` should return an Integer, so BigInt seems appropriate as fmpz is not <: Integer
+# this method is useful in particular to enable rand(ZZ(n):ZZ(m))
+function Base.length(r::StepRange{fmpz,fmpz})
+    n = div((r.stop - r.start) + r.step, r.step)
+    isempty(r) ? zero(BigInt) : BigInt(n)
+end
+
 ################################################################################
 #
 #   Hashing
