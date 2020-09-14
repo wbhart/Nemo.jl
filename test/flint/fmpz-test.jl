@@ -35,9 +35,12 @@ end
    @test rand(FlintZZ, 1:9) isa fmpz
    Random.seed!(rng, 0)
    t = rand(rng, FlintZZ, 1:9)
+   s = rand(rng, FlintZZ(1):FlintZZ(9))
    @test t isa fmpz
+   @test s isa fmpz
    Random.seed!(rng, 0)
    @test t == rand(rng, FlintZZ, 1:9)
+   @test s == rand(rng, FlintZZ(1):FlintZZ(9))
 
    for bits in 0:100
       t = rand_bits(FlintZZ, bits)
