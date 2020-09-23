@@ -316,15 +316,20 @@ end
 #
 ###############################################################################
 
-function rand(r::Random.AbstractRNG, R::GaloisFmpzField)
-   n = rand(r, BigInt(0):BigInt(R.n) - 1)
-   return gfp_fmpz_elem(fmpz(n), R)
+Random.Sampler(::Type{RNG}, R::GaloisFmpzField, n::Random.Repetition) where {RNG<:AbstractRNG} =
+   Random.SamplerSimple(R, Random.Sampler(RNG, BigInt(0):BigInt(R.n)-1, n))
+
+function rand(rng::AbstractRNG, R::Random.SamplerSimple{GaloisFmpzField})
+   n = rand(rng, R.data)
+   gfp_fmpz_elem(fmpz(n), R[])
 end
 
 function rand(r::Random.AbstractRNG, R::GaloisFmpzField, b::UnitRange{Int})
    n = rand(r, b)
    return R(n)
 end
+
+rand(R::GaloisFmpzField, b::UnitRange{Int}) = rand(Random.GLOBAL_RNG, R, b)
 
 ###############################################################################
 #

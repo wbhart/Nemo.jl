@@ -358,15 +358,22 @@ end
 #
 ###############################################################################
 
-function rand(r::Random.AbstractRNG, R::FmpzModRing)
-   n = rand(r, BigInt(0):BigInt(R.n) - 1)
-   return fmpz_mod(fmpz(n), R)
+Random.Sampler(::Type{RNG}, R::FmpzModRing, n::Random.Repetition) where {RNG<:AbstractRNG} =
+   Random.SamplerSimple(R, Random.Sampler(RNG, BigInt(0):BigInt(R.n)-1, n))
+
+function rand(rng::AbstractRNG, R::Random.SamplerSimple{FmpzModRing})
+   n = rand(rng, R.data)
+   fmpz_mod(fmpz(n), R[])
 end
+
+Random.gentype(::Type{FmpzModRing}) = elem_type(FmpzModRing)
 
 function rand(r::Random.AbstractRNG, R::FmpzModRing, b::UnitRange{Int})
    n = rand(r, b)
    return R(n)
 end
+
+rand(R::FmpzModRing, b::UnitRange{Int}) = rand(Random.GLOBAL_RNG, R, b)
 
 ###############################################################################
 #
