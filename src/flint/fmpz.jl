@@ -1632,18 +1632,18 @@ function base(n::fmpz, b::Integer)
     return s
 end
 
-function ndigits_internal(x::fmpz, b::Integer = 10)
-    # fmpz_sizeinbase might return an answer 1 too big
-    n = Int(ccall((:fmpz_sizeinbase, libflint), UInt,
-                  (Ref{fmpz}, Int32), x, b))
-    abs(x) < fmpz(b)^(n - 1) ? n - 1 : n
-end
-
 @doc Markdown.doc"""
     ndigits(x::fmpz, b::Integer = 10)
 > Return the number of digits of $x$ in the base $b$ (default is $b = 10$).
 """
-ndigits(x::fmpz, b::Integer = 10) = iszero(x) ? 1 : ndigits_internal(x, b)
+function ndigits(x::fmpz, b::Integer = 10)::Int
+   if _fmpz_is_small(x)
+      ndigits(x.d, base=b)
+   else
+      # GMP/Flint's sizeinbase is not reliable for b > 62, so use Julia's implementation
+      GC.@preserve x ndigits(unsafe_load(Ptr{BigInt}(x.d << 2)), base=b)
+   end
+end
 
 @doc Markdown.doc"""
     nbits(x::fmpz)
