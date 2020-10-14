@@ -368,6 +368,8 @@ end
 #
 ###############################################################################
 
+# define rand(::NmodRing)
+
 Random.Sampler(::Type{RNG}, R::NmodRing, n::Random.Repetition) where {RNG<:AbstractRNG} =
    Random.SamplerSimple(R, Random.Sampler(RNG, UInt(0):R.n - 1, n))
 
@@ -375,10 +377,16 @@ rand(rng::AbstractRNG, R::Random.SamplerSimple{NmodRing}) = nmod(rand(rng, R.dat
 
 Random.gentype(::Type{NmodRing}) = elem_type(NmodRing)
 
-function rand(r::Random.AbstractRNG, R::NmodRing, b::UnitRange{Int})
-   n = rand(r, b)
-   return R(n)
-end
+# define rand(make(R::NmodRing, n:m))
+
+RandomExtensions.maketype(R::NmodRing, _) = elem_type(R)
+
+rand(rng::AbstractRNG, sp::SamplerTrivial{<:Make2{nmod,NmodRing,UnitRange{Int}}}) =
+   sp[][1](rand(rng, sp[][2]))
+
+# define rand(R::NmodRing, n:m)
+
+rand(r::Random.AbstractRNG, R::NmodRing, b::UnitRange{Int}) = rand(r, make(R, b))
 
 rand(R::NmodRing, b::UnitRange{Int}) = rand(Random.GLOBAL_RNG, R, b)
 

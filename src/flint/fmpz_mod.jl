@@ -358,6 +358,8 @@ end
 #
 ###############################################################################
 
+# define rand(::FmpzModRing)
+
 Random.Sampler(::Type{RNG}, R::FmpzModRing, n::Random.Repetition) where {RNG<:AbstractRNG} =
    Random.SamplerSimple(R, Random.Sampler(RNG, BigInt(0):BigInt(R.n)-1, n))
 
@@ -368,10 +370,16 @@ end
 
 Random.gentype(::Type{FmpzModRing}) = elem_type(FmpzModRing)
 
-function rand(r::Random.AbstractRNG, R::FmpzModRing, b::UnitRange{Int})
-   n = rand(r, b)
-   return R(n)
-end
+# define rand(make(::FmpzModRing, n:m))
+
+RandomExtensions.maketype(R::FmpzModRing, _) = elem_type(R)
+
+rand(rng::AbstractRNG, sp::SamplerTrivial{<:Make2{fmpz_mod,FmpzModRing,UnitRange{Int}}}) =
+   sp[][1](rand(rng, sp[][2]))
+
+# define rand(::FmpzModRing, n:m)
+
+rand(r::Random.AbstractRNG, R::FmpzModRing, b::UnitRange{Int}) = rand(r, make(R, b))
 
 rand(R::FmpzModRing, b::UnitRange{Int}) = rand(Random.GLOBAL_RNG, R, b)
 

@@ -316,6 +316,8 @@ end
 #
 ###############################################################################
 
+# define rand(::GaloisFmpzField)
+
 Random.Sampler(::Type{RNG}, R::GaloisFmpzField, n::Random.Repetition) where {RNG<:AbstractRNG} =
    Random.SamplerSimple(R, Random.Sampler(RNG, BigInt(0):BigInt(R.n)-1, n))
 
@@ -324,10 +326,17 @@ function rand(rng::AbstractRNG, R::Random.SamplerSimple{GaloisFmpzField})
    gfp_fmpz_elem(fmpz(n), R[])
 end
 
-function rand(r::Random.AbstractRNG, R::GaloisFmpzField, b::UnitRange{Int})
-   n = rand(r, b)
-   return R(n)
-end
+# define rand(make(::GaloisFmpzField, n:m))
+
+RandomExtensions.maketype(R::GaloisFmpzField, _) = elem_type(R)
+
+rand(rng::AbstractRNG,
+     sp::SamplerTrivial{<:Make2{gfp_fmpz_elem,GaloisFmpzField,UnitRange{Int}}}) =
+        sp[][1](rand(rng, sp[][2]))
+
+# define rand(::GaloisFmpzField, n:m)
+
+rand(r::Random.AbstractRNG, R::GaloisFmpzField, b::UnitRange{Int}) = rand(r, make(R, b))
 
 rand(R::GaloisFmpzField, b::UnitRange{Int}) = rand(Random.GLOBAL_RNG, R, b)
 

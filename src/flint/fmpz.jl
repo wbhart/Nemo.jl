@@ -1805,9 +1805,16 @@ end
 #
 ###############################################################################
 
-function rand(rng::AbstractRNG, R::FlintIntegerRing, n::UnitRange{Int})
-   return R(rand(rng, n))
-end
+RandomExtensions.maketype(R::FlintIntegerRing, _) = fmpz
+
+# define rand(make(ZZ, n:m))
+rand(rng::AbstractRNG, sp::SamplerTrivial{<:Make2{fmpz,FlintIntegerRing}}) =
+        sp[][1](rand(rng, sp[][2]))
+
+rand(rng::AbstractRNG, R::FlintIntegerRing, n::UnitRange{Int}) = R(rand(rng, n))
+
+rand(R::FlintIntegerRing, n::UnitRange{Int}) = rand(Random.GLOBAL_RNG, R, n)
+
 
 @doc Markdown.doc"""
     rand_bits(::FlintIntegerRing, b::Int)

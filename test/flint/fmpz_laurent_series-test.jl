@@ -31,6 +31,9 @@ end
 @testset "fmpz_laurent_series.rand..." begin
    R, x = LaurentSeriesRing(ZZ, 10, "x")
    @test rand(R, -12:12, -10:10) isa fmpz_laurent_series
+   @test rand(make(R, -12:12, -10:10)) isa fmpz_laurent_series
+   @test rand(make(R, -12:12, make(ZZ, -10:10))) isa fmpz_laurent_series
+   @test rand(make(R, -12:12, -10:10), 2, 3) isa Matrix{fmpz_laurent_series}
    Random.seed!(rng, 0)
    t = rand(rng, R, -12:12, -10:10)
    @test t isa fmpz_laurent_series

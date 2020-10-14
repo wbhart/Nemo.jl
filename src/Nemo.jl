@@ -16,6 +16,9 @@ using InteractiveUtils
 using Libdl
 
 using Random
+using Random: SamplerTrivial
+
+using RandomExtensions: RandomExtensions, make, Make2, Make3
 
 using LoadFlint
 
@@ -387,8 +390,6 @@ include("flint/adhoc.jl")
 include("embedding/embedding.jl")
 
 include("Rings.jl")
-
-include("common.jl")
 
 ################################################################################
 #

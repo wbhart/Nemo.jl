@@ -540,17 +540,30 @@ end
 #
 ###############################################################################
 
-function rand(rng::AbstractRNG, S::FlintPuiseuxSeriesRing,
-              val_range::UnitRange{Int}, scale_range::UnitRange{Int}, v...)
+const FlintPuiseuxSeriesRingOrField = Union{FlintPuiseuxSeriesRing,FlintPuiseuxSeriesField}
+
+RandomExtensions.maketype(S::FlintPuiseuxSeriesRingOrField, _, _) = elem_type(S)
+
+RandomExtensions.make(S::FlintPuiseuxSeriesRingOrField, val_range::UnitRange{Int},
+                      scale_range::UnitRange{Int}, vs...) =
+   make(S, scale_range, make(laurent_ring(S), val_range, vs...))
+
+function rand(rng::AbstractRNG,
+              sp::SamplerTrivial{<:Make3{<:RingElement,
+                                         <:FlintPuiseuxSeriesRingOrField,
+                                         UnitRange{Int}}})
+   S, scale_range, v = sp[][1:end]
    (first(scale_range) <= 0 || last(scale_range) <= 0) && error("Scale must be positive")
-   return S(rand(rng, laurent_ring(S), val_range, v...), rand(rng, scale_range))
+   return S(rand(rng, v), rand(rng, scale_range))
 end
 
-function rand(rng::AbstractRNG, S::FlintPuiseuxSeriesField,
+function rand(rng::AbstractRNG, S::FlintPuiseuxSeriesRingOrField,
               val_range::UnitRange{Int}, scale_range::UnitRange{Int}, v...)
-   (first(scale_range) <= 0 || last(scale_range) <= 0) && error("Scale must be positive")
-   return S(rand(rng, laurent_ring(S), val_range, v...), rand(rng, scale_range))
+   rand(rng, make(S, val_range, scale_range, v...))
 end
+
+rand(S::FlintPuiseuxSeriesRingOrField, val_range, scale_range, v...) =
+   rand(Random.GLOBAL_RNG, S, val_range, scale_range, v...)
 
 ###############################################################################
 #

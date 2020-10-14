@@ -74,18 +74,25 @@ end
    @test s isa Nemo.gfp_elem
    t = rand(rng, R, 1:9)
    @test t isa Nemo.gfp_elem
+   t2 = rand(rng, make(R, 1:9))
+   @test t2 isa Nemo.gfp_elem
    s2 = rand(rng, R, 2)
    @test s2 isa Vector{Nemo.gfp_elem}
    @test size(s2) == (2,)
-   s3 = rand(rng, R, 2, 3)
-   @test s3 isa Matrix{Nemo.gfp_elem}
-   @test size(s3) == (2, 3)
+   s3 = rand(rng, make(R, 1:9), 2)
+   @test s3 isa Vector{Nemo.gfp_elem}
+   @test size(s3) == (2,)
+   s4 = rand(rng, R, 2, 3)
+   @test s4 isa Matrix{Nemo.gfp_elem}
+   @test size(s4) == (2, 3)
 
    Random.seed!(rng, 0)
    @test s == rand(rng, R)
    @test t == rand(rng, R, 1:9)
+   @test t2 == rand(rng, make(R, 1:9))
    @test s2 == rand(rng, R, 2)
-   @test s3 == rand(rng, R, 2, 3)
+   @test s3 == rand(rng, make(R, 1:9), 2)
+   @test s4 == rand(rng, R, 2, 3)
 end
 
 @testset "gfp.printing..." begin

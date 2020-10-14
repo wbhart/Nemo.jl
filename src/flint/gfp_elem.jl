@@ -327,16 +327,24 @@ end
 #
 ###############################################################################
 
+# define rand(::GaloisField)
+
 Random.Sampler(::Type{RNG}, R::GaloisField, n::Random.Repetition) where {RNG<:AbstractRNG} =
    Random.SamplerSimple(R, Random.Sampler(RNG, UInt(0):R.n - 1, n))
 
 rand(rng::AbstractRNG, R::Random.SamplerSimple{GaloisField}) =
    gfp_elem(rand(rng, R.data), R[])
 
-function rand(rng::AbstractRNG, R::GaloisField, b::UnitRange{Int})
-   n = rand(rng, b)
-   return R(n)
-end
+# define rand(make(::GaloisField, n:m))
+
+RandomExtensions.maketype(R::GaloisField, _) = elem_type(R)
+
+rand(rng::AbstractRNG, sp::SamplerTrivial{<:Make2{gfp_elem,GaloisField,UnitRange{Int}}}) =
+   sp[][1](rand(rng, sp[][2]))
+
+# define rand(::GaloisField, n:m)
+
+rand(rng::AbstractRNG, R::GaloisField, b::UnitRange{Int}) = rand(rng, make(R, b))
 
 rand(R::GaloisField, b::UnitRange{Int}) = rand(Random.GLOBAL_RNG, R, b)
 

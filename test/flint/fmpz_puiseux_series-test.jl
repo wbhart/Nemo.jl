@@ -27,6 +27,9 @@ end
 @testset "fmpz_puiseux_series.rand..." begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    @test rand(R, -12:12, 1:6, -10:10) isa FlintPuiseuxSeriesRingElem{fmpz_laurent_series}
+   @test rand(make(R, -12:12, 1:6, -10:10)) isa FlintPuiseuxSeriesRingElem{fmpz_laurent_series}
+   @test rand(make(R, -12:12, 1:6, make(ZZ, -10:10))) isa FlintPuiseuxSeriesRingElem{fmpz_laurent_series}
+   @test rand(make(R, -12:12, 1:6, -10:10), 2, 3) isa Matrix{FlintPuiseuxSeriesRingElem{fmpz_laurent_series}}
    Random.seed!(rng, 0)
    t = rand(rng, R, -12:12, 1:6, -10:10)
    @test t isa FlintPuiseuxSeriesRingElem{fmpz_laurent_series}
@@ -35,6 +38,8 @@ end
 
    R, x = PuiseuxSeriesField(QQ, 10, "x")
    @test rand(R, -12:12, 1:6, -10:10) isa Generic.PuiseuxSeriesFieldElem{fmpq}
+   @test rand(make(R, -12:12, 1:6, -10:10)) isa Generic.PuiseuxSeriesFieldElem{fmpq}
+   @test rand(make(R, -12:12, 1:6, -10:10), 2, 3) isa Matrix{Generic.PuiseuxSeriesFieldElem{fmpq}}
    Random.seed!(rng, 0)
    t = rand(rng, R, -12:12, 1:6, -10:10)
    @test t isa Generic.PuiseuxSeriesFieldElem{fmpq}
