@@ -97,6 +97,7 @@ end
 
 @doc Markdown.doc"""
     overlaps(x::arb_poly, y::arb_poly)
+
 > Return `true` if the coefficient balls of $x$ overlap the coefficient balls
 > of $y$, otherwise return `false`.
 """
@@ -107,6 +108,7 @@ end
 
 @doc Markdown.doc"""
     contains(x::arb_poly, y::arb_poly)
+
 > Return `true` if the coefficient balls of $x$ contain the corresponding
 > coefficient balls of $y$, otherwise return `false`.
 """
@@ -117,6 +119,7 @@ end
 
 @doc Markdown.doc"""
     contains(x::arb_poly, y::fmpz_poly)
+
 > Return `true` if the coefficient balls of $x$ contain the corresponding
 > exact coefficients of $y$, otherwise return `false`.
 """
@@ -127,6 +130,7 @@ end
 
 @doc Markdown.doc"""
     contains(x::arb_poly, y::fmpq_poly)
+
 > Return `true` if the coefficient balls of $x$ contain the corresponding
 > exact coefficients of $y$, otherwise return `false`.
 """
@@ -158,6 +162,7 @@ end
 
 @doc Markdown.doc"""
     unique_integer(x::arb_poly)
+
 > Return a tuple `(t, z)` where $t$ is `true` if there is a unique integer
 > contained in each of the coefficients of $x$, otherwise sets $t$ to `false`.
 > In the former case, $z$ is set to the integer polynomial.
@@ -378,6 +383,7 @@ end
 
 @doc Markdown.doc"""
     evaluate2(x::arb_poly, y::arb)
+
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
 """
@@ -400,6 +406,7 @@ end
 
 @doc Markdown.doc"""
     evaluate2(x::arb_poly, y::acb)
+
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
 """
@@ -422,6 +429,7 @@ end
 
 @doc Markdown.doc"""
     evaluate2(x::arb_poly, y::Integer)
+
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
 """
@@ -431,6 +439,7 @@ end
 
 @doc Markdown.doc"""
     evaluate2(x::arb_poly, y::Float64)
+
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
 """
@@ -440,6 +449,7 @@ end
 
 @doc Markdown.doc"""
     evaluate2(x::arb_poly, y::fmpz)
+
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
 """
@@ -449,6 +459,7 @@ end
 
 @doc Markdown.doc"""
     evaluate2(x::arb_poly, y::fmpq)
+
 > Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
 > its derivative evaluated at $y$.
 """
@@ -525,6 +536,7 @@ end
 
 @doc Markdown.doc"""
     from_roots(R::ArbPolyRing, b::Array{arb, 1})
+
 > Construct a polynomial in the given polynomial ring from a list of its roots.
 """
 function from_roots(R::ArbPolyRing, b::Array{arb, 1})

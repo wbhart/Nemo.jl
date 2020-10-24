@@ -325,6 +325,7 @@ end
 
 @doc Markdown.doc"""
     ldexp(x::acb_mat, y::Int)
+
 > Return $2^yx$. Note that $y$ can be positive, zero or negative.
 """
 function ldexp(x::acb_mat, y::Int)
@@ -342,6 +343,7 @@ end
 
 @doc Markdown.doc"""
     isequal(x::acb_mat, y::acb_mat)
+
 > Return `true` if the matrices of balls $x$ and $y$ are precisely equal,
 > i.e. if all matrix entries have the same midpoints and radii.
 """
@@ -365,6 +367,7 @@ end
 
 @doc Markdown.doc"""
     overlaps(x::acb_mat, y::acb_mat)
+
 > Returns `true` if all entries of $x$ overlap with the corresponding entry of
 > $y$, otherwise return `false`.
 """
@@ -376,6 +379,7 @@ end
 
 @doc Markdown.doc"""
     contains(x::acb_mat, y::acb_mat)
+
 > Returns `true` if all entries of $x$ contain the corresponding entry of
 > $y$, otherwise return `false`.
 """
@@ -393,6 +397,7 @@ end
 
 @doc Markdown.doc"""
     contains(x::acb_mat, y::fmpz_mat)
+
 > Returns `true` if all entries of $x$ contain the corresponding entry of
 > $y$, otherwise return `false`.
 """
@@ -404,6 +409,7 @@ end
 
 @doc Markdown.doc"""
     contains(x::acb_mat, y::fmpq_mat)
+
 > Returns `true` if all entries of $x$ contain the corresponding entry of
 > $y$, otherwise return `false`.
 """
@@ -429,6 +435,7 @@ end
 
 @doc Markdown.doc"""
     isreal(x::acb_mat)
+
 > Returns whether every entry of $x$ has vanishing imaginary part.
 """
 isreal(x::acb_mat) =
@@ -442,6 +449,7 @@ isreal(x::acb_mat) =
 
 @doc Markdown.doc"""
     inv(x::acb_mat)
+
 > Given a $n\times n$ matrix of type `acb_mat`, return an
 > $n\times n$ matrix $X$ such that $AX$ contains the
 > identity matrix. If $A$ cannot be inverted numerically an exception is raised.
@@ -548,6 +556,7 @@ end
 
 @doc Markdown.doc"""
     exp(x::acb_mat)
+
 > Returns the exponential of the matrix $x$.
 """
 function Base.exp(x::acb_mat)
@@ -657,6 +666,7 @@ end
 
 @doc Markdown.doc"""
     bound_inf_norm(x::acb_mat)
+
 > Returns a nonnegative element $z$ of type `acb`, such that $z$ is an upper
 > bound for the infinity norm for every matrix in $x$
 """

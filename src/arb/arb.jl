@@ -39,18 +39,21 @@ parent_type(::Type{arb}) = ArbField
 
 @doc Markdown.doc"""
     base_ring(R::ArbField)
+
 > Returns `Union{}` since an Arb field does not depend on any other ring.
 """
 base_ring(R::ArbField) = Union{}
 
 @doc Markdown.doc"""
     base_ring(x::arb)
+
 > Returns `Union{}` since an Arb field does not depend on any other ring.
 """
 base_ring(x::arb) = Union{}
 
 @doc Markdown.doc"""
     parent(x::arb)
+
 > Return the parent of the given Arb field element.
 """
 parent(x::arb) = x.parent
@@ -61,12 +64,14 @@ isexact_type(::Type{arb}) = false
 
 @doc Markdown.doc"""
     zero(R::ArbField)
+
 > Return exact zero in the given Arb field.
 """
 zero(R::ArbField) = R(0)
 
 @doc Markdown.doc"""
     one(R::ArbField)
+
 > Return exact one in the given Arb field.
 """
 one(R::ArbField) = R(1)
@@ -75,6 +80,7 @@ one(R::ArbField) = R(1)
 
 @doc Markdown.doc"""
     accuracy_bits(x::arb)
+
 > Return the relative accuracy of $x$ measured in bits, capped between
 > `typemax(Int)` and `-typemax(Int)`.
 """
@@ -108,6 +114,7 @@ characteristic(::ArbField) = 0
 
 @doc Markdown.doc"""
     Float64(x::arb)
+
 > Return the midpoint of $x$ rounded down to a machine double.
 """
 function Float64(x::arb)
@@ -121,6 +128,7 @@ end
 
 @doc Markdown.doc"""
     convert(::Type{Float64}, x::arb)
+
 > Return the midpoint of $x$ rounded down to a machine double.
 """
 function convert(::Type{Float64}, x::arb)
@@ -159,6 +167,7 @@ show_minus_one(::Type{arb}) = true
 
 @doc Markdown.doc"""
     overlaps(x::arb, y::arb)
+
 > Returns `true` if any part of the ball $x$ overlaps any part of the ball $y$,
 > otherwise return `false`.
 """
@@ -174,6 +183,7 @@ end
 
 @doc Markdown.doc"""
     contains(x::arb, y::fmpq)
+
 > Returns `true` if the ball $x$ contains the given rational value, otherwise
 > return `false`.
 """
@@ -184,6 +194,7 @@ end
 
 @doc Markdown.doc"""
     contains(x::arb, y::fmpz)
+
 > Returns `true` if the ball $x$ contains the given integer value, otherwise
 > return `false`.
 """
@@ -199,6 +210,7 @@ end
 
 @doc Markdown.doc"""
     contains(x::arb, y::Integer)
+
 > Returns `true` if the ball $x$ contains the given integer value, otherwise
 > return `false`.
 """
@@ -206,6 +218,7 @@ contains(x::arb, y::Integer) = contains(x, fmpz(y))
 
 @doc Markdown.doc"""
     contains(x::arb, y::Rational{T}) where {T <: Integer}
+
 > Returns `true` if the ball $x$ contains the given rational value, otherwise
 > return `false`.
 """
@@ -213,6 +226,7 @@ contains(x::arb, y::Rational{T}) where {T <: Integer} = contains(x, fmpq(y))
 
 @doc Markdown.doc"""
     contains(x::arb, y::BigFloat)
+
 > Returns `true` if the ball $x$ contains the given floating point value,
 > otherwise return `false`.
 """
@@ -224,6 +238,7 @@ end
 
 @doc Markdown.doc"""
     contains(x::arb, y::arb)
+
 > Returns `true` if the ball $x$ contains the ball $y$, otherwise return
 > `false`.
 """
@@ -234,6 +249,7 @@ end
 
 @doc Markdown.doc"""
     contains_zero(x::arb)
+
 > Returns `true` if the ball $x$ contains zero, otherwise return `false`.
 """
 function contains_zero(x::arb)
@@ -243,6 +259,7 @@ end
 
 @doc Markdown.doc"""
     contains_negative(x::arb)
+
 > Returns `true` if the ball $x$ contains any negative value, otherwise return
 > `false`.
 """
@@ -253,6 +270,7 @@ end
 
 @doc Markdown.doc"""
     contains_positive(x::arb)
+
 > Returns `true` if the ball $x$ contains any positive value, otherwise return
 > `false`.
 """
@@ -263,6 +281,7 @@ end
 
 @doc Markdown.doc"""
     contains_nonnegative(x::arb)
+
 > Returns `true` if the ball $x$ contains any nonnegative value, otherwise
 > return `false`.
 """
@@ -273,6 +292,7 @@ end
 
 @doc Markdown.doc"""
     contains_nonpositive(x::arb)
+
 > Returns `true` if the ball $x$ contains any nonpositive value, otherwise
 > return `false`.
 """
@@ -289,6 +309,7 @@ end
 
 @doc Markdown.doc"""
     isequal(x::arb, y::arb)
+
 > Return `true` if the balls $x$ and $y$ are precisely equal, i.e. have the
 > same midpoints and radii.
 """
@@ -432,6 +453,7 @@ end
 
 @doc Markdown.doc"""
     iszero(x::arb)
+
 > Return `true` if $x$ is certainly zero, otherwise return `false`.
 """
 function iszero(x::arb)
@@ -440,6 +462,7 @@ end
 
 @doc Markdown.doc"""
     isnonzero(x::arb)
+
 > Return `true` if $x$ is certainly not equal to zero, otherwise return
 > `false`.
 """
@@ -449,6 +472,7 @@ end
 
 @doc Markdown.doc"""
     isone(x::arb)
+
 > Return `true` if $x$ is certainly not equal to oneo, otherwise return
 > `false`.
 """
@@ -458,6 +482,7 @@ end
 
 @doc Markdown.doc"""
     isfinite(x::arb)
+
 > Return `true` if $x$ is finite, i.e. having finite midpoint and radius,
 > otherwise return `false`.
 """
@@ -467,6 +492,7 @@ end
 
 @doc Markdown.doc"""
     isexact(x::arb)
+
 > Return `true` if $x$ is exact, i.e. has zero radius, otherwise return
 > `false`.
 """
@@ -476,6 +502,7 @@ end
 
 @doc Markdown.doc"""
     isint(x::arb)
+
 > Return `true` if $x$ is an exact integer, otherwise return `false`.
 """
 function isint(x::arb)
@@ -484,6 +511,7 @@ end
 
 @doc Markdown.doc"""
     ispositive(x::arb)
+
 > Return `true` if $x$ is certainly positive, otherwise return `false`.
 """
 function ispositive(x::arb)
@@ -492,6 +520,7 @@ end
 
 @doc Markdown.doc"""
     isnonnegative(x::arb)
+
 > Return `true` if $x$ is certainly nonnegative, otherwise return `false`.
 """
 function isnonnegative(x::arb)
@@ -500,6 +529,7 @@ end
 
 @doc Markdown.doc"""
     isnegative(x::arb)
+
 > Return `true` if $x$ is certainly negative, otherwise return `false`.
 """
 function isnegative(x::arb)
@@ -513,6 +543,7 @@ end
 
 @doc Markdown.doc"""
     isnonpositive(x::arb)
+
 > Return `true` if $x$ is certainly nonpositive, otherwise return `false`.
 """
 function isnonpositive(x::arb)
@@ -527,6 +558,7 @@ end
 
 @doc Markdown.doc"""
     ball(mid::arb, rad::arb)
+
 > Constructs an `arb` enclosing the range $[m-|r|, m+|r|]$, given the pair
 > $(m, r)$.
 """
@@ -538,6 +570,7 @@ end
 
 @doc Markdown.doc"""
     radius(x::arb)
+
 > Return the radius of the ball $x$ as an Arb ball.
 """
 function radius(x::arb)
@@ -548,6 +581,7 @@ end
 
 @doc Markdown.doc"""
     midpoint(x::arb)
+
 > Return the midpoint of the ball $x$ as an Arb ball.
 """
 function midpoint(x::arb)
@@ -840,6 +874,7 @@ divexact(x::arb, y::Rational{T}) where {T <: Integer} = x // y
 
 @doc Markdown.doc"""
     abs(x::arb)
+
 > Return the absolute value of $x$.
 """
 function abs(x::arb)
@@ -856,6 +891,7 @@ end
 
 @doc Markdown.doc"""
     inv(x::arb)
+
 > Return the multiplicative inverse of $x$, i.e. $1/x$.
 """
 function inv(x::arb)
@@ -873,6 +909,7 @@ end
 
 @doc Markdown.doc"""
     ldexp(x::arb, y::Int)
+
 > Return $2^yx$. Note that $y$ can be positive, zero or negative.
 """
 function ldexp(x::arb, y::Int)
@@ -884,6 +921,7 @@ end
 
 @doc Markdown.doc"""
     ldexp(x::arb, y::fmpz)
+
 > Return $2^yx$. Note that $y$ can be positive, zero or negative.
 """
 function ldexp(x::arb, y::fmpz)
@@ -901,6 +939,7 @@ end
 
 @doc Markdown.doc"""
     trim(x::arb)
+
 > Return an `arb` interval containing $x$ but which may be more economical,
 > by rounding off insignificant bits from the midpoint.
 """
@@ -912,6 +951,7 @@ end
 
 @doc Markdown.doc"""
     unique_integer(x::arb)
+
 > Return a pair where the first value is a boolean and the second is an `fmpz`
 > integer. The boolean indicates whether the interval $x$ contains a unique
 > integer. If this is the case, the second return value is set to this unique
@@ -938,6 +978,7 @@ end
 
 @doc Markdown.doc"""
     setunion(x::arb, y::arb)
+
 > Return an `arb` containing the union of the intervals represented by $x$ and
 > $y$.
 """
@@ -950,6 +991,7 @@ end
 
 @doc Markdown.doc"""
     setintersection(x::arb, y::arb)
+
 > Return an `arb` containing the intersection of the intervals represented by
 > $x$ and $y$.
 """
@@ -968,6 +1010,7 @@ end
 
 @doc Markdown.doc"""
     const_pi(r::ArbField)
+
 > Return $\pi = 3.14159\ldots$ as an element of $r$.
 """
 function const_pi(r::ArbField)
@@ -978,6 +1021,7 @@ end
 
 @doc Markdown.doc"""
     const_e(r::ArbField)
+
 > Return $e = 2.71828\ldots$ as an element of $r$.
 """
 function const_e(r::ArbField)
@@ -988,6 +1032,7 @@ end
 
 @doc Markdown.doc"""
     const_log2(r::ArbField)
+
 > Return $\log(2) = 0.69314\ldots$ as an element of $r$.
 """
 function const_log2(r::ArbField)
@@ -998,6 +1043,7 @@ end
 
 @doc Markdown.doc"""
     const_log10(r::ArbField)
+
 > Return $\log(10) = 2.302585\ldots$ as an element of $r$.
 """
 function const_log10(r::ArbField)
@@ -1008,6 +1054,7 @@ end
 
 @doc Markdown.doc"""
     const_euler(r::ArbField)
+
 > Return Euler's constant $\gamma = 0.577215\ldots$ as an element of $r$.
 """
 function const_euler(r::ArbField)
@@ -1018,6 +1065,7 @@ end
 
 @doc Markdown.doc"""
     const_catalan(r::ArbField)
+
 > Return Catalan's constant $C = 0.915965\ldots$ as an element of $r$.
 """
 function const_catalan(r::ArbField)
@@ -1028,6 +1076,7 @@ end
 
 @doc Markdown.doc"""
     const_khinchin(r::ArbField)
+
 > Return Khinchin's constant $K = 2.685452\ldots$ as an element of $r$.
 """
 function const_khinchin(r::ArbField)
@@ -1038,6 +1087,7 @@ end
 
 @doc Markdown.doc"""
     const_glaisher(r::ArbField)
+
 > Return Glaisher's constant $A = 1.282427\ldots$ as an element of $r$.
 """
 function const_glaisher(r::ArbField)
@@ -1056,6 +1106,7 @@ end
 
 @doc Markdown.doc"""
     floor(x::arb)
+
 > Compute the floor of $x$, i.e. the greatest integer not exceeding $x$, as an
 > Arb.
 """
@@ -1067,6 +1118,7 @@ end
 
 @doc Markdown.doc"""
     ceil(x::arb)
+
 > Return the ceiling of $x$, i.e. the least integer not less than $x$, as an
 > Arb.
 """
@@ -1078,6 +1130,7 @@ end
 
 @doc Markdown.doc"""
     sqrt(x::arb)
+
 > Return the square root of $x$.
 """
 function Base.sqrt(x::arb)
@@ -1088,6 +1141,7 @@ end
 
 @doc Markdown.doc"""
     rsqrt(x::arb)
+
 > Return the reciprocal of the square root of $x$, i.e. $1/\sqrt{x}$.
 """
 function rsqrt(x::arb)
@@ -1098,6 +1152,7 @@ end
 
 @doc Markdown.doc"""
     sqrt1pm1(x::arb)
+
 > Return $\sqrt{1+x}-1$, evaluated accurately for small $x$.
 """
 function sqrt1pm1(x::arb)
@@ -1108,6 +1163,7 @@ end
 
 @doc Markdown.doc"""
     sqrtpos(x::arb)
+
 > Return the sqrt root of $x$, assuming that $x$ represents a nonnegative
 > number. Thus any negative number in the input interval is discarded.
 """
@@ -1120,6 +1176,7 @@ end
 
 @doc Markdown.doc"""
     log(x::arb)
+
 > Return the principal branch of the logarithm of $x$.
 """
 function log(x::arb)
@@ -1130,6 +1187,7 @@ end
 
 @doc Markdown.doc"""
     log1p(x::arb)
+
 > Return $\log(1+x)$, evaluated accurately for small $x$.
 """
 function log1p(x::arb)
@@ -1140,6 +1198,7 @@ end
 
 @doc Markdown.doc"""
     exp(x::arb)
+
 > Return the exponential of $x$.
 """
 function Base.exp(x::arb)
@@ -1150,6 +1209,7 @@ end
 
 @doc Markdown.doc"""
     expm1(x::arb)
+
 > Return $\exp(x)-1$, evaluated accurately for small $x$.
 """
 function expm1(x::arb)
@@ -1160,6 +1220,7 @@ end
 
 @doc Markdown.doc"""
     sin(x::arb)
+
 > Return the sine of $x$.
 """
 function sin(x::arb)
@@ -1170,6 +1231,7 @@ end
 
 @doc Markdown.doc"""
     cos(x::arb)
+
 > Return the cosine of $x$.
 """
 function cos(x::arb)
@@ -1180,6 +1242,7 @@ end
 
 @doc Markdown.doc"""
     sinpi(x::arb)
+
 > Return the sine of $\pi x$.
 """
 function sinpi(x::arb)
@@ -1190,6 +1253,7 @@ end
 
 @doc Markdown.doc"""
     cospi(x::arb)
+
 > Return the cosine of $\pi x$.
 """
 function cospi(x::arb)
@@ -1200,6 +1264,7 @@ end
 
 @doc Markdown.doc"""
     tan(x::arb)
+
 > Return the tangent of $x$.
 """
 function tan(x::arb)
@@ -1210,6 +1275,7 @@ end
 
 @doc Markdown.doc"""
     cot(x::arb)
+
 > Return the cotangent of $x$.
 """
 function cot(x::arb)
@@ -1220,6 +1286,7 @@ end
 
 @doc Markdown.doc"""
     tanpi(x::arb)
+
 > Return the tangent of $\pi x$.
 """
 function tanpi(x::arb)
@@ -1230,6 +1297,7 @@ end
 
 @doc Markdown.doc"""
     cotpi(x::arb)
+
 > Return the cotangent of $\pi x$.
 """
 function cotpi(x::arb)
@@ -1240,6 +1308,7 @@ end
 
 @doc Markdown.doc"""
     sinh(x::arb)
+
 > Return the hyperbolic sine of $x$.
 """
 function sinh(x::arb)
@@ -1250,6 +1319,7 @@ end
 
 @doc Markdown.doc"""
     cosh(x::arb)
+
 > Return the hyperbolic cosine of $x$.
 """
 function cosh(x::arb)
@@ -1260,6 +1330,7 @@ end
 
 @doc Markdown.doc"""
     tanh(x::arb)
+
 > Return the hyperbolic tangent of $x$.
 """
 function tanh(x::arb)
@@ -1270,6 +1341,7 @@ end
 
 @doc Markdown.doc"""
     coth(x::arb)
+
 > Return the hyperbolic cotangent of $x$.
 """
 function coth(x::arb)
@@ -1280,6 +1352,7 @@ end
 
 @doc Markdown.doc"""
     atan(x::arb)
+
 > Return the arctangent of $x$.
 """
 function atan(x::arb)
@@ -1290,6 +1363,7 @@ end
 
 @doc Markdown.doc"""
     asin(x::arb)
+
 > Return the arcsine of $x$.
 """
 function asin(x::arb)
@@ -1300,6 +1374,7 @@ end
 
 @doc Markdown.doc"""
     acos(x::arb)
+
 > Return the arccosine of $x$.
 """
 function acos(x::arb)
@@ -1310,6 +1385,7 @@ end
 
 @doc Markdown.doc"""
     atanh(x::arb)
+
 > Return the hyperbolic arctangent of $x$.
 """
 function atanh(x::arb)
@@ -1320,6 +1396,7 @@ end
 
 @doc Markdown.doc"""
     asinh(x::arb)
+
 > Return the hyperbolic arcsine of $x$.
 """
 function asinh(x::arb)
@@ -1330,6 +1407,7 @@ end
 
 @doc Markdown.doc"""
     acosh(x::arb)
+
 > Return the hyperbolic arccosine of $x$.
 """
 function acosh(x::arb)
@@ -1340,6 +1418,7 @@ end
 
 @doc Markdown.doc"""
     gamma(x::arb)
+
 > Return the Gamma function evaluated at $x$.
 """
 function gamma(x::arb)
@@ -1350,6 +1429,7 @@ end
 
 @doc Markdown.doc"""
     lgamma(x::arb)
+
 > Return the logarithm of the Gamma function evaluated at $x$.
 """
 function lgamma(x::arb)
@@ -1360,6 +1440,7 @@ end
 
 @doc Markdown.doc"""
     rgamma(x::arb)
+
 > Return the reciprocal of the Gamma function evaluated at $x$.
 """
 function rgamma(x::arb)
@@ -1370,6 +1451,7 @@ end
 
 @doc Markdown.doc"""
     digamma(x::arb)
+
 > Return the  logarithmic derivative of the gamma function evaluated at $x$,
 > i.e. $\psi(x)$.
 """
@@ -1381,6 +1463,7 @@ end
 
 @doc Markdown.doc"""
     zeta(x::arb)
+
 > Return the Riemann zeta function evaluated at $x$.
 """
 function zeta(x::arb)
@@ -1391,6 +1474,7 @@ end
 
 @doc Markdown.doc"""
     sincos(x::arb)
+
 > Return a tuple $s, c$ consisting of the sine $s$ and cosine $c$ of $x$.
 """
 function sincos(x::arb)
@@ -1403,6 +1487,7 @@ end
 
 @doc Markdown.doc"""
     sincospi(x::arb)
+
 > Return a tuple $s, c$ consisting of the sine $s$ and cosine $c$ of $\pi x$.
 """
 function sincospi(x::arb)
@@ -1415,6 +1500,7 @@ end
 
 @doc Markdown.doc"""
     sinpi(x::fmpq, r::ArbField)
+
 > Return the sine of $\pi x$ in the given Arb field.
 """
 function sinpi(x::fmpq, r::ArbField)
@@ -1426,6 +1512,7 @@ end
 
 @doc Markdown.doc"""
     cospi(x::fmpq, r::ArbField)
+
 >  Return the cosine of $\pi x$ in the given Arb field.
 """
 function cospi(x::fmpq, r::ArbField)
@@ -1437,6 +1524,7 @@ end
 
 @doc Markdown.doc"""
     sincospi(x::fmpq, r::ArbField)
+
 > Return a tuple $s, c$ consisting of the sine and cosine of $\pi x$ in the
 > given Arb field.
 """
@@ -1450,6 +1538,7 @@ end
 
 @doc Markdown.doc"""
     sinhcosh(x::arb)
+
 > Return a tuple $s, c$ consisting of the hyperbolic sine and cosine of $x$.
 """
 function sinhcosh(x::arb)
@@ -1462,6 +1551,7 @@ end
 
 @doc Markdown.doc"""
     atan2(x::arb, y::arb)
+
 > Return atan2$(b,a) = \arg(a+bi)$.
 """
 function atan2(x::arb, y::arb)
@@ -1473,6 +1563,7 @@ end
 
 @doc Markdown.doc"""
     agm(x::arb, y::arb)
+
 > Return the arithmetic-geometric mean of $x$ and $y$
 """
 function agm(x::arb, y::arb)
@@ -1484,6 +1575,7 @@ end
 
 @doc Markdown.doc"""
     zeta(s::arb, a::arb)
+
 > Return the Hurwitz zeta function $\zeta(s,a)$.
 """
 function zeta(s::arb, a::arb)
@@ -1495,6 +1587,7 @@ end
 
 @doc Markdown.doc"""
     hypot(x::arb, y::arb)
+
 > Return $\sqrt{x^2 + y^2}$.
 """
 function hypot(x::arb, y::arb)
@@ -1513,6 +1606,7 @@ end
 
 @doc Markdown.doc"""
     root(x::arb, n::Int)
+
 > Return the $n$-th root of $x$. We require $x \geq 0$.
 """
 function root(x::arb, n::Int)
@@ -1522,6 +1616,7 @@ end
 
 @doc Markdown.doc"""
     fac(x::arb)
+
 > Return the factorial of $x$.
 """
 fac(x::arb) = gamma(x+1)
@@ -1534,12 +1629,14 @@ end
 
 @doc Markdown.doc"""
     fac(n::Int, r::ArbField)
+
 > Return the factorial of $n$ in the given Arb field.
 """
 fac(n::Int, r::ArbField) = n < 0 ? fac(r(n)) : fac(UInt(n), r)
 
 @doc Markdown.doc"""
     binom(x::arb, n::UInt)
+
 > Return the binomial coefficient ${x \choose n}$.
 """
 function binom(x::arb, n::UInt)
@@ -1551,6 +1648,7 @@ end
 
 @doc Markdown.doc"""
     binom(n::UInt, k::UInt, r::ArbField)
+
 > Return the binomial coefficient ${n \choose k}$ in the given Arb field.
 """
 function binom(n::UInt, k::UInt, r::ArbField)
@@ -1562,6 +1660,7 @@ end
 
 @doc Markdown.doc"""
     fib(n::fmpz, r::ArbField)
+
 > Return the $n$-th Fibonacci number in the given Arb field.
 """
 function fib(n::fmpz, r::ArbField)
@@ -1580,12 +1679,14 @@ end
 
 @doc Markdown.doc"""
     fib(n::Int, r::ArbField)
+
 > Return the $n$-th Fibonacci number in the given Arb field.
 """
 fib(n::Int, r::ArbField) = n >= 0 ? fib(UInt(n), r) : fib(fmpz(n), r)
 
 @doc Markdown.doc"""
     gamma(x::fmpz, r::ArbField)
+
 > Return the Gamma function evaluated at $x$ in the given Arb field.
 """
 function gamma(x::fmpz, r::ArbField)
@@ -1597,6 +1698,7 @@ end
 
 @doc Markdown.doc"""
     gamma(x::fmpq, r::ArbField)
+
 > Return the Gamma function evaluated at $x$ in the given Arb field.
 """
 function gamma(x::fmpq, r::ArbField)
@@ -1616,6 +1718,7 @@ end
 
 @doc Markdown.doc"""
     zeta(n::Int, r::ArbField)
+
 > Return the Riemann zeta function $\zeta(n)$ as an element of the given Arb
 > field.
 """
@@ -1630,6 +1733,7 @@ end
 
 @doc Markdown.doc"""
     bernoulli(n::Int, r::ArbField)
+
 > Return the $n$-th Bernoulli number as an element of the given Arb field.
 """
 bernoulli(n::Int, r::ArbField) = n >= 0 ? bernoulli(UInt(n), r) : throw(DomainError(n, "Index must be non-negative"))
@@ -1643,6 +1747,7 @@ end
 
 @doc Markdown.doc"""
     risingfac(x::arb, n::Int)
+
 > Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an Arb.
 """
 risingfac(x::arb, n::Int) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : risingfac(x, UInt(n))
@@ -1656,6 +1761,7 @@ end
 
 @doc Markdown.doc"""
     risingfac(x::fmpq, n::Int, r::ArbField)
+
 > Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an element of the
 > given Arb field.
 """
@@ -1671,6 +1777,7 @@ end
 
 @doc Markdown.doc"""
     risingfac2(x::arb, n::Int)
+
 > Return a tuple containing the rising factorial $x(x + 1)\ldots (x + n - 1)$
 > and its derivative.
 """
@@ -1678,6 +1785,7 @@ risingfac2(x::arb, n::Int) = n < 0 ? throw(DomainError(n, "Index must be non-neg
 
 @doc Markdown.doc"""
     polylog(s::arb, a::arb)
+
 > Return the polylogarithm Li$_s(a)$.
 """
 function polylog(s::arb, a::arb)
@@ -1689,6 +1797,7 @@ end
 
 @doc Markdown.doc"""
     polylog(s::Int, a::arb)
+
 > Return the polylogarithm Li$_s(a)$.
 """
 function polylog(s::Int, a::arb)
@@ -1730,30 +1839,35 @@ end
 
 @doc Markdown.doc"""
     chebyshev_t(n::Int, x::arb)
+
 > Return the value of the Chebyshev polynomial $T_n(x)$.
 """
 chebyshev_t(n::Int, x::arb) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : chebyshev_t(UInt(n), x)
 
 @doc Markdown.doc"""
     chebyshev_u(n::Int, x::arb)
+
 > Return the value of the Chebyshev polynomial $U_n(x)$.
 """
 chebyshev_u(n::Int, x::arb) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : chebyshev_u(UInt(n), x)
 
 @doc Markdown.doc"""
     chebyshev_t2(n::Int, x::arb)
+
 > Return the tuple $(T_{n}(x), T_{n-1}(x))$.
 """
 chebyshev_t2(n::Int, x::arb) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : chebyshev_t2(UInt(n), x)
 
 @doc Markdown.doc"""
     chebyshev_u2(n::Int, x::arb)
+
 > Return the tuple $(U_{n}(x), U_{n-1}(x))$
 """
 chebyshev_u2(n::Int, x::arb) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : chebyshev_u2(UInt(n), x)
 
 @doc Markdown.doc"""
     bell(n::fmpz, r::ArbField)
+
 > Return the Bell number $B_n$ as an element of $r$.
 """
 function bell(n::fmpz, r::ArbField)
@@ -1765,12 +1879,14 @@ end
 
 @doc Markdown.doc"""
     bell(n::Int, r::ArbField)
+
 > Return the Bell number $B_n$ as an element of $r$.
 """
 bell(n::Int, r::ArbField) = bell(fmpz(n), r)
 
 @doc Markdown.doc"""
     numpart(n::fmpz, r::ArbField)
+
 > Return the number of partitions $p(n)$ as an element of $r$.
 """
 function numpart(n::fmpz, r::ArbField)
@@ -1782,6 +1898,7 @@ end
 
 @doc Markdown.doc"""
     numpart(n::Int, r::ArbField)
+
 > Return the number of partitions $p(n)$ as an element of $r$.
 """
 numpart(n::Int, r::ArbField) = numpart(fmpz(n), r)
@@ -1794,6 +1911,7 @@ numpart(n::Int, r::ArbField) = numpart(fmpz(n), r)
 
 @doc Markdown.doc"""
     lindep(A::Array{arb, 1}, bits::Int)
+
 > Find a small linear combination of the entries of the array $A$ that is small
 > (using LLL). The entries are first scaled by the given number of bits before
 > truncating to integers for use in LLL. This function can be used to find linear

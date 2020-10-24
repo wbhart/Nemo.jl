@@ -375,6 +375,7 @@ end
 
 @doc Markdown.doc"""
     remove(z::fq_nmod_poly, p::fq_nmod_poly)
+
 > Computes the valuation of $z$ at $p$, that is, the largest $k$ such that
 > $p^k$ divides $z$. Additionally, $z/p^k$ is returned as well.
 >
@@ -561,6 +562,7 @@ end
 
 @doc Markdown.doc"""
     isirreducible(x::fq_nmod_poly)
+
 > Return `true` if $x$ is irreducible, otherwise return `false`.
 """
 function isirreducible(x::fq_nmod_poly)
@@ -577,6 +579,7 @@ end
 
 @doc Markdown.doc"""
     issquarefree(x::fq_nmod_poly)
+
 > Return `true` if $x$ is squarefree, otherwise return `false`.
 """
 function issquarefree(x::fq_nmod_poly)
@@ -592,6 +595,7 @@ end
 
 @doc Markdown.doc"""
     factor(x::fq_nmod_poly)
+
 > Return the factorisation of $x$.
 """
 function factor(x::fq_nmod_poly)
@@ -621,6 +625,7 @@ end
 
 @doc Markdown.doc"""
     factor_squarefree(x::fq_nmod_poly)
+
 > Return the squarefree factorisation of $x$.
 """
 function factor_squarefree(x::fq_nmod_poly)
@@ -647,6 +652,7 @@ end
 
 @doc Markdown.doc"""
     factor_distinct_deg(x::fq_nmod_poly)
+
 > Return the distinct degree factorisation of a squarefree polynomial $x$.
 """
 function factor_distinct_deg(x::fq_nmod_poly)

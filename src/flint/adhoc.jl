@@ -6,6 +6,7 @@
 
 @doc Markdown.doc"""
     *(a::fmpz, b::AbsSeriesElem)
+
 > Return $a\times b$.
 """
 function *(a::fmpz, b::AbsSeriesElem)
@@ -22,12 +23,14 @@ end
 
 @doc Markdown.doc"""
     *(a::AbsSeriesElem, b::fmpz)
+
 > Return $a\times b$.
 """
 *(a::AbsSeriesElem, b::fmpz) = b*a
 
 @doc Markdown.doc"""
     ==(x::AbsSeriesElem, y::fmpz)
+
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::AbsSeriesElem, y::fmpz) = precision(x) == 0 || ((length(x) == 0 && iszero(y))
@@ -35,12 +38,14 @@ end
 
 @doc Markdown.doc"""
     ==(x::fmpz, y::AbsSeriesElem)
+
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::fmpz, y::AbsSeriesElem) = y == x
 
 @doc Markdown.doc"""
     divexact(x::AbsSeriesElem, y::fmpz)
+
 > Return $x/y$ where the quotient is expected to be exact.
 """
 function divexact(x::AbsSeriesElem, y::fmpz)
@@ -73,6 +78,7 @@ end
 
 @doc Markdown.doc"""
     *(a::fmpz, b::RelSeriesElem)
+
 > Return $a\times b$.
 """
 function *(a::fmpz, b::RelSeriesElem)
@@ -91,12 +97,14 @@ end
 
 @doc Markdown.doc"""
     *(a::RelSeriesElem, b::fmpz)
+
 > Return $a\times b$.
 """
 *(a::RelSeriesElem, b::fmpz) = b*a
 
 @doc Markdown.doc"""
     ==(x::RelSeriesElem, y::fmpz)
+
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::RelSeriesElem, y::fmpz) = precision(x) == 0 ||
@@ -105,12 +113,14 @@ end
 
 @doc Markdown.doc"""
     ==(x::fmpz, y::RelSeriesElem)
+
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::fmpz, y::RelSeriesElem) = y == x
 
 @doc Markdown.doc"""
     divexact(x::RelSeriesElem, y::fmpz)
+
 > Return $x/y$ where the quotient is expected to be exact.
 """
 function divexact(x::RelSeriesElem, y::fmpz)
@@ -144,6 +154,7 @@ end
 
 @doc Markdown.doc"""
     *(a::fmpz, b::PolyElem)
+
 > Return $a\times b$.
 """
 function *(a::fmpz, b::PolyElem)
@@ -159,12 +170,14 @@ end
 
 @doc Markdown.doc"""
     *(a::PolyElem, b::fmpz)
+
 > Return $a\times b$.
 """
 *(a::PolyElem, b::fmpz) = b*a
 
 @doc Markdown.doc"""
     ==(x::PolyElem, y::fmpz)
+
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::PolyElem, y::fmpz) = ((length(x) == 0 && iszero(y))
@@ -172,12 +185,14 @@ end
 
 @doc Markdown.doc"""
     ==(x::fmpz, y::PolyElem)
+
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::fmpz, y::PolyElem) = y == x
 
 @doc Markdown.doc"""
     divexact(a::PolyElem, b::fmpz)
+
 > Return $a/b$ where the quotient is expected to be exact.
 """
 function divexact(a::PolyElem, b::fmpz)
@@ -230,42 +245,49 @@ end
 
 @doc Markdown.doc"""
     *(a::ResElem, b::fmpz)
+
 > Return $a\times b$.
 """
 *(a::ResElem, b::fmpz) = parent(a)(data(a) * b)
 
 @doc Markdown.doc"""
     *(a::fmpz, b::ResElem)
+
 > Return $a\times b$.
 """
 *(a::fmpz, b::ResElem) = parent(b)(a * data(b))
 
 @doc Markdown.doc"""
     +(a::ResElem, b::fmpz)
+
 > Return $a + b$.
 """
 +(a::ResElem, b::fmpz) = parent(a)(data(a) + b)
 
 @doc Markdown.doc"""
     +(a::fmpz, b::ResElem)
+
 > Return $a + b$.
 """
 +(a::fmpz, b::ResElem) = parent(b)(a + data(b))
 
 @doc Markdown.doc"""
     -(a::ResElem, b::fmpz)
+
 > Return $a - b$.
 """
 -(a::ResElem, b::fmpz) = parent(a)(data(a) - b)
 
 @doc Markdown.doc"""
     -(a::fmpz, b::ResElem)
+
 > Return $a - b$.
 """
 -(a::fmpz, b::ResElem) = parent(b)(a - data(b))
 
 @doc Markdown.doc"""
     ==(a::ResElem, b::fmpz)
+
 > Return `true` if $a == b$ arithmetically, otherwise return `false`.
 """
 function ==(a::ResElem, b::fmpz)
@@ -275,6 +297,7 @@ end
 
 @doc Markdown.doc"""
     ==(a::fmpz, b::ResElem)
+
 > Return `true` if $a == b$ arithmetically, otherwise return `false`.
 """
 function ==(a::fmpz, b::ResElem)
@@ -416,6 +439,7 @@ end
 
 @doc Markdown.doc"""
     *(x::fmpz, y::MatElem)
+
 > Return $x\times y$.
 """
 function *(x::fmpz, y::MatElem)
@@ -430,12 +454,14 @@ end
 
 @doc Markdown.doc"""
     *(x::MatElem, y::fmpz)
+
 > Return $x\times y$.
 """
 *(x::MatElem, y::fmpz) = y*x
 
 @doc Markdown.doc"""
     +(x::fmpz, y::MatElem)
+
 > Return $S(x) + y$ where $S$ is the parent of $y$.
 """
 function +(x::fmpz, y::MatElem)
@@ -455,12 +481,14 @@ end
 
 @doc Markdown.doc"""
     +(x::MatElem, y::fmpz)
+
 > Return $x + S(y)$ where $S$ is the parent of $x$.
 """
 +(x::MatElem, y::fmpz) = y + x
 
 @doc Markdown.doc"""
     -(x::fmpz, y::MatElem)
+
 > Return $S(x) - y$ where $S$ is the parent of $y$.
 """
 function -(x::fmpz, y::MatElem)
@@ -480,6 +508,7 @@ end
 
 @doc Markdown.doc"""
     -(x::MatElem, y::fmpz)
+
 > Return $x - S(y)$, where $S$ is the parent of $x$
 """
 function -(x::MatElem, y::fmpz)
@@ -499,6 +528,7 @@ end
 
 @doc Markdown.doc"""
     ==(x::MatElem, y::fmpz)
+
 > Return `true` if $x == S(y)$ arithmetically, where $S$ is the parent of $x$,
 > otherwise return `false`.
 """
@@ -520,6 +550,7 @@ end
 
 @doc Markdown.doc"""
     ==(x::fmpz, y::MatElem)
+
 > Return `true` if $S(x) == y$ arithmetically, where $S$ is the parent of $y$,
 > otherwise return `false`.
 """
@@ -527,6 +558,7 @@ end
 
 @doc Markdown.doc"""
     divexact(x::MatElem, y::fmpz)
+
 > Return $x/y$, i.e. the matrix where each of the entries has been divided by
 > $y$. Each division is expected to be exact.
 """
@@ -572,6 +604,7 @@ end
 
 @doc Markdown.doc"""
     *(a::FracElem, b::fmpz)
+
 > Return $a\times b$.
 """
 function *(a::FracElem, b::fmpz)
@@ -584,6 +617,7 @@ end
 
 @doc Markdown.doc"""
     *(a::fmpz, b::FracElem)
+
 > Return $a\times b$.
 """
 function *(a::fmpz, b::FracElem)
@@ -596,6 +630,7 @@ end
 
 @doc Markdown.doc"""
     +(a::FracElem, b::fmpz)
+
 > Return $a + b$.
 """
 function +(a::FracElem, b::fmpz)
@@ -607,6 +642,7 @@ end
 
 @doc Markdown.doc"""
     -(a::FracElem, b::fmpz)
+
 > Return $a - b$.
 """
 function -(a::FracElem, b::fmpz)
@@ -618,12 +654,14 @@ end
 
 @doc Markdown.doc"""
     +(a::fmpz, b::FracElem)
+
 > Return $a + b$.
 """
 +(a::fmpz, b::FracElem) = b + a
 
 @doc Markdown.doc"""
     -(a::fmpz, b::FracElem)
+
 > Return $a - b$.
 """
 function -(a::fmpz, b::FracElem)
@@ -635,6 +673,7 @@ end
 
 @doc Markdown.doc"""
     ==(x::FracElem, y::fmpz)
+
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 function ==(x::FracElem, y::fmpz)
@@ -643,12 +682,14 @@ end
 
 @doc Markdown.doc"""
     ==(x::fmpz, y::FracElem)
+
 > Return `true` if $x == y$ arithmetically, otherwise return `false`.
 """
 ==(x::fmpz, y::FracElem) = y == x
 
 @doc Markdown.doc"""
     divexact(a::FracElem, b::fmpz)
+
 > Return $a/b$.
 """
 function divexact(a::FracElem, b::fmpz)
@@ -662,6 +703,7 @@ end
 
 @doc Markdown.doc"""
     divexact(a::fmpz, b::FracElem)
+
 > Return $a/b$.
 """
 function divexact(a::fmpz, b::FracElem)

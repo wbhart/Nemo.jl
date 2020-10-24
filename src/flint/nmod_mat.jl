@@ -357,6 +357,7 @@ end
 
 @doc Markdown.doc"""
     strong_echelon_form(a::nmod_mat)
+
 > Return the strong echeleon form of $a$. The matrix $a$ must have at least as
 > many rows as columns.
 """
@@ -374,6 +375,7 @@ end
 
 @doc Markdown.doc"""
     howell_form(a::nmod_mat)
+
 > Return the Howell normal form of $a$. The matrix $a$ must have at least as
 > many rows as columns.
 """
@@ -609,6 +611,7 @@ end
 
 @doc Markdown.doc"""
     lift(a::T) where {T <: Zmodn_mat}
+
 > Return a lift of the matrix $a$ to a matrix over $\mathbb{Z}$, i.e. where the
 > entries of the returned matrix are those of $a$ lifted to $\mathbb{Z}$.
 """

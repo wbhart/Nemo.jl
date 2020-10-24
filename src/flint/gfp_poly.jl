@@ -294,6 +294,7 @@ end
 
 @doc Markdown.doc"""
     lift(R::FmpzPolyRing, y::gfp_poly)
+
 > Lift from a polynomial over $\mathbb{Z}/n\mathbb{Z}$ to a polynomial over
 > $\mathbb{Z}$ with minimal reduced nonnegative coefficients. The ring `R`
 > specifies the ring to lift into.
@@ -314,6 +315,7 @@ end
 
 @doc Markdown.doc"""
     isirreducible(x::gfp_poly)
+
 > Return `true` if $x$ is irreducible, otherwise return `false`.
 """
 function isirreducible(x::gfp_poly)
@@ -329,6 +331,7 @@ end
 
 @doc Markdown.doc"""
     issquarefree(x::gfp_poly)
+
 > Return `true` if $x$ is squarefree, otherwise return `false`.
 """
 function issquarefree(x::gfp_poly)
@@ -344,6 +347,7 @@ end
 
 @doc Markdown.doc"""
     factor(x::gfp_poly)
+
 > Return the factorisation of $x$.
 """
 function factor(x::gfp_poly)
@@ -368,6 +372,7 @@ end
 
 @doc Markdown.doc"""
     factor_squarefree(x::gfp_poly)
+
 > Return the squarefree factorisation of $x$.
 """
 function factor_squarefree(x::gfp_poly)
@@ -391,6 +396,7 @@ end
 
 @doc Markdown.doc"""
     factor_distinct_deg(x::gfp_poly)
+
 > Return the distinct degree factorisation of a squarefree polynomial $x$.
 """
 function factor_distinct_deg(x::gfp_poly)
@@ -419,6 +425,7 @@ end
 
 @doc Markdown.doc"""
     remove(z::gfp_poly, p::gfp_poly)
+
 > Computes the valuation of $z$ at $p$, that is, the largest $k$ such that
 > $p^k$ divides $z$. Additionally, $z/p^k$ is returned as well.
 >

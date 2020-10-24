@@ -17,6 +17,7 @@ subfields(k::FinField) = k.subfields
 
 @doc Markdown.doc"""
     AddOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
+
 > Add an overfield to $F$, represented by a morphism $f: F\to G$ where
 > $G$ is the codomain of $f$.
 """

@@ -14,6 +14,7 @@ export FlintQadicField, qadic, prime, teichmuller, log
 
 @doc Markdown.doc"""
     O(R::FlintQadicField, m::fmpz)
+
 > Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
 > is not found to be a power of `p = prime(R)`.
 """
@@ -36,6 +37,7 @@ end
 
 @doc Markdown.doc"""
     O(R::FlintQadicField, m::fmpq)
+
 > Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
 > is not found to be a power of `p = prime(R)`.
 """
@@ -59,6 +61,7 @@ end
 
 @doc Markdown.doc"""
     O(R::FlintQadicField, m::Integer)
+
 > Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
 > is not found to be a power of `p = prime(R)`.
 """
@@ -68,18 +71,21 @@ elem_type(::Type{FlintQadicField}) = qadic
 
 @doc Markdown.doc"""
     base_ring(a::FlintQadicField)
+
 > Returns `Union{}` as this field is not dependent on another field.
 """
 base_ring(a::FlintQadicField) = Union{}
 
 @doc Markdown.doc"""
     base_ring(a::qadic)
+
 > Returns `Union{}` as this field is not dependent on another field.
 """
 base_ring(a::qadic) = Union{}
 
 @doc Markdown.doc"""
     parent(a::qadic)
+
 > Returns the parent of the given p-adic field element.
 """
 parent(a::qadic) = a.parent
@@ -120,6 +126,7 @@ end
 
 @doc Markdown.doc"""
     prime(R::FlintQadicField)
+
 > Return the prime $p$ for the given $q$-adic field.
 """
 function prime(R::FlintQadicField)
@@ -131,6 +138,7 @@ end
 
 @doc Markdown.doc"""
     precision(a::qadic)
+
 > Return the precision of the given $q$-adic field element, i.e. if the element
 > is known to $O(p^n)$ this function will return $n$.
 """
@@ -138,6 +146,7 @@ precision(a::qadic) = a.N
 
 @doc Markdown.doc"""
     valuation(a::qadic)
+
 > Return the valuation of the given $q$-adic field element, i.e. if the given
 > element is divisible by $p^n$ but not a higher power of $q$ then the function
 > will return $n$.
@@ -148,6 +157,7 @@ end
 
 @doc Markdown.doc"""
     lift(R::FmpqPolyRing, a::qadic)
+
 > Return a lift of the given $q$-adic field element to $\mathbb{Q}[x]$.
 """
 function lift(R::FmpqPolyRing, a::qadic)
@@ -160,6 +170,7 @@ end
 
 @doc Markdown.doc"""
     lift(R::FmpzPolyRing, a::qadic)
+
 > Return a lift of the given $q$-adic field element to $\mathbb{Z}[x]$ if possible.
 """
 function lift(R::FmpzPolyRing, a::qadic)
@@ -173,6 +184,7 @@ end
 
 @doc Markdown.doc"""
     zero(R::FlintQadicField)
+
 > Return zero in the given $q$-adic field, to the default precision.
 """
 function zero(R::FlintQadicField)
@@ -184,6 +196,7 @@ end
 
 @doc Markdown.doc"""
     one(R::FlintQadicField)
+
 > Return zero in the given $q$-adic field, to the default precision.
 """
 function one(R::FlintQadicField)
@@ -195,6 +208,7 @@ end
 
 @doc Markdown.doc"""
     iszero(a::qadic)
+
 > Return `true` if the given p-adic field element is zero, otherwise return
 > `false`.
 """
@@ -203,6 +217,7 @@ iszero(a::qadic) = Bool(ccall((:qadic_is_zero, libflint), Cint,
 
 @doc Markdown.doc"""
     isone(a::qadic)
+
 > Return `true` if the given p-adic field element is one, otherwise return
 > `false`.
 """
@@ -211,6 +226,7 @@ isone(a::qadic) = Bool(ccall((:qadic_is_one, libflint), Cint,
 
 @doc Markdown.doc"""
     isunit(a::qadic)
+
 > Return `true` if the given p-adic field element is invertible, i.e. nonzero,
 > otherwise return `false`.
 """
@@ -486,6 +502,7 @@ divexact(a::fmpq, b::qadic) = inv(inv(a)*b)
 
 @doc Markdown.doc"""
     inv(a::qadic)
+
 > Returns $a^{-1}$. If $a = 0$ a `DivideError()` is thrown.
 """
 function inv(a::qadic)
@@ -506,6 +523,7 @@ end
 
 @doc Markdown.doc"""
     divides(f::qadic, g::qadic)
+
 > Returns a pair consisting of a flag which is set to `true` if $g$ divides
 > $f$ and `false` otherwise, and a value $h$ such that $f = gh$ if
 > such a value exists. If not, the value of $h$ is undetermined.
@@ -528,6 +546,7 @@ end
 
 @doc Markdown.doc"""
     gcd(x::qadic, y::qadic)
+
 > Returns the greatest common divisor of $x$ and $y$, i.e. the function returns
 > $1$ unless both $a$ and $b$ are $0$, in which case it returns $0$.
 """
@@ -549,6 +568,7 @@ end
 
 @doc Markdown.doc"""
     sqrt(a::qadic)
+
 > Return the $q$-adic square root of $a$. We define this only when the
 > valuation of $a$ is even. The precision of the output will be
 > precision$(a) -$ valuation$(a)/2$. If the square root does not exist, an
@@ -574,6 +594,7 @@ end
 
 @doc Markdown.doc"""
     exp(a::qadic)
+
 > Return the $q$-adic exponential of $a$. We define this only when the
 > valuation of $a$ is positive (unless $a = 0$). The precision of the output
 > will be the same as the precision of the input. If the input is not valid an
@@ -592,6 +613,7 @@ end
 
 @doc Markdown.doc"""
     log(a::qadic)
+
 > Return the $q$-adic logarithm of $a$. We define this only when the valuation
 > of $a$ is zero (but not for $a == 0$). The precision of the output will be
 > the same as the precision of the input. If the input is not valid an
@@ -611,6 +633,7 @@ end
 
 @doc Markdown.doc"""
     teichmuller(a::qadic)
+
 > Return the Teichmuller lift of the $q$-adic value $a$. We require the
 > valuation of $a$ to be nonnegative. The precision of the output will be the
 > same as the precision of the input. For convenience, if $a$ is congruent to
@@ -629,6 +652,7 @@ end
 
 @doc Markdown.doc"""
     frobenius(a::qadic, e::Int = 1)
+
 > Return the image of the $e$-th power of Frobenius on the $q$-adic value $a$.
 > The precision of the output will be the same as the precision of the input.
 """
@@ -826,6 +850,7 @@ end
 
 @doc Markdown.doc"""
     FlintQadicField(p::Integer, d::Int, prec::Int)
+
 > Returns the parent object for the $q$-adic field for given prime $p$ and
 > degree $d$, where the default absolute precision of elements of the field
 > is given by `prec`.
