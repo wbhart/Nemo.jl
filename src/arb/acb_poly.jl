@@ -112,8 +112,8 @@ end
 @doc Markdown.doc"""
     overlaps(x::acb_poly, y::acb_poly)
 
-> Return `true` if the coefficient boxes of $x$ overlap the coefficient boxes
-> of $y$, otherwise return `false`.
+Return `true` if the coefficient boxes of $x$ overlap the coefficient boxes
+of $y$, otherwise return `false`.
 """
 function overlaps(x::acb_poly, y::acb_poly)
    return ccall((:acb_poly_overlaps, libarb), Bool,
@@ -123,8 +123,8 @@ end
 @doc Markdown.doc"""
     contains(x::acb_poly, y::acb_poly)
 
-> Return `true` if the coefficient boxes of $x$ contain the corresponding
-> coefficient boxes of $y$, otherwise return `false`.
+Return `true` if the coefficient boxes of $x$ contain the corresponding
+coefficient boxes of $y$, otherwise return `false`.
 """
 function contains(x::acb_poly, y::acb_poly)
    return ccall((:acb_poly_contains, libarb), Bool,
@@ -134,8 +134,8 @@ end
 @doc Markdown.doc"""
     contains(x::acb_poly, y::fmpz_poly)
 
-> Return `true` if the coefficient boxes of $x$ contain the corresponding
-> exact coefficients of $y$, otherwise return `false`.
+Return `true` if the coefficient boxes of $x$ contain the corresponding
+exact coefficients of $y$, otherwise return `false`.
 """
 function contains(x::acb_poly, y::fmpz_poly)
    return ccall((:acb_poly_contains_fmpz_poly, libarb), Bool,
@@ -145,8 +145,8 @@ end
 @doc Markdown.doc"""
     contains(x::acb_poly, y::fmpq_poly)
 
-> Return `true` if the coefficient boxes of $x$ contain the corresponding
-> exact coefficients of $y$, otherwise return `false`.
+Return `true` if the coefficient boxes of $x$ contain the corresponding
+exact coefficients of $y$, otherwise return `false`.
 """
 function contains(x::acb_poly, y::fmpq_poly)
    return ccall((:acb_poly_contains_fmpq_poly, libarb), Bool,
@@ -177,9 +177,9 @@ end
 @doc Markdown.doc"""
     unique_integer(x::acb_poly)
 
-> Return a tuple `(t, z)` where $t$ is `true` if there is a unique integer
-> contained in the (constant) polynomial $x$, along with that integer $z$
-> in case it is, otherwise sets $t$ to `false`.
+Return a tuple `(t, z)` where $t$ is `true` if there is a unique integer
+contained in the (constant) polynomial $x$, along with that integer $z$
+in case it is, otherwise sets $t$ to `false`.
 """
 function unique_integer(x::acb_poly)
   z = FmpzPolyRing(FlintZZ, var(parent(x)))()
@@ -191,8 +191,8 @@ end
 @doc Markdown.doc"""
     isreal(x::acb_poly)
 
-> Return `true` if all the coefficients of $x$ are real, i.e. have exact zero
-> imaginary parts.
+Return `true` if all the coefficients of $x$ are real, i.e. have exact zero
+imaginary parts.
 """
 function isreal(x::acb_poly)
   return ccall((:acb_poly_is_real, libarb), Cint, (Ref{acb_poly}, ), x) != 0
@@ -408,8 +408,8 @@ end
 @doc Markdown.doc"""
     evaluate2(x::acb_poly, y::acb)
 
-> Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
-> its derivative evaluated at $y$.
+Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
+its derivative evaluated at $y$.
 """
 function evaluate2(x::acb_poly, y::acb)
    z = parent(y)()
@@ -431,8 +431,8 @@ end
 @doc Markdown.doc"""
     evaluate2(x::acb_poly, y::Integer)
 
-> Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
-> its derivative evaluated at $y$.
+Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
+its derivative evaluated at $y$.
 """
 function evaluate2(x::acb_poly, y::Integer)
     return evaluate2(x, base_ring(parent(x))(y))
@@ -441,8 +441,8 @@ end
 @doc Markdown.doc"""
     evaluate2(x::acb_poly, y::Float64)
 
-> Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
-> its derivative evaluated at $y$.
+Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
+its derivative evaluated at $y$.
 """
 function evaluate2(x::acb_poly, y::Float64)
     return evaluate2(x, base_ring(parent(x))(y))
@@ -451,8 +451,8 @@ end
 @doc Markdown.doc"""
     evaluate2(x::acb_poly, y::fmpz)
 
-> Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
-> its derivative evaluated at $y$.
+Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
+its derivative evaluated at $y$.
 """
 function evaluate2(x::acb_poly, y::fmpz)
     return evaluate2(x, base_ring(parent(x))(y))
@@ -461,8 +461,8 @@ end
 @doc Markdown.doc"""
     evaluate2(x::acb_poly, y::fmpq)
 
-> Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
-> its derivative evaluated at $y$.
+Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
+its derivative evaluated at $y$.
 """
 function evaluate2(x::acb_poly, y::fmpq)
     return evaluate2(x, base_ring(parent(x))(y))
@@ -471,8 +471,8 @@ end
 @doc Markdown.doc"""
     evaluate2(x::acb_poly, y::arb)
 
-> Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
-> its derivative evaluated at $y$.
+Return a tuple $p, q$ consisting of the polynomial $x$ evaluated at $y$ and
+its derivative evaluated at $y$.
 """
 function evaluate2(x::acb_poly, y::arb)
     return evaluate2(x, base_ring(parent(x))(y))
@@ -548,7 +548,7 @@ end
 @doc Markdown.doc"""
     from_roots(R::AcbPolyRing, b::Array{acb, 1})
 
-> Construct a polynomial in the given polynomial ring from a list of its roots.
+Construct a polynomial in the given polynomial ring from a list of its roots.
 """
 function from_roots(R::AcbPolyRing, b::Array{acb, 1})
    z = R()
@@ -631,18 +631,18 @@ end
 @doc Markdown.doc"""
     roots(x::acb_poly; target=0, isolate_real=false, initial_prec=0, max_prec=0, max_iter=0)
 
-> Attempts to isolate the complex roots of the complex polynomial $x$ by
-> iteratively refining balls in which they lie.
->
-> This is done by increasing the working precision, starting at `initial_prec`.
-> The maximal number of iterations can be set using `max_iter` and the maximal
-> precision can be set using `max_prec`.
->
-> If `isolate_real` is set and $x$ is strictly real, then the real roots will
-> be isolated from the non-real roots. Every root will have either zero,
-> positive or negative real part.
->
-> It is assumed that $x$ is squarefree.
+Attempts to isolate the complex roots of the complex polynomial $x$ by
+iteratively refining balls in which they lie.
+
+This is done by increasing the working precision, starting at `initial_prec`.
+The maximal number of iterations can be set using `max_iter` and the maximal
+precision can be set using `max_prec`.
+
+If `isolate_real` is set and $x$ is strictly real, then the real roots will
+be isolated from the non-real roots. Every root will have either zero,
+positive or negative real part.
+
+It is assumed that $x$ is squarefree.
 """
 function roots(x::acb_poly; target=0, isolate_real=false, initial_prec=0, max_prec=0, max_iter=0)
     deg = degree(x)
@@ -736,7 +736,7 @@ end
 @doc Markdown.doc"""
     roots_upper_bound(x::acb_poly) -> arb
 
-> Returns an upper bound for the absolute value of all complex roots of $x$.
+Returns an upper bound for the absolute value of all complex roots of $x$.
 """
 function roots_upper_bound(x::acb_poly)
    z = ArbField(precision(base_ring(x)))()

@@ -56,7 +56,7 @@ parent_type(::Type{fmpz}) = FlintIntegerRing
 @doc Markdown.doc"""
     parent(a::fmpz)
 
-> Returns the unique Flint integer parent object `FlintZZ`.
+Returns the unique Flint integer parent object `FlintZZ`.
 """
 parent(a::fmpz) = FlintZZ
 
@@ -65,14 +65,14 @@ elem_type(::Type{FlintIntegerRing}) = fmpz
 @doc Markdown.doc"""
     base_ring(a::FlintIntegerRing)
 
-> Returns `Union{}` as this ring is not dependent on another ring.
+Returns `Union{}` as this ring is not dependent on another ring.
 """
 base_ring(a::FlintIntegerRing) = Union{}
 
 @doc Markdown.doc"""
     base_ring(a::fmpz)
 
-> Returns `Union{}` as the parent ring is not dependent on another ring.
+Returns `Union{}` as the parent ring is not dependent on another ring.
 """
 base_ring(a::fmpz) = Union{}
 
@@ -158,14 +158,14 @@ characteristic(R::FlintIntegerRing) = 0
 @doc Markdown.doc"""
     one(R::FlintIntegerRing)
 
-> Return the integer $1$.
+Return the integer $1$.
 """
 one(R::FlintIntegerRing) = fmpz(1)
 
 @doc Markdown.doc"""
     zero(R::FlintIntegerRing)
 
-> Return the integer $1$.
+Return the integer $1$.
 """
 zero(R::FlintIntegerRing) = fmpz(0)
 
@@ -175,15 +175,15 @@ zero(::Type{fmpz}) = fmpz(0)
 @doc Markdown.doc"""
     sign(a::fmpz)
 
-> Returns the sign of $a$, i.e. $+1$, $0$ or $-1$.
+Returns the sign of $a$, i.e. $+1$, $0$ or $-1$.
 """
 sign(a::fmpz) = fmpz(ccall((:fmpz_sgn, libflint), Cint, (Ref{fmpz},), a))
 
 @doc Markdown.doc"""
     fits(::Type{Int}, a::fmpz)
 
-> Returns `true` if the given integer fits into an `Int`, otherwise returns
-> `false`.
+Returns `true` if the given integer fits into an `Int`, otherwise returns
+`false`.
 """
 fits(::Type{Int}, a::fmpz) = ccall((:fmpz_fits_si, libflint), Bool,
                                    (Ref{fmpz},), a)
@@ -191,8 +191,8 @@ fits(::Type{Int}, a::fmpz) = ccall((:fmpz_fits_si, libflint), Bool,
 @doc Markdown.doc"""
     fits(::Type{UInt}, a::fmpz)
 
-> Returns `true` if the given integer fits into a `UInt`, otherwise returns
-> `false`.
+Returns `true` if the given integer fits into a `UInt`, otherwise returns
+`false`.
 """
 fits(::Type{UInt}, a::fmpz) = a < 0 ? false :
               ccall((:fmpz_abs_fits_ui, libflint), Bool, (Ref{fmpz},), a)
@@ -200,36 +200,36 @@ fits(::Type{UInt}, a::fmpz) = a < 0 ? false :
 @doc Markdown.doc"""
     size(a::fmpz)
 
-> Returns the number of limbs required to store the absolute value of $a$.
+Returns the number of limbs required to store the absolute value of $a$.
 """
 size(a::fmpz) = Int(ccall((:fmpz_size, libflint), Cint, (Ref{fmpz},), a))
 
 @doc Markdown.doc"""
     isunit(a::fmpz)
 
-> Return `true` if the given integer is a unit, i.e. $\pm 1$, otherwise return
-> `false`.
+Return `true` if the given integer is a unit, i.e. $\pm 1$, otherwise return
+`false`.
 """
 isunit(a::fmpz) = ccall((:fmpz_is_pm1, libflint), Bool, (Ref{fmpz},), a)
 
 @doc Markdown.doc"""
     iszero(a::fmpz)
 
-> Return `true` if the given integer is zero, otherwise return `false`.
+Return `true` if the given integer is zero, otherwise return `false`.
 """
 iszero(a::fmpz) = ccall((:fmpz_is_zero, libflint), Bool, (Ref{fmpz},), a)
 
 @doc Markdown.doc"""
     isone(a::fmpz)
 
-> Return `true` if the given integer is one, otherwise return `false`.
+Return `true` if the given integer is one, otherwise return `false`.
 """
 isone(a::fmpz) = ccall((:fmpz_is_one, libflint), Bool, (Ref{fmpz},), a)
 
 @doc Markdown.doc"""
     denominator(a::fmpz)
 
-> Returns the denominator of $a$ thought of as a rational. Always returns $1$.
+Returns the denominator of $a$ thought of as a rational. Always returns $1$.
 """
 function denominator(a::fmpz)
    return fmpz(1)
@@ -238,7 +238,7 @@ end
 @doc Markdown.doc"""
     numerator(a::fmpz)
 
-> Returns the numerator of $a$ thought of as a rational. Always returns $a$.
+Returns the numerator of $a$ thought of as a rational. Always returns $a$.
 """
 function numerator(a::fmpz)
    return a
@@ -535,8 +535,8 @@ mod(x::Integer, y::fmpz) = mod(fmpz(x), y)
 @doc Markdown.doc"""
     mod(x::fmpz, y::Integer)
 
-> Return the remainder after division of $x$ by $y$. The remainder will be
-> closer to zero than $y$ and have the same sign, or it will be zero.
+Return the remainder after division of $x$ by $y$. The remainder will be
+closer to zero than $y$ and have the same sign, or it will be zero.
 """
 mod(x::fmpz, y::Integer) = mod(x, fmpz(y))
 
@@ -730,7 +730,7 @@ end
 @doc Markdown.doc"""
     <<(x::fmpz, c::Int)
 
-> Return $2^cx$ where $c \geq 0$.
+Return $2^cx$ where $c \geq 0$.
 """
 function <<(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
@@ -744,7 +744,7 @@ end
 @doc Markdown.doc"""
     >>(x::fmpz, c::Int)
 
-> Return $x/2^c$, discarding any remainder, where $c \geq 0$.
+Return $x/2^c$, discarding any remainder, where $c \geq 0$.
 """
 function >>(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Exponent must be non-negative"))
@@ -764,8 +764,8 @@ end
 @doc Markdown.doc"""
     mod(x::fmpz, y::fmpz)
 
-> Return the remainder after division of $x$ by $y$. The remainder will be
-> closer to zero than $y$ and have the same sign, or it will be zero.
+Return the remainder after division of $x$ by $y$. The remainder will be
+closer to zero than $y$ and have the same sign, or it will be zero.
 """
 function mod(x::fmpz, y::fmpz)
    y == 0 && throw(DivideError())
@@ -778,8 +778,8 @@ end
 @doc Markdown.doc"""
     mod(x::fmpz, y::UInt)
 
-> Return the remainder after division of $x$ by $y$. The remainder will be the
-> least nonnegative remainder.
+Return the remainder after division of $x$ by $y$. The remainder will be the
+least nonnegative remainder.
 """
 function mod(x::fmpz, c::UInt)
     c == 0 && throw(DivideError())
@@ -789,7 +789,7 @@ end
 @doc Markdown.doc"""
     powmod(x::fmpz, p::fmpz, m::fmpz)
 
-> Return $x^p (\mod m)$. The remainder will be in the range $[0, m)$
+Return $x^p (\mod m)$. The remainder will be in the range $[0, m)$
 """
 function powmod(x::fmpz, p::fmpz, m::fmpz)
     m <= 0 && throw(DomainError(m, "Exponent must be non-negative"))
@@ -807,7 +807,7 @@ end
 @doc Markdown.doc"""
     powmod(x::fmpz, p::Int, m::fmpz)
 
-> Return $x^p (\mod m)$. The remainder will be in the range $[0, m)$
+Return $x^p (\mod m)$. The remainder will be in the range $[0, m)$
 """
 function powmod(x::fmpz, p::Int, m::fmpz)
     m <= 0 && throw(DomainError(m, "Exponent must be non-negative"))
@@ -825,7 +825,7 @@ end
 @doc Markdown.doc"""
     invmod(x::fmpz, m::fmpz)
 
-> Return $x^{-1} (\mod m)$. The remainder will be in the range $[0, m)$
+Return $x^{-1} (\mod m)$. The remainder will be in the range $[0, m)$
 """
 function invmod(x::fmpz, m::fmpz)
     m <= 0 && throw(DomainError(m, "Modulus must be non-negative"))
@@ -843,9 +843,9 @@ end
 @doc Markdown.doc"""
     sqrtmod(x::fmpz, m::fmpz)
 
-> Return a square root of $x (\mod m)$ if one exists. The remainder will be in
-> the range $[0, m)$. We require that $m$ is prime, otherwise the algorithm may
-> not terminate.
+Return a square root of $x (\mod m)$ if one exists. The remainder will be in
+the range $[0, m)$. We require that $m$ is prime, otherwise the algorithm may
+not terminate.
 """
 function sqrtmod(x::fmpz, m::fmpz)
     m <= 0 && throw(DomainError(m, "Modulus must be non-negative"))
@@ -860,9 +860,9 @@ end
 @doc Markdown.doc"""
     crt(r1::fmpz, m1::fmpz, r2::fmpz, m2::fmpz, signed=false)
 
-> Find $r$ such that $r \equiv r_1 (\mod m_1)$ and $r \equiv r_2 (\mod m_2)$.
-> If `signed = true`, $r$ will be in the range $-m_1m_2/2 < r \leq m_1m_2/2$.
-> If `signed = false` the value will be in the range $0 \leq r < m_1m_2$.
+Find $r$ such that $r \equiv r_1 (\mod m_1)$ and $r \equiv r_2 (\mod m_2)$.
+If `signed = true`, $r$ will be in the range $-m_1m_2/2 < r \leq m_1m_2/2$.
+If `signed = false` the value will be in the range $0 \leq r < m_1m_2$.
 """
 function crt(r1::fmpz, m1::fmpz, r2::fmpz, m2::fmpz, signed=false)
    z = fmpz()
@@ -875,9 +875,9 @@ end
 @doc Markdown.doc"""
     crt(r1::fmpz, m1::fmpz, r2::Int, m2::Int, signed=false)
 
-> Find $r$ such that $r \equiv r_1 (\mod m_1)$ and $r \equiv r_2 (\mod m_2)$.
-> If `signed = true`, $r$ will be in the range $-m_1m_2/2 < r \leq m_1m_2/2$.
-> If `signed = false` the value will be in the range $0 \leq r < m_1m_2$.
+Find $r$ such that $r \equiv r_1 (\mod m_1)$ and $r \equiv r_2 (\mod m_2)$.
+If `signed = true`, $r$ will be in the range $-m_1m_2/2 < r \leq m_1m_2/2$.
+If `signed = false` the value will be in the range $0 \leq r < m_1m_2$.
 """
 function crt(r1::fmpz, m1::fmpz, r2::Int, m2::Int, signed = false)
    z = fmpz()
@@ -898,7 +898,7 @@ end
 @doc Markdown.doc"""
     flog(x::fmpz, c::fmpz)
 
-> Return the floor of the logarithm of $x$ to base $c$.
+Return the floor of the logarithm of $x$ to base $c$.
 """
 function flog(x::fmpz, c::fmpz)
     c <= 0 && throw(DomainError(c, "Base must be non-negative"))
@@ -910,7 +910,7 @@ end
 @doc Markdown.doc"""
     clog(x::fmpz, c::fmpz)
 
-> Return the ceiling of the logarithm of $x$ to base $c$.
+Return the ceiling of the logarithm of $x$ to base $c$.
 """
 function clog(x::fmpz, c::fmpz)
     c <= 0 && throw(DomainError(c, "Base must be non-negative"))
@@ -922,7 +922,7 @@ end
 @doc Markdown.doc"""
     flog(x::fmpz, c::Int)
 
-> Return the floor of the logarithm of $x$ to base $c$.
+Return the floor of the logarithm of $x$ to base $c$.
 """
 function flog(x::fmpz, c::Int)
     c <= 0 && throw(DomainError(c, "Base must be non-negative"))
@@ -933,7 +933,7 @@ end
 @doc Markdown.doc"""
     clog(x::fmpz, c::Int)
 
-> Return the ceiling of the logarithm of $x$ to base $c$.
+Return the ceiling of the logarithm of $x$ to base $c$.
 """
 function clog(x::fmpz, c::Int)
     c <= 0 && throw(DomainError(c, "Base must be non-negative"))
@@ -950,8 +950,8 @@ end
 @doc Markdown.doc"""
     gcd(x::fmpz, y::fmpz)
 
-> Return the greatest common divisor of $x$ and $y$. The returned result will
-> always be nonnegative and will be zero iff $x$ and $y$ are zero.
+Return the greatest common divisor of $x$ and $y$. The returned result will
+always be nonnegative and will be zero iff $x$ and $y$ are zero.
 """
 function gcd(x::fmpz, y::fmpz)
    z = fmpz()
@@ -963,9 +963,9 @@ end
 @doc Markdown.doc"""
     gcd(x::Array{fmpz, 1})
 
-> Return the greatest common divisor of the elements of $x$. The returned
-> result will always be nonnegative and will be zero iff all elements of $x$
-> are zero.
+Return the greatest common divisor of the elements of $x$. The returned
+result will always be nonnegative and will be zero iff all elements of $x$
+are zero.
 """
 function gcd(x::Array{fmpz, 1})
    if length(x) == 0
@@ -992,8 +992,8 @@ end
 @doc Markdown.doc"""
     lcm(x::fmpz, y::fmpz)
 
-> Return the least common multiple of $x$ and $y$. The returned result will
-> always be nonnegative and will be zero iff $x$ and $y$ are zero.
+Return the least common multiple of $x$ and $y$. The returned result will
+always be nonnegative and will be zero iff $x$ and $y$ are zero.
 """
 function lcm(x::fmpz, y::fmpz)
    z = fmpz()
@@ -1005,8 +1005,8 @@ end
 @doc Markdown.doc"""
     lcm(x::Array{fmpz, 1})
 
-> Return the least common multiple of the elements of $x$. The returned result
-> will always be nonnegative and will be zero iff the elements of $x$ are zero.
+Return the least common multiple of the elements of $x$. The returned result
+will always be nonnegative and will be zero iff the elements of $x$ are zero.
 """
 function lcm(x::Array{fmpz, 1})
    if length(x) == 0
@@ -1044,8 +1044,8 @@ lcm(a::Integer, b::fmpz) = lcm(fmpz(a), b)
 @doc Markdown.doc"""
     gcdx(a::fmpz, b::fmpz)
 
-> Return a tuple $g, s, t$ such that $g$ is the greatest common divisor of $a$
-> and $b$ and integers $s$ and $t$ such that $g = as + bt$.
+Return a tuple $g, s, t$ such that $g$ is the greatest common divisor of $a$
+and $b$ and integers $s$ and $t$ such that $g = as + bt$.
 """
 function gcdx(a::fmpz, b::fmpz)
    g, s, t = gcdx(BigInt(a), BigInt(b))
@@ -1055,11 +1055,11 @@ end
 @doc Markdown.doc"""
     gcdinv(a::fmpz, b::fmpz)
 
-> Return a tuple $g, s$ where $g$ is the greatest common divisor of $a$ and
-> $b$ and where $s$ is the inverse of $a$ modulo $b$ if $g = 1$. This function
-> can be used to detect impossible inverses, i.e. where $a$ and $b$ are not
-> coprime, and to yield the common factor of $a$ and $b$ if they are not
-> coprime. We require $b \geq a \geq 0$.
+Return a tuple $g, s$ where $g$ is the greatest common divisor of $a$ and
+$b$ and where $s$ is the inverse of $a$ modulo $b$ if $g = 1$. This function
+can be used to detect impossible inverses, i.e. where $a$ and $b$ are not
+coprime, and to yield the common factor of $a$ and $b$ if they are not
+coprime. We require $b \geq a \geq 0$.
 """
 function gcdinv(a::fmpz, b::fmpz)
    a < 0 && throw(DomainError(a, "First argument must be non-negative"))
@@ -1089,7 +1089,7 @@ gcdinv(a::Integer, b::fmpz) = gcdinv(fmpz(a), b)
 @doc Markdown.doc"""
     isqrt(x::fmpz)
 
-> Return the floor of the square root of $x$.
+Return the floor of the square root of $x$.
 """
 function isqrt(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
@@ -1101,8 +1101,8 @@ end
 @doc Markdown.doc"""
     isqrtrem(x::fmpz)
 
-> Return a tuple $s, r$ consisting of the floor $s$ of the square root of $x$
-> and the remainder $r$, i.e. such that $x = s^2 + r$. We require $x \geq 0$.
+Return a tuple $s, r$ consisting of the floor $s$ of the square root of $x$
+and the remainder $r$, i.e. such that $x = s^2 + r$. We require $x \geq 0$.
 """
 function isqrtrem(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
@@ -1116,8 +1116,8 @@ end
 @doc Markdown.doc"""
     sqrt(x::fmpz)
 
-> Return the square root $s$ of $x$ if $x$ is a square, otherwise raise an
-> exception. We require $x \geq 0$.
+Return the square root $s$ of $x$ if $x$ is a square, otherwise raise an
+exception. We require $x \geq 0$.
 """
 function Base.sqrt(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
@@ -1132,8 +1132,8 @@ end
 @doc Markdown.doc"""
     root(x::fmpz, n::Int)
 
-> Return the floor of the $n$-the root of $x$. We require $n > 0$ and that
-> $x \geq 0$ if $n$ is even.
+Return the floor of the $n$-the root of $x$. We require $n > 0$ and that
+$x \geq 0$ if $n$ is even.
 """
 function root(x::fmpz, n::Int)
    x < 0 && iseven(n) && throw(DomainError((x, n), "Argument `x` must be positive if exponent `n` is even"))
@@ -1229,8 +1229,8 @@ end
 @doc Markdown.doc"""
     factor(a::fmpz)
 
-> Return a factorisation of $a$ using a `Fac` struct (see the documentation on
-> factorisation in Nemo).
+Return a factorisation of $a$ using a `Fac` struct (see the documentation on
+factorisation in Nemo).
 """
 function factor(a::fmpz)
    if iszero(a)
@@ -1249,8 +1249,8 @@ end
 @doc Markdown.doc"""
     divisible(x::fmpz, y::fmpz)
 
-> Return `true` if $x$ is divisible by $y$, otherwise return `false`. We
-> require $x \neq 0$.
+Return `true` if $x$ is divisible by $y$, otherwise return `false`. We
+require $x \neq 0$.
 """
 function divisible(x::fmpz, y::fmpz)
    iszero(y) && throw(DivideError())
@@ -1261,8 +1261,8 @@ end
 @doc Markdown.doc"""
     divisible(x::fmpz, y::Int)
 
-> Return `true` if $x$ is divisible by $y$, otherwise return `false`. We
-> require $x \neq 0$.
+Return `true` if $x$ is divisible by $y$, otherwise return `false`. We
+require $x \neq 0$.
 """
 function divisible(x::fmpz, y::Int)
    y == 0 && throw(DivideError())
@@ -1273,7 +1273,7 @@ end
 @doc Markdown.doc"""
     issquare(x::fmpz)
 
-> Return `true` if $x$ is a square, otherwise return `false`.
+Return `true` if $x$ is a square, otherwise return `false`.
 """
 issquare(x::fmpz) = Bool(ccall((:fmpz_is_square, libflint), Cint,
                                (Ref{fmpz},), x))
@@ -1283,7 +1283,7 @@ isprime(x::UInt) = Bool(ccall((:n_is_prime, libflint), Cint, (UInt,), x))
 @doc Markdown.doc"""
     isprime(x::fmpz)
 
-> Return `true` if $x$ is a prime number, otherwise return `false`.
+Return `true` if $x$ is a prime number, otherwise return `false`.
 """
 function isprime(x::fmpz)
   !isprobable_prime(x) && return false
@@ -1293,7 +1293,7 @@ end
 @doc Markdown.doc"""
     isprime(x::Int)
 
-> Return `true` if $x$ is a prime number, otherwise return `false`.
+Return `true` if $x$ is a prime number, otherwise return `false`.
 """
 function isprime(n::Int)
   if n < 0
@@ -1305,9 +1305,9 @@ end
 @doc Markdown.doc"""
     isprobable_prime(x::fmpz)
 
-> Return `true` if $x$ is very probably a prime number, otherwise return
-> `false`. No counterexamples are known to this test, but it is conjectured
-> that infinitely many exist.
+Return `true` if $x$ is very probably a prime number, otherwise return
+`false`. No counterexamples are known to this test, but it is conjectured
+that infinitely many exist.
 """
 isprobable_prime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, libflint), Cint,
                                       (Ref{fmpz},), x))
@@ -1315,7 +1315,7 @@ isprobable_prime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, libflint), Cint,
 @doc Markdown.doc"""
     remove(x::fmpz, y::fmpz)
 
-> Return the tuple $n, z$ such that $x = y^nz$ where $y$ and $z$ are coprime.
+Return the tuple $n, z$ such that $x = y^nz$ where $y$ and $z$ are coprime.
 """
 function remove(x::fmpz, y::fmpz)
    iszero(y) && throw(DivideError())
@@ -1334,7 +1334,7 @@ remove(x::Integer, y::Integer) = remove(fmpz(x), fmpz(y))
 @doc Markdown.doc"""
     valuation(x::fmpz, y::fmpz)
 
-> Return the largest $n$ such that $y^n$ divides $x$.
+Return the largest $n$ such that $y^n$ divides $x$.
 """
 function valuation(x::fmpz, y::fmpz)
    n, _ = remove(x, y)
@@ -1350,10 +1350,10 @@ valuation(x::Integer, y::Integer) = valuation(fmpz(x), fmpz(y))
 @doc Markdown.doc"""
     divisor_lenstra(n::fmpz, r::fmpz, m::fmpz)
 
-> If $n$ has a factor which lies in the residue class $r (\mod m)$ for
-> $0 < r < m < n$, this function returns such a factor. Otherwise it returns
-> $0$. This is only efficient if $m$ is at least the cube root of $n$. We
-> require gcd$(r, m) = 1$ and this condition is not checked.
+If $n$ has a factor which lies in the residue class $r (\mod m)$ for
+$0 < r < m < n$, this function returns such a factor. Otherwise it returns
+$0$. This is only efficient if $m$ is at least the cube root of $n$. We
+require gcd$(r, m) = 1$ and this condition is not checked.
 """
 function divisor_lenstra(n::fmpz, r::fmpz, m::fmpz)
    r <= 0 && throw(DomainError(r, "Residue class must be non-negative"))
@@ -1370,8 +1370,8 @@ end
 @doc Markdown.doc"""
     factorial(x::fmpz)
 
-> Return the factorial of $x$, i.e. $x! = 1.2.3\ldots x$. We require
-> $x \geq 0$.
+Return the factorial of $x$, i.e. $x! = 1.2.3\ldots x$. We require
+$x \geq 0$.
 """
 function factorial(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
@@ -1383,8 +1383,8 @@ end
 @doc Markdown.doc"""
     rising_factorial(x::fmpz, n::Int)
 
-> Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
-> If $n < 0$ we throw a `DomainError()`.
+Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
+If $n < 0$ we throw a `DomainError()`.
 """
 function rising_factorial(x::fmpz, n::Int)
     n < 0 && throw(DomainError(n, "Argument must be non-negative"))
@@ -1397,16 +1397,16 @@ end
 @doc Markdown.doc"""
     rising_factorial(x::fmpz, n::fmpz)
 
-> Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\cdots (x + n - 1)$.
-> If $n < 0$ we throw a `DomainError()`.
+Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\cdots (x + n - 1)$.
+If $n < 0$ we throw a `DomainError()`.
 """
 rising_factorial(x::fmpz, n::fmpz) = rising_factorial(x, Int(n))
 
 @doc Markdown.doc"""
     rising_factorial(x::Int, n::Int)
 
-> Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
-> If $n < 0$ we throw a `DomainError()`.
+Return the rising factorial of $x$, i.e. $x(x + 1)(x + 2)\ldots (x + n - 1)$.
+If $n < 0$ we throw a `DomainError()`.
 """
 function rising_factorial(x::Int, n::Int)
     n < 0 && throw(DomainError(n, "Argument must be non-negative"))
@@ -1426,8 +1426,8 @@ end
 @doc Markdown.doc"""
     primorial(x::Int)
 
->  Return the primorial of $x$, i.e. the product of all primes less than or
-> equal to $x$. If $x < 0$ we throw a `DomainError()`.
+ Return the primorial of $x$, i.e. the product of all primes less than or
+equal to $x$. If $x < 0$ we throw a `DomainError()`.
 """
 function primorial(x::Int)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
@@ -1440,8 +1440,8 @@ end
 @doc Markdown.doc"""
     primorial(x::fmpz)
 
->  Return the primorial of $x$, i.e. the product of all primes less than or
-> equal to $x$. If $x < 0$ we throw a `DomainError()`.
+ Return the primorial of $x$, i.e. the product of all primes less than or
+equal to $x$. If $x < 0$ we throw a `DomainError()`.
 """
 function primorial(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
@@ -1454,8 +1454,8 @@ end
 @doc Markdown.doc"""
     fibonacci(x::Int)
 
->  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
-> $F_{i + 1} = F_i + F_{i - 1}$ for all integers $i$.
+ Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
+$F_{i + 1} = F_i + F_{i - 1}$ for all integers $i$.
 """
 function fibonacci(x::Int)
     z = fmpz()
@@ -1467,8 +1467,8 @@ end
 @doc Markdown.doc"""
     fibonacci(x::fmpz)
 
->  Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
-> $F_{i + 1} = F_i + F_{i - 1}$ for all integers $i$.
+ Return the $x$-th Fibonacci number $F_x$. We define $F_1 = 1$, $F_2 = 1$ and
+$F_{i + 1} = F_i + F_{i - 1}$ for all integers $i$.
 """
 function fibonacci(x::fmpz)
     z = fmpz()
@@ -1480,7 +1480,7 @@ end
 @doc Markdown.doc"""
     bell(x::Int)
 
-> Return the Bell number $B_x$.
+Return the Bell number $B_x$.
 """
 function bell(x::Int)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
@@ -1493,7 +1493,7 @@ end
 @doc Markdown.doc"""
     bell(x::fmpz)
 
-> Return the Bell number $B_x$.
+Return the Bell number $B_x$.
 """
 function bell(x::fmpz)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
@@ -1506,8 +1506,8 @@ end
 @doc Markdown.doc"""
     binomial(n::fmpz, k::fmpz)
 
-> Return the binomial coefficient $\frac{n!}{(n - k)!k!}$. If $n, k < 0$ or
-> $k > n$ we return $0$.
+Return the binomial coefficient $\frac{n!}{(n - k)!k!}$. If $n, k < 0$ or
+$k > n$ we return $0$.
 """
 function binomial(n::fmpz, k::fmpz)
     n < 0 && return fmpz(0)
@@ -1521,8 +1521,8 @@ end
 @doc Markdown.doc"""
     moebius_mu(x::fmpz)
 
-> Returns the Moebius mu function of $x$ as an `Int`. The value
-> returned is either $-1$, $0$ or $1$. If $x \leq 0$ we throw a `DomainError()`.
+Returns the Moebius mu function of $x$ as an `Int`. The value
+returned is either $-1$, $0$ or $1$. If $x \leq 0$ we throw a `DomainError()`.
 """
 function moebius_mu(x::fmpz)
    x <= 0 && throw(DomainError(x, "Argument must be positive"))
@@ -1533,16 +1533,16 @@ end
 @doc Markdown.doc"""
     moebius_mu(x::Int)
 
-> Returns the Moebius mu function of $x$ as an `Int`. The value
-> returned is either $-1$, $0$ or $1$. If $x \leq 0$ we throw a `DomainError()`.
+Returns the Moebius mu function of $x$ as an `Int`. The value
+returned is either $-1$, $0$ or $1$. If $x \leq 0$ we throw a `DomainError()`.
 """
 moebius_mu(x::Int) = moebius_mu(fmpz(x))
 
 @doc Markdown.doc"""
     jacobi_symbol(x::fmpz, y::fmpz)
 
-> Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. If
-> $y \leq 0$, we throw a `DomainError()`.
+Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. If
+$y \leq 0$, we throw a `DomainError()`.
 """
 function jacobi_symbol(x::fmpz, y::fmpz)
    (y <= 0 || iseven(y)) && throw(DomainError(y, "Modulus must be odd and positive"))
@@ -1556,8 +1556,8 @@ end
 @doc Markdown.doc"""
     jacobi_symbol(x::Int, y::Int)
 
-> Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. If
-> $y \leq 0$, we throw a `DomainError()`.
+Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. If
+$y \leq 0$, we throw a `DomainError()`.
 """
 function jacobi_symbol(x::Int, y::Int)
    (y <= 0 || mod(y, 2) == 0) && throw(DomainError(y, "Modulus must be odd and positive"))
@@ -1570,8 +1570,8 @@ end
 @doc Markdown.doc"""
     divisor_sigma(x::fmpz, y::Int)
 
-> Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
-> $x \leq 0$ or $y < 0$ we throw a `DomainError()`.
+Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
+$x \leq 0$ or $y < 0$ we throw a `DomainError()`.
 """
 function divisor_sigma(x::fmpz, y::Int)
    x <= 0 && throw(DomainError(x, "Argument must be positive"))
@@ -1585,25 +1585,25 @@ end
 @doc Markdown.doc"""
     divisor_sigma(x::fmpz, y::fmpz)
 
-> Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
-> $x \leq 0$ or $y < 0$ we throw a `DomainError()`.
+Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
+$x \leq 0$ or $y < 0$ we throw a `DomainError()`.
 """
 divisor_sigma(x::fmpz, y::fmpz) = divisor_sigma(x, Int(y))
 
 @doc Markdown.doc"""
     divisor_sigma(x::Int, y::Int)
 
-> Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
-> $x \leq 0$ or $y < 0$ we throw a `DomainError()`.
+Return the value of the sigma function, i.e. $\sum_{0 < d \;| x} d^y$. If
+$x \leq 0$ or $y < 0$ we throw a `DomainError()`.
 """
 divisor_sigma(x::Int, y::Int) = Int(divisor_sigma(fmpz(x), y))
 
 @doc Markdown.doc"""
     euler_phi(x::fmpz)
 
-> Return the value of the Euler phi function at $x$, i.e. the number of
-> positive integers up to $x$ (inclusive) that are coprime with $x$. An
-> exception is raised if $x \leq 0$.
+Return the value of the Euler phi function at $x$, i.e. the number of
+positive integers up to $x$ (inclusive) that are coprime with $x$. An
+exception is raised if $x \leq 0$.
 """
 function euler_phi(x::fmpz)
    x <= 0 && throw(DomainError(x, "Argument must be positive"))
@@ -1616,17 +1616,17 @@ end
 @doc Markdown.doc"""
     euler_phi(x::Int)
 
-> Return the value of the Euler phi function at $x$, i.e. the number of
-> positive integers up to $x$ (inclusive) that are coprime with $x$. An
-> exception is raised if $x \leq 0$.
+Return the value of the Euler phi function at $x$, i.e. the number of
+positive integers up to $x$ (inclusive) that are coprime with $x$. An
+exception is raised if $x \leq 0$.
 """
 euler_phi(x::Int) = Int(euler_phi(fmpz(x)))
 
 @doc Markdown.doc"""
     number_of_partitions(x::Int)
 
-> Return the number of partitions of $x$. This function is not available on
-> Windows 64.
+Return the number of partitions of $x$. This function is not available on
+Windows 64.
 """
 function number_of_partitions(x::Int)
    if (Sys.iswindows() ? true : false) && Int == Int64
@@ -1644,8 +1644,8 @@ end
 @doc Markdown.doc"""
     number_of_partitions(x::fmpz)
 
-> Return the number of partitions of $x$. This function is not available on
-> Windows 64.
+Return the number of partitions of $x$. This function is not available on
+Windows 64.
 """
 function number_of_partitions(x::fmpz)
    if (Sys.iswindows() ? true : false) && Int == Int64
@@ -1669,35 +1669,35 @@ end
 @doc Markdown.doc"""
     bin(n::fmpz)
 
-> Return $n$ as a binary string.
+Return $n$ as a binary string.
 """
 bin(n::fmpz) = base(n, 2)
 
 @doc Markdown.doc"""
     oct(n::fmpz)
 
-> Return $n$ as a octal string.
+Return $n$ as a octal string.
 """
 oct(n::fmpz) = base(n, 8)
 
 @doc Markdown.doc"""
     dec(n::fmpz)
 
-> Return $n$ as a decimal string.
+Return $n$ as a decimal string.
 """
 dec(n::fmpz) = base(n, 10)
 
 @doc Markdown.doc"""
     hex(n::fmpz) = base(n, 16)
 
-> Return $n$ as a hexadecimal string.
+Return $n$ as a hexadecimal string.
 """
 hex(n::fmpz) = base(n, 16)
 
 @doc Markdown.doc"""
     base(n::fmpz, b::Integer)
 
-> Return $n$ as a string in base $b$. We require $2 \leq b \leq 62$.
+Return $n$ as a string in base $b$. We require $2 \leq b \leq 62$.
 """
 function base(n::fmpz, b::Integer)
     2 <= b <= 62 || error("invalid base: $b")
@@ -1711,7 +1711,7 @@ end
 @doc Markdown.doc"""
     ndigits(x::fmpz, b::Integer = 10)
 
-> Return the number of digits of $x$ in the base $b$ (default is $b = 10$).
+Return the number of digits of $x$ in the base $b$ (default is $b = 10$).
 """
 function ndigits(x::fmpz, b::Integer = 10)::Int
    if _fmpz_is_small(x)
@@ -1725,7 +1725,7 @@ end
 @doc Markdown.doc"""
     nbits(x::fmpz)
 
-> Return the number of binary bits of $x$. We return zero if $x = 0$.
+Return the number of binary bits of $x$. We return zero if $x = 0$.
 """
 nbits(x::fmpz) = iszero(x) ? 0 : Int(ccall((:fmpz_sizeinbase, libflint), UInt,
                   (Ref{fmpz}, Int32), x, 2))  # docu states: always correct
@@ -1740,7 +1740,7 @@ nbits(x::fmpz) = iszero(x) ? 0 : Int(ccall((:fmpz_sizeinbase, libflint), UInt,
 @doc Markdown.doc"""
     popcount(x::fmpz)
 
-> Return the number of ones in the binary representation of $x$.
+Return the number of ones in the binary representation of $x$.
 """
 popcount(x::fmpz) = Int(ccall((:fmpz_popcnt, libflint), UInt,
                               (Ref{fmpz},), x))
@@ -1748,7 +1748,7 @@ popcount(x::fmpz) = Int(ccall((:fmpz_popcnt, libflint), UInt,
 @doc Markdown.doc"""
     prevpow2(x::fmpz)
 
-> Return the previous power of $2$ up to including $x$.
+Return the previous power of $2$ up to including $x$.
 """
 prevpow2(x::fmpz) = x < 0 ? -prevpow2(-x) :
                             (x <= 2 ? x : one(FlintZZ) << (ndigits(x, 2) - 1))
@@ -1756,7 +1756,7 @@ prevpow2(x::fmpz) = x < 0 ? -prevpow2(-x) :
 @doc Markdown.doc"""
     nextpow2(x::fmpz)
 
-> Return the next power of $2$ that is at least $x$.
+Return the next power of $2$ that is at least $x$.
 """
 nextpow2(x::fmpz) = x < 0 ? -nextpow2(-x) :
                             (x <= 2 ? x : one(FlintZZ) << ndigits(x - 1, 2))
@@ -1764,7 +1764,7 @@ nextpow2(x::fmpz) = x < 0 ? -nextpow2(-x) :
 @doc Markdown.doc"""
     trailing_zeros(x::fmpz)
 
-> Count the trailing zeros in the binary representation of $x$.
+Count the trailing zeros in the binary representation of $x$.
 """
 trailing_zeros(x::fmpz) = ccall((:fmpz_val2, libflint), Int,
                                 (Ref{fmpz},), x)
@@ -1778,8 +1778,8 @@ trailing_zeros(x::fmpz) = ccall((:fmpz_val2, libflint), Int,
 @doc Markdown.doc"""
     clrbit!(x::fmpz, c::Int)
 
-> Clear bit $c$ of $x$, where the least significant bit is the $0$-th bit. Note
-> that this function modifies its input in-place.
+Clear bit $c$ of $x$, where the least significant bit is the $0$-th bit. Note
+that this function modifies its input in-place.
 """
 function clrbit!(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Second argument must be non-negative"))
@@ -1789,8 +1789,8 @@ end
 @doc Markdown.doc"""
     setbit!(x::fmpz, c::Int)
 
-> Set bit $c$ of $x$, where the least significant bit is the $0$-th bit. Note
-> that this function modifies its input in-place.
+Set bit $c$ of $x$, where the least significant bit is the $0$-th bit. Note
+that this function modifies its input in-place.
 """
 function setbit!(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Second argument must be non-negative"))
@@ -1800,8 +1800,8 @@ end
 @doc Markdown.doc"""
     combit!(x::fmpz, c::Int)
 
-> Complement bit $c$ of $x$, where the least significant bit is the $0$-th bit.
-> Note that this function modifies its input in-place.
+Complement bit $c$ of $x$, where the least significant bit is the $0$-th bit.
+Note that this function modifies its input in-place.
 """
 function combit!(x::fmpz, c::Int)
     c < 0 && throw(DomainError(c, "Second argument must be non-negative"))
@@ -1903,7 +1903,7 @@ rand(R::FlintIntegerRing, n::UnitRange{Int}) = rand(Random.GLOBAL_RNG, R, n)
 @doc Markdown.doc"""
     rand_bits(::FlintIntegerRing, b::Int)
 
-> Return a random signed integer whose absolute value has $b$ bits.
+Return a random signed integer whose absolute value has $b$ bits.
 """
 function rand_bits(::FlintIntegerRing, b::Int)
    b >= 0 || throw(DomainError(b, "Bit count must be non-negative"))
@@ -1916,8 +1916,8 @@ end
 @doc Markdown.doc"""
     rand_bits_prime(::FlintIntegerRing, n::Int, proved::Bool=true)
 
-> Return a random prime number with the given number of bits. If only a
-> probable prime is required, one can pass `proved=false`.
+Return a random prime number with the given number of bits. If only a
+probable prime is required, one can pass `proved=false`.
 """
 function rand_bits_prime(::FlintIntegerRing, n::Int, proved::Bool = true)
    n < 2 && throw(DomainError(n, "No primes with that many bits"))

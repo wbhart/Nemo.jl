@@ -19,7 +19,7 @@ parent_type(::Type{nf_elem}) = AnticNumberField
 @doc Markdown.doc"""
     parent(a::nf_elem)
 
-> Return the parent of the given number field element.
+Return the parent of the given number field element.
 """
 parent(a::nf_elem) = a.parent
 
@@ -28,14 +28,14 @@ elem_type(::Type{AnticNumberField}) = nf_elem
 @doc Markdown.doc"""
     base_ring(a::AnticNumberField)
 
-> Returns `Union{}` since a number field doesn't depend on any ring.
+Returns `Union{}` since a number field doesn't depend on any ring.
 """
 base_ring(a::AnticNumberField) = Union{}
 
 @doc Markdown.doc"""
     base_ring(a::nf_elem)
 
-> Returns `Union{}` since a number field doesn't depend on any ring.
+Returns `Union{}` since a number field doesn't depend on any ring.
 """
 base_ring(a::nf_elem) = Union{}
 
@@ -44,8 +44,8 @@ isdomain_type(::Type{nf_elem}) = true
 @doc Markdown.doc"""
     var(a::AnticNumberField)
 
-> Returns the identifier (as a symbol, not a string), that is used for printing
-> the generator of the given number field.
+Returns the identifier (as a symbol, not a string), that is used for printing
+the generator of the given number field.
 """
 var(a::AnticNumberField) = a.S
 
@@ -143,9 +143,9 @@ end
 @doc Markdown.doc"""
     coeff(x::nf_elem, n::Int)
 
-> Return the $n$-th coefficient of the polynomial representation of the given
-> number field element. Coefficients are numbered from $0$, starting with the
-> constant coefficient.
+Return the $n$-th coefficient of the polynomial representation of the given
+number field element. Coefficients are numbered from $0$, starting with the
+constant coefficient.
 """
 function coeff(x::nf_elem, n::Int)
    n < 0 && throw(DomainError(n, "Index must be non-negative"))
@@ -165,7 +165,7 @@ end
 @doc Markdown.doc"""
     gen(a::AnticNumberField)
 
-> Return the generator of the given number field.
+Return the generator of the given number field.
 """
 function gen(a::AnticNumberField)
    r = nf_elem(a)
@@ -177,7 +177,7 @@ end
 @doc Markdown.doc"""
     one(a::AnticNumberField)
 
-> Return the multiplicative identity, i.e. one, in the given number field.
+Return the multiplicative identity, i.e. one, in the given number field.
 """
 function one(a::AnticNumberField)
    r = nf_elem(a)
@@ -189,7 +189,7 @@ end
 @doc Markdown.doc"""
     zero(a::AnticNumberField)
 
-> Return the multiplicative identity, i.e. one, in the given number field.
+Return the multiplicative identity, i.e. one, in the given number field.
 """
 function zero(a::AnticNumberField)
    r = nf_elem(a)
@@ -201,8 +201,8 @@ end
 @doc Markdown.doc"""
     isgen(a::nf_elem)
 
-> Return `true` if the given number field element is the generator of the
-> number field, otherwise return `false`.
+Return `true` if the given number field element is the generator of the
+number field, otherwise return `false`.
 """
 function isgen(a::nf_elem)
    return ccall((:nf_elem_is_gen, libantic), Bool,
@@ -212,8 +212,8 @@ end
 @doc Markdown.doc"""
     isone(a::nf_elem)
 
-> Return `true` if the given number field element is the multiplicative
-> identity of the number field, i.e. one, otherwise return `false`.
+Return `true` if the given number field element is the multiplicative
+identity of the number field, i.e. one, otherwise return `false`.
 """
 function isone(a::nf_elem)
    return ccall((:nf_elem_is_one, libantic), Bool,
@@ -223,8 +223,8 @@ end
 @doc Markdown.doc"""
     iszero(a::nf_elem)
 
-> Return `true` if the given number field element is the additive
-> identity of the number field, i.e. zero, otherwise return `false`.
+Return `true` if the given number field element is the additive
+identity of the number field, i.e. zero, otherwise return `false`.
 """
 function iszero(a::nf_elem)
    return ccall((:nf_elem_is_zero, libantic), Bool,
@@ -234,16 +234,16 @@ end
 @doc Markdown.doc"""
     isunit(a::nf_elem)
 
-> Return `true` if the given number field element is invertible, i.e. nonzero,
-> otherwise return `false`.
+Return `true` if the given number field element is invertible, i.e. nonzero,
+otherwise return `false`.
 """
 isunit(a::nf_elem) = !iszero(a)
 
 @doc Markdown.doc"""
     isinteger(a::nf_elem)
 
-> Return `true` if the given number field element is an integer, otherwise
-> return `false`.
+Return `true` if the given number field element is an integer, otherwise
+return `false`.
 """
 function isinteger(a::nf_elem)
    b = ccall((:nf_elem_is_integer, libantic), Cint,
@@ -254,8 +254,8 @@ end
 @doc Markdown.doc"""
     isrational(a::nf_elem)
 
-> Return `true` if the given number field element is a rational number,
-> otherwise `false`.
+Return `true` if the given number field element is a rational number,
+otherwise `false`.
 """
 function isrational(a::nf_elem)
    b = ccall((:nf_elem_is_rational, libantic), Cint,
@@ -266,8 +266,8 @@ end
 @doc Markdown.doc"""
     denominator(a::nf_elem)
 
-> Return the denominator of the polynomial representation of the given number
-> field element.
+Return the denominator of the polynomial representation of the given number
+field element.
 """
 function denominator(a::nf_elem)
    z = fmpz()
@@ -297,8 +297,8 @@ function elem_to_mat_row!(a::fmpz_mat, i::Int, d::fmpz, b::nf_elem)
 @doc Markdown.doc"""
     degree(a::AnticNumberField)
 
-> Return the degree of the given number field, i.e. the degree of its
-> defining polynomial.
+Return the degree of the given number field, i.e. the degree of its
+defining polynomial.
 """
 degree(a::AnticNumberField) = a.pol_length-1
 
@@ -659,7 +659,7 @@ end
 @doc Markdown.doc"""
     inv(a::nf_elem)
 
-> Return $a^{-1}$. Requires $a \neq 0$.
+Return $a^{-1}$. Requires $a \neq 0$.
 """
 function inv(a::nf_elem)
    iszero(a) && throw(DivideError())
@@ -737,9 +737,9 @@ divexact(a::fmpq, b::nf_elem) = inv(b)*a
 @doc Markdown.doc"""
     divides(a::nf_elem, b::nf_elem)
 
-> Returns a pair consisting of a flag which is set to `true` if $b$ divides
-> $a$ and `false` otherwise, and a number field element $h$ such that $a = bh$
-> if such exists. If not, the value of $h$ is undetermined.
+Returns a pair consisting of a flag which is set to `true` if $b$ divides
+$a$ and `false` otherwise, and a number field element $h$ such that $a = bh$
+if such exists. If not, the value of $h$ is undetermined.
 """
 function divides(a::nf_elem, b::nf_elem)
    if iszero(a)
@@ -760,7 +760,7 @@ end
 @doc Markdown.doc"""
     norm(a::nf_elem)
 
-> Return the absolute norm of $a$. The result will be a rational number.
+Return the absolute norm of $a$. The result will be a rational number.
 """
 function norm(a::nf_elem)
    z = fmpq()
@@ -773,7 +773,7 @@ end
 @doc Markdown.doc"""
     tr(a::nf_elem)
 
-> Return the absolute trace of $a$. The result will be a rational number.
+Return the absolute trace of $a$. The result will be a rational number.
 """
 function tr(a::nf_elem)
    z = fmpq()
@@ -786,9 +786,9 @@ end
 @doc Markdown.doc"""
     representation_matrix(a::nf_elem)
 
-> Return a matrix with rational entries representing multiplication with $a$
-> with respect to the power basis of the generator of the parent of $a$.
-> The matrix is of type fmpq_mat.
+Return a matrix with rational entries representing multiplication with $a$
+with respect to the power basis of the generator of the parent of $a$.
+The matrix is of type fmpq_mat.
 """
 function representation_matrix(a::nf_elem)
   K = parent(a)
@@ -802,10 +802,10 @@ end
 @doc Markdown.doc"""
     representation_matrix_q(a::nf_elem)
 
-> Return a matrix  representing multiplication with $a$ with respect to the
-> power basis of the generator of the parent of $a$.
-> The matrix is returned as a tuple (fmpz_mat, fmpz), consisting of the
-> a primitive integer matrix and a denominator.
+Return a matrix  representing multiplication with $a$ with respect to the
+power basis of the generator of the parent of $a$.
+The matrix is returned as a tuple (fmpz_mat, fmpz), consisting of the
+a primitive integer matrix and a denominator.
 """
 function representation_matrix_q(a::nf_elem)
   K = parent(a)
@@ -840,11 +840,11 @@ end
 @doc Markdown.doc"""
     mul_red!(z::nf_elem, x::nf_elem, y::nf_elem, red::Bool)
 
-> Multiply $x$ by $y$ and set the existing number field element $z$ to the
-> result. Reduction modulo the defining polynomial is only performed if `red` is
-> set to `true`. Note that $x$ and $y$ must be reduced. This function is provided
-> for performance reasons as it saves allocating a new object for the result and
-> eliminates associated garbage collection.
+Multiply $x$ by $y$ and set the existing number field element $z$ to the
+result. Reduction modulo the defining polynomial is only performed if `red` is
+set to `true`. Note that $x$ and $y$ must be reduced. This function is provided
+for performance reasons as it saves allocating a new object for the result and
+eliminates associated garbage collection.
 """
 function mul_red!(z::nf_elem, x::nf_elem, y::nf_elem, red::Bool)
    ccall((:nf_elem_mul_red, libantic), Nothing,
@@ -870,10 +870,10 @@ end
 @doc Markdown.doc"""
     reduce!(x::nf_elem)
 
-> Reduce the given number field element by the defining polynomial, in-place.
-> This only needs to be done after accumulating values computed by `mul_red!`
-> where reduction has not been performed. All standard Nemo number field
-> functions automatically reduce their outputs.
+Reduce the given number field element by the defining polynomial, in-place.
+This only needs to be done after accumulating values computed by `mul_red!`
+where reduction has not been performed. All standard Nemo number field
+functions automatically reduce their outputs.
 """
 function reduce!(x::nf_elem)
    ccall((:nf_elem_reduce, libantic), Nothing,
@@ -1131,7 +1131,7 @@ promote_rule(::Type{nf_elem}, ::Type{fmpq_poly}) = nf_elem
 @doc Markdown.doc"""
     (a::AnticNumberField)()
 
-> Return an empty (0) element.
+Return an empty (0) element.
 """
 function (a::AnticNumberField)()
    z = nf_elem(a)
@@ -1143,7 +1143,7 @@ end
 @doc Markdown.doc"""
     (a::AnticNumberField)(c::Int)
 
-> Return $c$ as an element in $a$.
+Return $c$ as an element in $a$.
 """
 function (a::AnticNumberField)(c::Int)
    z = nf_elem(a)
@@ -1223,10 +1223,10 @@ rand(K::AnticNumberField, r) = rand(Random.GLOBAL_RNG, K, r)
 @doc Markdown.doc"""
     NumberField(f::fmpq_poly, s::AbstractString; cached::Bool = true, check::Bool = true)
 
-> Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
-> of the number field $\mathbb{Q}/(f)$ where $f$ is the supplied polynomial.
-> The supplied string `s` specifies how the generator of the number field
-> should be printed.
+Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
+of the number field $\mathbb{Q}/(f)$ where $f$ is the supplied polynomial.
+The supplied string `s` specifies how the generator of the number field
+should be printed.
 """
 function NumberField(f::fmpq_poly, s::AbstractString; cached::Bool = true, check::Bool = true)
    S = Symbol(s)
@@ -1238,12 +1238,12 @@ end
 @doc Markdown.doc"""
     CyclotomicField(n::Int, s::AbstractString, t = "\$"; cached = true)
 
-> Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
-> of the $n$-th cyclotomic field, $\mathbb{Q}(\zeta_n)$. The supplied string
-> `s` specifies how the generator of the number field should be printed. If
-> provided, the string `t` specifies how the generator of the polynomial ring
-> from which the number field is constructed, should be printed. If it is not
-> supplied, a default dollar sign will be used to represent the variable.
+Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
+of the $n$-th cyclotomic field, $\mathbb{Q}(\zeta_n)$. The supplied string
+`s` specifies how the generator of the number field should be printed. If
+provided, the string `t` specifies how the generator of the polynomial ring
+from which the number field is constructed, should be printed. If it is not
+supplied, a default dollar sign will be used to represent the variable.
 """
 function CyclotomicField(n::Int, s::AbstractString = "z_$n", t = "_\$"; cached = true)
    Zx, x = PolynomialRing(FlintZZ, string(gensym()); cached = cached)
@@ -1263,13 +1263,13 @@ end
 @doc Markdown.doc"""
     MaximalRealSubfield(n::Int, s::AbstractString, t = "\$"; cached = true)
 
-> Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
-> of the totally real subfield of the $n$-th cyclotomic field,
-> $\mathbb{Q}(\zeta_n)$. The supplied string `s` specifies how the generator of
-> the number field should be printed. If provided, the string `t` specifies how
-> the generator of the polynomial ring from which the number field is
-> constructed, should be printed. If it is not supplied, a default dollar sign
-> will be used to represent the variable.
+Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
+of the totally real subfield of the $n$-th cyclotomic field,
+$\mathbb{Q}(\zeta_n)$. The supplied string `s` specifies how the generator of
+the number field should be printed. If provided, the string `t` specifies how
+the generator of the polynomial ring from which the number field is
+constructed, should be printed. If it is not supplied, a default dollar sign
+will be used to represent the variable.
 """
 function MaximalRealSubfield(n::Int, s::AbstractString = "(z_$n + 1/z_$n)", t = "\$"; cached = true)
    Zx, x = PolynomialRing(FlintZZ, string(gensym()); cached = cached)

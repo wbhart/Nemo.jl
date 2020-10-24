@@ -552,7 +552,7 @@ end
 @doc Markdown.doc"""
     gso(x::fmpq_mat)
 
-> Return the Gram-Schmidt Orthogonalisation of the matrix $x$.
+Return the Gram-Schmidt Orthogonalisation of the matrix $x$.
 """
 function gso(x::fmpq_mat)
    z = similar(x)
@@ -570,8 +570,8 @@ end
 @doc Markdown.doc"""
     hilbert(R::FmpqMatSpace)
 
-> Return the Hilbert matrix in the given matrix space. This is the matrix with
-> entries $H_{i,j} = 1/(i + j - 1)$.
+Return the Hilbert matrix in the given matrix space. This is the matrix with
+entries $H_{i,j} = 1/(i + j - 1)$.
 """
 function hilbert(R::FmpqMatSpace)
    z = R()
@@ -625,8 +625,8 @@ end
 @doc Markdown.doc"""
     solve_dixon(a::fmpq_mat, b::fmpq_mat)
 
-> Solve $ax = b$ by clearing denominators and using Dixon's algorithm. This is
-> usually faster for large systems.
+Solve $ax = b$ by clearing denominators and using Dixon's algorithm. This is
+usually faster for large systems.
 """
 function solve_dixon(a::fmpq_mat, b::fmpq_mat)
    nrows(a) != ncols(a) && error("Not a square matrix in solve")

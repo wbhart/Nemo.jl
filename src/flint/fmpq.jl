@@ -92,14 +92,14 @@ end
 @doc Markdown.doc"""
     sign(a::fmpq)
 
-> Return the sign of $a$ ($-1$, $0$ or $1$) as a fraction.
+Return the sign of $a$ ($-1$, $0$ or $1$) as a fraction.
 """
 sign(a::fmpq) = fmpq(sign(numerator(a)))
 
 @doc Markdown.doc"""
     abs(a::fmpq)
 
-> Return the absolute value of $a$.
+Return the absolute value of $a$.
 """
 function abs(a::fmpq)
    z = fmpq()
@@ -127,8 +127,8 @@ isunit(a::fmpq) = !iszero(a)
 @doc Markdown.doc"""
     height(a::fmpq)
 
-> Return the height of the fraction $a$, namely the largest of the absolute
-> values of the numerator and denominator.
+Return the height of the fraction $a$, namely the largest of the absolute
+values of the numerator and denominator.
 """
 function height(a::fmpq)
    temp = fmpz()
@@ -139,7 +139,7 @@ end
 @doc Markdown.doc"""
     height_bits(a::fmpq)
 
-> Return the number of bits of the height of the fraction $a$.
+Return the number of bits of the height of the fraction $a$.
 """
 function height_bits(a::fmpq)
    return ccall((:fmpq_height_bits, libflint), Int, (Ref{fmpq},), a)
@@ -156,16 +156,16 @@ characteristic(::FlintRationalField) = 0
 @doc Markdown.doc"""
     floor(a::fmpq)
 
-> Returns the greatest integer that is less than or equal to $a$. The result is
-> returned as a rational with denominator $1$.
+Returns the greatest integer that is less than or equal to $a$. The result is
+returned as a rational with denominator $1$.
 """
 Base.floor(a::fmpq) = fmpq(fdiv(numerator(a), denominator(a)), 1)
 
 @doc Markdown.doc"""
     ceil(a::fmpq)
 
-> Returns the least integer that is greater than or equal to $a$. The result is
-> returned as a rational with denominator $1$.
+Returns the least integer that is greater than or equal to $a$. The result is
+returned as a rational with denominator $1$.
 """
 Base.ceil(a::fmpq) = fmpq(cdiv(numerator(a), denominator(a)), 1)
 
@@ -331,7 +331,7 @@ end
 @doc Markdown.doc"""
     isless(a::fmpq, b::fmpq)
 
-> Return `true` if $a < b$, otherwise return `false`.
+Return `true` if $a < b$, otherwise return `false`.
 """
 function isless(a::fmpq, b::fmpq)
    return ccall((:fmpq_cmp, libflint), Cint,
@@ -364,7 +364,7 @@ end
 @doc Markdown.doc"""
     isless(a::fmpq, b::Integer)
 
-> Return `true` if $a < b$, otherwise return `false`.
+Return `true` if $a < b$, otherwise return `false`.
 """
 function isless(a::fmpq, b::Integer)
    z = fmpq(b)
@@ -375,7 +375,7 @@ end
 @doc Markdown.doc"""
     isless(a::Integer, b::fmpq)
 
-> Return `true` if $a < b$, otherwise return `false`.
+Return `true` if $a < b$, otherwise return `false`.
 """
 function isless(a::Integer, b::fmpq)
    z = fmpq(a)
@@ -386,7 +386,7 @@ end
 @doc Markdown.doc"""
     isless(a::fmpq, b::fmpz)
 
-> Return `true` if $a < b$, otherwise return `false`.
+Return `true` if $a < b$, otherwise return `false`.
 """
 function isless(a::fmpq, b::fmpz)
    z = fmpq(b)
@@ -397,7 +397,7 @@ end
 @doc Markdown.doc"""
     isless(a::fmpz, b::fmpq)
 
-> Return `true` if $a < b$, otherwise return `false`.
+Return `true` if $a < b$, otherwise return `false`.
 """
 function isless(a::fmpz, b::fmpq)
    z = fmpq(a)
@@ -432,7 +432,7 @@ end
 @doc Markdown.doc"""
     >>(a::fmpq, b::Int)
 
-> Return $2^b/a$.
+Return $2^b/a$.
 """
 function >>(a::fmpq, b::Int)
    z = fmpq()
@@ -444,7 +444,7 @@ end
 @doc Markdown.doc"""
     <<(a::fmpq, b::Int)
 
-> Return $2^b\times a$.
+Return $2^b\times a$.
 """
 function <<(a::fmpq, b::Int)
    z = fmpq()
@@ -541,8 +541,8 @@ divexact(a::Rational{T}, b::fmpq) where {T <: Integer} = divexact(fmpq(a), b)
 @doc Markdown.doc"""
     mod(a::fmpq, b::fmpz)
 
-> Return $a \pmod{b}$ where $b$ is an integer coprime to the denominator of
-> $a$.
+Return $a \pmod{b}$ where $b$ is an integer coprime to the denominator of
+$a$.
 """
 function mod(a::fmpq, b::fmpz)
    iszero(b) && throw(DivideError())
@@ -555,8 +555,8 @@ end
 @doc Markdown.doc"""
     mod(a::fmpq, b::Integer)
 
-> Return $a \pmod{b}$ where $b$ is an integer coprime to the denominator of
-> $a$.
+Return $a \pmod{b}$ where $b$ is an integer coprime to the denominator of
+$a$.
 """
 mod(a::fmpq, b::Integer) = mod(a, fmpz(b))
 
@@ -592,10 +592,10 @@ valuation(a::fmpq, b::Integer) = valuation(a, fmpz(b))
 @doc Markdown.doc"""
     reconstruct(a::fmpz, b::fmpz)
 
-> Attempt to find a rational number $n/d$ such that
-> $0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
-> $0 < d \leq \lfloor\sqrt{m/2}\rfloor$ such that gcd$(n, d) = 1$ and
-> $a \equiv nd^{-1} \pmod{m}$. If no solution exists, an exception is thrown.
+Attempt to find a rational number $n/d$ such that
+$0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
+$0 < d \leq \lfloor\sqrt{m/2}\rfloor$ such that gcd$(n, d) = 1$ and
+$a \equiv nd^{-1} \pmod{m}$. If no solution exists, an exception is thrown.
 """
 function reconstruct(a::fmpz, b::fmpz)
    c = fmpq()
@@ -609,30 +609,30 @@ end
 @doc Markdown.doc"""
     reconstruct(a::fmpz, b::Integer)
 
-> Attempt to find a rational number $n/d$ such that
-> $0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
-> $0 < d \leq \lfloor\sqrt{m/2}\rfloor$ such that gcd$(n, d) = 1$ and
-> $a \equiv nd^{-1} \pmod{m}$. If no solution exists, an exception is thrown.
+Attempt to find a rational number $n/d$ such that
+$0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
+$0 < d \leq \lfloor\sqrt{m/2}\rfloor$ such that gcd$(n, d) = 1$ and
+$a \equiv nd^{-1} \pmod{m}$. If no solution exists, an exception is thrown.
 """
 reconstruct(a::fmpz, b::Integer) =  reconstruct(a, fmpz(b))
 
 @doc Markdown.doc"""
     reconstruct(a::Integer, b::fmpz)
 
-> Attempt to find a rational number $n/d$ such that
-> $0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
-> $0 < d \leq \lfloor\sqrt{m/2}\rfloor$ such that gcd$(n, d) = 1$ and
-> $a \equiv nd^{-1} \pmod{m}$. If no solution exists, an exception is thrown.
+Attempt to find a rational number $n/d$ such that
+$0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
+$0 < d \leq \lfloor\sqrt{m/2}\rfloor$ such that gcd$(n, d) = 1$ and
+$a \equiv nd^{-1} \pmod{m}$. If no solution exists, an exception is thrown.
 """
 reconstruct(a::Integer, b::fmpz) =  reconstruct(fmpz(a), b)
 
 @doc Markdown.doc"""
     reconstruct(a::Integer, b::Integer)
 
-> Attempt to find a rational number $n/d$ such that
-> $0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
-> $0 < d \leq \lfloor\sqrt{m/2}\rfloor$ such that gcd$(n, d) = 1$ and
-> $a \equiv nd^{-1} \pmod{m}$. If no solution exists, an exception is thrown.
+Attempt to find a rational number $n/d$ such that
+$0 \leq |n| \leq \lfloor\sqrt{m/2}\rfloor$ and
+$0 < d \leq \lfloor\sqrt{m/2}\rfloor$ such that gcd$(n, d) = 1$ and
+$a \equiv nd^{-1} \pmod{m}$. If no solution exists, an exception is thrown.
 """
 reconstruct(a::Integer, b::Integer) =  reconstruct(fmpz(a), fmpz(b))
 
@@ -645,15 +645,15 @@ reconstruct(a::Integer, b::Integer) =  reconstruct(fmpz(a), fmpz(b))
 @doc Markdown.doc"""
     next_minimal(a::fmpq)
 
-> Given $a$, returns the next rational number in the sequence obtained by
-> enumerating all positive denominators $q$, and for each $q$ enumerating
-> the numerators $1 \le p < q$ in order and generating both $p/q$ and $q/p$,
-> but skipping all gcd$(p,q) \neq 1$. Starting with zero, this generates
-> every nonnegative rational number once and only once, with the first
-> few entries being $0, 1, 1/2, 2, 1/3, 3, 2/3, 3/2, 1/4, 4, 3/4, 4/3, \ldots$.
-> This enumeration produces the rational numbers in order of minimal height.
-> It has the disadvantage of being somewhat slower to compute than the
-> Calkin-Wilf enumeration. If $a < 0$ we throw a `DomainError()`.
+Given $a$, returns the next rational number in the sequence obtained by
+enumerating all positive denominators $q$, and for each $q$ enumerating
+the numerators $1 \le p < q$ in order and generating both $p/q$ and $q/p$,
+but skipping all gcd$(p,q) \neq 1$. Starting with zero, this generates
+every nonnegative rational number once and only once, with the first
+few entries being $0, 1, 1/2, 2, 1/3, 3, 2/3, 3/2, 1/4, 4, 3/4, 4/3, \ldots$.
+This enumeration produces the rational numbers in order of minimal height.
+It has the disadvantage of being somewhat slower to compute than the
+Calkin-Wilf enumeration. If $a < 0$ we throw a `DomainError()`.
 """
 function next_minimal(a::fmpq)
    a < 0 && throw(DomainError(a, "Argument must be non-negative"))
@@ -665,12 +665,12 @@ end
 @doc Markdown.doc"""
     next_signed_minimal(a::fmpq)
 
-> Given a signed rational number $a$ assumed to be in canonical form,
-> returns the next element in the minimal-height sequence generated by
-> `next_minimal` but with negative numbers interleaved. The sequence begins
-> $0, 1, -1, 1/2, -1/2, 2, -2, 1/3, -1/3, \ldots$. Starting with zero, this
-> generates every rational number once and only once, in order of minimal
-> height.
+Given a signed rational number $a$ assumed to be in canonical form,
+returns the next element in the minimal-height sequence generated by
+`next_minimal` but with negative numbers interleaved. The sequence begins
+$0, 1, -1, 1/2, -1/2, 2, -2, 1/3, -1/3, \ldots$. Starting with zero, this
+generates every rational number once and only once, in order of minimal
+height.
 """
 function next_signed_minimal(a::fmpq)
    c = fmpq()
@@ -682,14 +682,14 @@ end
 @doc Markdown.doc"""
     next_calkin_wilf(a::fmpq)
 
-> Given $a$ return the next number in the breadth-first traversal of the
-> Calkin-Wilf tree. Starting with zero, this generates every nonnegative
-> rational number once and only once, with the first few entries being
-> $0, 1, 1/2, 2, 1/3, 3/2, 2/3, 3, 1/4, 4/3, 3/5, 5/2, 2/5, \ldots$.
-> Despite the appearance of the initial entries, the Calkin-Wilf enumeration
-> does not produce the rational numbers in order of height: some small
-> fractions will appear late in the sequence. This order has the advantage of
-> being faster to produce than the minimal-height order.
+Given $a$ return the next number in the breadth-first traversal of the
+Calkin-Wilf tree. Starting with zero, this generates every nonnegative
+rational number once and only once, with the first few entries being
+$0, 1, 1/2, 2, 1/3, 3/2, 2/3, 3, 1/4, 4/3, 3/5, 5/2, 2/5, \ldots$.
+Despite the appearance of the initial entries, the Calkin-Wilf enumeration
+does not produce the rational numbers in order of height: some small
+fractions will appear late in the sequence. This order has the advantage of
+being faster to produce than the minimal-height order.
 """
 function next_calkin_wilf(a::fmpq)
    a < 0 && throw(DomainError(a, "Argument must be non-negative"))
@@ -702,11 +702,11 @@ end
 @doc Markdown.doc"""
     next_signed_calkin_wilf(a::fmpq)
 
-> Given a signed rational number $a$ returns the next element in the
-> Calkin-Wilf sequence with negative numbers interleaved. The sequence begins
-> $0, 1, -1, 1/2, -1/2, 2, -2, 1/3, -1/3, \ldots$. Starting with zero, this
-> generates every rational number once and only once, but not in order of
-> minimal height.
+Given a signed rational number $a$ returns the next element in the
+Calkin-Wilf sequence with negative numbers interleaved. The sequence begins
+$0, 1, -1, 1/2, -1/2, 2, -2, 1/3, -1/3, \ldots$. Starting with zero, this
+generates every rational number once and only once, but not in order of
+minimal height.
 """
 function next_signed_calkin_wilf(a::fmpq)
    c = fmpq()
@@ -724,9 +724,9 @@ end
 @doc Markdown.doc"""
     harmonic(n::Int)
 
-> Computes the harmonic number $H_n = 1 + 1/2 + 1/3 + \cdots + 1/n$.
-> Table lookup is used for $H_n$ whose numerator and denominator
-> fit in a single limb. For larger $n$, a divide and conquer strategy is used.
+Computes the harmonic number $H_n = 1 + 1/2 + 1/3 + \cdots + 1/n$.
+Table lookup is used for $H_n$ whose numerator and denominator
+fit in a single limb. For larger $n$, a divide and conquer strategy is used.
 """
 function harmonic(n::Int)
    n < 0 && throw(DomainError(n, "Index must be non-negative"))
@@ -738,7 +738,7 @@ end
 @doc Markdown.doc"""
     bernoulli(n::Int)
 
-> Computes the Bernoulli number $B_n$ for nonnegative $n$.
+Computes the Bernoulli number $B_n$ for nonnegative $n$.
 """
 function bernoulli(n::Int)
    n < 0 && throw(DomainError(n, "Index must be non-negative"))
@@ -750,10 +750,10 @@ end
 @doc Markdown.doc"""
     bernoulli_cache(n::Int)
 
-> Precomputes and caches all the Bernoulli numbers up to $B_n$.
-> This is much faster than repeatedly calling `bernoulli(k)`.
-> Once cached, subsequent calls to `bernoulli(k)` for any $k \le n$
-> will read from the cache, making them virtually free.
+Precomputes and caches all the Bernoulli numbers up to $B_n$.
+This is much faster than repeatedly calling `bernoulli(k)`.
+Once cached, subsequent calls to `bernoulli(k)` for any $k \le n$
+will read from the cache, making them virtually free.
 """
 function bernoulli_cache(n::Int)
    n = n + 1
@@ -774,21 +774,21 @@ end
 @doc Markdown.doc"""
     dedekind_sum(h::fmpz, k::Integer)
 
-> Computes the Dedekind sum $s(h,k)$ for arbitrary $h$ and $k$.
+Computes the Dedekind sum $s(h,k)$ for arbitrary $h$ and $k$.
 """
 dedekind_sum(h::fmpz, k::Integer) = dedekind_sum(h, fmpz(k))
 
 @doc Markdown.doc"""
     dedekind_sum(h::Integer, k::fmpz)
 
-> Computes the Dedekind sum $s(h,k)$ for arbitrary $h$ and $k$.
+Computes the Dedekind sum $s(h,k)$ for arbitrary $h$ and $k$.
 """
 dedekind_sum(h::Integer, k::fmpz) = dedekind_sum(fmpz(h), k)
 
 @doc Markdown.doc"""
     dedekind_sum(h::Integer, k::Integer)
 
-> Computes the Dedekind sum $s(h,k)$ for arbitrary $h$ and $k$.
+Computes the Dedekind sum $s(h,k)$ for arbitrary $h$ and $k$.
 """
 dedekind_sum(h::Integer, k::Integer) = dedekind_sum(fmpz(h), fmpz(k))
 
@@ -813,9 +813,9 @@ end
 @doc Markdown.doc"""
       simplest_between(l::fmpq, r::fmpq)
 
-> Return the simplest fraction in the closed interval `[l, r]`. A canonical
-> fraction `a_1/b_1` is defined to be simpler than `a_2/b_2` iff `b_1 < b_2` or
-> `b_1 = b_2` and `a_1 < a_2`.
+Return the simplest fraction in the closed interval `[l, r]`. A canonical
+fraction `a_1/b_1` is defined to be simpler than `a_2/b_2` iff `b_1 < b_2` or
+`b_1 = b_2` and `a_1 < a_2`.
 """
 function simplest_between(l::fmpq, r::fmpq)
    z = fmpq()
@@ -914,9 +914,9 @@ end
 @doc Markdown.doc"""
     rand_bits(::FlintRationalField, b::Int)
 
-> Return a random signed rational whose numerator and denominator both have $b$
-> bits before canonicalisation. Note that the resulting numerator and
-> denominator can be smaller than $b$ bits.
+Return a random signed rational whose numerator and denominator both have $b$
+bits before canonicalisation. Note that the resulting numerator and
+denominator can be smaller than $b$ bits.
 """
 function rand_bits(::FlintRationalField, b::Int)
    b > 0 || throw(DomainError(b, "Bit count must be positive"))

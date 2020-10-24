@@ -60,14 +60,14 @@ modulus(R::GaloisFmpzField) = R.n
 @doc Markdown.doc"""
     characteristic(F::GaloisFmpzField)
 
-> Return the characteristic of the given Galois field.
+Return the characteristic of the given Galois field.
 """
 characteristic(F::GaloisFmpzField) = modulus(F)
 
 @doc Markdown.doc"""
     order(F::GaloisFmpzField)
 
-> Return the order, i.e. the number of elements in, the given Galois field.
+Return the order, i.e. the number of elements in, the given Galois field.
 """
 order(F::GaloisFmpzField) = modulus(F)
 

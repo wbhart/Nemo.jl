@@ -288,7 +288,7 @@ end
 @doc Markdown.doc"""
     ldexp(x::arb_mat, y::Int)
 
-> Return $2^yx$. Note that $y$ can be positive, zero or negative.
+Return $2^yx$. Note that $y$ can be positive, zero or negative.
 """
 function ldexp(x::arb_mat, y::Int)
   z = similar(x)
@@ -306,8 +306,8 @@ end
 @doc Markdown.doc"""
     isequal(x::arb_mat, y::arb_mat)
 
-> Return `true` if the matrices of balls $x$ and $y$ are precisely equal,
-> i.e. if all matrix entries have the same midpoints and radii.
+Return `true` if the matrices of balls $x$ and $y$ are precisely equal,
+i.e. if all matrix entries have the same midpoints and radii.
 """
 function isequal(x::arb_mat, y::arb_mat)
   r = ccall((:arb_mat_equal, libarb), Cint,
@@ -330,8 +330,8 @@ end
 @doc Markdown.doc"""
     overlaps(x::arb_mat, y::arb_mat)
 
-> Returns `true` if all entries of $x$ overlap with the corresponding entry of
-> $y$, otherwise return `false`.
+Returns `true` if all entries of $x$ overlap with the corresponding entry of
+$y$, otherwise return `false`.
 """
 function overlaps(x::arb_mat, y::arb_mat)
   r = ccall((:arb_mat_overlaps, libarb), Cint,
@@ -342,8 +342,8 @@ end
 @doc Markdown.doc"""
     contains(x::arb_mat, y::arb_mat)
 
-> Returns `true` if all entries of $x$ contain the corresponding entry of
-> $y$, otherwise return `false`.
+Returns `true` if all entries of $x$ contain the corresponding entry of
+$y$, otherwise return `false`.
 """
 function contains(x::arb_mat, y::arb_mat)
   r = ccall((:arb_mat_contains, libarb), Cint,
@@ -360,8 +360,8 @@ end
 @doc Markdown.doc"""
     contains(x::arb_mat, y::fmpz_mat)
 
-> Returns `true` if all entries of $x$ contain the corresponding entry of
-> $y$, otherwise return `false`.
+Returns `true` if all entries of $x$ contain the corresponding entry of
+$y$, otherwise return `false`.
 """
 function contains(x::arb_mat, y::fmpz_mat)
   r = ccall((:arb_mat_contains_fmpz_mat, libarb), Cint,
@@ -373,8 +373,8 @@ end
 @doc Markdown.doc"""
     contains(x::arb_mat, y::fmpq_mat)
 
-> Returns `true` if all entries of $x$ contain the corresponding entry of
-> $y$, otherwise return `false`.
+Returns `true` if all entries of $x$ contain the corresponding entry of
+$y$, otherwise return `false`.
 """
 function contains(x::arb_mat, y::fmpq_mat)
   r = ccall((:arb_mat_contains_fmpq_mat, libarb), Cint,
@@ -403,9 +403,9 @@ end
 @doc Markdown.doc"""
     inv(x::arb_mat)
 
-> Given a  $n\times n$ matrix of type `arb_mat`, return an
-> $n\times n$ matrix $X$ such that $AX$ contains the
-> identity matrix. If $A$ cannot be inverted numerically an exception is raised.
+Given a  $n\times n$ matrix of type `arb_mat`, return an
+$n\times n$ matrix $X$ such that $AX$ contains the
+identity matrix. If $A$ cannot be inverted numerically an exception is raised.
 """
 function inv(x::arb_mat)
   ncols(x) != nrows(x) && error("Matrix must be square")
@@ -494,7 +494,7 @@ end
 @doc Markdown.doc"""
     exp(x::arb_mat)
 
-> Returns the exponential of the matrix $x$.
+Returns the exponential of the matrix $x$.
 """
 function Base.exp(x::arb_mat)
   ncols(x) != nrows(x) && error("Matrix must be square")
@@ -605,8 +605,8 @@ end
 @doc Markdown.doc"""
     bound_inf_norm(x::arb_mat)
 
-> Returns a nonnegative element $z$ of type `arb`, such that $z$ is an upper
-> bound for the infinity norm for every matrix in $x$
+Returns a nonnegative element $z$ of type `arb`, such that $z$ is an upper
+bound for the infinity norm for every matrix in $x$
 """
 function bound_inf_norm(x::arb_mat)
   z = arb()

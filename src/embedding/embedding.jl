@@ -18,8 +18,8 @@ subfields(k::FinField) = k.subfields
 @doc Markdown.doc"""
     AddOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
-> Add an overfield to $F$, represented by a morphism $f: F\to G$ where
-> $G$ is the codomain of $f$.
+Add an overfield to $F$, represented by a morphism $f: F\to G$ where
+$G$ is the codomain of $f$.
 """
 function AddOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
@@ -37,8 +37,8 @@ end
 @doc Markdown.doc"""
     AddSubfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
-> Add a subfield to $F$, represented by a morphism $f: G\to F$ where
-> $G$ is the domain of $f$.
+Add a subfield to $F$, represented by a morphism $f: G\to F$ where
+$G$ is the domain of $f$.
 """
 function AddSubfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
 
@@ -71,7 +71,7 @@ any_root(x::PolyElem) = -coeff(linear_factor(x), 0)
 @doc Markdown.doc"""
     berlekamp_massey(a::Array{Y, 1}, n::Int) where Y <: FieldElem
 
-> Compute the minimal polynomial of a linear recurring sequence $a$.
+Compute the minimal polynomial of a linear recurring sequence $a$.
 """
 function berlekamp_massey(a::Array{Y, 1}, n::Int) where Y <: FieldElem
 
@@ -97,8 +97,8 @@ end
 @doc Markdown.doc"""
     generator_minimum_polynomial(f::FinFieldMorphism)
 
-> Compute the minimal polynomial of the generator of the codomain
-> of $f$ over the domain of $f$.
+Compute the minimal polynomial of the generator of the codomain
+of $f$ over the domain of $f$.
 """
 function generator_minimum_polynomial(f::FinFieldMorphism)
 
@@ -137,7 +137,7 @@ end
 @doc Markdown.doc"""
     isembedded(k::T, K::T) where T <: FinField
 
-> If $k$ is embbeded in $K$, return the corresponding embedding.
+If $k$ is embbeded in $K$, return the corresponding embedding.
 """
 function isembedded(k::T, K::T) where T <: FinField
 
@@ -158,7 +158,7 @@ end
 @doc Markdown.doc"""
     embed_any(k::T, K::T) where T <: FinField
 
-> Embed $k$ in $K$ without worrying about compatibility conditions.
+Embed $k$ in $K$ without worrying about compatibility conditions.
 """
 function embed_any(k::T, K::T) where T <: FinField
 
@@ -175,7 +175,7 @@ end
 @doc Markdown.doc"""
     find_morphism(k::T, K::T) where T <: FinField
 
-> Returns a compatible embedding from $k$ to $K$.
+Returns a compatible embedding from $k$ to $K$.
 """
 function find_morphism(k::T, K::T) where T <: FinField
 
@@ -226,7 +226,7 @@ end
 @doc Markdown.doc"""
     transitive_closure(f::FinFieldMorphism)
 
-> Compute the transitive closure.
+Compute the transitive closure.
 """
 function transitive_closure(f::FinFieldMorphism)
 
@@ -283,8 +283,8 @@ end
 @doc Markdown.doc"""
     intersections(k::T, K::T) where T <: FinField
 
-> For each subfield $S$ of $K$, embed $I$ in $S$ and $k$, where $I$ is the intersection
-> between $S$ and $k$.
+For each subfield $S$ of $K$, embed $I$ in $S$ and $k$, where $I$ is the intersection
+between $S$ and $k$.
 """
 function intersections(k::T, K::T) where T <: FinField
 
@@ -349,8 +349,8 @@ end
 @doc Markdown.doc"""
     embed(k::T, K::T) where T <: FinField
 
-> Embed $k$ in $K$, with some additionnal computations in order to satisfy
-> compatibility conditions with previous and future embeddings.
+Embed $k$ in $K$, with some additionnal computations in order to satisfy
+compatibility conditions with previous and future embeddings.
 """
 function embed(k::T, K::T) where T <: FinField
 
@@ -415,7 +415,7 @@ end
 @doc Markdown.doc"""
     preimage_map(k::T, k::T) where T <: FinField
 
-> Computes the preimage map corresponding to the embedding of $k$ into $K$.
+Computes the preimage map corresponding to the embedding of $k$ into $K$.
 """
 function preimage_map(k::T, K::T) where T <: FinField
     f = embed(k, K)
