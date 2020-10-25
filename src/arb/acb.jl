@@ -1127,7 +1127,7 @@ end
 @doc Markdown.doc"""
     modweber_f2(x::acb)
 > Return the modular Weber function
-> $$\mathfrak{f}_2(\tau) = \frac{\sqrt{2}\eta(2\tau)}{\eta(\tau)}$
+> $\mathfrak{f}_2(\tau) = \frac{\sqrt{2}\eta(2\tau)}{\eta(\tau)}$
 > at $x$ in the complex upper half plane.
 """
 function modweber_f2(x::acb)
