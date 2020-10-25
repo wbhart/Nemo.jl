@@ -35,21 +35,24 @@ parent_type(::Type{acb}) = AcbField
 
 @doc Markdown.doc"""
     base_ring(R::AcbField)
-> Returns `Union{}` since an Arb complex field does not depend on any other
-> ring.
+
+Returns `Union{}` since an Arb complex field does not depend on any other
+ring.
 """
 base_ring(R::AcbField) = Union{}
 
 @doc Markdown.doc"""
     base_ring(a::acb)
-> Returns `Union{}` since an Arb complex field does not depend on any other
-> ring.
+
+Returns `Union{}` since an Arb complex field does not depend on any other
+ring.
 """
 base_ring(a::acb) = Union{}
 
 @doc Markdown.doc"""
     parent(x::acb)
-> Return the parent of the given Arb complex field element.
+
+Return the parent of the given Arb complex field element.
 """
 parent(x::acb) = x.parent
 
@@ -59,7 +62,8 @@ isexact_type(::Type{acb}) = false
 
 @doc Markdown.doc"""
     zero(r::AcbField)
-> Return exact zero in the given Arb complex field.
+
+Return exact zero in the given Arb complex field.
 """
 function zero(r::AcbField)
   z = acb()
@@ -69,7 +73,8 @@ end
 
 @doc Markdown.doc"""
     one(r::AcbField)
-> Return exact one in the given Arb complex field.
+
+Return exact one in the given Arb complex field.
 """
 function one(r::AcbField)
   z = acb()
@@ -80,7 +85,8 @@ end
 
 @doc Markdown.doc"""
     onei(r::AcbField)
-> Return exact one times $i$ in the given Arb complex field.
+
+Return exact one times $i$ in the given Arb complex field.
 """
 function onei(r::AcbField)
   z = acb()
@@ -91,8 +97,9 @@ end
 
 @doc Markdown.doc"""
     accuracy_bits(x::acb)
-> Return the relative accuracy of $x$ measured in bits, capped between
-> `typemax(Int)` and `-typemax(Int)`.
+
+Return the relative accuracy of $x$ measured in bits, capped between
+`typemax(Int)` and `-typemax(Int)`.
 """
 function accuracy_bits(x::acb)
   # bug in acb.h: rel_accuracy_bits is not in the library
@@ -145,7 +152,8 @@ end
 
 @doc Markdown.doc"""
     real(x::acb)
-> Return the real part of $x$ as an `arb`.
+
+Return the real part of $x$ as an `arb`.
 """
 function real(x::acb)
   z = arb()
@@ -156,7 +164,8 @@ end
 
 @doc Markdown.doc"""
     imag(x::acb)
-> Return the imaginary part of $x$ as an `arb`.
+
+Return the imaginary part of $x$ as an `arb`.
 """
 function imag(x::acb)
   z = arb()
@@ -407,8 +416,9 @@ divexact(x::acb, y::Rational{T}) where {T <: Integer} = x // y
 
 @doc Markdown.doc"""
     isequal(x::acb, y::acb)
-> Return `true` if the boxes $x$ and $y$ are precisely equal, i.e. their real
-> and imaginary parts have the same midpoints and radii.
+
+Return `true` if the boxes $x$ and $y$ are precisely equal, i.e. their real
+and imaginary parts have the same midpoints and radii.
 """
 function isequal(x::acb, y::acb)
   r = ccall((:acb_equal, libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
@@ -460,8 +470,9 @@ end
 
 @doc Markdown.doc"""
     overlaps(x::acb, y::acb)
-> Returns `true` if any part of the box $x$ overlaps any part of the box $y$,
-> otherwise return `false`.
+
+Returns `true` if any part of the box $x$ overlaps any part of the box $y$,
+otherwise return `false`.
 """
 function overlaps(x::acb, y::acb)
   r = ccall((:acb_overlaps, libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
@@ -470,8 +481,9 @@ end
 
 @doc Markdown.doc"""
     contains(x::acb, y::acb)
-> Returns `true` if the box $x$ contains the box $y$, otherwise return
-> `false`.
+
+Returns `true` if the box $x$ contains the box $y$, otherwise return
+`false`.
 """
 function contains(x::acb, y::acb)
   r = ccall((:acb_contains, libarb), Cint, (Ref{acb}, Ref{acb}), x, y)
@@ -480,8 +492,9 @@ end
 
 @doc Markdown.doc"""
     contains(x::acb, y::fmpq)
-> Returns `true` if the box $x$ contains the given rational value, otherwise
-> return `false`.
+
+Returns `true` if the box $x$ contains the given rational value, otherwise
+return `false`.
 """
 function contains(x::acb, y::fmpq)
   r = ccall((:acb_contains_fmpq, libarb), Cint, (Ref{acb}, Ref{fmpq}), x, y)
@@ -490,8 +503,9 @@ end
 
 @doc Markdown.doc"""
     contains(x::acb, y::fmpz)
-> Returns `true` if the box $x$ contains the given integer value, otherwise
-> return `false`.
+
+Returns `true` if the box $x$ contains the given integer value, otherwise
+return `false`.
 """
 function contains(x::acb, y::fmpz)
   r = ccall((:acb_contains_fmpz, libarb), Cint, (Ref{acb}, Ref{fmpz}), x, y)
@@ -506,21 +520,24 @@ end
 
 @doc Markdown.doc"""
     contains(x::acb, y::Integer)
-> Returns `true` if the box $x$ contains the given integer value, otherwise
-> return `false`.
+
+Returns `true` if the box $x$ contains the given integer value, otherwise
+return `false`.
 """
 contains(x::acb, y::Integer) = contains(x, fmpz(y))
 
 @doc Markdown.doc"""
     contains(x::acb, y::Rational{T}) where {T <: Integer}
-> Returns `true` if the box $x$ contains the given rational value, otherwise
-> return `false`.
+
+Returns `true` if the box $x$ contains the given rational value, otherwise
+return `false`.
 """
 contains(x::acb, y::Rational{T}) where {T <: Integer} = contains(x, fmpz(y))
 
 @doc Markdown.doc"""
     contains_zero(x::acb)
-> Returns `true` if the box $x$ contains zero, otherwise return `false`.
+
+Returns `true` if the box $x$ contains zero, otherwise return `false`.
 """
 function contains_zero(x::acb)
    return Bool(ccall((:acb_contains_zero, libarb), Cint, (Ref{acb},), x))
@@ -538,7 +555,8 @@ end
 
 @doc Markdown.doc"""
     iszero(x::acb)
-> Return `true` if $x$ is certainly zero, otherwise return `false`.
+
+Return `true` if $x$ is certainly zero, otherwise return `false`.
 """
 function iszero(x::acb)
    return Bool(ccall((:acb_is_zero, libarb), Cint, (Ref{acb},), x))
@@ -546,7 +564,8 @@ end
 
 @doc Markdown.doc"""
     isone(x::acb)
-> Return `true` if $x$ is certainly zero, otherwise return `false`.
+
+Return `true` if $x$ is certainly zero, otherwise return `false`.
 """
 function isone(x::acb)
    return Bool(ccall((:acb_is_one, libarb), Cint, (Ref{acb},), x))
@@ -554,8 +573,9 @@ end
 
 @doc Markdown.doc"""
     isfinite(x::acb)
-> Return `true` if $x$ is finite, i.e. its real and imaginary parts have finite
-> midpoint and radius, otherwise return `false`.
+
+Return `true` if $x$ is finite, i.e. its real and imaginary parts have finite
+midpoint and radius, otherwise return `false`.
 """
 function isfinite(x::acb)
    return Bool(ccall((:acb_is_finite, libarb), Cint, (Ref{acb},), x))
@@ -563,8 +583,9 @@ end
 
 @doc Markdown.doc"""
     isexact(x::acb)
-> Return `true` if $x$ is exact, i.e. has its real and imaginary parts have
-> zero radius, otherwise return `false`.
+
+Return `true` if $x$ is exact, i.e. has its real and imaginary parts have
+zero radius, otherwise return `false`.
 """
 function isexact(x::acb)
    return Bool(ccall((:acb_is_exact, libarb), Cint, (Ref{acb},), x))
@@ -572,7 +593,8 @@ end
 
 @doc Markdown.doc"""
     isint(x::acb)
-> Return `true` if $x$ is an exact integer, otherwise return `false`.
+
+Return `true` if $x$ is an exact integer, otherwise return `false`.
 """
 function isint(x::acb)
    return Bool(ccall((:acb_is_int, libarb), Cint, (Ref{acb},), x))
@@ -580,8 +602,9 @@ end
 
 @doc Markdown.doc"""
     isreal(x::acb)
-> Return `true` if $x$ is purely real, i.e. having zero imaginary part,
-> otherwise return `false`.
+
+Return `true` if $x$ is purely real, i.e. having zero imaginary part,
+otherwise return `false`.
 """
 function isreal(x::acb)
    return Bool(ccall((:acb_is_real, libarb), Cint, (Ref{acb},), x))
@@ -597,7 +620,8 @@ isnegative(x::acb) = isreal(x) && isnegative(real(x))
 
 @doc Markdown.doc"""
     abs(x::acb)
-> Return the complex absolute value of $x$.
+
+Return the complex absolute value of $x$.
 """
 function abs(x::acb)
   z = arb()
@@ -615,7 +639,8 @@ end
 
 @doc Markdown.doc"""
     inv(x::acb)
-> Return the multiplicative inverse of $x$, i.e. $1/x$.
+
+Return the multiplicative inverse of $x$, i.e. $1/x$.
 """
 function inv(x::acb)
   z = parent(x)()
@@ -631,7 +656,8 @@ end
 
 @doc Markdown.doc"""
     ldexp(x::acb, y::Int)
-> Return $2^yx$. Note that $y$ can be positive, zero or negative.
+
+Return $2^yx$. Note that $y$ can be positive, zero or negative.
 """
 function ldexp(x::acb, y::Int)
   z = parent(x)()
@@ -642,7 +668,8 @@ end
 
 @doc Markdown.doc"""
     ldexp(x::acb, y::fmpz)
-> Return $2^yx$. Note that $y$ can be positive, zero or negative.
+
+Return $2^yx$. Note that $y$ can be positive, zero or negative.
 """
 function ldexp(x::acb, y::fmpz)
   z = parent(x)()
@@ -659,8 +686,9 @@ end
 
 @doc Markdown.doc"""
     trim(x::acb)
-> Return an `acb` box containing $x$ but which may be more economical,
-> by rounding off insignificant bits from midpoints.
+
+Return an `acb` box containing $x$ but which may be more economical,
+by rounding off insignificant bits from midpoints.
 """
 function trim(x::acb)
   z = parent(x)()
@@ -670,10 +698,11 @@ end
 
 @doc Markdown.doc"""
     unique_integer(x::acb)
-> Return a pair where the first value is a boolean and the second is an `fmpz`
-> integer. The boolean indicates whether the box $x$ contains a unique
-> integer. If this is the case, the second return value is set to this unique
-> integer.
+
+Return a pair where the first value is a boolean and the second is an `fmpz`
+integer. The boolean indicates whether the box $x$ contains a unique
+integer. If this is the case, the second return value is set to this unique
+integer.
 """
 function unique_integer(x::acb)
   z = fmpz()
@@ -684,7 +713,8 @@ end
 
 @doc Markdown.doc"""
     conj(x::acb)
-> Return the complex conjugate of $x$.
+
+Return the complex conjugate of $x$.
 """
 function conj(x::acb)
   z = parent(x)()
@@ -694,8 +724,9 @@ end
 
 @doc Markdown.doc"""
     angle(x::acb)
-> Return the angle in radians that the complex vector $x$ makes with the
-> positive real axis in a counterclockwise direction.
+
+Return the angle in radians that the complex vector $x$ makes with the
+positive real axis in a counterclockwise direction.
 """
 function angle(x::acb)
   z = arb()
@@ -713,7 +744,8 @@ end
 
 @doc Markdown.doc"""
     const_pi(r::AcbField)
-> Return $\pi = 3.14159\ldots$ as an element of $r$.
+
+Return $\pi = 3.14159\ldots$ as an element of $r$.
 """
 function const_pi(r::AcbField)
   z = r()
@@ -731,7 +763,8 @@ end
 
 @doc Markdown.doc"""
     Base.sqrt(x::acb)
-> Return the square root of $x$.
+
+Return the square root of $x$.
 """
 function Base.sqrt(x::acb)
    z = parent(x)()
@@ -741,7 +774,8 @@ end
 
 @doc Markdown.doc"""
     rsqrt(x::acb)
-> Return the reciprocal of the square root of $x$, i.e. $1/\sqrt{x}$.
+
+Return the reciprocal of the square root of $x$, i.e. $1/\sqrt{x}$.
 """
 function rsqrt(x::acb)
    z = parent(x)()
@@ -751,7 +785,8 @@ end
 
 @doc Markdown.doc"""
     log(x::acb)
-> Return the principal branch of the logarithm of $x$.
+
+Return the principal branch of the logarithm of $x$.
 
 """
 function log(x::acb)
@@ -762,7 +797,8 @@ end
 
 @doc Markdown.doc"""
     log1p(x::acb)
-> Return $\log(1+x)$, evaluated accurately for small $x$.
+
+Return $\log(1+x)$, evaluated accurately for small $x$.
 """
 function log1p(x::acb)
    z = parent(x)()
@@ -772,7 +808,8 @@ end
 
 @doc Markdown.doc"""
     exp(x::acb)
-> Return the exponential of $x$.
+
+Return the exponential of $x$.
 """
 function Base.exp(x::acb)
    z = parent(x)()
@@ -782,7 +819,8 @@ end
 
 @doc Markdown.doc"""
     exppii(x::acb)
-> Return the exponential of $\pi i x$.
+
+Return the exponential of $\pi i x$.
 """
 function exppii(x::acb)
    z = parent(x)()
@@ -792,7 +830,8 @@ end
 
 @doc Markdown.doc"""
     sin(x::acb)
-> Return the sine of $x$.
+
+Return the sine of $x$.
 """
 function sin(x::acb)
    z = parent(x)()
@@ -802,7 +841,8 @@ end
 
 @doc Markdown.doc"""
     cos(x::acb)
-> Return the cosine of $x$.
+
+Return the cosine of $x$.
 """
 function cos(x::acb)
    z = parent(x)()
@@ -812,7 +852,8 @@ end
 
 @doc Markdown.doc"""
     tan(x::acb)
-> Return the tangent of $x$.
+
+Return the tangent of $x$.
 """
 function tan(x::acb)
    z = parent(x)()
@@ -822,7 +863,8 @@ end
 
 @doc Markdown.doc"""
     cot(x::acb)
-> Return the cotangent of $x$.
+
+Return the cotangent of $x$.
 """
 function cot(x::acb)
    z = parent(x)()
@@ -832,7 +874,8 @@ end
 
 @doc Markdown.doc"""
     sinpi(x::acb)
-> Return the sine of $\pi x$.
+
+Return the sine of $\pi x$.
 """
 function sinpi(x::acb)
    z = parent(x)()
@@ -842,7 +885,8 @@ end
 
 @doc Markdown.doc"""
     cospi(x::acb)
-> Return the cosine of $\pi x$.
+
+Return the cosine of $\pi x$.
 """
 function cospi(x::acb)
    z = parent(x)()
@@ -852,7 +896,8 @@ end
 
 @doc Markdown.doc"""
     tanpi(x::acb)
-> Return the tangent of $\pi x$.
+
+Return the tangent of $\pi x$.
 """
 function tanpi(x::acb)
    z = parent(x)()
@@ -862,7 +907,8 @@ end
 
 @doc Markdown.doc"""
     cotpi(x::acb)
-> Return the cotangent of $\pi x$.
+
+Return the cotangent of $\pi x$.
 """
 function cotpi(x::acb)
    z = parent(x)()
@@ -872,7 +918,8 @@ end
 
 @doc Markdown.doc"""
     sinh(x::acb)
-> Return the hyperbolic sine of $x$.
+
+Return the hyperbolic sine of $x$.
 """
 function sinh(x::acb)
    z = parent(x)()
@@ -882,7 +929,8 @@ end
 
 @doc Markdown.doc"""
     cosh(x::acb)
-> Return the hyperbolic cosine of $x$.
+
+Return the hyperbolic cosine of $x$.
 """
 function cosh(x::acb)
    z = parent(x)()
@@ -892,7 +940,8 @@ end
 
 @doc Markdown.doc"""
     tanh(x::acb)
-> Return the hyperbolic tangent of $x$.
+
+Return the hyperbolic tangent of $x$.
 """
 function tanh(x::acb)
    z = parent(x)()
@@ -902,7 +951,8 @@ end
 
 @doc Markdown.doc"""
     coth(x::acb)
-> Return the hyperbolic cotangent of $x$.
+
+Return the hyperbolic cotangent of $x$.
 """
 function coth(x::acb)
    z = parent(x)()
@@ -912,7 +962,8 @@ end
 
 @doc Markdown.doc"""
     atan(x::acb)
-> Return the arctangent of $x$.
+
+Return the arctangent of $x$.
 """
 function atan(x::acb)
    z = parent(x)()
@@ -922,7 +973,8 @@ end
 
 @doc Markdown.doc"""
     logsinpi(x::acb)
-> Return $\log\sin(\pi x)$, constructed without branch cuts off the real line.
+
+Return $\log\sin(\pi x)$, constructed without branch cuts off the real line.
 """
 function logsinpi(x::acb)
    z = parent(x)()
@@ -932,7 +984,8 @@ end
 
 @doc Markdown.doc"""
     gamma(x::acb)
-> Return the Gamma function evaluated at $x$.
+
+Return the Gamma function evaluated at $x$.
 """
 function gamma(x::acb)
    z = parent(x)()
@@ -942,7 +995,8 @@ end
 
 @doc Markdown.doc"""
     rgamma(x::acb)
-> Return the reciprocal of the Gamma function evaluated at $x$.
+
+Return the reciprocal of the Gamma function evaluated at $x$.
 """
 function rgamma(x::acb)
    z = parent(x)()
@@ -952,7 +1006,8 @@ end
 
 @doc Markdown.doc"""
     lgamma(x::acb)
-> Return the logarithm of the Gamma function evaluated at $x$.
+
+Return the logarithm of the Gamma function evaluated at $x$.
 """
 function lgamma(x::acb)
    z = parent(x)()
@@ -962,8 +1017,9 @@ end
 
 @doc Markdown.doc"""
     digamma(x::acb)
-> Return the  logarithmic derivative of the gamma function evaluated at $x$,
-> i.e. $\psi(x)$.
+
+Return the  logarithmic derivative of the gamma function evaluated at $x$,
+i.e. $\psi(x)$.
 """
 function digamma(x::acb)
    z = parent(x)()
@@ -973,7 +1029,8 @@ end
 
 @doc Markdown.doc"""
     zeta(x::acb)
-> Return the Riemann zeta function evaluated at $x$.
+
+Return the Riemann zeta function evaluated at $x$.
 """
 function zeta(x::acb)
    z = parent(x)()
@@ -983,7 +1040,8 @@ end
 
 @doc Markdown.doc"""
     barnesg(x::acb)
-> Return the Barnes $G$-function, evaluated at $x$.
+
+Return the Barnes $G$-function, evaluated at $x$.
 """
 function barnesg(x::acb)
    z = parent(x)()
@@ -993,7 +1051,8 @@ end
 
 @doc Markdown.doc"""
     logbarnesg(x::acb)
-> Return the logarithm of the Barnes $G$-function, evaluated at $x$.
+
+Return the logarithm of the Barnes $G$-function, evaluated at $x$.
 """
 function logbarnesg(x::acb)
    z = parent(x)()
@@ -1003,7 +1062,8 @@ end
 
 @doc Markdown.doc"""
     agm(x::acb)
-> Return the arithmetic-geometric mean of $1$ and $x$.
+
+Return the arithmetic-geometric mean of $1$ and $x$.
 """
 function agm(x::acb)
    z = parent(x)()
@@ -1013,7 +1073,8 @@ end
 
 @doc Markdown.doc"""
     erf(x::acb)
-> Return the error function evaluated at $x$.
+
+Return the error function evaluated at $x$.
 """
 function erf(x::acb)
    z = parent(x)()
@@ -1023,7 +1084,8 @@ end
 
 @doc Markdown.doc"""
     erfi(x::acb)
-> Return the imaginary error function evaluated at $x$.
+
+Return the imaginary error function evaluated at $x$.
 """
 function erfi(x::acb)
    z = parent(x)()
@@ -1033,7 +1095,8 @@ end
 
 @doc Markdown.doc"""
     erfc(x::acb)
-> Return the complex error function evaluated at $x$.
+
+Return the complex error function evaluated at $x$.
 """
 function erfc(x::acb)
    z = parent(x)()
@@ -1043,7 +1106,8 @@ end
 
 @doc Markdown.doc"""
     ei(x::acb)
-> Return the exponential integral evaluated at $x$.
+
+Return the exponential integral evaluated at $x$.
 """
 function ei(x::acb)
    z = parent(x)()
@@ -1053,7 +1117,8 @@ end
 
 @doc Markdown.doc"""
     si(x::acb)
-> Return the sine integral evaluated at $x$.
+
+Return the sine integral evaluated at $x$.
 """
 function si(x::acb)
    z = parent(x)()
@@ -1063,7 +1128,8 @@ end
 
 @doc Markdown.doc"""
     ci(x::acb)
-> Return the exponential cosine integral evaluated at $x$.
+
+Return the exponential cosine integral evaluated at $x$.
 """
 function ci(x::acb)
    z = parent(x)()
@@ -1073,7 +1139,8 @@ end
 
 @doc Markdown.doc"""
     shi(x::acb)
-> Return the hyperbolic sine integral evaluated at $x$.
+
+Return the hyperbolic sine integral evaluated at $x$.
 """
 function shi(x::acb)
    z = parent(x)()
@@ -1083,7 +1150,8 @@ end
 
 @doc Markdown.doc"""
     chi(x::acb)
-> Return the hyperbolic cosine integral evaluated at $x$.
+
+Return the hyperbolic cosine integral evaluated at $x$.
 """
 function chi(x::acb)
    z = parent(x)()
@@ -1093,7 +1161,8 @@ end
 
 @doc Markdown.doc"""
     modeta(x::acb)
-> Return the Dedekind eta function $\eta(\tau)$ at $\tau = x$.
+
+Return the Dedekind eta function $\eta(\tau)$ at $\tau = x$.
 """
 function modeta(x::acb)
    z = parent(x)()
@@ -1103,9 +1172,10 @@ end
 
 @doc Markdown.doc"""
     modweber_f(x::acb)
-> Return the modular Weber function
-> $\mathfrak{f}(\tau) = \frac{\eta^2(\tau)}{\eta(\tau/2)\eta(2\tau)},$
-> at $x$ in the complex upper half plane.
+
+Return the modular Weber function
+$\mathfrak{f}(\tau) = \frac{\eta^2(\tau)}{\eta(\tau/2)\eta(2\tau)},$
+at $x$ in the complex upper half plane.
 """
 function modweber_f(x::acb)
    x_on_2 = divexact(x, 2)
@@ -1115,9 +1185,10 @@ end
 
 @doc Markdown.doc"""
     modweber_f1(x::acb)
-> Return the modular Weber function
-> $\mathfrak{f}_1(\tau) = \frac{\eta(\tau/2)}{\eta(\tau)},$
-> at $x$ in the complex upper half plane.
+
+Return the modular Weber function
+$\mathfrak{f}_1(\tau) = \frac{\eta(\tau/2)}{\eta(\tau)},$
+at $x$ in the complex upper half plane.
 """
 function modweber_f1(x::acb)
    x_on_2 = divexact(x, 2)
@@ -1126,9 +1197,10 @@ end
 
 @doc Markdown.doc"""
     modweber_f2(x::acb)
-> Return the modular Weber function
-> $$\mathfrak{f}_2(\tau) = \frac{\sqrt{2}\eta(2\tau)}{\eta(\tau)}$
-> at $x$ in the complex upper half plane.
+
+Return the modular Weber function
+$\mathfrak{f}_2(\tau) = \frac{\sqrt{2}\eta(2\tau)}{\eta(\tau)}$
+at $x$ in the complex upper half plane.
 """
 function modweber_f2(x::acb)
    x_times_2 = x*2
@@ -1137,7 +1209,8 @@ end
 
 @doc Markdown.doc"""
     modj(x::acb)
-> Return the $j$-invariant $j(\tau)$ at $\tau = x$.
+
+Return the $j$-invariant $j(\tau)$ at $\tau = x$.
 """
 function modj(x::acb)
    z = parent(x)()
@@ -1147,7 +1220,8 @@ end
 
 @doc Markdown.doc"""
     modlambda(x::acb)
-> Return the modular lambda function $\lambda(\tau)$ at $\tau = x$.
+
+Return the modular lambda function $\lambda(\tau)$ at $\tau = x$.
 """
 function modlambda(x::acb)
    z = parent(x)()
@@ -1157,7 +1231,8 @@ end
 
 @doc Markdown.doc"""
     moddelta(x::acb)
-> Return the modular delta function $\Delta(\tau)$ at $\tau = x$.
+
+Return the modular delta function $\Delta(\tau)$ at $\tau = x$.
 """
 function moddelta(x::acb)
    z = parent(x)()
@@ -1167,7 +1242,8 @@ end
 
 @doc Markdown.doc"""
     ellipk(x::acb)
-> Return the complete elliptic integral $K(x)$.
+
+Return the complete elliptic integral $K(x)$.
 """
 function ellipk(x::acb)
    z = parent(x)()
@@ -1177,7 +1253,8 @@ end
 
 @doc Markdown.doc"""
     ellipe(x::acb)
-> Return the complete elliptic integral $E(x)$.
+
+Return the complete elliptic integral $E(x)$.
 """
 function ellipe(x::acb)
    z = parent(x)()
@@ -1187,7 +1264,8 @@ end
 
 @doc Markdown.doc"""
     sincos(x::acb)
-> Return a tuple $s, c$ consisting of the sine $s$ and cosine $c$ of $x$.
+
+Return a tuple $s, c$ consisting of the sine $s$ and cosine $c$ of $x$.
 """
 function sincos(x::acb)
   s = parent(x)()
@@ -1199,7 +1277,8 @@ end
 
 @doc Markdown.doc"""
     sincospi(x::acb)
-> Return a tuple $s, c$ consisting of the sine $s$ and cosine $c$ of $\pi x$.
+
+Return a tuple $s, c$ consisting of the sine $s$ and cosine $c$ of $\pi x$.
 """
 function sincospi(x::acb)
   s = parent(x)()
@@ -1211,7 +1290,8 @@ end
 
 @doc Markdown.doc"""
     sinhcosh(x::acb)
-> Return a tuple $s, c$ consisting of the hyperbolic sine and cosine of $x$.
+
+Return a tuple $s, c$ consisting of the hyperbolic sine and cosine of $x$.
 """
 function sinhcosh(x::acb)
   s = parent(x)()
@@ -1223,7 +1303,8 @@ end
 
 @doc Markdown.doc"""
     zeta(s::acb, a::acb)
-> Return the Hurwitz zeta function $\zeta(s,a)$.
+
+Return the Hurwitz zeta function $\zeta(s,a)$.
 """
 function zeta(s::acb, a::acb)
   z = parent(s)()
@@ -1234,7 +1315,8 @@ end
 
 @doc Markdown.doc"""
     polygamma(s::acb, a::acb)
-> Return the generalised polygamma function $\psi(s,z)$.
+
+Return the generalised polygamma function $\psi(s,z)$.
 """
 function polygamma(s::acb, a::acb)
   z = parent(s)()
@@ -1252,7 +1334,8 @@ end
 
 @doc Markdown.doc"""
     risingfac(x::acb, n::Int)
-> Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an Acb.
+
+Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an Acb.
 """
 function risingfac(x::acb, n::Int)
   n < 0 && throw(DomainError(n, "Argument must be non-negative"))
@@ -1269,8 +1352,9 @@ end
 
 @doc Markdown.doc"""
     risingfac2(x::acb, n::Int)
-> Return a tuple containing the rising factorial $x(x + 1)\ldots (x + n - 1)$
-> and its derivative.
+
+Return a tuple containing the rising factorial $x(x + 1)\ldots (x + n - 1)$
+and its derivative.
 """
 function risingfac2(x::acb, n::Int)
   n < 0 && throw(DomainError(n, "Argument must be non-negative"))
@@ -1279,7 +1363,8 @@ end
 
 @doc Markdown.doc"""
     polylog(s::acb, a::acb)
->
+
+
 """
 function polylog(s::acb, a::acb)
   z = parent(s)()
@@ -1290,7 +1375,8 @@ end
 
 @doc Markdown.doc"""
     polylog(s::Int, a::acb)
-> Return the polylogarithm Li$_s(a)$.
+
+Return the polylogarithm Li$_s(a)$.
 """
 function polylog(s::Int, a::acb)
   z = parent(a)()
@@ -1301,7 +1387,8 @@ end
 
 @doc Markdown.doc"""
     li(x::acb)
-> Return the logarithmic integral, evaluated at $x$.
+
+Return the logarithmic integral, evaluated at $x$.
 """
 function li(x::acb)
   z = parent(x)()
@@ -1312,7 +1399,8 @@ end
 
 @doc Markdown.doc"""
     lioffset(x::acb)
-> Return the offset logarithmic integral, evaluated at $x$.
+
+Return the offset logarithmic integral, evaluated at $x$.
 """
 function lioffset(x::acb)
   z = parent(x)()
@@ -1323,7 +1411,8 @@ end
 
 @doc Markdown.doc"""
     expint(s::acb, x::acb)
-> Return the generalised exponential integral $E_s(x)$.
+
+Return the generalised exponential integral $E_s(x)$.
 """
 function expint(s::acb, x::acb)
   z = parent(s)()
@@ -1334,7 +1423,8 @@ end
 
 @doc Markdown.doc"""
     gamma(s::acb, x::acb)
-> Return the upper incomplete gamma function $\Gamma(s,x)$.
+
+Return the upper incomplete gamma function $\Gamma(s,x)$.
 """
 function gamma(s::acb, x::acb)
   z = parent(s)()
@@ -1345,7 +1435,8 @@ end
 
 @doc Markdown.doc"""
     besselj(nu::acb, x::acb)
-> Return the Bessel function $J_{\nu}(x)$.
+
+Return the Bessel function $J_{\nu}(x)$.
 """
 function besselj(nu::acb, x::acb)
   z = parent(x)()
@@ -1356,7 +1447,8 @@ end
 
 @doc Markdown.doc"""
     bessely(nu::acb, x::acb)
-> Return the Bessel function $Y_{\nu}(x)$.
+
+Return the Bessel function $Y_{\nu}(x)$.
 """
 function bessely(nu::acb, x::acb)
   z = parent(x)()
@@ -1367,7 +1459,8 @@ end
 
 @doc Markdown.doc"""
     besseli(nu::acb, x::acb)
-> Return the Bessel function $I_{\nu}(x)$.
+
+Return the Bessel function $I_{\nu}(x)$.
 """
 function besseli(nu::acb, x::acb)
   z = parent(x)()
@@ -1378,7 +1471,8 @@ end
 
 @doc Markdown.doc"""
     besselk(nu::acb, x::acb)
-> Return the Bessel function $K_{\nu}(x)$.
+
+Return the Bessel function $K_{\nu}(x)$.
 """
 function besselk(nu::acb, x::acb)
   z = parent(x)()
@@ -1389,7 +1483,8 @@ end
 
 @doc Markdown.doc"""
     hyp1f1(a::acb, b::acb, x::acb)
-> Return the confluent hypergeometric function ${}_1F1(a,b,x)$.
+
+Return the confluent hypergeometric function ${}_1F1(a,b,x)$.
 """
 function hyp1f1(a::acb, b::acb, x::acb)
   z = parent(x)()
@@ -1400,8 +1495,9 @@ end
 
 @doc Markdown.doc"""
     hyp1f1r(a::acb, b::acb, x::acb)
-> Return the regularized confluent hypergeometric function
-> ${}_1F1(a,b,x) / \Gamma(b)$.
+
+Return the regularized confluent hypergeometric function
+${}_1F1(a,b,x) / \Gamma(b)$.
 """
 function hyp1f1r(a::acb, b::acb, x::acb)
   z = parent(x)()
@@ -1412,7 +1508,8 @@ end
 
 @doc Markdown.doc"""
     hyperu(a::acb, b::acb, x::acb)
-> Return the confluent hypergeometric function $U(a,b,x)$.
+
+Return the confluent hypergeometric function $U(a,b,x)$.
 """
 function hyperu(a::acb, b::acb, x::acb)
   z = parent(x)()
@@ -1423,7 +1520,8 @@ end
 
 @doc Markdown.doc"""
     hyp2f1(a::acb, b::acb, c::acb, x::acb; flags=0)
-> Return the Gauss hypergeometric function ${}_2F_1(a,b,c,x)$.
+
+Return the Gauss hypergeometric function ${}_2F_1(a,b,c,x)$.
 """
 function hyp2f1(a::acb, b::acb, c::acb, x::acb; flags=0)
   z = parent(x)()
@@ -1434,8 +1532,9 @@ end
 
 @doc Markdown.doc"""
     jtheta(z::acb, tau::acb)
-> Return a tuple of four elements containing the Jacobi theta function values
-> $\theta_1, \theta_2, \theta_3, \theta_4$ evaluated at $z, \tau$.
+
+Return a tuple of four elements containing the Jacobi theta function values
+$\theta_1, \theta_2, \theta_3, \theta_4$ evaluated at $z, \tau$.
 """
 function jtheta(z::acb, tau::acb)
   t1 = parent(z)()
@@ -1450,7 +1549,8 @@ end
 
 @doc Markdown.doc"""
     ellipwp(z::acb, tau::acb)
-> Return the Weierstrass elliptic function $\wp(z,\tau)$.
+
+Return the Weierstrass elliptic function $\wp(z,\tau)$.
 """
 function ellipwp(z::acb, tau::acb)
   r = parent(z)()
@@ -1461,7 +1561,8 @@ end
 
 @doc Markdown.doc"""
     agm(x::acb, y::acb)
-> Return the arithmetic-geometric mean of $x$ and $y$.
+
+Return the arithmetic-geometric mean of $x$ and $y$.
 """
 function agm(x::acb, y::acb)
   v = inv(y)
@@ -1475,12 +1576,13 @@ end
 
 @doc Markdown.doc"""
     lindep(A::Array{acb, 1}, bits::Int)
-> Find a small linear combination of the entries of the array $A$ that is small
-> (using LLL). The entries are first scaled by the given number of bits before
-> truncating the real and imaginary parts to integers for use in LLL. This function can
-> be used to find linear dependence between a list of complex numbers. The algorithm is
-> heuristic only and returns an array of Nemo integers representing the linear
-> combination.
+
+Find a small linear combination of the entries of the array $A$ that is small
+(using LLL). The entries are first scaled by the given number of bits before
+truncating the real and imaginary parts to integers for use in LLL. This function can
+be used to find linear dependence between a list of complex numbers. The algorithm is
+heuristic only and returns an array of Nemo integers representing the linear
+combination.
 """
 function lindep(A::Array{acb, 1}, bits::Int)
   bits < 0 && throw(DomainError(bits, "Number of bits must be non-negative"))
@@ -1500,13 +1602,14 @@ end
 
 @doc Markdown.doc"""
     lindep(A::Array{acb, 2}, bits::Int)
-> Find a (common) small linear combination of the entries in each row of the array $A$,
-> that is small (using LLL). It is assumed that the complex numbers in each row of the
-> array share the same linear combination. The entries are first scaled by the given
-> number of bits before truncating the real and imaginary parts to integers for use in
-> LLL. This function can be used to find a common linear dependence shared across a
-> number of lists of complex numbers. The algorithm is heuristic only and returns an
-> array of Nemo integers representing the common linear combination.
+
+Find a (common) small linear combination of the entries in each row of the array $A$,
+that is small (using LLL). It is assumed that the complex numbers in each row of the
+array share the same linear combination. The entries are first scaled by the given
+number of bits before truncating the real and imaginary parts to integers for use in
+LLL. This function can be used to find a common linear dependence shared across a
+number of lists of complex numbers. The algorithm is heuristic only and returns an
+array of Nemo integers representing the common linear combination.
 """
 function lindep(A::Array{acb, 2}, bits::Int)
   bits < 0 && throw(DomainError(bits, "Number of bits must be non-negative"))

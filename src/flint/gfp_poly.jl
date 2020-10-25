@@ -294,9 +294,10 @@ end
 
 @doc Markdown.doc"""
     lift(R::FmpzPolyRing, y::gfp_poly)
-> Lift from a polynomial over $\mathbb{Z}/n\mathbb{Z}$ to a polynomial over
-> $\mathbb{Z}$ with minimal reduced nonnegative coefficients. The ring `R`
-> specifies the ring to lift into.
+
+Lift from a polynomial over $\mathbb{Z}/n\mathbb{Z}$ to a polynomial over
+$\mathbb{Z}$ with minimal reduced nonnegative coefficients. The ring `R`
+specifies the ring to lift into.
 """
 function lift(R::FmpzPolyRing, y::gfp_poly)
   z = fmpz_poly()
@@ -314,7 +315,8 @@ end
 
 @doc Markdown.doc"""
     isirreducible(x::gfp_poly)
-> Return `true` if $x$ is irreducible, otherwise return `false`.
+
+Return `true` if $x$ is irreducible, otherwise return `false`.
 """
 function isirreducible(x::gfp_poly)
   return Bool(ccall((:nmod_poly_is_irreducible, libflint), Int32,
@@ -329,7 +331,8 @@ end
 
 @doc Markdown.doc"""
     issquarefree(x::gfp_poly)
-> Return `true` if $x$ is squarefree, otherwise return `false`.
+
+Return `true` if $x$ is squarefree, otherwise return `false`.
 """
 function issquarefree(x::gfp_poly)
    return Bool(ccall((:nmod_poly_is_squarefree, libflint), Int32,
@@ -344,7 +347,8 @@ end
 
 @doc Markdown.doc"""
     factor(x::gfp_poly)
-> Return the factorisation of $x$.
+
+Return the factorisation of $x$.
 """
 function factor(x::gfp_poly)
   fac, z = _factor(x)
@@ -368,7 +372,8 @@ end
 
 @doc Markdown.doc"""
     factor_squarefree(x::gfp_poly)
-> Return the squarefree factorisation of $x$.
+
+Return the squarefree factorisation of $x$.
 """
 function factor_squarefree(x::gfp_poly)
   return Fac(parent(x)(lead(x)), _factor_squarefree(x))
@@ -391,7 +396,8 @@ end
 
 @doc Markdown.doc"""
     factor_distinct_deg(x::gfp_poly)
-> Return the distinct degree factorisation of a squarefree polynomial $x$.
+
+Return the distinct degree factorisation of a squarefree polynomial $x$.
 """
 function factor_distinct_deg(x::gfp_poly)
   !issquarefree(x) && error("Polynomial must be squarefree")
@@ -419,10 +425,11 @@ end
 
 @doc Markdown.doc"""
     remove(z::gfp_poly, p::gfp_poly)
-> Computes the valuation of $z$ at $p$, that is, the largest $k$ such that
-> $p^k$ divides $z$. Additionally, $z/p^k$ is returned as well.
->
-> See also `valuation`, which only returns the valuation.
+
+Computes the valuation of $z$ at $p$, that is, the largest $k$ such that
+$p^k$ divides $z$. Additionally, $z/p^k$ is returned as well.
+
+See also `valuation`, which only returns the valuation.
 """
 function remove(z::gfp_poly, p::gfp_poly)
    check_parent(z,p)

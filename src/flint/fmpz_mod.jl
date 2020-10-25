@@ -305,8 +305,9 @@ end
 
 @doc Markdown.doc"""
     gcdx(a::fmpz_mod, b::fmpz_mod)
-> Compute the extended gcd with the Euclidean structure inherited from
-> $\mathbb{Z}$.
+
+Compute the extended gcd with the Euclidean structure inherited from
+$\mathbb{Z}$.
 """
 function gcdx(a::fmpz_mod, b::fmpz_mod)
    m = modulus(a)

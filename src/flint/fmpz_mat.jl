@@ -378,7 +378,8 @@ end
 
 @doc Markdown.doc"""
     <<(x::fmpz_mat, y::Int)
-> Return $2^yx$.
+
+Return $2^yx$.
 """
 function <<(x::fmpz_mat, y::Int)
    y < 0 && throw(DomainError(y, "Exponent must be non-negative"))
@@ -391,7 +392,8 @@ end
 
 @doc Markdown.doc"""
     >>(x::fmpz_mat, y::Int)
-> Return $x/2^y$ where rounding is towards zero.
+
+Return $x/2^y$ where rounding is towards zero.
 """
 function >>(x::fmpz_mat, y::Int)
    y < 0 && throw(DomainError(y, "Exponent must be non-negative"))
@@ -488,8 +490,9 @@ end
 
 @doc Markdown.doc"""
     pseudo_inv(x::fmpz_mat)
-> Return a tuple $(z, d)$ consisting of a matrix $z$ and denominator $d$ such
-> that $z/d$ is the inverse of $x$.
+
+Return a tuple $(z, d)$ consisting of a matrix $z$ and denominator $d$ such
+that $z/d$ is the inverse of $x$.
 """
 function pseudo_inv(x::fmpz_mat)
    z = similar(x)
@@ -557,7 +560,8 @@ end
 
 @doc Markdown.doc"""
     reduce_mod(x::fmpz_mat, y::fmpz)
-> Reduce the entries of $x$ modulo $y$ and return the result.
+
+Reduce the entries of $x$ modulo $y$ and return the result.
 """
 function reduce_mod(x::fmpz_mat, y::fmpz)
    z = similar(x)
@@ -568,7 +572,8 @@ end
 
 @doc Markdown.doc"""
     reduce_mod(x::fmpz_mat, y::Integer)
-> Reduce the entries of $x$ modulo $y$ and return the result.
+
+Reduce the entries of $x$ modulo $y$ and return the result.
 """
 reduce_mod(x::fmpz_mat, y::Integer) = reduce_mod(x, fmpz(y))
 
@@ -616,8 +621,9 @@ end
 
 @doc Markdown.doc"""
     det_divisor(x::fmpz_mat)
-> Return some positive divisor of the determinant of $x$, if the determinant
-> is nonzero, otherwise return zero.
+
+Return some positive divisor of the determinant of $x$, if the determinant
+is nonzero, otherwise return zero.
 """
 function det_divisor(x::fmpz_mat)
    nrows(x) != ncols(x) && error("Non-square matrix")
@@ -629,9 +635,10 @@ end
 
 @doc Markdown.doc"""
     det_given_divisor(x::fmpz_mat, d::fmpz, proved=true)
-> Return the determinant of $x$ given a positive divisor of its determinant. If
-> `proved == true` (the default), the output is guaranteed to be correct,
-> otherwise a heuristic algorithm is used.
+
+Return the determinant of $x$ given a positive divisor of its determinant. If
+`proved == true` (the default), the output is guaranteed to be correct,
+otherwise a heuristic algorithm is used.
 """
 function det_given_divisor(x::fmpz_mat, d::fmpz, proved=true)
    nrows(x) != ncols(x) && error("Non-square")
@@ -643,9 +650,10 @@ end
 
 @doc Markdown.doc"""
     det_given_divisor(x::fmpz_mat, d::Integer, proved=true)
-> Return the determinant of $x$ given a positive divisor of its determinant. If
-> `proved == true` (the default), the output is guaranteed to be correct,
-> otherwise a heuristic algorithm is used.
+
+Return the determinant of $x$ given a positive divisor of its determinant. If
+`proved == true` (the default), the output is guaranteed to be correct,
+otherwise a heuristic algorithm is used.
 """
 function det_given_divisor(x::fmpz_mat, d::Integer, proved=true)
    return det_given_divisor(x, fmpz(d), proved)
@@ -672,8 +680,9 @@ end
 
 @doc Markdown.doc"""
     hadamard(R::FmpzMatSpace)
-> Return the Hadamard matrix for the given matrix space. The number of rows and
-> columns must be equal.
+
+Return the Hadamard matrix for the given matrix space. The number of rows and
+columns must be equal.
 """
 function hadamard(R::FmpzMatSpace)
    nrows(R) != ncols(R) && error("Unable to create Hadamard matrix")
@@ -686,7 +695,8 @@ end
 
 @doc Markdown.doc"""
     ishadamard(x::fmpz_mat)
-> Return `true` if the given matrix is Hadamard, otherwise return `false`.
+
+Return `true` if the given matrix is Hadamard, otherwise return `false`.
 """
 function ishadamard(x::fmpz_mat)
    return ccall((:fmpz_mat_is_hadamard, libflint), Bool,
@@ -701,7 +711,8 @@ end
 
 @doc Markdown.doc"""
     hnf(x::fmpz_mat)
-> Return the Hermite Normal Form of $x$.
+
+Return the Hermite Normal Form of $x$.
 """
 function hnf(x::fmpz_mat)
    z = similar(x)
@@ -712,8 +723,9 @@ end
 
 @doc Markdown.doc"""
     hnf_with_transform(x::fmpz_mat)
-> Compute a tuple $(H, T)$ where $H$ is the Hermite normal form of $x$ and $T$
-> is a transformation matrix so that $H = Tx$.
+
+Compute a tuple $(H, T)$ where $H$ is the Hermite normal form of $x$ and $T$
+is a transformation matrix so that $H = Tx$.
 """
 function hnf_with_transform(x::fmpz_mat)
    z = similar(x)
@@ -725,8 +737,9 @@ end
 
 @doc Markdown.doc"""
     hnf_modular(x::fmpz_mat, d::fmpz)
-> Compute the Hermite normal form of $x$ given that $d$ is a multiple of the
-> determinant of the nonzero rows of $x$.
+
+Compute the Hermite normal form of $x$ given that $d$ is a multiple of the
+determinant of the nonzero rows of $x$.
 """
 function hnf_modular(x::fmpz_mat, d::fmpz)
    z = similar(x)
@@ -737,8 +750,9 @@ end
 
 @doc Markdown.doc"""
     hnf_modular_eldiv(x::fmpz_mat, d::fmpz)
-> Compute the Hermite normal form of $x$ given that $d$ is a multiple of the
-> largest elementary divisor of $x$. The matrix $x$ must have full rank.
+
+Compute the Hermite normal form of $x$ given that $d$ is a multiple of the
+largest elementary divisor of $x$. The matrix $x$ must have full rank.
 """
 function hnf_modular_eldiv(x::fmpz_mat, d::fmpz)
    (nrows(x) < ncols(x)) &&
@@ -751,8 +765,9 @@ end
 
 @doc Markdown.doc"""
     ishnf(x::fmpz_mat)
-> Return `true` if the given matrix is in Hermite Normal Form, otherwise return
-> `false`.
+
+Return `true` if the given matrix is in Hermite Normal Form, otherwise return
+`false`.
 """
 function ishnf(x::fmpz_mat)
    return ccall((:fmpz_mat_is_in_hnf, libflint), Bool,
@@ -782,9 +797,10 @@ end
 
 @doc Markdown.doc"""
     lll_with_transform(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
-> Compute a tuple $(L, T)$ where $L$ is the LLL reduction of $a$ and $T$ is a
-> transformation matrix so that $L = Ta$. All the default parameters can be
-> overridden by supplying an optional context object.
+
+Compute a tuple $(L, T)$ where $L$ is the LLL reduction of $a$ and $T$ is a
+transformation matrix so that $L = Ta$. All the default parameters can be
+overridden by supplying an optional context object.
 """
 function lll_with_transform(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
    z = deepcopy(x)
@@ -799,11 +815,12 @@ end
 
 @doc Markdown.doc"""
     lll(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
-> Return the LLL reduction of the matrix $x$. By default the matrix $x$ is a
-> $\mathbb{Z}$-basis and the Gram matrix is maintained throughout in
-> approximate form. The LLL is performed with reduction parameters
-> $\delta = 0.99$ and $\eta = 0.51$. All of these defaults can be overridden by
-> specifying an optional context object.
+
+Return the LLL reduction of the matrix $x$. By default the matrix $x$ is a
+$\mathbb{Z}$-basis and the Gram matrix is maintained throughout in
+approximate form. The LLL is performed with reduction parameters
+$\delta = 0.99$ and $\eta = 0.51$. All of these defaults can be overridden by
+specifying an optional context object.
 """
 function lll(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
    z = deepcopy(x)
@@ -817,11 +834,12 @@ end
 
 @doc Markdown.doc"""
     lll!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
-> Perform the LLL reduction of the matrix $x$ inplace. By default the matrix
-> $x$ is a > $\mathbb{Z}$-basis and the Gram matrix is maintained throughout in
-> approximate form. The LLL is performed with reduction parameters
-> $\delta = 0.99$ and $\eta = 0.51$. All of these defaults can be overridden by
-> specifying an optional context object.
+
+Perform the LLL reduction of the matrix $x$ inplace. By default the matrix
+$x$ is a > $\mathbb{Z}$-basis and the Gram matrix is maintained throughout in
+approximate form. The LLL is performed with reduction parameters
+$\delta = 0.99$ and $\eta = 0.51$. All of these defaults can be overridden by
+specifying an optional context object.
 """
 function lll!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51))
    if nrows(x) == 0
@@ -834,9 +852,10 @@ end
 
 @doc Markdown.doc"""
     lll_gram_with_transform(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
-> Given the Gram matrix $x$ of a matrix $M$, compute a tuple $(L, T)$ where
-> $L$ is the gram matrix of the LLL reduction of the matrix and $T$ is a
-> transformation matrix so that $L = TM$.
+
+Given the Gram matrix $x$ of a matrix $M$, compute a tuple $(L, T)$ where
+$L$ is the gram matrix of the LLL reduction of the matrix and $T$ is a
+transformation matrix so that $L = TM$.
 """
 function lll_gram_with_transform(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
    z = deepcopy(x)
@@ -851,8 +870,9 @@ end
 
 @doc Markdown.doc"""
     lll_gram(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
-> Given the Gram matrix $x$ of a matrix, compute the Gram matrix of its LLL
-> reduction.
+
+Given the Gram matrix $x$ of a matrix, compute the Gram matrix of its LLL
+reduction.
 """
 function lll_gram(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
    z = deepcopy(x)
@@ -863,8 +883,9 @@ end
 
 @doc Markdown.doc"""
     lll_gram!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
-> Given the Gram matrix $x$ of a matrix, compute the Gram matrix of its LLL
-> reduction inplace.
+
+Given the Gram matrix $x$ of a matrix, compute the Gram matrix of its LLL
+reduction inplace.
 """
 function lll_gram!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
    u = similar(x, nrows(x), nrows(x))
@@ -876,9 +897,10 @@ end
 
 @doc Markdown.doc"""
     lll_with_removal_transform(x::fmpz_mat, b::fmpz, ctx::lll_ctx = lll_ctx(0.99, 0.51))
-> Compute a tuple $(r, L, T)$ where the first $r$ rows of $L$ are those
-> remaining from the LLL reduction after removal of vectors with norm exceeding
-> the bound $b$ and $T$ is a transformation matrix so that $L = Tx$.
+
+Compute a tuple $(r, L, T)$ where the first $r$ rows of $L$ are those
+remaining from the LLL reduction after removal of vectors with norm exceeding
+the bound $b$ and $T$ is a transformation matrix so that $L = Tx$.
 """
 function lll_with_removal_transform(x::fmpz_mat, b::fmpz, ctx::lll_ctx = lll_ctx(0.99, 0.51))
    z = deepcopy(x)
@@ -893,9 +915,10 @@ end
 
 @doc Markdown.doc"""
     lll_with_removal(x::fmpz_mat, b::fmpz, ctx::lll_ctx = lll_ctx(0.99, 0.51))
-> Compute the LLL reduction of $x$ and throw away rows whose norm exceeds
-> the given bound $b$. Return a tuple $(r, L)$ where the first $r$ rows of $L$
-> are the rows remaining after removal.
+
+Compute the LLL reduction of $x$ and throw away rows whose norm exceeds
+the given bound $b$. Return a tuple $(r, L)$ where the first $r$ rows of $L$
+are the rows remaining after removal.
 """
 function lll_with_removal(x::fmpz_mat, b::fmpz, ctx::lll_ctx = lll_ctx(0.99, 0.51))
    z = deepcopy(x)
@@ -931,9 +954,10 @@ end
 
 @doc Markdown.doc"""
     nullspace_right_rational(x::fmpz_mat)
-> Return a tuple $(r, U)$ consisting of a matrix $U$ such that the first $r$ columns
-> form the right rational nullspace of $x$, i.e. a set of vectors over $\mathbb{Z}$
-> giving a $\mathbb{Q}$-basis  for the nullspace of $x$ considered as a matrix over
+
+Return a tuple $(r, U)$ consisting of a matrix $U$ such that the first $r$ columns
+form the right rational nullspace of $x$, i.e. a set of vectors over $\mathbb{Z}$
+giving a $\mathbb{Q}$-basis  for the nullspace of $x$ considered as a matrix over
 $\mathbb{Q}$.
 """
 function nullspace_right_rational(x::fmpz_mat)
@@ -977,7 +1001,8 @@ end
 
 @doc Markdown.doc"""
     snf(x::fmpz_mat)
-> Compute the Smith normal form of $x$.
+
+Compute the Smith normal form of $x$.
 """
 function snf(x::fmpz_mat)
    z = similar(x)
@@ -988,7 +1013,8 @@ end
 
 @doc Markdown.doc"""
     snf_diagonal(x::fmpz_mat)
-> Given a diagonal matrix $x$ compute the Smith normal form of $x$.
+
+Given a diagonal matrix $x$ compute the Smith normal form of $x$.
 """
 function snf_diagonal(x::fmpz_mat)
    z = similar(x)
@@ -999,7 +1025,8 @@ end
 
 @doc Markdown.doc"""
     issnf(x::fmpz_mat)
-> Return `true` if $x$ is in Smith normal form, otherwise return `false`.
+
+Return `true` if $x$ is in Smith normal form, otherwise return `false`.
 """
 function issnf(x::fmpz_mat)
    return ccall((:fmpz_mat_is_in_snf, libflint), Bool,
@@ -1014,8 +1041,9 @@ end
 
 @doc Markdown.doc"""
     solve(a::fmpz_mat, b::fmpz_mat) -> fmpz_mat
-> Return a matrix $x$ such that $ax = b$. An exception is raised
-> if this is not possible.
+
+Return a matrix $x$ such that $ax = b$. An exception is raised
+if this is not possible.
 """
 function solve(a::fmpz_mat, b::fmpz_mat)
    nrows(b) != nrows(a) && error("Incompatible dimensions in solve")
@@ -1028,8 +1056,9 @@ end
 
 @doc Markdown.doc"""
     cansolve(a::fmpz_mat, b::fmpz_mat) -> Bool, fmpz_mat
-> Return true and a matrix $x$ such that $ax = b$, or false and some matrix
-> in case $x$ does not exist.
+
+Return true and a matrix $x$ such that $ax = b$, or false and some matrix
+in case $x$ does not exist.
 """
 function cansolve(a::fmpz_mat, b::fmpz_mat)
    nrows(b) != nrows(a) && error("Incompatible dimensions in cansolve")
@@ -1064,9 +1093,10 @@ end
 
 @doc Markdown.doc"""
     cansolve_with_nullspace(a::fmpz_mat, b::fmpz_mat) -> Bool, fmpz_mat, fmpz_mat
-> Return true, a matrix $x$ and a matrix $k$ such that $ax = b$ and the columns
-> of $k$ form a basis for the nullspace of $a$. In case $x$ does not exist, false
-> and two arbitrary matrices are returned.
+
+Return true, a matrix $x$ and a matrix $k$ such that $ax = b$ and the columns
+of $k$ form a basis for the nullspace of $a$. In case $x$ does not exist, false
+and two arbitrary matrices are returned.
 """
 function cansolve_with_nullspace(a::fmpz_mat, b::fmpz_mat)
    nrows(b) != nrows(a) && error("Incompatible dimensions in cansolve_with_nullspace")
@@ -1116,10 +1146,11 @@ end
 
 @doc Markdown.doc"""
     solve_rational(a::fmpz_mat, b::fmpz_mat)
-> If it exists, return a tuple $(x, d)$ consisting of a column vector $x$ such
-> that $ax = db$. The element $b$ must be a column vector with the same number
-> of rows as $a$ and $a$ must be a square matrix. If these conditions are not
-> met or $(x, d)$ does not exist, an exception is raised.
+
+If it exists, return a tuple $(x, d)$ consisting of a column vector $x$ such
+that $ax = db$. The element $b$ must be a column vector with the same number
+of rows as $a$ and $a$ must be a square matrix. If these conditions are not
+met or $(x, d)$ does not exist, an exception is raised.
 """
 function solve_rational(a::fmpz_mat, b::fmpz_mat)
    nrows(a) != ncols(a) && error("Not a square matrix in solve_rational")
@@ -1138,10 +1169,11 @@ end
 
 @doc Markdown.doc"""
     solve_dixon(a::fmpz_mat, b::fmpz_mat)
-> Return a tuple $(x, m)$ consisting of a column vector $x$ such that $ax = b
-> \pmod{m}$. The element  $b$ must be a column vector with the same number > of
-> rows as $a$ and $a$ must be a square matrix. If these conditions are not met
-> or $(x, d)$ does not exist, an exception is raised.
+
+Return a tuple $(x, m)$ consisting of a column vector $x$ such that $ax = b
+\pmod{m}$. The element  $b$ must be a column vector with the same number > of
+rows as $a$ and $a$ must be a square matrix. If these conditions are not met
+or $(x, d)$ does not exist, an exception is raised.
 """
 function solve_dixon(a::fmpz_mat, b::fmpz_mat)
    nrows(a) != ncols(a) && error("Not a square matrix in solve")

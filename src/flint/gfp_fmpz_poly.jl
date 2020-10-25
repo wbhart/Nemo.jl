@@ -185,9 +185,10 @@ end
 
 @doc Markdown.doc"""
     function lift(R::FmpzPolyRing, y::gfp_fmpz_poly)
-> Lift from a polynomial over $\mathbb{Z}/n\mathbb{Z}$ to a polynomial over
-> $\mathbb{Z}$ with minimal reduced nonnegative coefficients. The ring `R`
-> specifies the ring to lift into.
+
+Lift from a polynomial over $\mathbb{Z}/n\mathbb{Z}$ to a polynomial over
+$\mathbb{Z}$ with minimal reduced nonnegative coefficients. The ring `R`
+specifies the ring to lift into.
 """
 function lift(R::FmpzPolyRing, y::gfp_fmpz_poly)
    z = fmpz_poly()
@@ -205,7 +206,8 @@ end
 
 @doc Markdown.doc"""
     isirreducible(x::gfp_fmpz_poly)
-> Return `true` if $x$ is irreducible, otherwise return `false`.
+
+Return `true` if $x$ is irreducible, otherwise return `false`.
 """
 function isirreducible(x::gfp_fmpz_poly)
   return Bool(ccall((:fmpz_mod_poly_is_irreducible, libflint), Int32,
@@ -220,7 +222,8 @@ end
 
 @doc Markdown.doc"""
     issquarefree(x::gfp_fmpz_poly)
-> Return `true` if $x$ is squarefree, otherwise return `false`.
+
+Return `true` if $x$ is squarefree, otherwise return `false`.
 """
 function issquarefree(x::gfp_fmpz_poly)
    return Bool(ccall((:fmpz_mod_poly_is_squarefree, libflint), Int32, 
@@ -235,7 +238,8 @@ end
 
 @doc Markdown.doc"""
     factor(x::gfp_fmpz_poly)
-> Return the factorisation of $x$.
+
+Return the factorisation of $x$.
 """
 function factor(x::gfp_fmpz_poly)
   fac = _factor(x)
@@ -259,7 +263,8 @@ end
 
 @doc Markdown.doc"""
     factor_squarefree(x::gfp_fmpz_poly)
-> Return the squarefree factorisation of $x$.
+
+Return the squarefree factorisation of $x$.
 """
 function factor_squarefree(x::gfp_fmpz_poly)
   fac = _factor_squarefree(x)
@@ -283,7 +288,8 @@ end
 
 @doc Markdown.doc"""
     factor_distinct_deg(x::fmpz_mod_poly)
-> Return the distinct degree factorisation of a squarefree polynomial $x$.
+
+Return the distinct degree factorisation of a squarefree polynomial $x$.
 """
 function factor_distinct_deg(x::gfp_fmpz_poly)
   !issquarefree(x) && error("Polynomial must be squarefree")

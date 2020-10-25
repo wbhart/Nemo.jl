@@ -325,7 +325,8 @@ end
 
 @doc Markdown.doc"""
     ldexp(x::acb_mat, y::Int)
-> Return $2^yx$. Note that $y$ can be positive, zero or negative.
+
+Return $2^yx$. Note that $y$ can be positive, zero or negative.
 """
 function ldexp(x::acb_mat, y::Int)
   z = similar(x)
@@ -342,8 +343,9 @@ end
 
 @doc Markdown.doc"""
     isequal(x::acb_mat, y::acb_mat)
-> Return `true` if the matrices of balls $x$ and $y$ are precisely equal,
-> i.e. if all matrix entries have the same midpoints and radii.
+
+Return `true` if the matrices of balls $x$ and $y$ are precisely equal,
+i.e. if all matrix entries have the same midpoints and radii.
 """
 function isequal(x::acb_mat, y::acb_mat)
   r = ccall((:acb_mat_equal, libarb), Cint,
@@ -365,8 +367,9 @@ end
 
 @doc Markdown.doc"""
     overlaps(x::acb_mat, y::acb_mat)
-> Returns `true` if all entries of $x$ overlap with the corresponding entry of
-> $y$, otherwise return `false`.
+
+Returns `true` if all entries of $x$ overlap with the corresponding entry of
+$y$, otherwise return `false`.
 """
 function overlaps(x::acb_mat, y::acb_mat)
   r = ccall((:acb_mat_overlaps, libarb), Cint,
@@ -376,8 +379,9 @@ end
 
 @doc Markdown.doc"""
     contains(x::acb_mat, y::acb_mat)
-> Returns `true` if all entries of $x$ contain the corresponding entry of
-> $y$, otherwise return `false`.
+
+Returns `true` if all entries of $x$ contain the corresponding entry of
+$y$, otherwise return `false`.
 """
 function contains(x::acb_mat, y::acb_mat)
   r = ccall((:acb_mat_contains, libarb), Cint,
@@ -393,8 +397,9 @@ end
 
 @doc Markdown.doc"""
     contains(x::acb_mat, y::fmpz_mat)
-> Returns `true` if all entries of $x$ contain the corresponding entry of
-> $y$, otherwise return `false`.
+
+Returns `true` if all entries of $x$ contain the corresponding entry of
+$y$, otherwise return `false`.
 """
 function contains(x::acb_mat, y::fmpz_mat)
   r = ccall((:acb_mat_contains_fmpz_mat, libarb), Cint,
@@ -404,8 +409,9 @@ end
 
 @doc Markdown.doc"""
     contains(x::acb_mat, y::fmpq_mat)
-> Returns `true` if all entries of $x$ contain the corresponding entry of
-> $y$, otherwise return `false`.
+
+Returns `true` if all entries of $x$ contain the corresponding entry of
+$y$, otherwise return `false`.
 """
 function contains(x::acb_mat, y::fmpq_mat)
   r = ccall((:acb_mat_contains_fmpq_mat, libarb), Cint,
@@ -429,7 +435,8 @@ end
 
 @doc Markdown.doc"""
     isreal(x::acb_mat)
-> Returns whether every entry of $x$ has vanishing imaginary part.
+
+Returns whether every entry of $x$ has vanishing imaginary part.
 """
 isreal(x::acb_mat) =
             Bool(ccall((:acb_mat_is_real, libarb), Cint, (Ref{acb_mat}, ), x))
@@ -442,9 +449,10 @@ isreal(x::acb_mat) =
 
 @doc Markdown.doc"""
     inv(x::acb_mat)
-> Given a $n\times n$ matrix of type `acb_mat`, return an
-> $n\times n$ matrix $X$ such that $AX$ contains the
-> identity matrix. If $A$ cannot be inverted numerically an exception is raised.
+
+Given a $n\times n$ matrix of type `acb_mat`, return an
+$n\times n$ matrix $X$ such that $AX$ contains the
+identity matrix. If $A$ cannot be inverted numerically an exception is raised.
 """
 function inv(x::acb_mat)
   ncols(x) != nrows(x) && error("Matrix must be square")
@@ -548,7 +556,8 @@ end
 
 @doc Markdown.doc"""
     exp(x::acb_mat)
-> Returns the exponential of the matrix $x$.
+
+Returns the exponential of the matrix $x$.
 """
 function Base.exp(x::acb_mat)
   ncols(x) != nrows(x) && error("Matrix must be square")
@@ -657,8 +666,9 @@ end
 
 @doc Markdown.doc"""
     bound_inf_norm(x::acb_mat)
-> Returns a nonnegative element $z$ of type `acb`, such that $z$ is an upper
-> bound for the infinity norm for every matrix in $x$
+
+Returns a nonnegative element $z$ of type `acb`, such that $z$ is an upper
+bound for the infinity norm for every matrix in $x$
 """
 function bound_inf_norm(x::acb_mat)
   z = arb()
@@ -993,13 +1003,13 @@ end
 @doc Markdown.doc"""
     eigvals_simple(A::acb_mat, alg = :default)
 
-> Returns the eigenvalues of `A` as a vector of `acb`. It is assumed that `A`
-> has only simple eigenvalues.
->
-> The algorithm used can be changed by setting the `alg` keyword to
-> `:vdhoeven_mourrain` or `:rump`.
->
-> This function is experimental.
+Returns the eigenvalues of `A` as a vector of `acb`. It is assumed that `A`
+has only simple eigenvalues.
+
+The algorithm used can be changed by setting the `alg` keyword to
+`:vdhoeven_mourrain` or `:rump`.
+
+This function is experimental.
 """
 function eigvals_simple(A::acb_mat, alg = :default)
   E, _, _ = _eig_simple(A, alg = alg)
@@ -1009,11 +1019,11 @@ end
 @doc Markdown.doc"""
     eigvals(A::acb_mat)
 
-> Returns the eigenvalues of `A` as a vector of tuples `(acb, Int)`.
-> Each tuple `(z, k)` corresponds to a cluser of `k` eigenvalues
-> of $A$.
->
-> This function is experimental.
+Returns the eigenvalues of `A` as a vector of tuples `(acb, Int)`.
+Each tuple `(z, k)` corresponds to a cluser of `k` eigenvalues
+of $A$.
+
+This function is experimental.
 """
 function eigvals(A::acb_mat)
   e, _ = _eig_multiple(A)

@@ -67,7 +67,8 @@ end
 
 @doc Markdown.doc"""
     preimage_map(f::FinFieldMorphism)
-> Compute the preimage map corresponding to the embedding $f$.
+
+Compute the preimage map corresponding to the embedding $f$.
 """
 preimage_map(f::FinFieldMorphism) = FinFieldPreimage(domain(f), codomain(f),
                                                      image_fn(f), inverse_fn(f))

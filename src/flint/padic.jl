@@ -15,8 +15,9 @@ export FlintPadicField, padic, prime, teichmuller, log, get_printing_mode,
 
 @doc Markdown.doc"""
     O(R::FlintPadicField, m::fmpz)
-> Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
-> is not found to be a power of `p = prime(R)`.
+
+Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
+is not found to be a power of `p = prime(R)`.
 """
 function O(R::FlintPadicField, m::fmpz)
    if isone(m)
@@ -37,8 +38,9 @@ end
 
 @doc Markdown.doc"""
     O(R::FlintPadicField, m::fmpq)
-> Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
-> is not found to be a power of `p = prime(R)`.
+
+Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
+is not found to be a power of `p = prime(R)`.
 """
 function O(R::FlintPadicField, m::fmpq)
    d = denominator(m)
@@ -60,8 +62,9 @@ end
 
 @doc Markdown.doc"""
     O(R::FlintPadicField, m::Integer)
-> Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
-> is not found to be a power of `p = prime(R)`.
+
+Construct the value $0 + O(p^n)$ given $m = p^n$. An exception results if $m$
+is not found to be a power of `p = prime(R)`.
 """
 O(R::FlintPadicField, m::Integer) = O(R, fmpz(m))
 
@@ -69,19 +72,22 @@ elem_type(::Type{FlintPadicField}) = padic
 
 @doc Markdown.doc"""
     base_ring(a::FlintPadicField)
-> Returns `Union{}` as this field is not dependent on another field.
+
+Returns `Union{}` as this field is not dependent on another field.
 """
 base_ring(a::FlintPadicField) = Union{}
 
 @doc Markdown.doc"""
     base_ring(a::padic)
-> Returns `Union{}` as this field is not dependent on another field.
+
+Returns `Union{}` as this field is not dependent on another field.
 """
 base_ring(a::padic) = Union{}
 
 @doc Markdown.doc"""
     parent(a::padic)
-> Returns the parent of the given p-adic field element.
+
+Returns the parent of the given p-adic field element.
 """
 parent(a::padic) = a.parent
 
@@ -116,7 +122,8 @@ end
 
 @doc Markdown.doc"""
     prime(R::FlintPadicField)
-> Return the prime $p$ for the given $p$-adic field.
+
+Return the prime $p$ for the given $p$-adic field.
 """
 function prime(R::FlintPadicField)
    z = fmpz()
@@ -127,22 +134,25 @@ end
 
 @doc Markdown.doc"""
     precision(a::padic)
-> Return the precision of the given $p$-adic field element, i.e. if the element
-> is known to $O(p^n)$ this function will return $n$.
+
+Return the precision of the given $p$-adic field element, i.e. if the element
+is known to $O(p^n)$ this function will return $n$.
 """
 precision(a::padic) = a.N
 
 @doc Markdown.doc"""
     valuation(a::padic)
-> Return the valuation of the given $p$-adic field element, i.e. if the given
-> element is divisible by $p^n$ but not a higher power of $p$ then the function
-> will return $n$.
+
+Return the valuation of the given $p$-adic field element, i.e. if the given
+element is divisible by $p^n$ but not a higher power of $p$ then the function
+will return $n$.
 """
 valuation(a::padic) = iszero(a) ? a.N : a.v
 
 @doc Markdown.doc"""
     lift(R::FlintRationalField, a::padic)
-> Return a lift of the given $p$-adic field element to $\mathbb{Q}$.
+
+Return a lift of the given $p$-adic field element to $\mathbb{Q}$.
 """
 function lift(R::FlintRationalField, a::padic)
     ctx = parent(a)
@@ -154,7 +164,8 @@ end
 
 @doc Markdown.doc"""
     lift(R::FlintIntegerRing, a::padic)
-> Return a lift of the given $p$-adic field element to $\mathbb{Z}$.
+
+Return a lift of the given $p$-adic field element to $\mathbb{Z}$.
 """
 function lift(R::FlintIntegerRing, a::padic)
     ctx = parent(a)
@@ -166,7 +177,8 @@ end
 
 @doc Markdown.doc"""
     zero(R::FlintPadicField)
-> Return zero in the given $p$-adic field, to the default precision.
+
+Return zero in the given $p$-adic field, to the default precision.
 """
 function zero(R::FlintPadicField)
    z = padic(R.prec_max)
@@ -177,7 +189,8 @@ end
 
 @doc Markdown.doc"""
     one(R::FlintPadicField)
-> Return zero in the given $p$-adic field, to the default precision.
+
+Return zero in the given $p$-adic field, to the default precision.
 """
 function one(R::FlintPadicField)
    z = padic(R.prec_max)
@@ -188,24 +201,27 @@ end
 
 @doc Markdown.doc"""
     iszero(a::padic)
-> Return `true` if the given p-adic field element is zero, otherwise return
-> `false`.
+
+Return `true` if the given p-adic field element is zero, otherwise return
+`false`.
 """
 iszero(a::padic) = Bool(ccall((:padic_is_zero, libflint), Cint,
                               (Ref{padic},), a))
 
 @doc Markdown.doc"""
     isone(a::padic)
-> Return `true` if the given p-adic field element is one, otherwise return
-> `false`.
+
+Return `true` if the given p-adic field element is one, otherwise return
+`false`.
 """
 isone(a::padic) = Bool(ccall((:padic_is_one, libflint), Cint,
                              (Ref{padic},), a))
 
 @doc Markdown.doc"""
     isunit(a::padic)
-> Return `true` if the given p-adic field element is invertible, i.e. nonzero,
-> otherwise return `false`.
+
+Return `true` if the given p-adic field element is invertible, i.e. nonzero,
+otherwise return `false`.
 """
 isunit(a::padic) = !Bool(ccall((:padic_is_zero, libflint), Cint,
                               (Ref{padic},), a))
@@ -223,7 +239,7 @@ const PADIC_PRINTING_MODE = Ref(Cint(1))
 @doc Markdown.doc"""
     get_printing_mode(::Type{FlintPadicField})
 
-> Get the printing mode for the elements of the p-adic field `R`.
+Get the printing mode for the elements of the p-adic field `R`.
 """
 function get_printing_mode(::Type{FlintPadicField})
    return flint_padic_printing_mode[PADIC_PRINTING_MODE[] + 1]
@@ -232,8 +248,8 @@ end
 @doc Markdown.doc"""
     set_printing_mode(::Type{FlintPadicField}, printing::Symbol)
 
-> Set the printing mode for the elements of the p-adic field `R`. Possible values
-> are `:terse`, `:series` and `:val_unit`.
+Set the printing mode for the elements of the p-adic field `R`. Possible values
+are `:terse`, `:series` and `:val_unit`.
 """
 function set_printing_mode(::Type{FlintPadicField}, printing::Symbol)
    if printing == :terse
@@ -485,7 +501,8 @@ divexact(a::fmpq, b::padic) = inv(inv(a)*b)
 
 @doc Markdown.doc"""
     inv(a::padic)
-> Returns $a^{-1}$. If $a = 0$ a `DivideError()` is thrown.
+
+Returns $a^{-1}$. If $a = 0$ a `DivideError()` is thrown.
 """
 function inv(a::padic)
    iszero(a) && throw(DivideError())
@@ -505,9 +522,10 @@ end
 
 @doc Markdown.doc"""
     divides(a::padic, b::padic)
-> Returns a pair consisting of a flag which is set to `true` if $b$ divides
-> $a$ and `false` otherwise, and a value $h$ such that $a = bh$ if
-> such a value exists. If not, the value of $h$ is undetermined.
+
+Returns a pair consisting of a flag which is set to `true` if $b$ divides
+$a$ and `false` otherwise, and a value $h$ such that $a = bh$ if
+such a value exists. If not, the value of $h$ is undetermined.
 """
 function divides(a::padic, b::padic)
    if iszero(a)
@@ -527,8 +545,9 @@ end
 
 @doc Markdown.doc"""
     gcd(x::padic, y::padic)
-> Returns the greatest common divisor of $x$ and $y$, i.e. the function returns
-> $1$ unless both $a$ and $b$ are $0$, in which case it returns $0$.
+
+Returns the greatest common divisor of $x$ and $y$, i.e. the function returns
+$1$ unless both $a$ and $b$ are $0$, in which case it returns $0$.
 """
 function gcd(x::padic, y::padic)
    check_parent(x, y)
@@ -548,10 +567,11 @@ end
 
 @doc Markdown.doc"""
     sqrt(a::padic)
-> Return the $p$-adic square root of $a$. We define this only when the
-> valuation of $a$ is even. The precision of the output will be
-> precision$(a) -$ valuation$(a)/2$. If the square root does not exist, an
-> exception is thrown.
+
+Return the $p$-adic square root of $a$. We define this only when the
+valuation of $a$ is even. The precision of the output will be
+precision$(a) -$ valuation$(a)/2$. If the square root does not exist, an
+exception is thrown.
 """
 function Base.sqrt(a::padic)
    (a.v % 2) != 0 && error("Unable to take padic square root")
@@ -572,10 +592,11 @@ end
 
 @doc Markdown.doc"""
     exp(a::padic)
-> Return the $p$-adic exponential of $a$. We define this only when the
-> valuation of $a$ is positive (unless $a = 0$). The precision of the output
-> will be the same as the precision of the input. If the input is not valid an
-> exception is thrown.
+
+Return the $p$-adic exponential of $a$. We define this only when the
+valuation of $a$ is positive (unless $a = 0$). The precision of the output
+will be the same as the precision of the input. If the input is not valid an
+exception is thrown.
 """
 function Base.exp(a::padic)
    !iszero(a) && a.v <= 0 && throw(DomainError(a, "Valuation must be positive"))
@@ -590,10 +611,11 @@ end
 
 @doc Markdown.doc"""
     log(a::padic)
-> Return the $p$-adic logarithm of $a$. We define this only when the valuation
-> of $a$ is zero (but not for $a == 0$). The precision of the output will be
-> the same as the precision of the input. If the input is not valid an
-> exception is thrown.
+
+Return the $p$-adic logarithm of $a$. We define this only when the valuation
+of $a$ is zero (but not for $a == 0$). The precision of the output will be
+the same as the precision of the input. If the input is not valid an
+exception is thrown.
 """
 function log(a::padic)
    (a.v > 0 || a.v < 0 || iszero(a)) && throw(DomainError(a, "Valuation must be zero"))
@@ -608,11 +630,12 @@ end
 
 @doc Markdown.doc"""
     teichmuller(a::padic)
-> Return the Teichmuller lift of the $p$-adic value $a$. We require the
-> valuation of $a$ to be nonnegative. The precision of the output will be the
-> same as the precision of the input. For convenience, if $a$ is congruent to
-> zero modulo $p$ we return zero. If the input is not valid an exception is
-> thrown.
+
+Return the Teichmuller lift of the $p$-adic value $a$. We require the
+valuation of $a$ to be nonnegative. The precision of the output will be the
+same as the precision of the input. For convenience, if $a$ is congruent to
+zero modulo $p$ we return zero. If the input is not valid an exception is
+thrown.
 """
 function teichmuller(a::padic)
    a.v < 0 && throw(DomainError(a.v, "Valuation must be non-negative"))
@@ -738,8 +761,9 @@ end
 
 @doc Markdown.doc"""
     FlintPadicField(p::Integer, prec::Int; kw...)
-> Returns the parent object for the $p$-adic field for given prime $p$, where
-> the default absolute precision of elements of the field is given by `prec`.
+
+Returns the parent object for the $p$-adic field for given prime $p$, where
+the default absolute precision of elements of the field is given by `prec`.
 """
 function FlintPadicField(p::Integer, prec::Int; kw...)
    return FlintPadicField(fmpz(p), prec; kw...)

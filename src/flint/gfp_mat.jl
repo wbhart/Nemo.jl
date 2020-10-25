@@ -114,8 +114,9 @@ end
 
 @doc Markdown.doc"""
     strong_echelon_form(a::gfp_mat)
-> Return the strong echeleon form of $a$. The matrix $a$ must have at least as
-> many rows as columns.
+
+Return the strong echeleon form of $a$. The matrix $a$ must have at least as
+many rows as columns.
 """
 function strong_echelon_form(a::gfp_mat)
   (nrows(a) < ncols(a)) &&
@@ -137,8 +138,9 @@ end
 
 @doc Markdown.doc"""
     howell_form(a::gfp_mat)
-> Return the Howell normal form of $a$. The matrix $a$ must have at least as
-> many rows as columns.
+
+Return the Howell normal form of $a$. The matrix $a$ must have at least as
+many rows as columns.
 """
 function howell_form(a::gfp_mat)
   (nrows(a) < ncols(a)) &&
@@ -219,8 +221,9 @@ end
 
 @doc Markdown.doc"""
     lift(a::gfp_mat)
-> Return a lift of the matrix $a$ to a matrix over $\mathbb{Z}$, i.e. where the
-> entries of the returned matrix are those of $a$ lifted to $\mathbb{Z}$.
+
+Return a lift of the matrix $a$ to a matrix over $\mathbb{Z}$, i.e. where the
+entries of the returned matrix are those of $a$ lifted to $\mathbb{Z}$.
 """
 function lift(a::gfp_mat)
   z = fmpz_mat(nrows(a), ncols(a))

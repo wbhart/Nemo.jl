@@ -516,7 +516,8 @@ end
 
 @doc Markdown.doc"""
     log(a::fmpq_abs_series)
-> Return log$(a)$. Requires the constant term to be one.
+
+Return log$(a)$. Requires the constant term to be one.
 """
 function log(a::fmpq_abs_series)
    !isone(coeff(a, 0)) && error("Constant term not one in log")
@@ -533,7 +534,8 @@ end
 
 @doc Markdown.doc"""
     tan(a::fmpq_abs_series)
-> Return tan$(a)$. Requires a zero constant term.
+
+Return tan$(a)$. Requires a zero constant term.
 """
 function tan(a::fmpq_abs_series)
    !iszero(coeff(a, 0)) && error("Constant term not zero in tan")
@@ -550,7 +552,8 @@ end
 
 @doc Markdown.doc"""
     tanh(a::fmpq_abs_series)
-> Return tanh$(a)$. Requires a zero constant term.
+
+Return tanh$(a)$. Requires a zero constant term.
 """
 function tanh(a::fmpq_abs_series)
    !iszero(coeff(a, 0)) && error("Constant term not zero in tanh")
@@ -567,7 +570,8 @@ end
 
 @doc Markdown.doc"""
     sin(a::fmpq_abs_series)
-> Return sin$(a)$. Requires a zero constant term.
+
+Return sin$(a)$. Requires a zero constant term.
 """
 function sin(a::fmpq_abs_series)
    !iszero(coeff(a, 0)) && error("Constant term not zero in sin")
@@ -584,7 +588,8 @@ end
 
 @doc Markdown.doc"""
     sinh(a::fmpq_abs_series)
-> Return sinh$(a)$. Requires a zero constant term.
+
+Return sinh$(a)$. Requires a zero constant term.
 """
 function sinh(a::fmpq_abs_series)
    !iszero(coeff(a, 0)) && error("Constant term not zero in sinh")
@@ -601,7 +606,8 @@ end
 
 @doc Markdown.doc"""
     cos(a::fmpq_abs_series)
-> Return cos$(a)$. Requires a zero constant term.
+
+Return cos$(a)$. Requires a zero constant term.
 """
 function cos(a::fmpq_abs_series)
    !iszero(coeff(a, 0)) && error("Constant term not zero in cos")
@@ -618,7 +624,8 @@ end
 
 @doc Markdown.doc"""
     cosh(a::fmpq_abs_series)
-> Return cosh$(a)$. Requires a zero constant term.
+
+Return cosh$(a)$. Requires a zero constant term.
 """
 function cosh(a::fmpq_abs_series)
    !iszero(coeff(a, 0)) && error("Constant term not zero in cosh")
@@ -635,7 +642,8 @@ end
 
 @doc Markdown.doc"""
     asin(a::fmpq_abs_series)
-> Return asin$(a)$. Requires a zero constant term.
+
+Return asin$(a)$. Requires a zero constant term.
 """
 function asin(a::fmpq_abs_series)
    !iszero(coeff(a, 0)) && error("Constant term not zero in asin")
@@ -652,7 +660,8 @@ end
 
 @doc Markdown.doc"""
     asinh(a::fmpq_abs_series)
-> Return asinh$(a)$. Requires a zero constant term.
+
+Return asinh$(a)$. Requires a zero constant term.
 """
 function asinh(a::fmpq_abs_series)
    !iszero(coeff(a, 0)) && error("Constant term not zero in asinh")
@@ -669,7 +678,8 @@ end
 
 @doc Markdown.doc"""
     atan(a::fmpq_abs_series)
-> Return atan$(a)$. Requires a zero constant term.
+
+Return atan$(a)$. Requires a zero constant term.
 """
 function atan(a::fmpq_abs_series)
    !iszero(coeff(a, 0)) && error("Constant term not zero in atan")
@@ -686,7 +696,8 @@ end
 
 @doc Markdown.doc"""
     atanh(a::fmpq_abs_series)
-> Return atanh$(a)$. Requires a zero constant term.
+
+Return atanh$(a)$. Requires a zero constant term.
 """
 function atanh(a::fmpq_abs_series)
    !iszero(coeff(a, 0)) && error("Constant term not zero in atanh")
@@ -703,8 +714,9 @@ end
 
 @doc Markdown.doc"""
     sqrt(a::fmpq_abs_series)
-> Return the power series square root of $a$. Requires a constant term equal to
-> one.
+
+Return the power series square root of $a$. Requires a constant term equal to
+one.
 """
 function Base.sqrt(a::fmpq_abs_series)
    !isone(coeff(a, 0)) && error("Constant term not one in sqrt")

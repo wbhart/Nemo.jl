@@ -375,10 +375,11 @@ end
 
 @doc Markdown.doc"""
     remove(z::fq_poly, p::fq_poly)
-> Computes the valuation of $z$ at $p$, that is, the largest $k$ such that
-> $p^k$ divides $z$. Additionally, $z/p^k$ is returned as well.
->
-> See also `valuation`, which only returns the valuation.
+
+Computes the valuation of $z$ at $p$, that is, the largest $k$ such that
+$p^k$ divides $z$. Additionally, $z/p^k$ is returned as well.
+
+See also `valuation`, which only returns the valuation.
 """
 function remove(z::fq_poly, p::fq_poly)
    check_parent(z,p)
@@ -559,7 +560,8 @@ end
 
 @doc Markdown.doc"""
     isirreducible(x::fq_poly)
-> Return `true` if $x$ is irreducible, otherwise return `false`.
+
+Return `true` if $x$ is irreducible, otherwise return `false`.
 """
 function isirreducible(x::fq_poly)
   return Bool(ccall((:fq_poly_is_irreducible, libflint), Int32,
@@ -575,7 +577,8 @@ end
 
 @doc Markdown.doc"""
     issquarefree(x::fq_poly)
-> Return `true` if $x$ is squarefree, otherwise return `false`.
+
+Return `true` if $x$ is squarefree, otherwise return `false`.
 """
 function issquarefree(x::fq_poly)
    return Bool(ccall((:fq_poly_is_squarefree, libflint), Int32,
@@ -590,7 +593,8 @@ end
 
 @doc Markdown.doc"""
     factor(x::fq_poly)
-> Return the factorisation of $x$.
+
+Return the factorisation of $x$.
 """
 function factor(x::fq_poly)
    fac, z = _factor(x)
@@ -619,7 +623,8 @@ end
 
 @doc Markdown.doc"""
     factor_squarefree(x::fq_poly)
-> Return the squarefree factorisation of $x$.
+
+Return the squarefree factorisation of $x$.
 """
 function factor_squarefree(x::fq_poly)
   # _factor_squareefree does weird things if the polynomial is not monic
@@ -645,7 +650,8 @@ end
 
 @doc Markdown.doc"""
     factor_distinct_deg(x::fq_poly)
-> Return the distinct degree factorisation of a squarefree polynomial $x$.
+
+Return the distinct degree factorisation of a squarefree polynomial $x$.
 """
 function factor_distinct_deg(x::fq_poly)
    R = parent(x)

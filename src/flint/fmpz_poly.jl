@@ -582,9 +582,10 @@ end
 
 @doc Markdown.doc"""
     signature(f::fmpz_poly)
-> Return the signature of the polynomial $f$, i.e. a tuple $(r, s)$ such that
-> $r$ is the number of real roots of $f$ and $s$ is half the number of complex
-> roots.
+
+Return the signature of the polynomial $f$, i.e. a tuple $(r, s)$ such that
+$r$ is the number of real roots of $f$ and $s$ is half the number of complex
+roots.
 """
 function signature(f::fmpz_poly)
    r = Vector{Int}(undef, 1)
@@ -628,7 +629,8 @@ end
 
 @doc Markdown.doc"""
     factor(x::fmpz_poly)
-> Returns the factorization of $x$.
+
+Returns the factorization of $x$.
 """
 function factor(x::fmpz_poly)
   fac, z = _factor(x)
@@ -661,7 +663,8 @@ end
 
 @doc Markdown.doc"""
     isirreducible(x::fmpz_poly)
-> Checks if $x$ is irreducible.
+
+Checks if $x$ is irreducible.
 """
 function isirreducible(x::fmpz_poly)
    if degree(x) == 0
@@ -697,9 +700,10 @@ end
 
 @doc Markdown.doc"""
     cyclotomic(n::Int, x::fmpz_poly)
-> Return the $n$th cyclotomic polynomial, defined as
-> $$\Phi_n(x) = \prod_{\omega} (x-\omega),$$ where $\omega$ runs over all the
-> $n$th primitive roots of unity.
+
+Return the $n$th cyclotomic polynomial, defined as
+$$\Phi_n(x) = \prod_{\omega} (x-\omega),$$ where $\omega$ runs over all the
+$n$th primitive roots of unity.
 """
 function cyclotomic(n::Int, x::fmpz_poly)
    z = parent(x)()
@@ -710,12 +714,13 @@ end
 
 @doc Markdown.doc"""
     swinnerton_dyer(n::Int, x::fmpz_poly)
-> Return the Swinnerton-Dyer polynomial $S_n$, defined as the integer
-> polynomial
-> $$S_n = \prod (x \pm \sqrt{2} \pm \sqrt{3} \pm \sqrt{5} \pm \ldots \pm \sqrt{p_n})$$
-> where $p_n$ denotes the $n$-th prime number and all combinations of signs are
-> taken. This polynomial has degree $2^n$ and is irreducible over the integers
-> (it is the minimal polynomial of $\sqrt{2} + \ldots + \sqrt{p_n}$).
+
+Return the Swinnerton-Dyer polynomial $S_n$, defined as the integer
+polynomial
+$$S_n = \prod (x \pm \sqrt{2} \pm \sqrt{3} \pm \sqrt{5} \pm \ldots \pm \sqrt{p_n})$$
+where $p_n$ denotes the $n$-th prime number and all combinations of signs are
+taken. This polynomial has degree $2^n$ and is irreducible over the integers
+(it is the minimal polynomial of $\sqrt{2} + \ldots + \sqrt{p_n}$).
 """
 function swinnerton_dyer(n::Int, x::fmpz_poly)
    z = parent(x)()
@@ -726,9 +731,10 @@ end
 
 @doc Markdown.doc"""
     cos_minpoly(n::Int, x::fmpz_poly)
-> Return the minimal polynomial of $2 \cos(2 \pi / n)$. For suitable choice of
-> $n$, this gives the minimal polynomial of $2 \cos(a \pi)$ or $2 \sin(a \pi)$ for any
-> rational $a$.
+
+Return the minimal polynomial of $2 \cos(2 \pi / n)$. For suitable choice of
+$n$, this gives the minimal polynomial of $2 \cos(a \pi)$ or $2 \sin(a \pi)$ for any
+rational $a$.
 """
 function cos_minpoly(n::Int, x::fmpz_poly)
    z = parent(x)()
@@ -739,9 +745,10 @@ end
 
 @doc Markdown.doc"""
     theta_qexp(e::Int, n::Int, x::fmpz_poly)
-> Return the $q$-expansion to length $n$ of the Jacobi theta function raised to
-> the power $r$, i.e. $\vartheta(q)^r$ where
-> $\vartheta(q) = 1 + \sum_{k=1}^{\infty} q^{k^2}$.
+
+Return the $q$-expansion to length $n$ of the Jacobi theta function raised to
+the power $r$, i.e. $\vartheta(q)^r$ where
+$\vartheta(q) = 1 + \sum_{k=1}^{\infty} q^{k^2}$.
 """
 function theta_qexp(e::Int, n::Int, x::fmpz_poly)
    z = parent(x)()
@@ -752,13 +759,14 @@ end
 
 @doc Markdown.doc"""
     eta_qexp(e::Int, n::Int, x::fmpz_poly)
-> Return the $q$-expansion to length $n$ of the Dedekind eta function (without
-> the leading factor $q^{1/24}$) raised to the power $r$, i.e.
-> $(q^{-1/24} \eta(q))^r = \prod_{k=1}^{\infty} (1 - q^k)^r$.
-> In particular, $r = -1$ gives the generating function of the partition
-> function $p(k)$, and $r = 24$ gives, after multiplication by $q$, the modular
-> discriminant $\Delta(q)$ which generates the Ramanujan tau function
-> $\tau(k)$.
+
+Return the $q$-expansion to length $n$ of the Dedekind eta function (without
+the leading factor $q^{1/24}$) raised to the power $r$, i.e.
+$(q^{-1/24} \eta(q))^r = \prod_{k=1}^{\infty} (1 - q^k)^r$.
+In particular, $r = -1$ gives the generating function of the partition
+function $p(k)$, and $r = 24$ gives, after multiplication by $q$, the modular
+discriminant $\Delta(q)$ which generates the Ramanujan tau function
+$\tau(k)$.
 """
 function eta_qexp(e::Int, n::Int, x::fmpz_poly)
    z = parent(x)()
