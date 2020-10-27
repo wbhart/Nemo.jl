@@ -1361,11 +1361,6 @@ function risingfac2(x::acb, n::Int)
   return risingfac2(x, UInt(n))
 end
 
-@doc Markdown.doc"""
-    polylog(s::Union{acb,Int}, a::acb)
-
-Return the polylogarithm Li$_s(a)$.
-"""
 function polylog(s::acb, a::acb)
   z = parent(s)()
   ccall((:acb_polylog, libarb), Nothing,
@@ -1379,6 +1374,12 @@ function polylog(s::Int, a::acb)
               (Ref{acb}, Int, Ref{acb}, Int), z, s, a, parent(a).prec)
   return z
 end
+
+@doc Markdown.doc"""
+    polylog(s::Union{acb,Int}, a::acb)
+
+Return the polylogarithm Li$_s(a)$.
+""" polylog(s::Union{acb,Int}, ::acb)
 
 @doc Markdown.doc"""
     li(x::acb)
