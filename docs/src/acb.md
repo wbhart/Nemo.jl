@@ -619,11 +619,7 @@ risingfac2(::acb, ::Int)
 ```
 
 ```@docs
-polylog(::acb, ::acb)
-```
-
-```@docs
-polylog(::Int, ::acb)
+polylog(::Union{acb,Int}, ::acb)
 ```
 
 ```@docs
