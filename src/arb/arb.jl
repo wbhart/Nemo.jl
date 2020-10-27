@@ -1783,11 +1783,6 @@ and its derivative.
 """
 risingfac2(x::arb, n::Int) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : risingfac2(x, UInt(n))
 
-@doc Markdown.doc"""
-    polylog(s::arb, a::arb)
-
-Return the polylogarithm Li$_s(a)$.
-"""
 function polylog(s::arb, a::arb)
   z = parent(s)()
   ccall((:arb_polylog, libarb), Nothing,
@@ -1795,17 +1790,18 @@ function polylog(s::arb, a::arb)
   return z
 end
 
-@doc Markdown.doc"""
-    polylog(s::Int, a::arb)
-
-Return the polylogarithm Li$_s(a)$.
-"""
 function polylog(s::Int, a::arb)
   z = parent(a)()
   ccall((:arb_polylog_si, libarb), Nothing,
               (Ref{arb}, Int, Ref{arb}, Int), z, s, a, parent(a).prec)
   return z
 end
+
+@doc Markdown.doc"""
+    polylog(s::Union{arb,Int}, a::arb)
+
+Return the polylogarithm Li$_s(a)$.
+""" polylog(s::Union{arb,Int}, a::arb)
 
 function chebyshev_t(n::UInt, x::arb)
   z = parent(x)()
