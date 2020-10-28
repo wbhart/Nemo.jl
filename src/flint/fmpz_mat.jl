@@ -579,6 +579,75 @@ reduce_mod(x::fmpz_mat, y::Integer) = reduce_mod(x, fmpz(y))
 
 ###############################################################################
 #
+#   Fraction free LU decomposition
+#
+###############################################################################
+
+function fflu(x::fmpz_mat, P = SymmetricGroup(nrows(x)))
+   m = nrows(x)
+   n = ncols(x)
+   L = similar(x, m, m)
+   U = similar(x)
+   d = fmpz()
+   p = P()
+
+   for i = 1:nrows(x)
+      p.d[i] -= 1
+   end
+
+   r = ccall((:fmpz_mat_fflu, libflint), Int,
+                (Ref{fmpz_mat}, Ref{fmpz}, Ptr{Int}, Ref{fmpz_mat}, Int),
+                U, d, p.d, x, 0)
+
+   for i = 1:nrows(x)
+      p.d[i] += 1
+   end
+
+   i = 1
+   j = 1
+   k = 1
+   while i <= m && j <= n
+      if !iszero(U[i, j])
+         L[i, k] = U[i, j]
+         for l = i + 1:m
+            L[l, k] = U[l, j]
+            U[l, j] = 0
+         end
+         i += 1
+         k += 1
+      end
+      j += 1
+   end
+
+   while k <= m
+      L[k, k] = 1
+      k += 1
+   end
+
+#   for i = 1:m
+#      for j = 1:i
+#         if j <= n
+#            L[i, j] = U[i, j]
+#         else
+#            L[i, j] = fmpz()
+#         end
+#         if i > j && j <= n
+#            U[i, j] = fmpz()
+#         end
+#      end
+#   end
+
+#   for i = 1:m
+#      if iszero(L[i, i])
+#         L[i, i] = fmpz(1)
+#      end
+#   end
+
+   return r, d, p, L, U
+end
+
+###############################################################################
+#
 #   Characteristic polynomial
 #
 ###############################################################################
