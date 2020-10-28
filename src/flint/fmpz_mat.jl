@@ -624,25 +624,6 @@ function fflu(x::fmpz_mat, P = SymmetricGroup(nrows(x)))
       k += 1
    end
 
-#   for i = 1:m
-#      for j = 1:i
-#         if j <= n
-#            L[i, j] = U[i, j]
-#         else
-#            L[i, j] = fmpz()
-#         end
-#         if i > j && j <= n
-#            U[i, j] = fmpz()
-#         end
-#      end
-#   end
-
-#   for i = 1:m
-#      if iszero(L[i, i])
-#         L[i, i] = fmpz(1)
-#      end
-#   end
-
    return r, d, p, L, U
 end
 
