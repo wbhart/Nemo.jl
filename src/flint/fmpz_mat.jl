@@ -624,7 +624,7 @@ function fflu(x::fmpz_mat, P = SymmetricGroup(nrows(x)))
       k += 1
    end
 
-   return r, d, p, L, U
+   return r, d, p^(-1), L, U
 end
 
 ###############################################################################

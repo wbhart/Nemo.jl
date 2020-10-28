@@ -474,7 +474,7 @@ end
       end
       L2 = change_base_ring(QQ, L)                                   
       U2 = change_base_ring(QQ, U)                                   
-      @test change_base_ring(QQ, P^(-1)*A) == L2*D*U2
+      @test change_base_ring(QQ, P*A) == L2*D*U2
    end
 end
 
