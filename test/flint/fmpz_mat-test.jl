@@ -446,6 +446,38 @@ end
    @test ishadamard(hadamard(S))
 end
 
+@testset "fmpz_mat.fflu..." begin
+   for iters = 1:100
+      m = rand(0:20)
+      n = rand(0:20)
+
+      rank = rand(0:min(m, n))
+      S = MatrixSpace(ZZ, m, n)
+      A = S()
+      for i = 1:m
+         for j = 1:n
+            A[i, j] = rand(-10:10)
+         end
+      end
+                                       
+      r, d, P, L, U = fflu(A)
+
+      V = MatrixSpace(QQ, m, m)
+      D = V()
+      if m >= 1
+          D[1, 1] = 1//L[1, 1]
+      end
+      if m >= 2
+         for j = 1:m - 1
+            D[j + 1, j + 1] = (1//L[j, j])*(1//L[j + 1, j + 1])
+         end
+      end
+      L2 = change_base_ring(QQ, L)                                   
+      U2 = change_base_ring(QQ, U)                                   
+      @test change_base_ring(QQ, P*A) == L2*D*U2
+   end
+end
+
 @testset "fmpz_mat.hnf..." begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
