@@ -557,3 +557,14 @@ end
 
    @test degree(minpoly(R, M)) == 5
 end
+
+@testset "fmpq_mat.rand..." begin
+   S = MatrixSpace(QQ, 10, 10)
+   M = rand(S, 1:9)
+   @test parent(M) == S
+   for i=1:10, j=1:10
+      x = M[i, j]
+      @test numerator(x) in 1:9
+      @test denominator(x) in 1:9
+   end
+end

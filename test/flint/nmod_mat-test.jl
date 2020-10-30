@@ -1,19 +1,3 @@
-function randelem(R::Nemo.NmodRing, n)
-   return rand(R, -n:n)
-end
-
-function randmat(R::NmodMatSpace, d::Int)
-   m = nrows(R)
-   n = ncols(R)
-   r = R()
-   for i = 1:m
-      for j = 1:n
-         r[i, j] = randelem(base_ring(R), d)
-      end
-   end
-   return r
-end
-
 @testset "nmod_mat.constructors..." begin
   Z2 = ResidueRing(ZZ, 2)
   Z3 = ResidueRing(ZZ, 3)
@@ -809,7 +793,7 @@ end
       U, x = PolynomialRing(R, "x")
 
       for i = 1:10
-         M = randmat(S, 5)
+         M = rand(S, -5:5)
 
          p1 = charpoly(U, M)
          p2 = charpoly_danilevsky!(U, M)
@@ -817,4 +801,19 @@ end
          @test p1 == p2
       end
    end
+end
+
+@testset "nmod_mat.rand..." begin
+   R = ResidueRing(ZZ, 17)
+   S = MatrixSpace(R, 3, 3)
+
+   M = rand(S, 1:5)
+   @test parent(M) == S
+
+   for i=1:3, j=1:3
+      @test M[i, j] in 1:5
+   end
+
+   M = rand(S)
+   @test parent(M) == S
 end
