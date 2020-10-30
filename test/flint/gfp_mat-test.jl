@@ -466,6 +466,16 @@ end
 end
 
 @testset "gfp_mat.row_echelon_form..." begin
+  for iters = 1:100
+    m = rand(0:100)
+    n = rand(0:100)
+    S = MatrixSpace(GF(7), m, n)
+    M = rand(S)
+    r, N = rref(M)
+
+    @test isrref(N)
+  end
+
   Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
