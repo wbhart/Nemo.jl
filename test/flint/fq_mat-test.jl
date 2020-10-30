@@ -1,15 +1,3 @@
-function randmat(R::FqMatSpace)
-   m = nrows(R)
-   n = ncols(R)
-   r = R()
-   for i = 1:m
-      for j = 1:n
-         r[i, j] = rand(base_ring(R))
-      end
-   end
-   return r
-end
-
 @testset "fq_mat.constructors..." begin
   F4, a = FiniteField(fmpz(2), 2, "a")
   F9, b = FiniteField(fmpz(3), 2, "b")
@@ -717,7 +705,7 @@ end
       U, x = PolynomialRing(F17, "x")
 
       for i = 1:10
-         M = randmat(S)
+         M = rand(S)
          N = deepcopy(M)
 
          p1 = charpoly(U, M)
@@ -727,4 +715,11 @@ end
          @test iszero(subst(p1, N))
       end
    end
+end
+
+@testset "fq_mat.rand..." begin
+   F17, _ = FiniteField(fmpz(17), 1, "a")
+   S = MatrixSpace(F17, 3, 3)
+   M = rand(S)
+   @test parent(M) == S
 end

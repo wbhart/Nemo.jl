@@ -459,7 +459,7 @@ end
             A[i, j] = rand(-10:10)
          end
       end
-                                       
+
       r, d, P, L, U = fflu(A)
 
       V = MatrixSpace(QQ, m, m)
@@ -472,8 +472,8 @@ end
             D[j + 1, j + 1] = (1//L[j, j])*(1//L[j + 1, j + 1])
          end
       end
-      L2 = change_base_ring(QQ, L)                                   
-      U2 = change_base_ring(QQ, U)                                   
+      L2 = change_base_ring(QQ, L)
+      U2 = change_base_ring(QQ, U)
       @test change_base_ring(QQ, P*A) == L2*D*U2
    end
 end
@@ -628,4 +628,13 @@ end
    @test hcat(A, B) == T([2 3 5 1 4 7; 1 4 7 9 6 7; 9 6 3 4 3 3])
 
    @test vcat(A, B) == U([2 3 5; 1 4 7; 9 6 3; 1 4 7; 9 6 7; 4 3 3])
+end
+
+@testset "fmpz_mat.rand..." begin
+   S = MatrixSpace(FlintZZ, 3, 3)
+   M = rand(S, 1:9)
+   @test parent(M) == S
+   for i=1:3, j=1:3
+      @test M[i, j] in 1:9
+   end
 end
