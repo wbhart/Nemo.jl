@@ -87,7 +87,7 @@ end
    end
 
    @testset "Nemo seeding" begin
-      for seed in (rand(UInt128), abs(rand(Int8)))
+      for seed in (rand(UInt128), rand(Int8(0):typemax(Int8)))
          Nemo.randseed!(seed)
          a = [rand_bits(ZZ, i) for i = 1:99] # must test for i > 64, to exercise
                                              # both Flint's RNGs
