@@ -489,6 +489,16 @@ end
 end
 
 @testset "fmpq_mat.rref..." begin
+   for iters = 1:50
+      m = rand(0:50)
+      n = rand(0:50)
+      S = MatrixSpace(QQ, m, n)
+      M = rand(S, -100:100)
+      r, N = rref(M)
+
+      @test isrref(N)
+   end
+ 
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 4 1 1])

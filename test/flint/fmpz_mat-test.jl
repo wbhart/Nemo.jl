@@ -555,6 +555,21 @@ end
 end
 
 @testset "fmpz_mat.rref..." begin
+   for iters = 1:100
+      m = rand(0:100)
+      n = rand(0:100)
+      S = MatrixSpace(FlintZZ, m, n)
+      M = rand(S, -100:100)
+      r, N, d = rref(M)
+
+      @test isrref(N)
+
+      N2 = change_base_ring(QQ, N)
+      N2 = divexact(N2, d)
+
+      @test isrref(N2)
+   end 
+
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 4 1 1])
