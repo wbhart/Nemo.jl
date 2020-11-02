@@ -59,6 +59,12 @@ end
       t = rand_bits(FlintQQ, bits)
       @test height_bits(t) <= bits
    end
+
+   # implemented in AbstractAlgebra
+   test_rand(QQ, 1:9) do f
+      @test 1 <= numerator(f) <= 9
+      @test 1 <= denominator(f) <= 9
+   end
 end
 
 @testset "fmpq.printing..." begin
