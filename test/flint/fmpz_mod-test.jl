@@ -41,36 +41,9 @@ end
 
 @testset "fmpz_mod.rand..." begin
    R = ResidueRing(ZZ, ZZ(13))
-   @test rand(R) isa Nemo.fmpz_mod
-   @test rand(R, 1:9) isa Nemo.fmpz_mod
-   @test rand(R, 2) isa Vector{Nemo.fmpz_mod}
-   @test rand(R, 2, 3) isa Matrix{Nemo.fmpz_mod}
 
-   Random.seed!(rng, 0)
-
-   s = rand(rng, R)
-   @test s isa Nemo.fmpz_mod
-   t = rand(rng, R, 1:9)
-   @test t isa Nemo.fmpz_mod
-   t2 = rand(rng, make(R, 1:9))
-   @test t2 isa Nemo.fmpz_mod
-   s2 = rand(rng, R, 2)
-   @test s2 isa Vector{Nemo.fmpz_mod}
-   @test length(s2) == 2
-   s3 = rand(rng, make(R, 1:9), 2)
-   @test s3 isa Vector{Nemo.fmpz_mod}
-   @test length(s3) == 2
-   s4 = rand(rng, R, 2, 3)
-   @test s4 isa Matrix{Nemo.fmpz_mod}
-   @test size(s4) == (2, 3)
-
-   Random.seed!(rng, 0)
-   @test s == rand(rng, R)
-   @test t == rand(rng, R, 1:9)
-   @test t2 == rand(rng, make(R, 1:9))
-   @test s2 == rand(rng, R, 2)
-   @test s3 == rand(rng, make(R, 1:9), 2)
-   @test s4 == rand(rng, R, 2, 3)
+   test_rand(R)
+   test_rand(R, 1:9)
 end
 
 @testset "fmpz_mod.printing..." begin

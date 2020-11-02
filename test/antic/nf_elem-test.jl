@@ -53,14 +53,7 @@ end
    R, x = PolynomialRing(QQ, "x")
    K, a = NumberField(x^3 + 3x + 1, "a")
 
-   @test rand(K, 1:9) isa nf_elem
-   @test rand(make(K, 1:9)) isa nf_elem
-   @test rand(make(K, 1:9), 2, 3) isa Matrix{nf_elem}
-   Random.seed!(rng, 0)
-   k = rand(rng, K, 1:9)
-   @test k isa nf_elem
-   Random.seed!(rng, 0)
-   @test k == rand(rng, K, 1:9)
+   test_rand(K, 1:9)
 end
 
 @testset "nf_elem.printing..." begin

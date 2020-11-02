@@ -32,21 +32,8 @@ end
 end
 
 @testset "fmpz.rand..." begin
-   @test rand(FlintZZ, 1:9) isa fmpz
-   Random.seed!(rng, 0)
-   t = rand(rng, FlintZZ, 1:9)
-   s = rand(rng, FlintZZ(1):FlintZZ(9))
-   r = rand(rng, make(FlintZZ, 1:9))
-   @test t isa fmpz
-   @test s isa fmpz
-   @test r isa fmpz
-   Random.seed!(rng, 0)
-   @test t == rand(rng, FlintZZ, 1:9)
-   @test s == rand(rng, FlintZZ(1):FlintZZ(9))
-   @test r == rand(rng, make(FlintZZ, 1:9))
-
-   rs = rand(make(FlintZZ, 1:9), 2, 3)
-   @test rs isa Matrix{fmpz}
+   test_rand(FlintZZ, 1:9)
+   test_rand(FlintZZ(1):FlintZZ(9))
 
    for bits in 0:100
       t = rand_bits(FlintZZ, bits)
@@ -72,15 +59,9 @@ end
                @test_throws ArgumentError rand(r)
             else
                rb = map(BigInt, r) # in(::fmpz, StepRange{fmpz}) no working
-               @test BigInt(rand(r)) in rb
-               @test rand(r) isa fmpz
-               @test all(in(rb), map(BigInt, rand(r, 9)))
-               @test rand(r, 9) isa Vector{fmpz}
-               seed = rand(rng, UInt128)
-               Random.seed!(rng, seed)
-               x = rand(rng, r)
-               Random.seed!(rng, seed)
-               @test x == rand(rng, r)
+               test_rand(r) do x
+                  @test BigInt(x) in rb
+               end
             end
          end
       end

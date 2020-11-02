@@ -187,23 +187,5 @@ end
 @testset "fq.rand..." begin
    R, x = FiniteField(fmpz(17), 3, "x")
 
-   @inferred rand(R)
-   @test rand(R) isa fq
-   @test rand(R, 2) isa Vector{fq}
-   @test rand(R, 2, 3) isa Matrix{fq}
-
-   Random.seed!(rng, 0)
-   t = rand(rng, R)
-   @test t isa fq
-   s2 = rand(rng, R, 2)
-   @test s2 isa Vector{fq}
-   @test length(s2) == 2
-   s3 = rand(rng, R, 2, 3)
-   @test s3 isa Matrix{fq}
-   @test size(s3) == (2, 3)
-
-   Random.seed!(rng, 0)
-   @test t == rand(rng, R)
-   @test s2 == rand(rng, R, 2)
-   @test s3 == rand(rng, R, 2, 3)
+   test_rand(R)
 end
