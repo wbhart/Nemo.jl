@@ -133,7 +133,12 @@ end
       M = randmat_with_rank(S, dim, -100:100)
       b = rand(T, -100:100)
 
-      x, d = Generic.solve_fflu(M, b)
+      if isdefined(Generic, :can_solve_with_solution_fflu) 
+         flag, x, d = Generic.can_solve_with_solution_fflu(M, b)
+         @test flag
+      else
+         x, d = Generic.solve_fflu(M, b)
+      end       
 
       @test divexact(M, d)*x == b
    end
@@ -150,7 +155,12 @@ end
       M = randmat_with_rank(S, dim, -100:100)
       b = rand(T, -100:100)
 
-      x = Generic.solve_lu(M, b)
+      if isdefined(Generic, :can_solve_with_solution_lu)
+         flag, x = Generic.can_solve_with_solution_lu(M, b)
+         @test flag
+      else
+         x = Generic.solve_lu(M, b)
+      end     
 
       @test M*x == b
    end
