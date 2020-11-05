@@ -155,7 +155,12 @@ end
       M = randmat_with_rank(S, dim, -100:100)
       b = rand(T, -100:100)
 
-      flag, x = Generic.can_solve_with_solution_lu(M, b)
+      if isdefined(Generic, :can_solve_with_solution_lu)
+         flag, x = Generic.can_solve_with_solution_lu(M, b)
+         @test flag
+      else
+         x = Generic.solve_lu(M, b)
+      end     
 
       @test flag && M*x == b
    end
