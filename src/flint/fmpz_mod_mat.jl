@@ -480,12 +480,12 @@ end
 #= Not implemented in Flint yet
 
 function lu!(P::Generic.Perm, x::T) where T <: Zmod_fmpz_mat
+  P.d .-= 1
+
   rank = Int(ccall((:fmpz_mod_mat_lu, libflint), Cint, (Ptr{Int}, Ref{T}, Cint),
            P.d, x, 0))
 
-  for i in 1:length(P.d)
-    P.d[i] += 1
-  end
+  P.d .+= 1
 
   # flint does x == PLU instead of Px == LU (docs are wrong)
   inv!(P)
@@ -504,7 +504,7 @@ function lu(x::T, P = SymmetricGroup(nrows(x))) where T <: Zmod_fmpz_mat
   L = similar(x, m, m)
 
   rank = lu!(p, U)
-
+  
   for i = 1:m
     for j = 1:n
       if i > j

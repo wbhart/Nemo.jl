@@ -591,17 +591,13 @@ function fflu(x::fmpz_mat, P = SymmetricGroup(nrows(x)))
    d = fmpz()
    p = P()
 
-   for i = 1:nrows(x)
-      p.d[i] -= 1
-   end
+   p.d .-= 1
 
    r = ccall((:fmpz_mat_fflu, libflint), Int,
                 (Ref{fmpz_mat}, Ref{fmpz}, Ptr{Int}, Ref{fmpz_mat}, Int),
                 U, d, p.d, x, 0)
 
-   for i = 1:nrows(x)
-      p.d[i] += 1
-   end
+   p.d .+= 1
 
    i = 1
    j = 1

@@ -433,13 +433,13 @@ end
 ################################################################################
 
 function lu!(P::Generic.Perm, x::fq_mat)
+   P.d .-= 1
+
    rank = Int(ccall((:fq_mat_lu, libflint), Cint,
                 (Ptr{Int}, Ref{fq_mat}, Cint, Ref{FqFiniteField}),
                 P.d, x, 0, base_ring(x)))
 
-  for i in 1:length(P.d)
-    P.d[i] += 1
-  end
+  P.d .+= 1
 
   # flint does x == PLU instead of Px == LU (docs are wrong)
   inv!(P)
