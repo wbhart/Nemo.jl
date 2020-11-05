@@ -162,7 +162,7 @@ end
          x = Generic.solve_lu(M, b)
       end     
 
-      @test flag && M*x == b
+      @test M*x == b
    end
 end
 
