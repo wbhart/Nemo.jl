@@ -140,7 +140,7 @@ end
          x, d = Generic.solve_fflu(M, b)
       end       
 
-      @test flag && divexact(M, d)*x == b
+      @test divexact(M, d)*x == b
    end
 end
 
