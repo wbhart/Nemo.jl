@@ -5,7 +5,7 @@
 ###############################################################################
 
 export FmpzPolyRing, fmpz_poly, cyclotomic, theta_qexp, eta_qexp, cos_minpoly,
-       swinnerton_dyer, signature
+       swinnerton_dyer, signature, height
 
 ###############################################################################
 #
@@ -56,6 +56,18 @@ function deepcopy_internal(a::fmpz_poly, dict::IdDict)
 end
 
 characteristic(::FmpzPolyRing) = 0
+
+@doc Markdown.doc"""
+    height(a::fmpz_poly)
+
+Return the largest of the absolute values of the coefficients of a.
+"""
+function height(a::fmpz_poly)
+   z = fmpz()
+   ccall((:fmpz_poly_height, libflint), Nothing,
+         (Ref{fmpz}, Ref{fmpz_poly}), z, a)
+   return z
+end
 
 ###############################################################################
 #
