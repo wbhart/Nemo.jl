@@ -1084,8 +1084,9 @@ mutable struct FmpzMPolyRing <: MPolyRing{fmpz}
    ord::Int
    deg::Cint
    rev::Cint
-   lut::NTuple{64, Int}
-   lut1::NTuple{64, Int}
+   lut::NTuple{Base.GMP.BITS_PER_LIMB, Int}
+   lut1::NTuple{Base.GMP.BITS_PER_LIMB, UInt8}
+
    base_ring::FlintIntegerRing
    S::Array{Symbol, 1}
 
@@ -1254,8 +1255,9 @@ mutable struct FmpqMPolyRing <: MPolyRing{fmpq}
    ord::Int
    deg::Cint
    rev::Cint
-   lut::NTuple{64, Int}
-   lut1::NTuple{64, Int}
+   lut::NTuple{Base.GMP.BITS_PER_LIMB, Int}
+   lut1::NTuple{Base.GMP.BITS_PER_LIMB, UInt8}
+
    base_ring::FlintRationalField
    S::Array{Symbol, 1}
 
@@ -1436,13 +1438,15 @@ mutable struct NmodMPolyRing <: MPolyRing{nmod}
    ninv::UInt
    norm::Int
    extras::Ptr{Int}
+
    nvars::Int
    nfields::Int
    ord::Cint
    deg::Cint
    rev::Cint
-   lut::NTuple{64, Int}
-   lut1::NTuple{64, Int}
+   lut::NTuple{Base.GMP.BITS_PER_LIMB, Int}
+   lut1::NTuple{Base.GMP.BITS_PER_LIMB, UInt8}
+
    base_ring::NmodRing
    S::Array{Symbol, 1}
 
@@ -1599,7 +1603,7 @@ mutable struct FqNmodFiniteField <: FinField
    n :: Int
    ninv :: Int
    norm :: Int
-   sparse_modulus :: Int
+   sparse_modulus :: Int  # TODO actually Cint, and is_conway::Cint on 2.7
    a :: Ptr{Nothing}
    j :: Ptr{Nothing}
    len :: Int
@@ -1752,7 +1756,7 @@ end
 
 mutable struct FqFiniteField <: FinField
    p::Int # fmpz
-   sparse_modulus::Int
+   sparse_modulus :: Int  # TODO actually Cint, and is_conway::Cint on 2.7
    a::Ptr{Nothing}
    j::Ptr{Nothing}
    len::Int
@@ -1898,14 +1902,14 @@ mutable struct FqNmodMPolyRing <: MPolyRing{fq_nmod}
    ord::Cint
    deg::Cint
    rev::Cint
-   lut::NTuple{Int === Int64 ? 64 : 32, Int}
-   lut1::NTuple{Int === Int64 ? 64 : 32, UInt8}
+   lut::NTuple{Base.GMP.BITS_PER_LIMB, Int}
+   lut1::NTuple{Base.GMP.BITS_PER_LIMB, UInt8}
 
    p :: Int
    n :: Int
    ninv :: Int
    norm :: Int
-   sparse_modulus :: Int
+   sparse_modulus :: Int  # TODO actually Cint, and is_conway::Cint on 2.7
    a :: Ptr{Nothing}
    j :: Ptr{Nothing}
    len :: Int
@@ -1951,7 +1955,6 @@ mutable struct FqNmodMPolyRing <: MPolyRing{fq_nmod}
          if cached
             FqNmodMPolyID[R, s, S] = z
          end
-         @assert z.nvars == length(s)
          return z
       end
    end

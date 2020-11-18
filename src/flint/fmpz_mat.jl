@@ -829,8 +829,8 @@ end
 mutable struct lll_ctx
    delta::Float64
    eta::Float64
-   rep_type::Int
-   gram_type::Int
+   rep_type::Cint
+   gram_type::Cint
 
    function lll_ctx(delta::Float64, eta::Float64,
                     rep::Symbol = :zbasis, gram::Symbol = :approx)
