@@ -70,6 +70,8 @@ end
    @test deepcopy(f) == f
 
    @test characteristic(R) == 0
+
+   @test height(2*x^2 - 7*x + 1) == 7
 end
 
 @testset "fmpz_poly.binary_ops..." begin

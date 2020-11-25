@@ -418,6 +418,47 @@ end
 
 ###############################################################################
 #
+#   Random functions
+#
+###############################################################################
+
+# define rand(::FqNmodFiniteField)
+
+Random.Sampler(::Type{RNG}, R::FqNmodFiniteField, n::Random.Repetition) where {RNG<:AbstractRNG} =
+   Random.SamplerSimple(R, Random.Sampler(RNG, BigInt(0):BigInt(order(R))-1, n))
+
+function rand(rng::AbstractRNG, R::Random.SamplerSimple{FqNmodFiniteField})
+   F = R[]
+   x = gen(F)
+   z = zero(F)
+   p = characteristic(F)
+   n = fmpz(rand(rng, R.data))
+   xi = one(F)
+   while !iszero(n)
+      n, r = divrem(n, p)
+      z += r*xi
+      xi *= x
+   end
+   return z
+end
+
+Random.gentype(::Type{FqNmodFiniteField}) = elem_type(FqNmodFiniteField)
+
+# define rand(make(::FqNmodFiniteField, n:m))
+
+RandomExtensions.maketype(R::FqNmodFiniteField, _) = elem_type(R)
+
+rand(rng::AbstractRNG, sp::SamplerTrivial{<:Make2{fq_nmod,FqNmodFiniteField,UnitRange{Int}}}) =
+   sp[][1](rand(rng, sp[][2]))
+
+# define rand(::FqNmodFiniteField, n:m)
+
+rand(r::Random.AbstractRNG, R::FqNmodFiniteField, b::UnitRange{Int}) = rand(r, make(R, b))
+
+rand(R::FqNmodFiniteField, b::UnitRange{Int}) = rand(Random.GLOBAL_RNG, R, b)
+
+###############################################################################
+#
 #   Promotions
 #
 ###############################################################################

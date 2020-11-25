@@ -1084,8 +1084,9 @@ mutable struct FmpzMPolyRing <: MPolyRing{fmpz}
    ord::Int
    deg::Cint
    rev::Cint
-   lut::NTuple{64, Int}
-   lut1::NTuple{64, Int}
+   lut::NTuple{Base.GMP.BITS_PER_LIMB, Int}
+   lut1::NTuple{Base.GMP.BITS_PER_LIMB, UInt8}
+
    base_ring::FlintIntegerRing
    S::Array{Symbol, 1}
 
@@ -1254,8 +1255,9 @@ mutable struct FmpqMPolyRing <: MPolyRing{fmpq}
    ord::Int
    deg::Cint
    rev::Cint
-   lut::NTuple{64, Int}
-   lut1::NTuple{64, Int}
+   lut::NTuple{Base.GMP.BITS_PER_LIMB, Int}
+   lut1::NTuple{Base.GMP.BITS_PER_LIMB, UInt8}
+
    base_ring::FlintRationalField
    S::Array{Symbol, 1}
 
@@ -1436,13 +1438,15 @@ mutable struct NmodMPolyRing <: MPolyRing{nmod}
    ninv::UInt
    norm::Int
    extras::Ptr{Int}
+
    nvars::Int
    nfields::Int
    ord::Cint
    deg::Cint
    rev::Cint
-   lut::NTuple{64, Int}
-   lut1::NTuple{64, Int}
+   lut::NTuple{Base.GMP.BITS_PER_LIMB, Int}
+   lut1::NTuple{Base.GMP.BITS_PER_LIMB, UInt8}
+
    base_ring::NmodRing
    S::Array{Symbol, 1}
 
@@ -1599,7 +1603,7 @@ mutable struct FqNmodFiniteField <: FinField
    n :: Int
    ninv :: Int
    norm :: Int
-   sparse_modulus :: Int
+   sparse_modulus :: Int  # TODO actually Cint, and is_conway::Cint on 2.7
    a :: Ptr{Nothing}
    j :: Ptr{Nothing}
    len :: Int
@@ -1752,7 +1756,7 @@ end
 
 mutable struct FqFiniteField <: FinField
    p::Int # fmpz
-   sparse_modulus::Int
+   sparse_modulus :: Int  # TODO actually Cint, and is_conway::Cint on 2.7
    a::Ptr{Nothing}
    j::Ptr{Nothing}
    len::Int
@@ -1883,6 +1887,194 @@ end
 function _fq_clear_fn(a::fq)
    ccall((:fq_clear, libflint), Nothing,
          (Ref{fq}, Ref{FqFiniteField}), a, a.parent)
+end
+
+
+###############################################################################
+#
+#   FqNmodMPolyRing / fq_nmod_mpoly
+#
+###############################################################################
+
+mutable struct FqNmodMPolyRing <: MPolyRing{fq_nmod}
+   nvars::Int
+   nfields::Int
+   ord::Cint
+   deg::Cint
+   rev::Cint
+   lut::NTuple{Base.GMP.BITS_PER_LIMB, Int}
+   lut1::NTuple{Base.GMP.BITS_PER_LIMB, UInt8}
+
+   p :: Int
+   n :: Int
+   ninv :: Int
+   norm :: Int
+   sparse_modulus :: Int  # TODO actually Cint, and is_conway::Cint on 2.7
+   a :: Ptr{Nothing}
+   j :: Ptr{Nothing}
+   len :: Int
+   mod_coeffs :: Ptr{Nothing}
+   mod_alloc :: Int
+   mod_length :: Int
+   mod_n :: Int
+   mod_ninv :: Int
+   mod_norm :: Int
+   inv_coeffs :: Ptr{Nothing}
+   inv_alloc :: Int
+   inv_length :: Int
+   inv_n :: Int
+   inv_ninv :: Int
+   inv_norm :: Int
+   var :: Ptr{Nothing}
+
+   base_ring::FqNmodFiniteField
+   S::Array{Symbol, 1}
+
+   function FqNmodMPolyRing(R::FqNmodFiniteField, s::Array{Symbol, 1}, S::Symbol, cached::Bool = true)
+      isempty(s) && error("variable list is empty")
+      if cached && haskey(FqNmodMPolyID, (R, s, S))
+         return FqNmodMPolyID[R, s, S]
+      else
+         if S == :lex
+            ord = 0
+         elseif S == :deglex
+            ord = 1
+         elseif S == :degrevlex
+            ord = 2
+         else
+            error("$S is not a valid ordering")
+         end
+
+         z = new()
+         ccall((:fq_nmod_mpoly_ctx_init, libflint), Nothing,
+               (Ref{FqNmodMPolyRing}, Int, Cint, Ref{FqNmodFiniteField}),
+               z, length(s), ord, R)
+         z.base_ring = R
+         z.S = s
+         finalizer(_fq_nmod_mpoly_ctx_clear_fn, z)
+         if cached
+            FqNmodMPolyID[R, s, S] = z
+         end
+         return z
+      end
+   end
+end
+
+function _fq_nmod_mpoly_ctx_clear_fn(a::FqNmodMPolyRing)
+   ccall((:fq_nmod_mpoly_ctx_clear, libflint), Nothing,
+           (Ref{FqNmodMPolyRing},), a)
+end
+
+const FqNmodMPolyID = Dict{Tuple{FqNmodFiniteField, Array{Symbol, 1}, Symbol}, FqNmodMPolyRing}()
+
+mutable struct fq_nmod_mpoly <: MPolyElem{fq_nmod}
+   coeffs::Ptr{Nothing}
+   exps::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   bits::Int
+
+   parent::FqNmodMPolyRing
+
+   function fq_nmod_mpoly(ctx::FqNmodMPolyRing)
+      z = new()
+      ccall((:fq_nmod_mpoly_init, libflint), Nothing,
+            (Ref{fq_nmod_mpoly}, Ref{FqNmodMPolyRing},), z, ctx)
+      z.parent = ctx
+      finalizer(_fq_nmod_mpoly_clear_fn, z)
+      return z
+   end
+
+   function fq_nmod_mpoly(ctx::FqNmodMPolyRing, a::Vector{fq_nmod}, b::Vector{Vector{UInt}})
+      z = new()
+      ccall((:fq_nmod_mpoly_init2, libflint), Nothing,
+            (Ref{fq_nmod_mpoly}, Int, Ref{FqNmodMPolyRing},), z, length(a), ctx)
+      z.parent = ctx
+      finalizer(_fq_nmod_mpoly_clear_fn, z)
+
+      for i in 1:length(a)
+         ccall((:fq_nmod_mpoly_push_term_fq_nmod_ui, libflint), Nothing,
+               (Ref{fq_nmod_mpoly}, Ref{fq_nmod}, Ptr{UInt}, Ref{FqNmodMPolyRing}),
+               z, a[i], b[i], ctx)
+       end
+
+       ccall((:fq_nmod_mpoly_sort_terms, libflint), Nothing,
+             (Ref{fq_nmod_mpoly}, Ref{FqNmodMPolyRing}), z, ctx)
+       ccall((:fq_nmod_mpoly_combine_like_terms, libflint), Nothing,
+             (Ref{fq_nmod_mpoly}, Ref{FqNmodMPolyRing}), z, ctx)
+       return z
+   end
+
+   function fq_nmod_mpoly(ctx::FqNmodMPolyRing, a::Vector{fq_nmod}, b::Vector{Vector{Int}})
+      z = new()
+      ccall((:fq_nmod_mpoly_init2, libflint), Nothing,
+            (Ref{fq_nmod_mpoly}, Int, Ref{FqNmodMPolyRing},), z, length(a), ctx)
+      z.parent = ctx
+      finalizer(_fq_nmod_mpoly_clear_fn, z)
+
+      for i in 1:length(a)
+         ccall((:fq_nmod_mpoly_push_term_ui_ui, libflint), Nothing,
+               (Ref{fq_nmod_mpoly}, Ref{fq_nmod}, Ptr{Int}, Ref{FqNmodMPolyRing}),
+               z, a[i], b[i], ctx)
+       end
+
+       ccall((:fq_nmod_mpoly_sort_terms, libflint), Nothing,
+             (Ref{fq_nmod_mpoly}, Ref{FqNmodMPolyRing}), z, ctx)
+       ccall((:fq_nmod_mpoly_combine_like_terms, libflint), Nothing,
+             (Ref{fq_nmod_mpoly}, Ref{FqNmodMPolyRing}), z, ctx)
+       return z
+   end
+
+   function fq_nmod_mpoly(ctx::FqNmodMPolyRing, a::Vector{fq_nmod}, b::Vector{Vector{fmpz}})
+      z = new()
+      ccall((:fq_nmod_mpoly_init2, libflint), Nothing,
+            (Ref{fq_nmod_mpoly}, Int, Ref{FqNmodMPolyRing},), z, length(a), ctx)
+      z.parent = ctx
+      finalizer(_fq_nmod_mpoly_clear_fn, z)
+
+      for i in 1:length(a)
+         ccall((:fq_nmod_mpoly_push_term_fq_nmod_fmpz, libflint), Nothing,
+               (Ref{fq_nmod_mpoly}, Ref{fq_nmod}, Ptr{Ref{fmpz}}, Ref{FqNmodMPolyRing}),
+               z, a[i], b[i], ctx)
+       end
+
+       ccall((:fq_nmod_mpoly_sort_terms, libflint), Nothing,
+             (Ref{fq_nmod_mpoly}, Ref{FqNmodMPolyRing}), z, ctx)
+       ccall((:nmod_mpoly_combine_like_terms, libflint), Nothing,
+             (Ref{fq_nmod_mpoly}, Ref{FqNmodMPolyRing}), z, ctx)
+       return z
+   end
+
+   function fq_nmod_mpoly(ctx::FqNmodMPolyRing, a::UInt)
+      z = new()
+      ccall((:fq_nmod_mpoly_init, libflint), Nothing,
+            (Ref{fq_nmod_mpoly}, Ref{FqNmodMPolyRing},), z, ctx)
+      ccall((:fq_nmod_mpoly_set_ui, libflint), Nothing,
+            (Ref{fq_nmod_mpoly}, UInt, Ref{FqNmodMPolyRing}), z, a, ctx)
+      z.parent = ctx
+      finalizer(_fq_nmod_mpoly_clear_fn, z)
+      return z
+   end
+
+   function fq_nmod_mpoly(ctx::NmodMPolyRing, a::nmod)
+      return fq_nmod_mpoly(ctx, a.data)
+   end
+
+   function fq_nmod_mpoly(ctx::FqNmodMPolyRing, a::fq_nmod)
+      z = new()
+      ccall((:fq_nmod_mpoly_init, libflint), Nothing,
+            (Ref{fq_nmod_mpoly}, Ref{FqNmodMPolyRing},), z, ctx)
+      ccall((:fq_nmod_mpoly_set_fq_nmod, libflint), Nothing,
+            (Ref{fq_nmod_mpoly}, Ref{fq_nmod}, Ref{FqNmodMPolyRing}), z, a, ctx)
+      z.parent = ctx
+      finalizer(_fq_nmod_mpoly_clear_fn, z)
+      return z
+   end
+end
+
+function _fq_nmod_mpoly_clear_fn(a::fq_nmod_mpoly)
+   ccall((:fq_nmod_mpoly_clear, libflint), Nothing,
+          (Ref{fq_nmod_mpoly}, Ref{FqNmodMPolyRing}), a, a.parent)
 end
 
 
