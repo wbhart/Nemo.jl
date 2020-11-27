@@ -404,6 +404,7 @@ end
 mutable struct GaloisField <: FinField
    n::UInt
    ninv::UInt
+   @declare_other
 
    function GaloisField(n::UInt, cached::Bool=true)
       if cached && haskey(GaloisFieldID, n)
@@ -483,6 +484,7 @@ end
 mutable struct GaloisFmpzField <: FinField
    n::fmpz
    ninv::fmpz_mod_ctx_struct
+   @declare_other
 
    function GaloisFmpzField(n::fmpz, cached::Bool=true)
       if cached && haskey(GaloisFmpzFieldID, n)
@@ -1622,6 +1624,7 @@ mutable struct FqNmodFiniteField <: FinField
    var :: Ptr{Nothing}
    overfields :: Dict{Int, Array{FinFieldMorphism, 1}}
    subfields :: Dict{Int, Array{FinFieldMorphism, 1}}
+   @declare_other
 
    function FqNmodFiniteField(c::fmpz, deg::Int, s::Symbol, cached::Bool = true)
       if cached && haskey(FqNmodFiniteFieldID, (c, deg, s))
@@ -1771,6 +1774,7 @@ mutable struct FqFiniteField <: FinField
    var::Ptr{Nothing}
    overfields :: Dict{Int, Array{FinFieldMorphism, 1}}
    subfields :: Dict{Int, Array{FinFieldMorphism, 1}}
+   @declare_other
 
    function FqFiniteField(char::fmpz, deg::Int, s::Symbol, cached::Bool = true)
       if cached && haskey(FqFiniteFieldID, (char, deg, s))
