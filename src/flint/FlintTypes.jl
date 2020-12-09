@@ -47,6 +47,14 @@ mutable struct fmpz <: RingElem
         return z
     end
 
+    function fmpz(x::Ptr{Culong}, len::Clong)
+        z = new()
+        ccall((:fmpz_init, libflint), Nothing, (Ref{fmpz},), z)
+        ccall((:fmpz_set_ui_array, libflint), Nothing, (Ref{fmpz}, Ptr{Culong}, Clong), z, x, len)
+        finalizer(_fmpz_clear_fn, z)
+        return z
+    end
+
     function fmpz(x::Float64)
         !isinteger(x) && throw(InexactError(:convert, fmpz, x))
         z = new()
