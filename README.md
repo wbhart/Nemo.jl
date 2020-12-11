@@ -8,12 +8,12 @@ to cover commutative algebra, number theory and group theory.
 It is currently developed by William Hart, Tommy Hofmann, Fredrik Johansson and
 Claus Fieker with contributions from others.
 
-- [http://nemocas.org/](http://nemocas.org)(Website)
-- [http://nemocas.github.io/Nemo.jl/latest/](http://nemocas.github.io/Nemo.jl/latest/) (Online documentation)
+- <http://nemocas.org> (Website)
+- <https://nemocas.github.io/Nemo.jl/latest/> (Online documentation)
 
 The official Nemo repository is at:
 
-- [https://github.com/Nemocas/Nemo.jl](https://github.com/Nemocas/Nemo.jl)
+- <https://github.com/Nemocas/Nemo.jl>
 
 Nemo currently provides:
 
