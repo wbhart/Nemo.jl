@@ -72,6 +72,8 @@ Return the characteristic of the given Galois field.
 """
 characteristic(R::GaloisField) = fmpz(R.n)
 
+degree(::GaloisField) = 1
+
 ###############################################################################
 #
 #   Canonicalisation

@@ -71,6 +71,8 @@ Return the order, i.e. the number of elements in, the given Galois field.
 """
 order(F::GaloisFmpzField) = modulus(F)
 
+degree(::GaloisFmpzField) = 1
+
 function deepcopy_internal(a::gfp_fmpz_elem, dict::IdDict)
    R = parent(a)
    return gfp_fmpz_elem(deepcopy(a.data), R)

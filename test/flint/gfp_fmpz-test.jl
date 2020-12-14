@@ -89,6 +89,8 @@ end
    @test R === R1
 
    @test characteristic(R) == 13
+
+   @test degree(R) == 1
 end
 
 @testset "gfp_fmpz.unary_ops..." begin
