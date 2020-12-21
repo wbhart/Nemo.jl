@@ -15,6 +15,11 @@
    @test isa(T, FqFiniteField)
    @test isa(T2, FqFiniteField)
 
+   @test characteristic(R) == fmpz(7)
+   @test characteristic(T) == fmpz(36893488147419103363)
+   @test characteristic(T2) == fmpz(36893488147419103363)
+
+
    @test isa(3x^4 + 2x^3 + 4x^2 + x + 1, fq)
    @test isa(z^2 + z + 1, fq)
    @test isa(z2^2 + z2 + 1, fq)
@@ -182,6 +187,20 @@ end
    @test frobenius(a, 3) == 3*x^4+3*x^3+3*x^2+x+4
 
    @test pth_root(a) == 4*x^4+3*x^3+4*x^2+5*x+2
+
+   @test issquare(a^2)
+
+   @test square_root(a^2)^2 == a^2
+
+   @test issquare_with_square_root(a^2)[1]
+
+   @test issquare_with_square_root(a^2)[2]^2 == a^2
+
+   @test !issquare(x*a^2)
+
+   @test_throws ErrorException square_root(x*a^2)
+
+   @test !issquare_with_square_root(x*a^2)[1]
 end
 
 @testset "fq.rand..." begin

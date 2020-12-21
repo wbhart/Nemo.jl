@@ -442,6 +442,80 @@ function gcd(a::fmpz_mpoly, b::fmpz_mpoly)
    return z
 end
 
+################################################################################
+#
+#   Factorization and Square Root
+#
+################################################################################
+
+function (::Type{Fac{fmpz_mpoly}})(fac::fmpz_mpoly_factor, preserve_input::Bool = true)
+   R = fac.parent
+   F = Fac{fmpz_mpoly}()
+   empty!(F.fac)
+   for i in 0:fac.num-1
+      f = R()
+      if preserve_input
+         ccall((:fmpz_mpoly_factor_get_base, libflint), Nothing,
+               (Ref{fmpz_mpoly}, Ref{fmpz_mpoly_factor}, Int, Ref{FmpzMPolyRing}),
+               f, fac, i, R)
+      else
+         ccall((:fmpz_mpoly_factor_swap_base, libflint), Nothing,
+               (Ref{fmpz_mpoly}, Ref{fmpz_mpoly_factor}, Int, Ref{FmpzMPolyRing}),
+               f, fac, i, R)
+      end
+      F.fac[f] = ccall((:fmpz_mpoly_factor_get_exp_si, libflint), Int,
+                       (Ref{fmpz_mpoly_factor}, Int, Ref{FmpzMPolyRing}),
+                       fac, i, R)
+   end
+   c = fmpz()
+   ccall((:fmpz_mpoly_factor_get_constant_fmpz, libflint), Nothing,
+         (Ref{fmpz}, Ref{fmpz_mpoly_factor}),
+         c, fac)
+   F.unit = R(c)
+   return F
+end
+
+function factor(a::fmpz_mpoly)
+   R = parent(a)
+   fac = fmpz_mpoly_factor(R)
+   ok = ccall((:fmpz_mpoly_factor, libflint), Cint,
+              (Ref{fmpz_mpoly_factor}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
+              fac, a, R)
+   ok == 0 && error("unable to compute factorization")
+   return Fac{fmpz_mpoly}(fac, false)
+end
+
+function factor_squarefree(a::fmpz_mpoly)
+   R = parent(a)
+   fac = fmpz_mpoly_factor(R)
+   ok = ccall((:fmpz_mpoly_factor_squarefree, libflint), Cint,
+              (Ref{fmpz_mpoly_factor}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
+              fac, a, R)
+   ok == 0 && error("unable to compute factorization")
+   return Fac{fmpz_mpoly}(fac, false)
+end
+
+
+function square_root(a::fmpz_mpoly)
+   (flag, q) = issquare_with_square_root(a)
+   !flag && error("Not a square in square_root")
+   return q
+end
+
+function issquare(a::fmpz_mpoly)
+   return Bool(ccall((:fmpz_mpoly_is_square, libflint), Cint,
+                     (Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
+                     a, a.parent))
+end
+
+function issquare_with_square_root(a::fmpz_mpoly)
+   q = parent(a)()
+   flag = ccall((:fmpz_mpoly_sqrt, libflint), Cint,
+                (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
+                q, a, a.parent)
+   return (Bool(flag), q)
+end
+
 ###############################################################################
 #
 #   Comparison
