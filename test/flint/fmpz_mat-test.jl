@@ -560,7 +560,7 @@ end
       n = rand(0:100)
       S = MatrixSpace(FlintZZ, m, n)
       M = rand(S, -100:100)
-      r, N, d = rref(M)
+      r, N, d = rref_rational(M)
 
       @test isrref(N)
 
@@ -574,7 +574,7 @@ end
 
    A = S([fmpz(2) 3 5; 1 4 7; 4 1 1])
 
-   r, B, d = rref(A)
+   r, B, d = rref_rational(A)
 
    @test (B, d) == (S([5 0 (-1); 0 5 9; 0 0 0]), 5)
    @test r == 2

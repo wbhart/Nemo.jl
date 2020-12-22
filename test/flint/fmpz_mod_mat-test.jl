@@ -432,19 +432,19 @@ end
 
   c = a*transpose(a)
 
-  r, den, d = rref(a)
+  r, d, den = rref_rational(a)
 
   @test d == R([ 12 0 0 11; 0 12 0 10; 0 0 12 5])
   @test r == 3
   @test den == Z17(12)
 
-  r, den = rref!(a)
+  r, den = rref_rational!(a)
 
   @test a == R([ 12 0 0 11; 0 12 0 10; 0 0 12 5])
   @test r == 3
   @test den == Z17(12)
 
-  r, den, d = rref(b)
+  r, d, den = rref_rational(b)
 
   @test d == parent(b)([ 2 0 0 ; 0 0 2; 0 0 0; 0 0 0])
   @test r == 2
