@@ -1792,6 +1792,217 @@ function _nmod_mpoly_factor_clear_fn(f::nmod_mpoly_factor)
          f, f.parent)
 end
 
+################################################################################
+#
+#   GFPMPolyRing / gfp_mpoly
+#
+###############################################################################
+
+mutable struct GFPMPolyRing <: MPolyRing{gfp_elem}
+   nvars::Int
+   nfields::Int
+   ord::Cint
+   deg::Cint
+   rev::Cint
+   lut::NTuple{Base.GMP.BITS_PER_LIMB, Int}
+   lut1::NTuple{Base.GMP.BITS_PER_LIMB, UInt8}
+
+   n::UInt
+   ninv::UInt
+   norm::Int
+   # end of flint struct
+
+   base_ring::GaloisField
+   S::Array{Symbol, 1}
+
+   function GFPMPolyRing(R::GaloisField, s::Array{Symbol, 1}, S::Symbol, cached::Bool = true)
+      if cached && haskey(GFPMPolyID, (R, s, S))
+         return GFPMPolyID[R, s, S]
+      else
+         if S == :lex
+            ord = 0
+         elseif S == :deglex
+            ord = 1
+         elseif S == :degrevlex
+            ord = 2
+         else
+            error("$S is not a valid ordering")
+         end
+
+         z = new()
+         ccall((:nmod_mpoly_ctx_init, libflint), Nothing,
+               (Ref{GFPMPolyRing}, Int, Cint, UInt),
+               z, length(s), ord, UInt(modulus(R)))
+         z.base_ring = R
+         z.S = s
+         finalizer(_gfp_mpoly_ctx_clear_fn, z)
+         if cached
+            GFPMPolyID[R, s, S] = z
+         end
+         return z
+      end
+   end
+end
+
+function _gfp_mpoly_ctx_clear_fn(a::GFPMPolyRing)
+   ccall((:nmod_mpoly_ctx_clear, libflint), Nothing,
+         (Ref{GFPMPolyRing},), a)
+end
+
+const GFPMPolyID = Dict{Tuple{GaloisField, Array{Symbol, 1}, Symbol}, GFPMPolyRing}()
+
+mutable struct gfp_mpoly <: MPolyElem{gfp_elem}
+   coeffs::Ptr{Nothing}
+   exps::Ptr{Nothing}
+   length::Int
+   bits::Int
+   coeffs_alloc::Int
+   exps_alloc::Int
+   # end of flint struct
+
+   parent::GFPMPolyRing
+
+   function gfp_mpoly(ctx::GFPMPolyRing)
+      z = new()
+      ccall((:nmod_mpoly_init, libflint), Nothing,
+            (Ref{gfp_mpoly}, Ref{GFPMPolyRing}),
+            z, ctx)
+      z.parent = ctx
+      finalizer(_gfp_mpoly_clear_fn, z)
+      return z
+   end
+
+   function gfp_mpoly(ctx::GFPMPolyRing, a::Vector{nmod}, b::Vector{Vector{UInt}})
+      z = new()
+      ccall((:nmod_mpoly_init2, libflint), Nothing,
+            (Ref{gfp_mpoly}, Int, Ref{GFPMPolyRing}),
+            z, length(a), ctx)
+      z.parent = ctx
+      finalizer(_gfp_mpoly_clear_fn, z)
+
+      for i in 1:length(a)
+         ccall((:nmod_mpoly_push_term_ui_ui, libflint), Nothing,
+               (Ref{gfp_mpoly}, UInt, Ptr{UInt}, Ref{GFPMPolyRing}),
+               z, a[i].data, b[i], ctx)
+      end
+
+      ccall((:nmod_mpoly_sort_terms, libflint), Nothing,
+            (Ref{gfp_mpoly}, Ref{GFPMPolyRing}),
+            z, ctx)
+      ccall((:nmod_mpoly_combine_like_terms, libflint), Nothing,
+            (Ref{gfp_mpoly}, Ref{GFPMPolyRing}),
+            z, ctx)
+      return z
+   end
+
+   function gfp_mpoly(ctx::GFPMPolyRing, a::Vector{nmod}, b::Vector{Vector{Int}})
+      z = new()
+      ccall((:nmod_mpoly_init2, libflint), Nothing,
+            (Ref{gfp_mpoly}, Int, Ref{GFPMPolyRing}),
+            z, length(a), ctx)
+      z.parent = ctx
+      finalizer(_gfp_mpoly_clear_fn, z)
+
+      for i in 1:length(a)
+         ccall((:nmod_mpoly_push_term_ui_ui, libflint), Nothing,
+               (Ref{gfp_mpoly}, UInt, Ptr{Int}, Ref{GFPMPolyRing}),
+               z, a[i].data, b[i], ctx)
+       end
+
+       ccall((:nmod_mpoly_sort_terms, libflint), Nothing,
+             (Ref{gfp_mpoly}, Ref{GFPMPolyRing}),
+             z, ctx)
+       ccall((:nmod_mpoly_combine_like_terms, libflint), Nothing,
+             (Ref{gfp_mpoly}, Ref{GFPMPolyRing}),
+             z, ctx)
+       return z
+   end
+
+   function gfp_mpoly(ctx::GFPMPolyRing, a::Vector{nmod}, b::Vector{Vector{fmpz}})
+      z = new()
+      ccall((:nmod_mpoly_init2, libflint), Nothing,
+            (Ref{gfp_mpoly}, Int, Ref{GFPMPolyRing}),
+            z, length(a), ctx)
+      z.parent = ctx
+      finalizer(_gfp_mpoly_clear_fn, z)
+
+      for i in 1:length(a)
+         ccall((:nmod_mpoly_push_term_ui_fmpz, libflint), Nothing,
+               (Ref{gfp_mpoly}, UInt, Ptr{Ref{fmpz}}, Ref{GFPMPolyRing}),
+               z, a[i].data, b[i], ctx)
+      end
+
+      ccall((:nmod_mpoly_sort_terms, libflint), Nothing,
+             (Ref{gfp_mpoly}, Ref{GFPMPolyRing}),
+             z, ctx)
+      ccall((:nmod_mpoly_combine_like_terms, libflint), Nothing,
+             (Ref{gfp_mpoly}, Ref{GFPMPolyRing}),
+             z, ctx)
+      return z
+   end
+
+   function gfp_mpoly(ctx::GFPMPolyRing, a::UInt)
+      z = new()
+      ccall((:nmod_mpoly_init, libflint), Nothing,
+            (Ref{gfp_mpoly}, Ref{GFPMPolyRing}),
+            z, ctx)
+      ccall((:nmod_mpoly_set_ui, libflint), Nothing,
+            (Ref{gfp_mpoly}, UInt, Ref{GFPMPolyRing}),
+            z, a, ctx)
+      z.parent = ctx
+      finalizer(_gfp_mpoly_clear_fn, z)
+      return z
+   end
+
+   function gfp_mpoly(ctx::GFPMPolyRing, a::nmod)
+      z = new()
+      ccall((:nmod_mpoly_init, libflint), Nothing,
+            (Ref{gfp_mpoly}, Ref{GFPMPolyRing},),
+            z, ctx)
+      ccall((:nmod_mpoly_set_ui, libflint), Nothing,
+            (Ref{gfp_mpoly}, UInt, Ref{GFPMPolyRing}),
+            z, a.data, ctx)
+      finalizer(_gfp_mpoly_clear_fn, z)
+      z.parent = ctx
+      return z
+   end
+end
+
+function _gfp_mpoly_clear_fn(a::gfp_mpoly)
+   ccall((:nmod_mpoly_clear, libflint), Nothing,
+         (Ref{gfp_mpoly}, Ref{GFPMPolyRing}),
+         a, a.parent)
+end
+
+const Zmodn_mpoly = Union{nmod_mpoly, gfp_mpoly}
+
+mutable struct gfp_mpoly_factor
+   constant::UInt
+   poly::Ptr{Nothing}
+   exp::Ptr{Nothing}
+   num::Int
+   alloc::Int
+   # end flint struct
+
+   parent::GFPMPolyRing
+
+   function gfp_mpoly_factor(ctx::GFPMPolyRing)
+      z = new()
+      ccall((:gfp_mpoly_factor_init, libflint), Nothing,
+            (Ref{gfp_mpoly_factor}, Ref{GFPMPolyRing}),
+            z, ctx)
+      z.parent = ctx
+      finalizer(_gfp_mpoly_factor_clear_fn, z)
+      return z
+   end
+end
+
+function _gfp_mpoly_factor_clear_fn(f::gfp_mpoly_factor)
+   ccall((:nmod_mpoly_factor_clear, libflint), Nothing,
+         (Ref{gfp_mpoly_factor}, Ref{GFPMPolyRing}),
+         f, f.parent)
+end
+
 ###############################################################################
 #
 #   FqNmodFiniteField / fq_nmod
