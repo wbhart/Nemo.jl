@@ -17,6 +17,8 @@
       @test !(SSS === SSSS)
 
       @test nvars(S) == num_vars
+      @test modulus(S) == modulus(R)
+      @test modulus(varlist[1]) == modulus(R)
 
       @test elem_type(S) == nmod_mpoly
       @test elem_type(NmodMPolyRing) == nmod_mpoly
@@ -68,6 +70,11 @@ end
       g = gens(S)
 
       @test characteristic(S) == 23
+
+      @test S(2) == 2
+      @test S(2) == R(2)
+      @test S(2) == UInt(2)
+      @test S(BigInt(2)) == UInt(2)
 
       @test !isgen(S(1))
 
@@ -330,6 +337,9 @@ end
          f = rand(S, 0:5, 0:100)
          g = rand(S, 0:5, 0:100)
 
+         @test iszero(f) || !divides(f, S(0))[1]
+         @test divexact(2*f, 2) == f
+
          p = f*g
 
          flag, q = divides(p, f)
@@ -553,6 +563,9 @@ end
    M2 = T([1 1; 2 4])
 
    @test f(M1, M2) == T([9 12; 18 20])
+
+   @test evaluate(f, [fmpz(20), fmpz(30)]) == R(20^2*30^2+2*20+1)
+   @test evaluate(f, [UInt(20), UInt(30)]) == R(20^2*30^2+2*20+1)
 end
 
 @testset "nmod_mpoly.valuation..." begin
@@ -613,7 +626,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.combine_like_terms..." begin
+@testset "nmod_mpoly.unsafe..." begin
   R23 = ResidueRing(FlintZZ, 23)
 
   for num_vars = 1:10
@@ -647,6 +660,28 @@ end
         @test length(f) == lenf - 1 - terms_cancel
      end
   end
+
+   S, (x, y) = PolynomialRing(R23, ["x", "y"])
+
+   f = one(S)
+   zero!(f)
+   setcoeff!(f, 1, 1)
+   set_exponent_vector!(f, 1, [fmpz(1), fmpz(0)])
+   set_exponent_vector!(f, 2, [UInt(0), UInt(1)])
+   setcoeff!(f, 2, 2)
+   setcoeff!(f, 3, 3)
+   set_exponent_vector!(f, 3, [UInt(2), UInt(0)])
+   set_exponent_vector!(f, 4, [fmpz(0), fmpz(2)])
+   setcoeff!(f, 4, 4)
+   sort_terms!(f)
+   @test f == 1*x+2*y+3*x^2+4*y^2
+
+   add!(f, y^2, x*y)
+   @test f == y^2 + x*y
+   addeq!(f, x^2)
+   @test f == y^2 + x*y + x^2
+   mul!(f, f, x)
+   @test f == (y^2 + x*y + x^2)*x
 end
 
 @testset "nmod_mpoly.exponents..." begin
@@ -689,15 +724,36 @@ end
         f = combine_like_terms!(f)
 
         for i = 1:length(f) - 1
+           @test exponent_vector_ui(f, i) != exponent_vector_ui(f, i + 1)
            @test exponent_vector(f, i) != exponent_vector(f, i + 1)
            @test coeff(f, i) != 0
-        end
-        if length(f) > 0
-           @test coeff(f, length(f)) != 0
+           @test coeff(f, i + 1) != 0
         end
      end
 
      f = rand(vars_R)^(fmpz(2)^64)
+     @test !exponent_vector_fits_ui(f, 1)
      @test_throws DomainError exponent_vector(f, 1)
   end
+
+   S, (x, y) = PolynomialRing(R23, ["x", "y"])
+
+   f = 1+2*x+3*y^2
+   @test coeff(f, [UInt(1), UInt(0)]) == 2
+   @test coeff(f, [UInt(1), UInt(1)]) == 0
+
+   setcoeff!(f, [2,3], 1)
+   @test f == 1+2*x+3*y^2+x^2*y^3
+
+   setcoeff!(f,[UInt(0), UInt(2)], R23(0))
+   @test f == 1+2*x+x^2*y^3
+
+   m = [[0,0], [1,0], [0,1]]
+   @test S([R23(0), R23(1), R23(2)], m) == 1*x+2*y
+
+   m = [[fmpz(0),fmpz(0)], [fmpz(1),fmpz(0)], [fmpz(0),fmpz(1)]]
+   @test S([R23(0), R23(1), R23(2)], m) == 1*x+2*y
+
+   m = [[BigInt(0),BigInt(0)], [BigInt(1),BigInt(0)], [BigInt(0),BigInt(1)]]
+   @test S([BigInt(0), BigInt(1), BigInt(2)], m) == 1*x+2*y
 end

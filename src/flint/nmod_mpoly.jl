@@ -351,63 +351,66 @@ end
 #
 ###############################################################################
 
-#=
-for (jT, cN, cT) in ((UInt, :ui, UInt),)
-   @eval begin
-      function +(a::nmod_mpoly, b::($jT))
-         z = parent(a)()
-         ccall(($(string(:nmod_mpoly_add_, cN)), libflint), Nothing,
-               (Ref{nmod_mpoly}, Ref{nmod_mpoly}, ($cT), Ref{NmodMPolyRing}),
-               z, a, b, parent(a))
-         return z
-      end
-
-      +(a::($jT), b::nmod_mpoly) = b + a
-
-      function -(a::nmod_mpoly, b::($jT))
-         z = parent(a)()
-         ccall(($(string(:nmod_mpoly_sub_, cN)), libflint), Nothing,
-               (Ref{nmod_mpoly}, Ref{nmod_mpoly}, ($cT), Ref{NmodMPolyRing}),
-               z, a, b, parent(a))
-         return z
-      end
-
-      -(a::($jT), b::nmod_mpoly) = - (b - a)
-
-      function *(a::nmod_mpoly, b::($jT))
-         z = parent(a)()
-         ccall(($(string(:nmod_mpoly_scalar_mul_, cN)), libflint), Nothing,
-               (Ref{nmod_mpoly}, Ref{nmod_mpoly}, ($cT), Ref{NmodMPolyRing}),
-               z, a, b, parent(a))
-         return z
-      end
-
-      *(a::($jT), b::nmod_mpoly) = b * a
-
-      function divexact(a::nmod_mpoly, b::($jT))
-         z = parent(a)()
-         ccall(($(string(:nmod_mpoly_scalar_div_, cN)), libflint), Nothing,
-               (Ref{nmod_mpoly}, Ref{nmod_mpoly}, ($cT), Ref{NmodMPolyRing}),
-               z, a, b, parent(a))
-         return z
-      end
-   end
+function +(a::($etype), b::UInt)
+   z = parent(a)()
+   ccall((:nmod_mpoly_add_ui, libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, UInt, Ref{($rtype)}),
+         z, a, b, parent(a))
+   return z
 end
-=#
+
++(b::UInt, a::($etype)) = a + b
+
++(a::($etype), b::($ctype)) = a + b.data
+
++(b::($ctype), a::($etype)) = a + b.data
 
 +(a::($etype), b::Integer) = a + base_ring(parent(a))(b)
 
 +(a::Integer, b::($etype)) = b + a
 
+function -(a::($etype), b::UInt)
+   z = parent(a)()
+   ccall((:nmod_mpoly_sub_ui, libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, UInt, Ref{($rtype)}),
+         z, a, b, parent(a))
+   return z
+end
+
+function -(b::UInt, a::($etype))
+   z = parent(a)()
+   ccall((:nmod_mpoly_sub_ui, libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, UInt, Ref{($rtype)}),
+         z, a, b, parent(a))
+   ccall((:nmod_mpoly_neg, libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Ref{($rtype)}),
+         z, z, parent(a))
+   return z
+end
+
+-(a::($etype), b::($ctype)) = a - b.data
+
+-(b::($ctype), a::($etype)) = b.data - a
+
 -(a::($etype), b::Integer) = a - base_ring(parent(a))(b)
 
 -(a::Integer, b::($etype)) = base_ring(parent(b))(a) - b
 
-*(a::($etype), b::Integer) = a*base_ring(parent(a))(b)
+function *(a::($etype), b::UInt)
+   z = parent(a)()
+   ccall((:nmod_mpoly_scalar_mul_ui, libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, UInt, Ref{($rtype)}),
+         z, a, b, parent(a))
+   return z
+end
 
-*(a::Integer, b::($etype)) = b*a
+*(b::UInt, a::($etype)) = a * b
 
-divexact(a::($etype), b::Integer) = divexact(a, base_ring(parent(a))(b))
+*(a::($etype), b::($ctype)) = a * b.data
+
+*(b::($ctype), a::($etype)) = a * b.data
+
+*(a::($etype), b::Integer) = a * base_ring(parent(a))(b)
 
 ###############################################################################
 #
@@ -948,7 +951,7 @@ end
 
 # Set the coefficient of the term with the given exponent vector to the
 # given fmpz. Removal of a zero term is performed.
-function setcoeff!(a::($etype), exps::Vector{UInt}, b::nmod)
+function setcoeff!(a::($etype), exps::Vector{UInt}, b::($ctype))
    ccall((:nmod_mpoly_set_coeff_ui_ui, libflint), Nothing,
          (Ref{($etype)}, UInt, Ptr{UInt}, Ref{($rtype)}),
          a, b.data, exps, parent(a))
@@ -957,8 +960,8 @@ end
 
 # Set the coefficient of the term with the given exponent vector to the
 # given fmpz. Removal of a zero term is performed.
-function setcoeff!(a::($etype), exps::Vector{Int}, b::nmod)
-   ccall((:nmod_mpoly_set_coeff_fmpz_ui, libflint), Nothing,
+function setcoeff!(a::($etype), exps::Vector{Int}, b::($ctype))
+   ccall((:nmod_mpoly_set_coeff_ui_ui, libflint), Nothing,
          (Ref{($etype)}, UInt, Ptr{Int}, Ref{($rtype)}),
          a, b.data, exps, parent(a))
    return a
@@ -1056,13 +1059,11 @@ function (R::($rtype))(a::nmod_mpoly)
 end
 
 # Create poly with given array of coefficients and array of exponent vectors (sorting is performed)
-function (R::($rtype))(a::Vector{nmod}, b::Vector{Vector{T}}) where {T <: Union{fmpz, UInt}}
+function (R::($rtype))(a::Vector{($ctype)}, b::Vector{Vector{T}}) where {T <: Union{fmpz, UInt}}
    length(a) != length(b) && error("Coefficient and exponent vector must have the same length")
-
    for i in 1:length(b)
      length(b[i]) != nvars(R) && error("Exponent vector $i has length $(length(b[i])) (expected $(nvars(R))")
    end
-
    z = nmod_mpoly(R, a, b)
    return z
 end
@@ -1070,28 +1071,24 @@ end
 # Create poly with given array of coefficients and array of exponent vectors (sorting is performed)
 function (R::($rtype))(a::Vector{($ctype)}, b::Vector{Vector{Int}})
    length(a) != length(b) && error("Coefficient and exponent vector must have the same length")
-
    for i in 1:length(b)
       length(b[i]) != nvars(R) && error("Exponent vector $i has length $(length(b[i])) (expected $(nvars(R)))")
    end
-
    z = nmod_mpoly(R, a, b)
    return z
 end
 
 # Create poly with given array of coefficients and array of exponent vectors (sorting is performed)
-function (R::($rtype))(a::Vector{Any}, b::Vector{Vector{T}}) where T
+function (R::($rtype))(a::Vector, b::Vector{Vector{T}}) where T
    n = nvars(R)
    length(a) != length(b) && error("Coefficient and exponent vector must have the same length")
-   newa = map(R, a)
+   newa = map(base_ring(R), a)
    newb = map(x -> map(FlintZZ, x), b)
    newaa = convert(Vector{($ctype)}, newa)
    newbb = convert(Vector{Vector{fmpz}}, newb)
-
    for i in 1:length(newbb)
       length(newbb[i]) != n && error("Exponent vector $i has length $(length(newbb[i])) (expected $(nvars(R)))")
    end
-
    return R(newaa, newbb)
 end
 

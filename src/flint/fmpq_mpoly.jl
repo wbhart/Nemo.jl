@@ -6,10 +6,10 @@
 
 export FmpqMPolyRing, fmpq_mpoly, degrees, symbols, degree_fmpz,
        degrees_fit_int, degrees_fmpz, total_degree_fits_int, total_degree_fmpz,
-       combine_like_terms!, sort_terms!, exponent_vector_fits_ui,
-       exponent_vector_fits_int, exponent_vector, exponent_vector_fmpz,
+       exponent_vector_fits_int, exponent_vector_fits_ui,
+       exponent_vector, exponent_vector_ui, exponent_vector_fmpz,
        exponent_vectors, exponent_vectors_fmpz, set_exponent_vector!,
-       sort_terms!
+       combine_like_terms!, sort_terms!
 
 ###############################################################################
 #
