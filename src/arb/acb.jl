@@ -1821,10 +1821,42 @@ end
 
 (r::AcbField)(x::Rational{T}) where {T <: Integer} = r(fmpq(x))
 
-function (r::AcbField)(x::T, y::T) where {T <: Union{Int, UInt,fmpz, fmpq, arb, Float64, BigFloat, AbstractString}}
+function (r::AcbField)(x::T, y::T) where {T <: Union{Int, UInt, fmpz, fmpq, arb, Float64, BigFloat, AbstractString}}
   z = acb(x, y, r.prec)
   z.parent = r
   return z
+end
+
+for S in (Int, UInt, fmpz, fmpq, arb, Float64, BigFloat, AbstractString, BigInt)
+  for T in (Int, UInt, fmpz, fmpq, arb, Float64, BigFloat, AbstractString, BigInt)
+    if S != T
+      @eval begin
+        function (r::AcbField)(x::$(S), y::$(T))
+          RR = ArbField(r.prec, cached = false)
+          z = acb(RR(x), RR(y), r.prec)
+          z.parent = r
+          return z
+        end
+      end
+    end
+  end
+end
+
+for T in (Int, UInt, fmpz, fmpq, arb, Float64, BigFloat, AbstractString, BigInt)
+  @eval begin
+    function (r::AcbField)(x::Rational{S}, y::$(T)) where {S <: Integer}
+      RR = ArbField(r.prec, cached = false)
+      z = acb(RR(x), RR(y), r.prec)
+      z.parent = r
+      return z
+    end
+    function (r::AcbField)(x::$(T), y::Rational{S}) where {S <: Integer}
+      RR = ArbField(r.prec, cached = false)
+      z = acb(RR(x), RR(y), r.prec)
+      z.parent = r
+      return z
+    end
+  end
 end
 
 (r::AcbField)(x::BigInt, y::BigInt) = r(fmpz(x), fmpz(y))
