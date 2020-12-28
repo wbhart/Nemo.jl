@@ -422,7 +422,7 @@ function ^(a::($etype), b::Int)
    b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    z = parent(a)()
    ccall((:nmod_mpoly_pow_ui, libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)}, UInt, Ref{NmodMPolyRing}),
+         (Ref{($etype)}, Ref{($etype)}, UInt, Ref{($rtype)}),
          z, a, UInt(b), parent(a))
    return z
 end
@@ -430,9 +430,10 @@ end
 function ^(a::($etype), b::fmpz)
    b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    z = parent(a)()
-   ccall((:nmod_mpoly_pow_fmpz, libflint), Nothing,
+   ok = ccall((:nmod_mpoly_pow_fmpz, libflint), Cint,
          (Ref{($etype)}, Ref{($etype)}, Ref{fmpz}, Ref{($rtype)}),
          z, a, b, parent(a))
+   !isone(ok) && error("Unable to compute power")
    return z
 end
 
@@ -473,7 +474,7 @@ function (::Type{Fac{($etype)}})(fac::($ftype), preserve_input::Bool = true)
                f, fac, i, R)
       end
       F.fac[f] = ccall((:nmod_mpoly_factor_get_exp_si, libflint), Int,
-                       (Ref{nmod_mpoly_factor}, Int, Ref{($rtype)}),
+                       (Ref{($ftype)}, Int, Ref{($rtype)}),
                        fac, i, R)
    end
    c = ccall((:nmod_mpoly_factor_get_constant_ui, libflint), UInt,
@@ -490,7 +491,7 @@ function factor(a::($etype))
               (Ref{($ftype)}, Ref{($etype)}, Ref{($rtype)}),
               fac, a, R)
    !isone(ok) && error("unable to compute factorization")
-   return Fac{nmod_mpoly}(fac, false)
+   return Fac{($etype)}(fac, false)
 end
 
 function factor_squarefree(a::($etype))
@@ -671,8 +672,8 @@ function evaluate(a::($etype), b::Vector{nmod})
    length(b) != nvars(parent(a)) && error("Vector size incorrect in evaluate")
    b2 = [d.data for d in b]
    z = ccall((:nmod_mpoly_evaluate_all_ui, libflint), UInt,
-         (Ref{nmod_mpoly}, Ptr{UInt}, Ref{NmodMPolyRing}),
-            a, b2, parent(a))
+             (Ref{($etype)}, Ptr{UInt}, Ref{($rtype)}),
+             a, b2, parent(a))
    return base_ring(parent(a))(z)
 end
 
@@ -1030,7 +1031,7 @@ function (R::($rtype))()
    return z
 end
 
-function (R::($rtype))(b::nmod)
+function (R::($rtype))(b::($ctype))
    z = ($etype)(R, b)
    return z
 end
@@ -1053,7 +1054,7 @@ function (R::($rtype))(b::fmpz)
    return R(base_ring(R)(b))
 end
 
-function (R::($rtype))(a::nmod_mpoly)
+function (R::($rtype))(a::($etype))
    parent(a) != R && error("Unable to coerce polynomial")
    return a
 end
@@ -1064,7 +1065,7 @@ function (R::($rtype))(a::Vector{($ctype)}, b::Vector{Vector{T}}) where {T <: Un
    for i in 1:length(b)
      length(b[i]) != nvars(R) && error("Exponent vector $i has length $(length(b[i])) (expected $(nvars(R))")
    end
-   z = nmod_mpoly(R, a, b)
+   z = ($etype)(R, a, b)
    return z
 end
 
@@ -1074,7 +1075,7 @@ function (R::($rtype))(a::Vector{($ctype)}, b::Vector{Vector{Int}})
    for i in 1:length(b)
       length(b[i]) != nvars(R) && error("Exponent vector $i has length $(length(b[i])) (expected $(nvars(R)))")
    end
-   z = nmod_mpoly(R, a, b)
+   z = ($etype)(R, a, b)
    return z
 end
 

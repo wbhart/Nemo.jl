@@ -1872,7 +1872,7 @@ mutable struct gfp_mpoly <: MPolyElem{gfp_elem}
       return z
    end
 
-   function gfp_mpoly(ctx::GFPMPolyRing, a::Vector{nmod}, b::Vector{Vector{UInt}})
+   function gfp_mpoly(ctx::GFPMPolyRing, a::Vector{gfp_elem}, b::Vector{Vector{UInt}})
       z = new()
       ccall((:nmod_mpoly_init2, libflint), Nothing,
             (Ref{gfp_mpoly}, Int, Ref{GFPMPolyRing}),
@@ -1895,7 +1895,7 @@ mutable struct gfp_mpoly <: MPolyElem{gfp_elem}
       return z
    end
 
-   function gfp_mpoly(ctx::GFPMPolyRing, a::Vector{nmod}, b::Vector{Vector{Int}})
+   function gfp_mpoly(ctx::GFPMPolyRing, a::Vector{gfp_elem}, b::Vector{Vector{Int}})
       z = new()
       ccall((:nmod_mpoly_init2, libflint), Nothing,
             (Ref{gfp_mpoly}, Int, Ref{GFPMPolyRing}),
@@ -1918,7 +1918,7 @@ mutable struct gfp_mpoly <: MPolyElem{gfp_elem}
        return z
    end
 
-   function gfp_mpoly(ctx::GFPMPolyRing, a::Vector{nmod}, b::Vector{Vector{fmpz}})
+   function gfp_mpoly(ctx::GFPMPolyRing, a::Vector{gfp_elem}, b::Vector{Vector{fmpz}})
       z = new()
       ccall((:nmod_mpoly_init2, libflint), Nothing,
             (Ref{gfp_mpoly}, Int, Ref{GFPMPolyRing}),
@@ -1954,10 +1954,10 @@ mutable struct gfp_mpoly <: MPolyElem{gfp_elem}
       return z
    end
 
-   function gfp_mpoly(ctx::GFPMPolyRing, a::nmod)
+   function gfp_mpoly(ctx::GFPMPolyRing, a::gfp_elem)
       z = new()
       ccall((:nmod_mpoly_init, libflint), Nothing,
-            (Ref{gfp_mpoly}, Ref{GFPMPolyRing},),
+            (Ref{gfp_mpoly}, Ref{GFPMPolyRing}),
             z, ctx)
       ccall((:nmod_mpoly_set_ui, libflint), Nothing,
             (Ref{gfp_mpoly}, UInt, Ref{GFPMPolyRing}),
@@ -1988,7 +1988,7 @@ mutable struct gfp_mpoly_factor
 
    function gfp_mpoly_factor(ctx::GFPMPolyRing)
       z = new()
-      ccall((:gfp_mpoly_factor_init, libflint), Nothing,
+      ccall((:nmod_mpoly_factor_init, libflint), Nothing,
             (Ref{gfp_mpoly_factor}, Ref{GFPMPolyRing}),
             z, ctx)
       z.parent = ctx

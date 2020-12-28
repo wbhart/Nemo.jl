@@ -1,5 +1,5 @@
-@testset "nmod_mpoly.constructors..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.constructors..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -21,34 +21,34 @@
       @test modulus(S) == modulus(R)
       @test modulus(varlist[1]) == modulus(R)
 
-      @test elem_type(S) == nmod_mpoly
-      @test elem_type(NmodMPolyRing) == nmod_mpoly
-      @test parent_type(nmod_mpoly) == NmodMPolyRing
+      @test elem_type(S) == gfp_mpoly
+      @test elem_type(GFPMPolyRing) == gfp_mpoly
+      @test parent_type(gfp_mpoly) == GFPMPolyRing
 
-      @test typeof(S) <: NmodMPolyRing
+      @test typeof(S) <: GFPMPolyRing
 
       isa(symbols(S), Array{Symbol, 1})
 
       for j = 1:num_vars
-         @test isa(varlist[j], nmod_mpoly)
-         @test isa(gens(S)[j], nmod_mpoly)
+         @test isa(varlist[j], gfp_mpoly)
+         @test isa(gens(S)[j], gfp_mpoly)
       end
 
       f =  rand(S, 0:5, 0:100)
 
-      @test isa(f, nmod_mpoly)
+      @test isa(f, gfp_mpoly)
 
-      @test isa(S(2), nmod_mpoly)
+      @test isa(S(2), gfp_mpoly)
 
-      @test isa(S(R(2)), nmod_mpoly)
+      @test isa(S(R(2)), gfp_mpoly)
 
-      @test isa(S(f), nmod_mpoly)
+      @test isa(S(f), gfp_mpoly)
 
       V = [R(rand(-100:100)) for i in 1:5]
 
       W0 = [ UInt[rand(0:100) for i in 1:num_vars] for j in 1:5]
 
-      @test isa(S(V, W0), nmod_mpoly)
+      @test isa(S(V, W0), gfp_mpoly)
 
       for i in 1:num_vars
         f = gen(S, i)
@@ -60,8 +60,8 @@
    end
 end
 
-@testset "nmod_mpoly.manipulation..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.manipulation..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -182,8 +182,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.multivariate_coeff..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.multivariate_coeff..." begin
+   R = GF(23)
 
    for ord in Nemo.flint_orderings
       S, (x, y, z) = PolynomialRing(R, ["x", "y", "z"]; ordering=ord)
@@ -200,8 +200,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.unary_ops..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.unary_ops..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -217,8 +217,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.binary_ops..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.binary_ops..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -240,8 +240,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.adhoc_binary..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.adhoc_binary..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -276,8 +276,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.adhoc_comparison..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.adhoc_comparison..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -298,8 +298,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.powering..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.powering..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -325,8 +325,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.divides..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.divides..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -357,8 +357,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.euclidean_division..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.euclidean_division..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -393,8 +393,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.ideal_reduction..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.ideal_reduction..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -442,8 +442,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.gcd..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.gcd..." begin
+   R = GF(23)
 
    for num_vars = 1:4
       var_names = ["x$j" for j in 1:num_vars]
@@ -468,8 +468,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.factor..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.factor..." begin
+   R = GF(23)
    R, (x, y, z) = PolynomialRing(R, ["x", "y", "z"])
 
    function check_factor(a, esum)
@@ -485,8 +485,8 @@ end
    check_factor(x^99-y^99*z^33, 22)
 end
 
-@testset "nmod_mpoly.sqrt..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.sqrt..." begin
+   R = GF(23)
 
    for num_vars = 1:4
       var_names = ["x$j" for j in 1:num_vars]
@@ -511,8 +511,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.evaluation..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.evaluation..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -569,8 +569,8 @@ end
    @test evaluate(f, [UInt(20), UInt(30)]) == R(20^2*30^2+2*20+1)
 end
 
-@testset "nmod_mpoly.valuation..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.valuation..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -607,8 +607,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.derivative..." begin
-   R = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.derivative..." begin
+   R = GF(23)
 
    for num_vars = 1:10
       var_names = ["x$j" for j in 1:num_vars]
@@ -627,8 +627,8 @@ end
    end
 end
 
-@testset "nmod_mpoly.unsafe..." begin
-  R23 = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.unsafe..." begin
+  R23 = GF(23)
 
   for num_vars = 1:10
      var_names = ["x$j" for j in 1:num_vars]
@@ -685,8 +685,8 @@ end
    @test f == (y^2 + x*y + x^2)*x
 end
 
-@testset "nmod_mpoly.exponents..." begin
-  R23 = ResidueRing(FlintZZ, 23)
+@testset "gfp_mpoly.exponents..." begin
+  R23 = GF(23)
 
   for num_vars = 1:10
      var_names = ["x$j" for j in 1:num_vars]
