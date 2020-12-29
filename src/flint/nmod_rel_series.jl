@@ -621,9 +621,9 @@ end
 
 function Base.exp(a::nmod_rel_series)
    if iszero(a)
+      precision(a) == 0 && return deepcopy(a)
       z = one(parent(a))
       z.prec = precision(a)
-      z.val = valuation(a)
       return z
    end
    z = parent(a)()
