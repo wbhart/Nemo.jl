@@ -304,52 +304,32 @@ end
 #
 ###############################################################################
 
-function show(io::IO, x::FlintPuiseuxSeriesElem)
-   len = pol_length(x.data)
-   if len == 0
-      print(io, zero(base_ring(x)))
-   else
-      coeff_printed = false
-      sc = scale(x.data)
-      den = x.scale
-      for i = 0:len - 1
-         c = polcoeff(x.data, i)
-         bracket = needs_parentheses(c)
-         if !iszero(c)
-            if coeff_printed && !displayed_with_minus_in_front(c)
-               print(io, "+")
-            end
-            if i*sc + valuation(x.data) != 0
-               if !isone(c) && (c != -1 || show_minus_one(elem_type(base_ring(x))))
-                  if bracket
-                     print(io, "(")
-                  end
-                  print(io, c)
-                  if bracket
-                     print(io, ")")
-                  end
-                  if i*sc + valuation(x.data) != 0
-                     print(io, "*")
-                  end
-               end
-               if c == -1 && !show_minus_one(elem_type(base_ring(x)))
-                  print(io, "-")
-               end
-               print(io, string(var(parent(x.data))))
-               if (i*sc + valuation(x.data))//den != 1
-                  print(io, "^")
-                  q = (valuation(x.data) + i*sc)//den
-                  print(io, denominator(q) == 1 ? numerator(q) : q)
-               end
-            else
-               print(io, c)
-            end
-            coeff_printed = true
+function AbstractAlgebra.expressify(a::FlintPuiseuxSeriesElem,
+                                    x = var(parent(a.data)); context = nothing)
+   sum = Expr(:call, :+)
+   for i in 0:pol_length(a.data) - 1
+      c = polcoeff(a.data, i)
+      if !iszero(c)
+         q = (i*scale(a.data) + valuation(a.data))//a.scale
+         xk = iszero(q) ? 1 : isone(q) ? x : Expr(:call, :^, x, expressify(q))
+         if isone(c)
+             push!(sum.args, xk)
+         else
+             push!(sum.args, Expr(:call, :*, expressify(c, context = context), xk))
          end
       end
    end
-   q =  precision(x.data)//x.scale
-   print(io, "+O(", string(var(parent(x.data))), "^", denominator(q) == 1 ? numerator(q) : q, ")")
+   q = precision(a.data)//a.scale
+   push!(sum.args, Expr(:call, :O, Expr(:call, :^, x, expressify(q))))
+   return sum
+end
+
+function Base.show(io::IO, ::MIME"text/plain", a::FlintPuiseuxSeriesElem)
+   print(io, AbstractAlgebra.obj_to_string(a, context = io))
+end
+
+function Base.show(io::IO, a::FlintPuiseuxSeriesElem)
+   print(io, AbstractAlgebra.obj_to_string(a, context = io))
 end
 
 function show(io::IO, a::FlintPuiseuxSeriesRing)
@@ -361,12 +341,6 @@ function show(io::IO, a::FlintPuiseuxSeriesField)
    print(io, "Puiseux series field in ", var(laurent_ring(a)), " over ")
    show(io, base_ring(a))
 end
-
-needs_parentheses(x::FlintPuiseuxSeriesElem) = pol_length(x.data) > 1
-
-displayed_with_minus_in_front(x::FlintPuiseuxSeriesElem) = pol_length(x) <= 1 && displayed_with_minus_in_front(polcoeff(x.data, 0))
-
-show_minus_one(::Type{FlintPuiseuxSeriesElem{T}}) where T <: RingElem = show_minus_one(T)
 
 ###############################################################################
 #
@@ -600,7 +574,7 @@ rand(S::FlintPuiseuxSeriesRingOrField, val_range, scale_range, v...) =
 
 function zero!(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
    zero!(a.data)
-   a = set_scale(a, 1)
+   a.data = set_scale!(a.data, 1)
    return a
 end
 
@@ -663,6 +637,7 @@ end
 ###############################################################################
 
 function (R::FlintPuiseuxSeriesRing{T})(b::RingElement) where T <: RingElem
+   # TODO this method applies to b::fmpz_poly but is broken
    return R(base_ring(R)(b))
 end
 
@@ -709,14 +684,14 @@ function (R::FlintPuiseuxSeriesField{T})(b::Rational) where T <: RingElem
 end
 
 function (R::FlintPuiseuxSeriesRing{T})(b::T) where T <: RingElem
-   parent(b) != base_ring(R) && error("Unable to coerce to Puiseux series")
+   parent(b) != laurent_ring(R) && error("Unable to coerce to Puiseux series")
    z = FlintPuiseuxSeriesRingElem{T}(b, 1)
    z.parent = R
    return z
 end
 
 function (R::FlintPuiseuxSeriesField{T})(b::T) where T <: FieldElem
-   parent(b) != base_ring(R) && error("Unable to coerce to Puiseux series")
+   parent(b) != laurent_ring(R) && error("Unable to coerce to Puiseux series")
    z = FlintPuiseuxSeriesFieldElem{T}(b, 1)
    z.parent = R
    return z
