@@ -23,6 +23,13 @@ jobs:
           - ubuntu-latest
           - macOS-latest
           - windows-latest
+        exclude:
+          # Reduce the number of macOS jobs, as fewer can be run in parallel
+          - os: macos-latest
+            julia-version: '1.1'
+          - os: macos-latest
+            julia-version: '1.4'
+
     steps:
       - uses: actions/checkout@v2
         with:
