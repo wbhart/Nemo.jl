@@ -934,9 +934,8 @@ Given the Gram matrix $x$ of a matrix, compute the Gram matrix of its LLL
 reduction inplace.
 """
 function lll_gram!(x::fmpz_mat, ctx::lll_ctx = lll_ctx(0.99, 0.51, :gram))
-   u = similar(x, nrows(x), nrows(x))
    ccall((:fmpz_lll, libflint), Nothing,
-         (Ref{fmpz_mat}, Ref{fmpz_mat}, Ref{lll_ctx}), x, u, ctx)
+         (Ref{fmpz_mat}, Ptr{Nothing}, Ref{lll_ctx}), x, C_NULL, ctx)
    return x
 end
 
@@ -968,9 +967,8 @@ are the rows remaining after removal.
 """
 function lll_with_removal(x::fmpz_mat, b::fmpz, ctx::lll_ctx = lll_ctx(0.99, 0.51))
    z = deepcopy(x)
-   u = similar(x, nrows(x), nrows(x))
    d = Int(ccall((:fmpz_lll_with_removal, libflint), Cint,
-    (Ref{fmpz_mat}, Ref{fmpz_mat}, Ref{fmpz}, Ref{lll_ctx}), z, u, b, ctx))
+    (Ref{fmpz_mat}, Ptr{Nothing}, Ref{fmpz}, Ref{lll_ctx}), z, C_NULL, b, ctx))
    return d, z
 end
 
