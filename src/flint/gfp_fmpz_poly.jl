@@ -375,32 +375,32 @@ end
 ################################################################################
 
 function (R::GFPFmpzPolyRing)()
-  z = gfp_fmpz_poly(R.n)
+  z = gfp_fmpz_poly(base_ring(R))
   z.parent = R
   return z
 end
 
 function (R::GFPFmpzPolyRing)(x::fmpz)
-  z = gfp_fmpz_poly(R.n, x)
+  z = gfp_fmpz_poly(base_ring(R), x)
   z.parent = R
   return z
 end
 
 function (R::GFPFmpzPolyRing)(x::Integer)
-  z = gfp_fmpz_poly(R.n, fmpz(x))
+  z = gfp_fmpz_poly(base_ring(R), fmpz(x))
   z.parent = R
   return z
 end
 
 function (R::GFPFmpzPolyRing)(x::gfp_fmpz_elem)
   base_ring(R) != parent(x) && error("Wrong parents")
-  z = gfp_fmpz_poly(R.n, x.data)
+  z = gfp_fmpz_poly(base_ring(R), x.data)
   z.parent = R
   return z
 end
 
 function (R::GFPFmpzPolyRing)(arr::Array{fmpz, 1})
-  z = gfp_fmpz_poly(R.n, arr)
+  z = gfp_fmpz_poly(base_ring(R), arr)
   z.parent = R
   return z
 end
@@ -409,7 +409,7 @@ function (R::GFPFmpzPolyRing)(arr::Array{gfp_fmpz_elem, 1})
   if length(arr) > 0
      (base_ring(R) != parent(arr[1])) && error("Wrong parents")
   end
-  z = gfp_fmpz_poly(R.n, arr)
+  z = gfp_fmpz_poly(base_ring(R), arr)
   z.parent = R
   return z
 end
@@ -417,7 +417,7 @@ end
 (R::GFPFmpzPolyRing)(arr::Array{T, 1}) where {T <: Integer} = R(map(base_ring(R), arr))
 
 function (R::GFPFmpzPolyRing)(x::fmpz_poly)
-  z = gfp_fmpz_poly(R.n, x)
+  z = gfp_fmpz_poly(base_ring(R), x)
   z.parent = R
   return z
 end

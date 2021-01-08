@@ -15,7 +15,7 @@ export fmpz_mod_rel_series, FmpzModRelSeriesRing
 function O(a::fmpz_mod_rel_series)
    val = pol_length(a) + valuation(a) - 1
    val < 0 && throw(DomainError(val, "Valuation must be non-negative"))
-   z = fmpz_mod_rel_series(modulus(a), Vector{fmpz}(undef, 0), 0, val, val)
+   z = fmpz_mod_rel_series(base_ring(a), Vector{fmpz}(undef, 0), 0, val, val)
    z.parent = parent(a)
    return z
 end
@@ -79,7 +79,7 @@ zero(R::FmpzModRelSeriesRing) = R(0)
 one(R::FmpzModRelSeriesRing) = R(1)
 
 function gen(R::FmpzModRelSeriesRing)
-   z = fmpz_mod_rel_series(modulus(R), [fmpz(1)], 1, max_precision(R) + 1, 1)
+   z = fmpz_mod_rel_series(base_ring(R), [fmpz(1)], 1, max_precision(R) + 1, 1)
    z.parent = R
    return z
 end
@@ -713,10 +713,9 @@ function addeq!(a::fmpz_mod_rel_series, b::fmpz_mod_rel_series)
    val = min(a.val, b.val)
    lena = min(lena, prec - a.val)
    lenb = min(lenb, prec - b.val)
-   modulus = modulus(a)
    p = a.parent.base_ring.ninv
    if a.val < b.val
-      z = fmpz_mod_rel_series(modulus)
+      z = fmpz_mod_rel_series(p)
       lenz = max(lena, lenb + b.val - a.val)
       ccall((:fmpz_mod_poly_set_trunc, libflint), Nothing,
             (Ref{fmpz_mod_rel_series}, Ref{fmpz_mod_rel_series}, Int,
@@ -793,7 +792,7 @@ promote_rule(::Type{fmpz_mod_rel_series}, ::Type{fmpz_mod}) = fmpz_mod_rel_serie
 ###############################################################################
 
 function (a::FmpzModRelSeriesRing)()
-   z = fmpz_mod_rel_series(modulus(a))
+   z = fmpz_mod_rel_series(base_ring(a))
    z.prec = a.prec_max
    z.val = a.prec_max
    z.parent = a
@@ -802,11 +801,11 @@ end
 
 function (a::FmpzModRelSeriesRing)(b::Integer)
    if b == 0
-      z = fmpz_mod_rel_series(modulus(a))
+      z = fmpz_mod_rel_series(base_ring(a))
       z.prec = a.prec_max
       z.val = a.prec_max
    else
-      z = fmpz_mod_rel_series(modulus(a), [fmpz(b)], 1, a.prec_max, 0)
+      z = fmpz_mod_rel_series(base_ring(a), [fmpz(b)], 1, a.prec_max, 0)
    end
    z.parent = a
    return z
@@ -814,11 +813,11 @@ end
 
 function (a::FmpzModRelSeriesRing)(b::fmpz)
    if iszero(b)
-      z = fmpz_mod_rel_series(modulus(a))
+      z = fmpz_mod_rel_series(base_ring(a))
       z.prec = a.prec_max
       z.val = a.prec_max
    else
-      z = fmpz_mod_rel_series(modulus(a), [b], 1, a.prec_max, 0)
+      z = fmpz_mod_rel_series(base_ring(a), [b], 1, a.prec_max, 0)
    end
    z.parent = a
    return z
@@ -826,11 +825,11 @@ end
 
 function (a::FmpzModRelSeriesRing)(b::fmpz_mod)
    if iszero(b)
-      z = fmpz_mod_rel_series(modulus(a))
+      z = fmpz_mod_rel_series(base_ring(a))
       z.prec = a.prec_max
       z.val = a.prec_max
    else
-      z = fmpz_mod_rel_series(modulus(a), [b], 1, a.prec_max, 0)
+      z = fmpz_mod_rel_series(base_ring(a), [b], 1, a.prec_max, 0)
    end
    z.parent = a
    return z
@@ -842,13 +841,13 @@ function (a::FmpzModRelSeriesRing)(b::fmpz_mod_rel_series)
 end
 
 function (a::FmpzModRelSeriesRing)(b::Array{fmpz, 1}, len::Int, prec::Int, val::Int)
-   z = fmpz_mod_rel_series(modulus(a), b, len, prec, val)
+   z = fmpz_mod_rel_series(base_ring(a), b, len, prec, val)
    z.parent = a
    return z
 end
 
 function (a::FmpzModRelSeriesRing)(b::Array{fmpz_mod, 1}, len::Int, prec::Int, val::Int)
-   z = fmpz_mod_rel_series(modulus(a), b, len, prec, val)
+   z = fmpz_mod_rel_series(base_ring(a), b, len, prec, val)
    z.parent = a
    return z
 end

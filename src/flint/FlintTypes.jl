@@ -852,8 +852,9 @@ mutable struct fmpz_mod_poly <: PolyElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_poly(n::fmpz)
-      return fmpz_mod_poly(FmpzModRing(n).ninv)
+
+   function fmpz_mod_poly(R::FmpzModRing)
+      return fmpz_mod_poly(R.ninv)
    end
 
    function fmpz_mod_poly(n::fmpz_mod_ctx_struct, a::fmpz)
@@ -868,8 +869,8 @@ mutable struct fmpz_mod_poly <: PolyElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_poly(n::fmpz, a::fmpz)
-      return fmpz_mod_poly(FmpzModRing(n).ninv, a)
+   function fmpz_mod_poly(R::FmpzModRing, a::fmpz)
+      return fmpz_mod_poly(R.ninv, a)
    end
 
    function fmpz_mod_poly(n::fmpz_mod_ctx_struct, a::UInt)
@@ -884,8 +885,8 @@ mutable struct fmpz_mod_poly <: PolyElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_poly(n::fmpz, a::UInt)
-      return fmpz_mod_poly(FmpzModRing(n).ninv, a)
+   function fmpz_mod_poly(R::FmpzModRing, a::UInt)
+      return fmpz_mod_poly(R.ninv, a)
    end
 
    function fmpz_mod_poly(n::fmpz_mod_ctx_struct, arr::Array{fmpz, 1})
@@ -903,8 +904,8 @@ mutable struct fmpz_mod_poly <: PolyElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_poly(n::fmpz, arr::Array{fmpz, 1})
-      return fmpz_mod_poly(FmpzModRing(n).ninv, arr)
+   function fmpz_mod_poly(R::FmpzModRing, arr::Array{fmpz, 1})
+      return fmpz_mod_poly(R.ninv, arr)
    end
 
    function fmpz_mod_poly(n::fmpz_mod_ctx_struct, arr::Array{fmpz_mod, 1})
@@ -921,8 +922,8 @@ mutable struct fmpz_mod_poly <: PolyElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_poly(n::fmpz, arr::Array{fmpz_mod, 1})
-      return fmpz_mod_poly(FmpzModRing(n).ninv, arr)
+   function fmpz_mod_poly(R::FmpzModRing, arr::Array{fmpz_mod, 1})
+      return fmpz_mod_poly(R.ninv, arr)
    end
 
    function fmpz_mod_poly(n::fmpz_mod_ctx_struct, f::fmpz_poly)
@@ -937,8 +938,8 @@ mutable struct fmpz_mod_poly <: PolyElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_poly(n::fmpz, f::fmpz_poly)
-      return fmpz_mod_poly(FmpzModRing(n).ninv, f)
+   function fmpz_mod_poly(R::FmpzModRing, f::fmpz_poly)
+      return fmpz_mod_poly(R.ninv, f)
    end
 
    function fmpz_mod_poly(n::fmpz_mod_ctx_struct, f::fmpz_mod_poly)
@@ -953,8 +954,8 @@ mutable struct fmpz_mod_poly <: PolyElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_poly(n::fmpz, f::fmpz_mod_poly)
-      return fmpz_mod_poly(FmpzModRing(n).ninv, f)
+   function fmpz_mod_poly(R::FmpzModRing, f::fmpz_mod_poly)
+      return fmpz_mod_poly(R.ninv, f)
    end
 end
 
@@ -983,8 +984,8 @@ mutable struct fmpz_mod_poly_factor
       return z
    end
 
-   function fmpz_mod_poly_factor(n::fmpz)
-      return fmpz_mod_poly_factor(FmpzModRing(n).ninv)
+   function fmpz_mod_poly_factor(R::FmpzModRing)
+      return fmpz_mod_poly_factor(R.ninv)
    end
 end
 
@@ -1040,8 +1041,8 @@ mutable struct gfp_fmpz_poly <: PolyElem{gfp_fmpz_elem}
       return z
    end
 
-   function gfp_fmpz_poly(n::fmpz)
-      return gfp_fmpz_poly(FmpzModRing(n).ninv)
+   function gfp_fmpz_poly(R::GaloisFmpzField)
+      return gfp_fmpz_poly(R.ninv)
    end
 
    function gfp_fmpz_poly(n::fmpz_mod_ctx_struct, a::fmpz)
@@ -1056,8 +1057,8 @@ mutable struct gfp_fmpz_poly <: PolyElem{gfp_fmpz_elem}
       return z
    end
 
-   function gfp_fmpz_poly(n::fmpz, a::fmpz)
-      return gfp_fmpz_poly(FmpzModRing(n).ninv, a)
+   function gfp_fmpz_poly(R::GaloisFmpzField, a::fmpz)
+      return gfp_fmpz_poly(R.ninv, a)
    end
 
    function gfp_fmpz_poly(n::fmpz_mod_ctx_struct, a::UInt)
@@ -1072,8 +1073,8 @@ mutable struct gfp_fmpz_poly <: PolyElem{gfp_fmpz_elem}
       return z
    end
 
-   function gfp_fmpz_poly(n::fmpz, a::UInt)
-      return gfp_fmpz_poly(FmpzModRing(n).ninv, a)
+   function gfp_fmpz_poly(R::GaloisFmpzField, a::UInt)
+      return gfp_fmpz_poly(R.ninv, a)
    end
 
    function gfp_fmpz_poly(n::fmpz_mod_ctx_struct, arr::Array{fmpz, 1})
@@ -1091,8 +1092,8 @@ mutable struct gfp_fmpz_poly <: PolyElem{gfp_fmpz_elem}
       return z
    end
 
-   function gfp_fmpz_poly(n::fmpz, arr::Array{fmpz, 1})
-      gfp_fmpz_poly(FmpzModRing(n).ninv, arr)
+   function gfp_fmpz_poly(R::GaloisFmpzField, arr::Array{fmpz, 1})
+      gfp_fmpz_poly(R.ninv, arr)
    end
 
    function gfp_fmpz_poly(n::fmpz_mod_ctx_struct, arr::Array{gfp_fmpz_elem, 1})
@@ -1109,8 +1110,8 @@ mutable struct gfp_fmpz_poly <: PolyElem{gfp_fmpz_elem}
       return z
    end
 
-   function gfp_fmpz_poly(n::fmpz, arr::Array{gfp_fmpz_elem, 1})
-      return gfp_fmpz_poly(FmpzModRing(n).ninv, arr)
+   function gfp_fmpz_poly(R::GaloisFmpzField, arr::Array{gfp_fmpz_elem, 1})
+      return gfp_fmpz_poly(R.ninv, arr)
    end
 
    function gfp_fmpz_poly(n::fmpz_mod_ctx_struct, f::fmpz_poly)
@@ -1125,8 +1126,8 @@ mutable struct gfp_fmpz_poly <: PolyElem{gfp_fmpz_elem}
       return z
    end
 
-   function gfp_fmpz_poly(n::fmpz, f::fmpz_poly)
-      return gfp_fmpz_poly(FmpzModRing(n).ninv, f)
+   function gfp_fmpz_poly(R::GaloisFmpzField, f::fmpz_poly)
+      return gfp_fmpz_poly(R.ninv, f)
    end
 
    function gfp_fmpz_poly(n::fmpz_mod_ctx_struct, f::gfp_fmpz_poly)
@@ -1141,8 +1142,8 @@ mutable struct gfp_fmpz_poly <: PolyElem{gfp_fmpz_elem}
       return z
    end
 
-   function gfp_fmpz_poly(n::fmpz, f::gfp_fmpz_poly)
-      return gfp_fmpz_poly(FmpzModRing(n).ninv, f)
+   function gfp_fmpz_poly(R::GaloisFmpzField, f::gfp_fmpz_poly)
+      return gfp_fmpz_poly(R.ninv, f)
    end
 end
 
@@ -1171,8 +1172,8 @@ mutable struct gfp_fmpz_poly_factor
       return z
    end
 
-   function gfp_fmpz_poly_factor(n::fmpz)
-      return gfp_fmpz_poly_factor(FmpzModRing(n).ninv)
+   function gfp_fmpz_poly_factor(R::GaloisFmpzField)
+      return gfp_fmpz_poly_factor(R.ninv)
    end
 end
 
@@ -3273,8 +3274,8 @@ mutable struct fmpz_mod_rel_series <: RelSeriesElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_rel_series(p::fmpz)
-      return fmpz_mod_rel_series(FmpzModRing(p).ninv)
+   function fmpz_mod_rel_series(R::FmpzModRing)
+      return fmpz_mod_rel_series(R.ninv)
    end
 
    function fmpz_mod_rel_series(p::fmpz_mod_ctx_struct, a::Array{fmpz, 1},
@@ -3295,9 +3296,9 @@ mutable struct fmpz_mod_rel_series <: RelSeriesElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_rel_series(p::fmpz, a::Array{fmpz, 1},
+   function fmpz_mod_rel_series(R::FmpzModRing, a::Array{fmpz, 1},
                                 len::Int, prec::Int, val::Int)
-      return fmpz_mod_rel_series(FmpzModRing(p).ninv, a, len, prec, val)
+      return fmpz_mod_rel_series(R.ninv, a, len, prec, val)
    end
 
    function fmpz_mod_rel_series(p::fmpz_mod_ctx_struct, a::Array{fmpz_mod, 1},
@@ -3318,9 +3319,9 @@ mutable struct fmpz_mod_rel_series <: RelSeriesElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_rel_series(p::fmpz, a::Array{fmpz_mod, 1},
+   function fmpz_mod_rel_series(R::FmpzModRing, a::Array{fmpz_mod, 1},
                                 len::Int, prec::Int, val::Int)
-      return fmpz_mod_rel_series(FmpzModRing(p).ninv, a, len, prec, val)
+      return fmpz_mod_rel_series(R.ninv, a, len, prec, val)
    end
 
    function fmpz_mod_rel_series(a::fmpz_mod_rel_series)
@@ -3390,8 +3391,8 @@ mutable struct fmpz_mod_abs_series <: AbsSeriesElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_abs_series(p::fmpz)
-      return fmpz_mod_abs_series(FmpzModRing(p).ninv)
+   function fmpz_mod_abs_series(R::FmpzModRing)
+      return fmpz_mod_abs_series(R.ninv)
    end
 
    function fmpz_mod_abs_series(p::fmpz_mod_ctx_struct, a::Array{fmpz, 1},
@@ -3411,8 +3412,8 @@ mutable struct fmpz_mod_abs_series <: AbsSeriesElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_abs_series(p::fmpz, a::Array{fmpz, 1}, len::Int, prec::Int)
-      return fmpz_mod_abs_series(FmpzModRing(p).ninv, a, len, prec)
+   function fmpz_mod_abs_series(R::FmpzModRing, a::Array{fmpz, 1}, len::Int, prec::Int)
+      return fmpz_mod_abs_series(R.ninv, a, len, prec)
    end
 
    function fmpz_mod_abs_series(p::fmpz_mod_ctx_struct, a::Array{fmpz_mod, 1},
@@ -3430,9 +3431,9 @@ mutable struct fmpz_mod_abs_series <: AbsSeriesElem{fmpz_mod}
       return z
    end
 
-   function fmpz_mod_abs_series(p::fmpz, a::Array{fmpz_mod, 1},
+   function fmpz_mod_abs_series(R::FmpzModRing, a::Array{fmpz_mod, 1},
                                 len::Int, prec::Int)
-      return fmpz_mod_abs_series(FmpzModRing(p).ninv, a, len, prec)
+      return fmpz_mod_abs_series(R.ninv, a, len, prec)
    end
 
    function fmpz_mod_abs_series(a::fmpz_mod_abs_series)

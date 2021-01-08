@@ -77,7 +77,7 @@ modulus(a::Zmodn_fmpz_poly) = a.parent.n
 modulus(R::ZmodNFmpzPolyRing) = R.n
 
 function deepcopy_internal(a::T, dict::IdDict) where {T <: Zmodn_fmpz_poly}
-  z = T(modulus(a), a)
+  z = T(base_ring(parent(a)), a)
   z.parent = a.parent
   return z
 end
@@ -936,32 +936,32 @@ end
 ################################################################################
 
 function (R::FmpzModPolyRing)()
-  z = fmpz_mod_poly(R.n)
+  z = fmpz_mod_poly(base_ring(R))
   z.parent = R
   return z
 end
 
 function (R::FmpzModPolyRing)(x::fmpz)
-  z = fmpz_mod_poly(R.n, x)
+  z = fmpz_mod_poly(base_ring(R), x)
   z.parent = R
   return z
 end
 
 function (R::FmpzModPolyRing)(x::Integer)
-  z = fmpz_mod_poly(R.n, fmpz(x))
+  z = fmpz_mod_poly(base_ring(R), fmpz(x))
   z.parent = R
   return z
 end
 
 function (R::FmpzModPolyRing)(x::fmpz_mod)
   base_ring(R) != parent(x) && error("Wrong parents")
-  z = fmpz_mod_poly(R.n, x.data)
+  z = fmpz_mod_poly(base_ring(R), x.data)
   z.parent = R
   return z
 end
 
 function (R::FmpzModPolyRing)(arr::Array{fmpz, 1})
-  z = fmpz_mod_poly(R.n, arr)
+  z = fmpz_mod_poly(base_ring(R), arr)
   z.parent = R
   return z
 end
@@ -970,7 +970,7 @@ function (R::FmpzModPolyRing)(arr::Array{fmpz_mod, 1})
   if length(arr) > 0
      (base_ring(R) != parent(arr[1])) && error("Wrong parents")
   end
-  z = fmpz_mod_poly(R.n, arr)
+  z = fmpz_mod_poly(base_ring(R), arr)
   z.parent = R
   return z
 end
@@ -978,7 +978,7 @@ end
 (R::FmpzModPolyRing)(arr::Array{T, 1}) where {T <: Integer} = R(map(base_ring(R), arr))
 
 function (R::FmpzModPolyRing)(x::fmpz_poly)
-  z = fmpz_mod_poly(R.n, x)
+  z = fmpz_mod_poly(base_ring(R), x)
   z.parent = R
   return z
 end

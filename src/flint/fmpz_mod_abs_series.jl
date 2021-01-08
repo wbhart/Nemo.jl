@@ -18,7 +18,7 @@ function O(a::fmpz_mod_abs_series)
    end
    prec = length(a) - 1
    prec < 0 && throw(DomainError(prec, "Precision must be non-negative"))
-   z = fmpz_mod_abs_series(modulus(a), Vector{fmpz}(undef, 0), 0, prec)
+   z = fmpz_mod_abs_series(base_ring(a), Vector{fmpz}(undef, 0), 0, prec)
    z.parent = parent(a)
    return z
 end
@@ -86,7 +86,7 @@ zero(R::FmpzModAbsSeriesRing) = R(0)
 one(R::FmpzModAbsSeriesRing) = R(1)
 
 function gen(R::FmpzModAbsSeriesRing)
-   z = fmpz_mod_abs_series(modulus(base_ring(R)), [fmpz(0), fmpz(1)], 2, max_precision(R))
+   z = fmpz_mod_abs_series(base_ring(R), [fmpz(0), fmpz(1)], 2, max_precision(R))
    z.parent = R
    return z
 end
@@ -595,7 +595,7 @@ promote_rule(::Type{fmpz_mod_abs_series}, ::Type{fmpz_mod}) = fmpz_mod_abs_serie
 ###############################################################################
 
 function (a::FmpzModAbsSeriesRing)()
-   m = modulus(base_ring(a))
+   m = base_ring(a)
    z = fmpz_mod_abs_series(m)
    z.prec = a.prec_max
    z.parent = a
@@ -603,7 +603,7 @@ function (a::FmpzModAbsSeriesRing)()
 end
 
 function (a::FmpzModAbsSeriesRing)(b::Integer)
-   m = modulus(base_ring(a))
+   m = base_ring(a)
    if b == 0
       z = fmpz_mod_abs_series(m)
       z.prec = a.prec_max
@@ -615,7 +615,7 @@ function (a::FmpzModAbsSeriesRing)(b::Integer)
 end
 
 function (a::FmpzModAbsSeriesRing)(b::fmpz)
-   m = modulus(base_ring(a))
+   m = base_ring(a)
    if iszero(b)
       z = fmpz_mod_abs_series(m)
       z.prec = a.prec_max
@@ -627,7 +627,7 @@ function (a::FmpzModAbsSeriesRing)(b::fmpz)
 end
 
 function (a::FmpzModAbsSeriesRing)(b::fmpz_mod)
-   m = modulus(base_ring(a))
+   m = base_ring(a)
    if iszero(b)
       z = fmpz_mod_abs_series(m)
       z.prec = a.prec_max
@@ -644,7 +644,7 @@ function (a::FmpzModAbsSeriesRing)(b::fmpz_mod_abs_series)
 end
 
 function (a::FmpzModAbsSeriesRing)(b::Array{fmpz, 1}, len::Int, prec::Int)
-   m = modulus(base_ring(a))
+   m = base_ring(a)
    z = fmpz_mod_abs_series(m, b, len, prec)
    z.parent = a
    return z
