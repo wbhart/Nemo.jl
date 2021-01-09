@@ -1096,6 +1096,28 @@ end
 end #eval
 end #for
 
+################################################################################
+#
+#  Ad hoc exact division
+#
+################################################################################
+
+function divexact(f::gfp_mpoly, a::gfp_elem)
+  ainv = inv(a)
+  return ainv * f
+end
+
+function divexact(f::gfp_mpoly, a::Union{fmpz, Integer})
+  return divexact(f, base_ring(f)(a))
+end
+
+function divexact(f::nmod_mpoly, a::nmod)
+  return divexact(f, parent(f)(a))
+end
+
+function divexact(f::nmod_mpoly, a::Union{fmpz, Integer})
+  return divexact(f, base_ring(f)(a))
+end
 
 ###############################################################################
 #
