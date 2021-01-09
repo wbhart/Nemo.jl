@@ -340,6 +340,8 @@ end
 
          @test iszero(f) || !divides(f, S(0))[1]
          @test divexact(2*f, 2) == f
+         @test divexact(2*f, fmpz(2)) == f
+         @test divexact(R(2)*f, R(2)) == f
 
          p = f*g
 
