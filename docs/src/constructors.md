@@ -63,12 +63,12 @@ they represent.
 | $R = \mathbb{F}_{p^n}$                | `R, a = FiniteField(p, n, "a")`               |
 | $R = \mathbb{Z}/n\mathbb{Z}$          | `R = ResidueRing(ZZ, n)`                      |
 | $S = R[x]$                            | `S, x = PolynomialRing(R, "x")`               |
-| $S = R[x, y]$                         | `S, (x, y, z) = PolynomialRing(R, ["x", "y"]) |
+| $S = R[x, y]$                         | `S, (x, y) = PolynomialRing(R, ["x", "y"])    |
 | $S = R[[x]]$ (to precision $n$)       | `S, x = PowerSeriesRing(R, n, "x")`           |
 | $S = R((x))$ (to precision $n$)       | `S, x = LaurentSeriesRing(R, n, "x")`         |
-| $S = \mbox{Frac}_R$                   | `S = FractionField(R)`                        |
+| $S = \mathrm{Frac}_R$                 | `S = FractionField(R)`                        |
 | $S = R/(f)$                           | `S = ResidueRing(R, f)`                       |
-| $S = \mbox{Mat}_{m\times n}(R)$       | `S = MatrixSpace(R, m, n)`                    |
+| $S = \mathrm{Mat}_{m\times n}(R)$     | `S = MatrixSpace(R, m, n)`                    |
 | $S = \mathbb{Q}[x]/(f)$               | `S, a = NumberField(f, "a")`                  |
 | $S = \mathbb{Q}_p$ (to precision $N$) | `S = PadicField(p, n)`                        |
 | $S = \mathbb{R}$ (to precision $n$)   | `S = RealField(n)`                            |
