@@ -482,6 +482,51 @@ rand(R::FqNmodFiniteField, b::UnitRange{Int}) = rand(Random.GLOBAL_RNG, R, b)
 
 ###############################################################################
 #
+#   Iteration
+#
+###############################################################################
+
+# the two definitions are merged (with `Union`) so that this doesn't produce a compilation
+# warning due to similar definitions in Hecke
+Base.iterate(F::Union{FqNmodFiniteField,FqFiniteField}) =
+   zero(F), zeros(F isa FqNmodFiniteField ? UInt : fmpz, degree(F))
+
+function Base.iterate(F::Union{FqNmodFiniteField,FqFiniteField}, coeffs::Vector)
+   deg = length(coeffs)
+   char = F isa FqNmodFiniteField ? F.p : # cheaper than calling characteristic(F)::fmpz
+                                    characteristic(F)
+   allzero = true
+   for d = 1:deg
+      if allzero
+         coeffs[d] += 1
+         if coeffs[d] == char
+            coeffs[d] = 0
+         else
+            allzero = false
+         end
+      else
+         break
+      end
+   end
+   allzero && return nothing
+
+   elt = F()
+   for d = 1:deg
+      if F isa FqNmodFiniteField
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{fq_nmod}, Int, UInt), elt, d - 1, coeffs[d])
+      else
+         ccall((:fmpz_poly_set_coeff_fmpz, libflint), Nothing,
+               (Ref{fq}, Int, Ref{fmpz}), elt, d - 1, coeffs[d])
+      end
+   end
+   elt, coeffs
+end
+
+# Base.length(F) and Base.eltype(F) are defined in AbstractAlgebra
+
+###############################################################################
+#
 #   Promotions
 #
 ###############################################################################
