@@ -180,10 +180,28 @@ end
 #
 ################################################################################
 
-function show(io::IO, x::acb)
-  show(io, real(x))
-  print(io, " + i*")
-  show(io, imag(x))
+function expressify(z::acb; context = nothing)
+   x = real(z)
+   y = imag(z)
+   if iszero(y) # is exact zero!
+      return expressify(x, context = context)
+   else
+      y = Expr(:call, :*, expressify(y, context = context), :im)
+      if iszero(x)
+         return y
+      else
+         x = expressify(x, context = context)
+         return Expr(:call, :+, x, y)
+      end
+   end
+end
+
+function Base.show(io::IO, ::MIME"text/plain", z::acb)
+   print(io, AbstractAlgebra.obj_to_string(z, context = io))
+end
+
+function Base.show(io::IO, z::acb)
+   print(io, AbstractAlgebra.obj_to_string(z, context = io))
 end
 
 function show(io::IO, x::AcbField)
@@ -193,8 +211,6 @@ function show(io::IO, x::AcbField)
 end
 
 needs_parentheses(x::acb) = true
-
-show_minus_one(::Type{acb}) = true
 
 ################################################################################
 #

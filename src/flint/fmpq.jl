@@ -187,9 +187,9 @@ function expressify(a::fmpq; context = nothing)::Any
     n = numerator(a)
     d = denominator(a)
     if isone(d)
-        return BigInt(n)
+        return n
     else
-        return Expr(:call, ://, BigInt(n), BigInt(d))
+        return Expr(:call, ://, n, d)
     end
 end
 
@@ -205,10 +205,6 @@ function show(io::IO, a::FlintRationalField)
 end
 
 needs_parentheses(x::fmpq) = false
-
-displayed_with_minus_in_front(x::fmpq) = x < 0
-
-show_minus_one(::Type{fmpq}) = false
 
 ###############################################################################
 #
