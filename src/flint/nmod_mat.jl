@@ -437,13 +437,24 @@ end
 #
 ################################################################################
 
-function inv(a::T) where T <: Zmodn_mat
+function inv(a::nmod_mat)
   !issquare(a) && error("Matrix must be a square matrix")
-  z = similar(a)
-  r = ccall((:nmod_mat_inv, libflint), Int,
-          (Ref{T}, Ref{T}), z, a)
-  !Bool(r) && error("Matrix not invertible")
-  return z
+  if isprime(a.n)
+     z = similar(a)
+     r = ccall((:nmod_mat_inv, libflint), Int,
+               (Ref{nmod_mat}, Ref{nmod_mat}), z, a)
+     !Bool(r) && error("Matrix not invertible")
+     return z
+  else
+     b = lift(a)
+     c, d = pseudo_inv(b)
+     R = base_ring(a)
+
+     if !isone(gcd(d, modulus(R)))
+        error("Matrix not invertible")
+     end
+     return change_base_ring(R, c) * inv(R(d))
+  end
 end
 
 ################################################################################
