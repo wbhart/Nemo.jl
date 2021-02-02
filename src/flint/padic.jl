@@ -271,7 +271,7 @@ function expressify(x::padic; context = nothing)
    if iszero(x)
       push!(sum.args, 0)
    elseif pmode == 0  # terse
-      push!(sum.args, expressify(lift(FlintQQ, x)), context = context)
+      push!(sum.args, expressify(lift(FlintQQ, x), context = context))
    else
       pp = prime(parent(x))
       p = BigInt(pp)

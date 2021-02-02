@@ -50,6 +50,7 @@ end
    @test get_printing_mode(PadicField) == :terse
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
+   @test sprint(show, "text/plain", a) == "211 + O(7^3)"
 
    set_printing_mode(PadicField, :val_unit)
    @test get_printing_mode(PadicField) == :val_unit
