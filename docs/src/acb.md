@@ -434,7 +434,15 @@ Base.exp(::acb)
 ```
 
 ```@docs
+expm1(::acb)
+```
+
+```@docs
 exppii(::acb)
+```
+
+```@docs
+root_of_unity(::AcbField, k::Int)
 ```
 
 ```@docs
