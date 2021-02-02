@@ -221,6 +221,8 @@ end
                               "0.2449786631268641541720825 +/- 3.64e-26"))
    @test overlaps(exp(z), CC("1.166850622789068287614508 +/- 2.54e-25",
                               "0.3609491955082235514294545 +/- 4.64e-26"))
+   @test overlaps(expm1(z), CC("0.166850622789068287614508 +/- 2.54e-25",
+                               "0.3609491955082235514294545 +/- 4.64e-26"))
    @test overlaps(exppii(z), CC("0.3152424821841265534507942 +/- 6.54e-26",
                               "0.2290370699407402465924600 +/- 7.08e-26"))
    @test overlaps(sin(z), CC("0.2076767030562843558332814 +/- 4.54e-26",
@@ -239,6 +241,14 @@ end
                               "0.874699001621106252447974 +/- 2.75e-25"))
    @test overlaps(cotpi(z), CC("0.310809701365069898900469 +/- 6.52e-25",
                               "-1.051367546125004636154355 +/- 3.73e-25"))
+
+   @test overlaps(root_of_unity(CC, 2), CC(-1))
+   @test_throws ArgumentError root_of_unity(CC, -1)
+   @test_throws ArgumentError root_of_unity(CC, 0)
+   @test overlaps(root_of_unity(CC, 4), onei(CC))
+   @test overlaps(root_of_unity(CC, 5), CC("0.3090169943749474241 +/- 9.26e-20",
+                                       "0.9510565162951535721 +/- 7.88e-20"))
+
 
    sval, cval = sincos(z)
    @test overlaps(sval, CC("0.2076767030562843558332814 +/- 4.54e-26",
