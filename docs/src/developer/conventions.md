@@ -151,7 +151,7 @@ etc.
 * Promotion rules
 
 * Parent object call overload (e.g. for implementing `R(2)` where `R` is a
-parent object (e.g. a ring or field, etc.)
+parent object, e.g. a ring or field, etc.)
 
 * Additional constructors, e.g. `matrix`, which might be used instead of a
 parent object to construct elements.
