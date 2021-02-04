@@ -114,6 +114,8 @@ name, e.g. `FlintTypes.jl`. This is because Julia must be aware of all types
 before they are used. Separation of types from implementations makes it easy
 to ensure this happens.
 
+Abstract types should be put in a file called `AbstractTypes.jl`.
+
 Most implementation files present functions in a particular order, which is as
 follows:
 
