@@ -30,7 +30,8 @@ makedocs(
                            "padic.md",
                            "qadic.md"],
              "matrix.md",
-             "factor.md"
+             "factor.md",
+	     "Developer" => [ "developer/conventions.md" ]
          ]
 )
 
