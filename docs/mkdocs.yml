@@ -26,6 +26,7 @@ pages:
 - Number fields:                numberfield.md
 - Factorization:                factor.md
 - Conventions:                  developer/conventions.md
+- Type System:                  developer/typesystem.md
 
 markdown_extensions:
   - extra

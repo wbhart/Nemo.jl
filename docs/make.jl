@@ -18,7 +18,7 @@ makedocs(
                           "mpolynomial.md",
                           "series.md",
                           "puiseux.md",
-                          "residue.md"],
+                          "residue.md" ],
              "Fields" => [ "fraction.md",
                            "rational.md",
                            "arb.md",
@@ -28,10 +28,11 @@ makedocs(
 			   "ff_embedding.md",
                            "numberfield.md",
                            "padic.md",
-                           "qadic.md"],
+                           "qadic.md" ],
              "matrix.md",
              "factor.md",
-	     "Developer" => [ "developer/conventions.md" ]
+	     "Developer" => [ "developer/conventions.md",
+			      "developer/typesystem.md" ]
          ]
 )
 
