@@ -1,6 +1,10 @@
-# Types and parents
+```@meta
+CurrentModule = Nemo
+```
 
-## The Nemo type system
+# The type system
+
+## Use of Julia types in Nemo
 
 ### Concrete and abstract types
 
