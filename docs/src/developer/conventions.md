@@ -25,12 +25,12 @@ remains uncapitalised in Nemo.
 
 * Types such as `gfp_poly` which don't exist under that name on the C side
 also use the lowercase convention as they wrap an actual C type which must be
-split into more than one type on the Julia side, e.g. `nmod_poly` and
+split into more than one type on the Julia side. For example `nmod_poly` and
 `gfp_poly` on the Julia side both represent Flint `nmod_poly`'s on the C side.
 
-* Types of parent objects are capitalised whether they correspond to a C
-type or not, e.g. `FqNmodFiniteField` for the type of a parent object that
-`fq_nmod`'s belong to.
+* Types of rings and fields, modules, maps, etc. are capitalised whether they
+correspond to a C type or not, e.g. `FqNmodFiniteField` for the type of an
+object representing the field that `fq_nmod`'s belong to.
 .
 * We omit an underscore if the first word of a method is "is" or "has", e.g.
 `iseven`.
@@ -41,20 +41,19 @@ without an underscore in Julia itself, e.g. `setindex`.
 * Inner and outer constructors with the same name as a type use the same
 spelling and capitalisation as that type, e.g. `fmpz(1)`.
 
-* Functions for creating parent objects (rings, fields, modules, maps, etc.)
-use CamelCase (especially if they can could be used to create parents of
-generic objects), e.g. `PolynomialRing`. We refer to these functions as parent
-constructors.
+* Functions for creating rings, fields, modules, maps, etc. (rather than the
+elements thereof) use CamelCase, e.g. `PolynomialRing`. We refer to these 
+functions as parent constructors.
 
 * We prefer words to not be abbreviated, e.g. `denominator` instead of `den`.
 
-* Exceptions always exist where the result would be offensive in a major
-language (example omitted).
+* Exceptions always exist where the result would be offensive in any major
+spoken language (example omitted).
 
 It is easy to find counterexamples to virtually all these rules. However we
 have been making efforts to remove the most egregious cases from our codebase
-over time. As perfect consistency is not possible, this has to at times take
-a back seat.
+over time. As perfect consistency is not possible, work on this has to at
+times take a back seat.
 
 ### Spacing and tabs
 
@@ -76,7 +75,7 @@ Prototypes in docstrings should have four spaces before them.
 Where possible, line lengths should not exceed 80 characters. We generally
 don't enforce this for function prototypes.
 
-We use the term/factor convention for spacing. This means that all terms have
+We use a term/factor convention for spacing. This means that all terms have
 spaces before and after them, factors (usually) do not.
 
 In practice this means that `+`, `-`, `=`, `==`, `!=`, `<`, `>`, `<=`, `>=` all
@@ -101,11 +100,13 @@ algorithm as it proceeds.
 The hash when used for a comment should always be followed by a space. Full
 sentences are preferred.
 
-We do not generally use comments in Nemo for complaints, unfinished
-implementations or proposals. These are better off in a ticket on GitHub with
-a discussion that will be brought to the attention of all relevant parties.
+We do not generally use comments in Nemo for questions, complaints or
+proposals for future improvement. These are better off in a ticket on GitHub
+with a discussion that will be brought to the attention of all relevant
+parties.
 
-Any (necessary) limitations of the implementation can be noted in docstrings.
+Any (necessary) limitations of the implementation should be noted in
+docstrings.
 
 ### Layout of files
 
@@ -114,7 +115,8 @@ name, e.g. `FlintTypes.jl`. This is because Julia must be aware of all types
 before they are used. Separation of types from implementations makes it easy
 to ensure this happens.
 
-Abstract types should be put in a file called `AbstractTypes.jl`.
+Abstract types should be put in the file called `AbstractTypes.jl` at the top
+level of the `src` directory.
 
 Most implementation files present functions in a particular order, which is as
 follows:
@@ -150,13 +152,13 @@ etc.
 
 * Promotion rules
 
-* Parent object call overload (e.g. for implementing `R(2)` where `R` is a
-parent object, e.g. a ring or field, etc.)
+* Parent object call overload (e.g. for implementing `R(2)` where `R` is an
+object representing a ring or field, etc.)
 
 * Additional constructors, e.g. `matrix`, which might be used instead of a
 parent object to construct elements.
 
-* Parent constructors, e.g. `PolynomialRing`, etc.
+* Parent object constructors, e.g. `PolynomialRing`, etc.
 
 The exact order within the file is less important than generally following
 something like the above. This aids in finding functions in a file since all
