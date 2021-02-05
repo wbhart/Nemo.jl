@@ -49,9 +49,9 @@ univariate polynomials over a base ring `R` are parameterised by `R`. The
 base ring of a ring `S` can be obtained by the call `base_ring(S)`.
 
 We have found it extremely useful to parameterise the type of both the parent
-and element objects of such a ring by the type of the base ring. Thus for
-example, a generic polynomial with Flint integer coefficients would have
-type `Poly{fmpz}`.
+and element objects of such a ring by the type of the elements of the base
+ring. Thus for example, a generic polynomial with Flint integer coefficients
+would have type `Poly{fmpz}`.
 
 In practice Flint already implements univariate polynomials over Flint
 integers, and these have type `fmpz_poly`. But both `fmpz_poly` and the
@@ -77,7 +77,7 @@ of a given element type.
 
 This is especially important in generic code where it may not even be known
 which Julia package is being used. The user may be expecting an
-AbstractAlgebra, a Nemo or even some other kind of matrix or polynomial to be
+AbstractAlgebra object, a Nemo object or even some other kind of object to be
 constructed, depending on which package they are using.
 
 The function for returning the correct type for a dense matrix is
