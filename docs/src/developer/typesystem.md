@@ -117,3 +117,94 @@ Nemo does not apply any of these three approaches widely at present, though
 information which can only be known at runtime such as whether a ring is
 Euclidean will eventually have to encoded using one of these three methods.
 
+### Nemo's custom map types
+
+It makes sense that map types in Nemo should be parameterised by the element
+types of both the domain and codomain of the map, and of course all maps in
+the system should somehow belong to an abstract type `Map`.
+
+This leads one to consider a two parameter system of types `Map{D, C}` where
+`D` and `C` are the domain and codomain types respectively.
+
+One may also wish to implement various types of map, e.g. linear maps (where
+the map contains a matrix representing the map) or functional maps (where the
+map is implemented by a Julia function) and so on. Notionally one imagines
+doing this with a hierarchy of two parameter abstract types all ultimately
+belonging to `Map{D, C}` as the root of the tree.
+
+This approach begins to break down when constructions from homological algebra
+begin to be applied to maps. In such cases, the maps themselves are the object
+of study and functions may be applied to maps to produce other maps.
+
+The simplest such function is composition. In a system where composition of
+maps always results in a map of the same type, no problem arises with the
+straightforward approach outlined above.
+
+However, for various reasons (including performance) it may not be desirable or
+even possible to construct a composition of two given maps using the same
+representation as the original maps. This means that the result of composing
+two maps of the same type may be a map of a different type, e.g. in the worst
+case a general composition type.
+
+This problem makes many homological and category theoretic operations on maps
+difficult or impossible to implement.
+
+Other operations which may be desirable to implement are caching of maps (e.g.
+where the map is extremely time consuming to compute, such as discrete
+logarithms) and attaching category theoretic information to maps. Such
+operations can be effected by encapsulating existing maps in objects containing
+the extra information, e.g. a cache or a category. However all the methods that
+applied to the original map objects now no longer apply to the encapsulated
+objects.
+
+To work around these limitations Nemo implements a four parameter `Map` type,
+`Map{D, C, T, U}`.
+
+The first two parameters are the domain and codomain types as discussed above.
+
+The parameter `T` is a "map class" which is itself an abstract type existing in
+a hierarchy of abstract types. This parameter is best thought of as a trait,
+independent of the hierarchy of abstract types belonging to `Map`, giving
+additional flexibility to the map types in the system.
+
+For example, `T` may be set to `LinearMap` or `FunctionalMap`.
+
+The final parameter `U` is used to allow maps of a given type `U` to be
+composed and still result in a map of type `U`, even though the concrete type
+of the composition is different to that of the original maps. Methods can
+be written for all maps of type `U` by matching this parameter, rather than
+matching on the concrete type `U` of the original maps.
+
+For example, two maps with concrete type `MyRingHomomorphism` would belong to
+`Map{D, C, T, MyRingHomomorphism}` as would any composition of such maps, even
+if its concrete type was not a `MyRingHomomorphism`.
+
+Naturally four parameter types are rather unwieldy and so various helper
+functions are provided to compute four parameter map types. For example
+`Map(D, C)` (note the parentheses; it's a function which computes a type) will
+compute the union of all maps whose first two parameters are `D` and `C`, and
+where the remaining two parameters are arbitrary.
+
+Similarly one can pass a map class or a concrete type `U` to the `Map` function
+to compute the class of all maps of the given map class or type.
+
+For example, to write a function which accepts all maps of "type"
+`MyRingHomomorphism`, including all compositions of such maps, one inserts
+`Map(MyRingHomomorphism)` in place of the type, e.g.
+
+```julia
+function myfun(f::Map(MyRingHomomorphism))
+```
+
+Now the function `myfun` will accept any map whose fourth parameter `U` is set
+to `MyRingHomomorphism`.
+
+This four parameter system is flexible, but may need to be expanded in future.
+For example it may be useful to have more than one trait `T`. This could be
+achieved either by making `T` a tuple of traits or by introducing a
+parameterised `MapTrait` type which can be placed at that location. Naturally
+the `Map` functions for computing the four parameter types will have to be
+similarly expanded to make it easier for the user.
+
+The map type system is currently considered experimental and our observation so
+far is that it is not intuitive for developers.
