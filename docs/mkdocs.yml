@@ -27,6 +27,7 @@ pages:
 - Factorization:                factor.md
 - Conventions:                  developer/conventions.md
 - Type System:                  developer/typesystem.md
+- Parent Objects:               developer/parents.md
 
 markdown_extensions:
   - extra
