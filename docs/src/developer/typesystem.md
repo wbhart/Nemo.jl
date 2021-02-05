@@ -167,7 +167,10 @@ a hierarchy of abstract types. This parameter is best thought of as a trait,
 independent of the hierarchy of abstract types belonging to `Map`, giving
 additional flexibility to the map types in the system.
 
-For example, `T` may be set to `LinearMap` or `FunctionalMap`.
+For example, `T` may be set to `LinearMap` or `FunctionalMap`. This may be
+useful if one wishes to distinguish maps in other ways, e.g. whether they are
+homomorphisms, isomorphisms, maps with section or retraction etc. As usual,
+offering traits partially gets around the single inheritance problem.
 
 The final parameter `U` is used to allow maps of a given type `U` to be
 composed and still result in a map of type `U`, even though the concrete type
@@ -177,7 +180,7 @@ matching on the concrete type `U` of the original maps.
 
 For example, two maps with concrete type `MyRingHomomorphism` would belong to
 `Map{D, C, T, MyRingHomomorphism}` as would any composition of such maps, even
-if its concrete type was not a `MyRingHomomorphism`.
+if the concrete type of the composition was not a `MyRingHomomorphism`.
 
 Naturally four parameter types are rather unwieldy and so various helper
 functions are provided to compute four parameter map types. For example
@@ -196,8 +199,8 @@ For example, to write a function which accepts all maps of "type"
 function myfun(f::Map(MyRingHomomorphism))
 ```
 
-Now the function `myfun` will accept any map whose fourth parameter `U` is set
-to `MyRingHomomorphism`.
+Now the function `myfun` will accept any map type whose fourth parameter `U` is
+set to `MyRingHomomorphism`.
 
 This four parameter system is flexible, but may need to be expanded in future.
 For example it may be useful to have more than one trait `T`. This could be
