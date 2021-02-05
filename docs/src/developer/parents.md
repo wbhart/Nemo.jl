@@ -72,8 +72,8 @@ was passed.
 ### Other functions for computing types
 
 Sometimes one needs to know the type of a polynomial or matrix one would
-obtain if it were constructed over a given ring or coefficients/entries of a
-given element type.
+obtain if it were constructed over a given ring or with coefficients/entries
+of a given element type.
 
 This is especially important in generic code where it may not even be known
 which Julia package is being used. The user may be expecting an
@@ -82,7 +82,7 @@ constructed, depending on which package they are using.
 
 The function for returning the correct type for a dense matrix is
 `dense_matrix_type` to which one can pass either a base ring or an element
-type. For example, if AbstractAlgebra is being used `dense_matrix_type(ZZ)`
+type. For example, if AbstractAlgebra is being used, `dense_matrix_type(ZZ)`
 will return `Mat{BigInt}` whereas if Nemo is being used it will return
 `fmpz_mat`.
 
@@ -152,7 +152,7 @@ be used in library code. There are a number of reasons for this.
 
 Firstly, inside the Generic submodule of AbstractAlgebra the only parent object
 constructors that are directly accessible are the ones inside Generic. Thus if
-a Nemo function calls a function inside generic and it creates a parent object
+a Nemo function calls a function inside Generic and it creates a parent object
 using one of the parent object constructors, it will create a parent object for
 a generic ring rather than a Nemo one.
 
@@ -173,7 +173,7 @@ any future attempts to parallelise library code.
 
 Most parent object constructors take a `cached` keyword which specifies whether
 the parent object should be cached or not, but again it is better overall to
-simply eschew the use of parent object constructors in libary code.
+simply eschew the use of parent object constructors in library code.
 
 Instead, it is recommended to use functions such as `similar`, `zero_matrix`,
 `identity_matrix`, `change_base_ring`, `map`, etc.
@@ -189,7 +189,4 @@ developers will fill in such infrastructure rather than simply push the can
 down the road for someone else to fix. Forcing the creating of parent objects
 into as few bottlenecks as possible will make it much easier for developers to
 remove problems associated with such calls when they arise in future.
-
-
-
 
