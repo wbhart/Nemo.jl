@@ -38,12 +38,15 @@ object representing the field that `fq_nmod`'s belong to.
 * Underscores are omitted if the method name is already well established
 without an underscore in Julia itself, e.g. `setindex`.
 
-* Inner and outer constructors with the same name as a type use the same
-spelling and capitalisation as that type, e.g. `fmpz(1)`.
+* Constructors with the same name as a type use the same spelling and
+capitalisation as that type, e.g. `fmpz(1)`.
 
 * Functions for creating rings, fields, modules, maps, etc. (rather than the
 elements thereof) use CamelCase, e.g. `PolynomialRing`. We refer to these 
-functions as parent constructors.
+functions as parent constructors. Note that we do not follow the Julia
+convention here, e.g. `PolynomialRing` is a function and not a type constructor
+(in fact we often return a tuple consisting of a parent object and other
+objects such as generators with this type of function) yet we capitalise it.
 
 * We prefer words to not be abbreviated, e.g. `denominator` instead of `den`.
 
@@ -67,16 +70,16 @@ file. Consistency within a file is valued highly.
 
 If you are new to Nemo development and do not already have a very strong
 preference, new files should be started with 3 space indenting. This maximises
-the likelihood that copy and paste between files will be straighforward, though
+the likelihood that copy and paste between files will be straightforward, though
 modern editors ease this to some degree.
 
-Prototypes in docstrings should have four spaces before them.
+Function signatures in docstrings should have four spaces before them.
 
-Where possible, line lengths should not exceed 80 characters. We generally
-don't enforce this for function prototypes.
+Where possible, line lengths should not exceed 80 characters.
 
-We use a term/factor convention for spacing. This means that all terms have
-spaces before and after them, factors (usually) do not.
+We use a term/factor convention for spacing. This means that all (additive)
+terms have spaces before and after them, (multiplicative) factors usually do
+not.
 
 In practice this means that `+`, `-`, `=`, `==`, `!=`, `<`, `>`, `<=`, `>=` all
 have spaces before and after them. The operators `*`, `/`, `^` and unary minus
