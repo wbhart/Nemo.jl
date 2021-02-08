@@ -85,10 +85,10 @@ type.
 Nemo does not currently use type traits, though the map types in Nemo do make
 use of a custom analogue of this.
 
-Note that unlike class based systems that dispatch on the type of the implicit
-`this` parameter, Julia methods dispatch on the type of all arguments. This is
-a natural fit for mathematics where all sorts of ad hoc left and right
-operations may be required.
+Note that unlike class based systems that dispatch on the type of a (sometimes
+implicit) `this` or `self' parameter, Julia methods dispatch on the type of all
+arguments. This is a natural fit for mathematics where all sorts of ad hoc left
+and right operations may be required.
 
 ### Encapsulation, maps and runtime flags
 
@@ -119,7 +119,8 @@ its multimethod system and can also make introspection more difficult.
 
 Nemo does not apply any of these three approaches widely at present, though
 information which can only be known at runtime such as whether a ring is
-Euclidean will eventually have to encoded using one of these three methods.
+Euclidean will eventually have to be encoded using one of these three
+methods.
 
 ### Nemo's custom map types
 
@@ -187,13 +188,13 @@ For example, two maps with concrete type `MyRingHomomorphism` would belong to
 if the concrete type of the composition was not a `MyRingHomomorphism`.
 
 Naturally four parameter types are rather unwieldy and so various helper
-functions are provided to compute four parameter map types. For example
-`Map(D, C)` (note the parentheses; it's a function which computes a type) will
-compute the union of all maps whose first two parameters are `D` and `C`, and
-where the remaining two parameters are arbitrary.
+functions are provided to compute four parameter map types. In the first
+instance one still has the type `Map{D, C}` which will give the union of all
+map types whose first two parameters are `D` and `C`, and where the remaining
+two parameters are arbitrary.
 
-Similarly one can pass a map class or a concrete type `U` to the `Map` function
-to compute the class of all maps of the given map class or type.
+However one can also pass a map class or a concrete type `U` to a `Map`
+function to compute the class of all maps of the given map class or type..
 
 For example, to write a function which accepts all maps of "type"
 `MyRingHomomorphism`, including all compositions of such maps, one inserts
@@ -203,12 +204,13 @@ For example, to write a function which accepts all maps of "type"
 function myfun(f::Map(MyRingHomomorphism))
 ```
 
-Now the function `myfun` will accept any map type whose fourth parameter `U` is
-set to `MyRingHomomorphism`.
+Note the parentheses here, rather than curly braces; it's a function to
+compute a type! Now the function `myfun` will accept any map type whose
+fourth parameter `U` is set to `MyRingHomomorphism`.
 
-This four parameter system is flexible, but may need to be expanded in future.
-For example it may be useful to have more than one trait `T`. This could be
-achieved either by making `T` a tuple of traits or by introducing a
+This four parameter system is flexible, but may need to be expanded in the
+future. For example it may be useful to have more than one trait `T`. This
+could be achieved either by making `T` a tuple of traits or by introducing a
 parameterised `MapTrait` type which can be placed at that location. Naturally
 the `Map` functions for computing the four parameter types will have to be
 similarly expanded to make it easier for the user.
