@@ -28,7 +28,7 @@ function (f::FinFieldMorphism)(x)
 end
 
 function Base.show(io::IO, f::FinFieldMorphism)
-    print("Morphism from $(domain(f))\nto $(codomain(f))")
+    print(io, "Morphism from $(domain(f)) to $(codomain(f))")
 end
 
 struct FinFieldPreimage{T} <: AbstractAlgebra.Map{T, T, AbstractAlgebra.SetMap,
@@ -62,7 +62,7 @@ function (f::FinFieldPreimage)(x)
 end
 
 function Base.show(io::IO, f::FinFieldPreimage)
-    print("Preimage of the morphism from $(domain(f))\nto $(codomain(f))")
+    print(io, "Preimage of the morphism from $(domain(f)) to $(codomain(f))")
 end
 
 @doc Markdown.doc"""
