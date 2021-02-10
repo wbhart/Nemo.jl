@@ -252,7 +252,7 @@ function transitive_closure(f::FinFieldMorphism)
                 AddOverfield!(domain(g), phi)
             end
         else
-            val = FqNmodFiniteField[codomain(v) for v in subK[d]]
+            val = FqNmodFiniteField[domain(v) for v in subK[d]]
             
             for g in subk[d]
                 if !(domain(g) in val)
