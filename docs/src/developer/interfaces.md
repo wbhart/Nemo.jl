@@ -25,12 +25,13 @@ they cannot make use of functions such as `subeq!` as it is not part of the
 official interface.
 
 In addition to implementations for abstract types and their unions, one may
-also like to provide specialised implementations for the the generic types
-e.g. `Poly{T}` and `Mat{T}`. These are based on Julia arrays internally, and
-so it makes perfect sense to implement lower level functionality for
-these types specifically, as this may lead to performance gains. Such
-specialised implementations can make use of any functions provided for the
-generic types, whether in the interface or not.
+also like to provide specialised implementations for the generic types
+e.g. `Poly{T}` and `Mat{T}` as one would for other specialised types. The
+generic types are based on Julia arrays internally, and so it makes perfect
+sense to implement lower level functionality for these types specifically, as
+this may lead to performance gains. Such specialised implementations can make
+use of any functions provided for the generic types, whether in the interface
+or not.
 
 For convenience we list the most important abstract types and their unions
 for which one should usually prefer to write generic implementations.
@@ -50,17 +51,16 @@ for which one should usually prefer to write generic implementations.
 * `ResFieldElem{T}` : all elements of a residue field
 * `Map{D, C}` : all maps (see Maps developer docs for a description)
 
-N.B: inside the `Generic` submodule of AbstractAlgebra the abstract types `Blah`
-are only accessible by writing `AbstractAlgebra.Blah`. The unions are directly
-accessible. There may be generic types and abstract types with the same name,
-so this is more than just a convention.
+N.B: inside the `Generic` submodule of AbstractAlgebra some abstract types
+`Blah` are only accessible by writing `AbstractAlgebra.Blah`. The unions are
+directly accessible. There may be generic types and abstract types with the
+same name, so this is more than just a convention.
 
 Note that multivariate polynomials tend to require very specialised
 implementations depending heavily on implementation details of the specific
 multivariate type. Therefore it is rare to write implementations for the
 abstract type `MPolyElem{T}`. Instead, implementations tend to be done for each
-concrete multivariate type and for the generic multivariate polynomial
-type `MPoly{T}` only.
+concrete multivariate type separately.
 
 ## Generic interfaces
 
@@ -117,8 +117,8 @@ We do however partially implement some Julia interfaces.
 * Iteration : iterators are currently provided for multivariate polynomials to
 iterate over the coefficients, terms and monomials. Nemo matrices can also be
 iterated over. Iteration proceeds down each column in turn. One can also
-iterate over all permutations and partitions. Finally, the Flint `fq_nmod`
-finite field type can be iterated over.
+iterate over all permutations and partitions. Finally, all finite field types
+can be iterated over.
 
 * Views : because C libraries cannot be expected to implement the full range
 of Julia view types, views of matrices in Nemo can only be constructed for
@@ -129,7 +129,7 @@ caveat that we generally use parent objects where Julia would use types. See
 the specific documentation for the module of interest to see details.
 
 * zero and one : these are implemented for parent types, which is not what
-Julia typicaly expects. Exceptions include the Flint `fmpz` and `fmpq` types,
+Julia typically expects. Exceptions include the Flint `fmpz` and `fmpq` types,
 as their parents are not parameterised, which makes it possible to implement
 these functions for the types as well as the parents.
 
@@ -155,6 +155,14 @@ word sized integers, but no overflow when the integer becomes large (Nemo
 integers are based on Flint's multiprecision `fmpz` type).
 
 * hash : we implement hash functions for all major element types in Nemo.
+
+* getindex/setindex! : we implement these to access elements of Nemo matrices,
+however see the note below on row major representation. In addition, we allow
+creation of matrices using the notation `R[a b; c d]` etc. This is done by
+overloading `getindex` for the parent object `R` instead of a type as Julia
+would normally expect. Note that we also provide this overload for the types
+`fmpz` and `fmpq` as these types are not parameterised and so matrices can
+be constructed using the type only.
 
 Many other Julia interfaces are either not yet implemented or only very
 partially implemented.
