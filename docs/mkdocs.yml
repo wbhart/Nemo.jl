@@ -25,6 +25,7 @@ pages:
 - Complex boxes:                acb.md
 - Number fields:                numberfield.md
 - Factorization:                factor.md
+- Conventions:                  developer/conventions.md
 
 markdown_extensions:
   - extra
