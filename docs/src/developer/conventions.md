@@ -173,4 +173,3 @@ which is the oldest and most canonical example.
 Headings for sections should be 80 characters wide and formed of hashes in the
 style that can be seen in each Nemo file.
 
-
