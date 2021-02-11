@@ -35,20 +35,20 @@ generic types, whether in the interface or not.
 For convenience we list the most important abstract types and their unions
 for which one should usually prefer to write generic implementations.
 
-* `PolyElem{T} : all univariate polynomial types
-* `MPolyElem{T} : all multivariate polynomial types (see note below)
-* `MatrixElem{T} : union of all matrix types including matrix algebras
-* `MatElem{T} : all matrix types not including matrix algebras
-* `AbsSeriesElem{T} : all abstract series types
-* `RelSeriesElem{T} : all relative series types
-* `LaurentSeriesElem{T} : union of all Laurent series over rings and fields
-* `PuiseuxSeriesElem{T} : union of all Puiseux series over rings and fields
-* `FPModule{T} : all finitely presented modules over a Euclidean domain
-* `FPModuleElem{T} : all elems of fin. presented modules over a Euc. domain
-* `FracElem{T} : all fractions
-* `ResElem{T} : all elements of a residue ring
-* `ResFieldElem{T} : all elements of a residue field
-* `Map{D, C} : all maps (see Maps developer docs for a description)
+* `PolyElem{T}` : all univariate polynomial types
+* `MPolyElem{T}` : all multivariate polynomial types (see note below)
+* `MatrixElem{T}` : union of all matrix types including matrix algebras
+* `MatElem{T}` : all matrix types not including matrix algebras
+* `AbsSeriesElem{T}` : all abstract series types
+* `RelSeriesElem{T}` : all relative series types
+* `LaurentSeriesElem{T}` : union of all Laurent series over rings and fields
+* `PuiseuxSeriesElem{T}` : union of all Puiseux series over rings and fields
+* `FPModule{T}` : all finitely presented modules over a Euclidean domain
+* `FPModuleElem{T}` : all elems of fin. presented modules over a Euc. domain
+* `FracElem{T}` : all fractions
+* `ResElem{T}` : all elements of a residue ring
+* `ResFieldElem{T}` : all elements of a residue field
+* `Map{D, C}` : all maps (see Maps developer docs for a description)
 
 N.B: inside the `Generic` submodule of AbstractAlgebra the abstract types `Blah`
 are only accessible by writing `AbstractAlgebra.Blah`. The unions are directly
