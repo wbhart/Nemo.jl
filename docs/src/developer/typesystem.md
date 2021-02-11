@@ -86,7 +86,7 @@ Nemo does not currently use type traits, though the map types in Nemo do make
 use of a custom analogue of this.
 
 Note that unlike class based systems that dispatch on the type of a (sometimes
-implicit) `this` or `self' parameter, Julia methods dispatch on the type of all
+implicit) `this` or `self` parameter, Julia methods dispatch on the type of all
 arguments. This is a natural fit for mathematics where all sorts of ad hoc left
 and right operations may be required.
 
