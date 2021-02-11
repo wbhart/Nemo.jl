@@ -33,7 +33,8 @@ makedocs(
              "factor.md",
 	     "Developer" => [ "developer/conventions.md",
 			      "developer/typesystem.md",
-			      "developer/parents.md" ]
+			      "developer/parents.md",
+			      "developer/interfaces.md" ]
          ]
 )
 

@@ -28,6 +28,7 @@ pages:
 - Conventions:                  developer/conventions.md
 - Type System:                  developer/typesystem.md
 - Parent Objects:               developer/parents.md
+- Interfaces:                   developer/interfaces.md
 
 markdown_extensions:
   - extra
