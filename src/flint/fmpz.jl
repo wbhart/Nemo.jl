@@ -41,8 +41,7 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        gcdinv, isprobable_prime, jacobi_symbol, remove, root, size,
        isqrtrem, sqrtmod, trailing_zeros, divisor_sigma, euler_phi, fibonacci,
        moebius_mu, primorial, rising_factorial, number_of_partitions,
-       canonical_unit, needs_parentheses, displayed_with_minus_in_front,
-       show_minus_one, addeq!, mul!, isunit, isequal,
+       canonical_unit, isunit, isequal, addeq!, mul!,
        issquare, square_root, issquare_with_square_root,
        iszero, rand, rand_bits, binomial, factorial, rand_bits_prime
 
@@ -254,7 +253,8 @@ iseven(a::fmpz) = ccall((:fmpz_is_even, libflint), Cint, (Ref{fmpz},), a) % Bool
 #
 ###############################################################################
 
-AbstractAlgebra.expressify(x::fmpz; context = nothing) = BigInt(x)
+# fmpz is allowed as a leaf, and the following code is needed by AA's api
+expressify(x::fmpz; context = nothing) = x
 
 function AbstractAlgebra.get_syntactic_sign_abs(obj::fmpz)
     return obj < 0 ? (-1, -obj) : (1, obj)
@@ -268,7 +268,7 @@ function AbstractAlgebra.printExpr(S::AbstractAlgebra.printer, obj::fmpz,
                                    left::Int, right::Int)
     if obj < 0
         AbstractAlgebra.printGenericPrefix(S, Expr(:call, :-, string(-obj)),
-                                           left, right, "-", AbstractAlgebra.prec_pre_Minus)
+                              left, right, "-", AbstractAlgebra.prec_pre_Minus)
     else
         AbstractAlgebra.push(S, string(obj))
     end
@@ -281,10 +281,6 @@ show(io::IO, x::fmpz) = print(io, string(x))
 show(io::IO, a::FlintIntegerRing) = print(io, "Integer Ring")
 
 needs_parentheses(x::fmpz) = false
-
-displayed_with_minus_in_front(x::fmpz) = x < 0
-
-show_minus_one(::Type{fmpz}) = false
 
 ###############################################################################
 #

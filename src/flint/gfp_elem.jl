@@ -94,7 +94,7 @@ function show(io::IO, R::GaloisField)
    print(io, "Galois field with characteristic ", signed(widen(R.n)))
 end
 
-function AbstractAlgebra.expressify(a::gfp_elem; context = nothing)
+function expressify(a::gfp_elem; context = nothing)
     return a.data
 end
 
@@ -103,10 +103,6 @@ function show(io::IO, a::gfp_elem)
 end
 
 needs_parentheses(x::gfp_elem) = false
-
-displayed_with_minus_in_front(x::gfp_elem) = false
-
-show_minus_one(::Type{gfp_elem}) = true
 
 ###############################################################################
 #

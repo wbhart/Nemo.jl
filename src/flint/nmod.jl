@@ -98,7 +98,7 @@ function show(io::IO, R::NmodRing)
    print(io, "Integers modulo ", signed(widen(R.n)))
 end
 
-function AbstractAlgebra.expressify(a::Nemo.nmod; context = nothing)
+function expressify(a::Nemo.nmod; context = nothing)
     return a.data
 end
 
@@ -107,10 +107,6 @@ function show(io::IO, a::nmod)
 end
 
 needs_parentheses(x::nmod) = false
-
-displayed_with_minus_in_front(x::nmod) = false
-
-show_minus_one(::Type{nmod}) = true
 
 ###############################################################################
 #

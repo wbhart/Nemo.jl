@@ -274,6 +274,21 @@ promote_rule(::Type{gfp_mat}, ::Type{fmpz}) = gfp_mat
 
 ################################################################################
 #
+#  Inverse
+#
+################################################################################
+
+function inv(a::gfp_mat)
+  !issquare(a) && error("Matrix must be a square matrix")
+  z = similar(a)
+  r = ccall((:nmod_mat_inv, libflint), Int,
+          (Ref{gfp_mat}, Ref{gfp_mat}), z, a)
+  !Bool(r) && error("Matrix not invertible")
+  return z
+end
+
+################################################################################
+#
 #   Linear solving
 #
 ################################################################################

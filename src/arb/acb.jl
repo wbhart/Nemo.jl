@@ -8,7 +8,7 @@
 ###############################################################################
 
 import Base: real, imag, abs, conj, angle, log, log1p, sin, cos,
-             tan, cot, sinpi, cospi, sinh, cosh, tanh, coth, atan
+             tan, cot, sinpi, cospi, sinh, cosh, tanh, coth, atan, expm1
 
 
 export one, onei, real, imag, conj, abs, inv, angle, isreal, polygamma, erf,
@@ -21,7 +21,7 @@ export rsqrt, log, log1p, exppii, sin, cos, tan, cot,
        ei, si, ci, shi, chi, li, lioffset, expint, gamma,
        hyp1f1, hyp1f1r, hyperu, hyp2f1,
        jtheta, modeta, modj, modlambda, moddelta, ellipwp, ellipk, ellipe,
-       modweber_f, modweber_f1, modweber_f2, canonical_unit
+       modweber_f, modweber_f1, modweber_f2, canonical_unit, root_of_unity
 
 ###############################################################################
 #
@@ -180,10 +180,28 @@ end
 #
 ################################################################################
 
-function show(io::IO, x::acb)
-  show(io, real(x))
-  print(io, " + i*")
-  show(io, imag(x))
+function expressify(z::acb; context = nothing)
+   x = real(z)
+   y = imag(z)
+   if iszero(y) # is exact zero!
+      return expressify(x, context = context)
+   else
+      y = Expr(:call, :*, expressify(y, context = context), :im)
+      if iszero(x)
+         return y
+      else
+         x = expressify(x, context = context)
+         return Expr(:call, :+, x, y)
+      end
+   end
+end
+
+function Base.show(io::IO, ::MIME"text/plain", z::acb)
+   print(io, AbstractAlgebra.obj_to_string(z, context = io))
+end
+
+function Base.show(io::IO, z::acb)
+   print(io, AbstractAlgebra.obj_to_string(z, context = io))
 end
 
 function show(io::IO, x::AcbField)
@@ -193,8 +211,6 @@ function show(io::IO, x::AcbField)
 end
 
 needs_parentheses(x::acb) = true
-
-show_minus_one(::Type{acb}) = true
 
 ################################################################################
 #
@@ -818,6 +834,17 @@ function Base.exp(x::acb)
 end
 
 @doc Markdown.doc"""
+    expm1(x::acb)
+
+Return $\exp(x)-1$, evaluated accurately for small $x$.
+"""
+function Base.expm1(x::acb)
+   z = parent(x)()
+   ccall((:acb_expm1, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   return z
+end
+
+@doc Markdown.doc"""
     exppii(x::acb)
 
 Return the exponential of $\pi i x$.
@@ -825,6 +852,18 @@ Return the exponential of $\pi i x$.
 function exppii(x::acb)
    z = parent(x)()
    ccall((:acb_exp_pi_i, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
+   return z
+end
+
+@doc Markdown.doc"""
+    root_of_unity(C::AcbField, k::Int)
+
+Return $\exp(2\pi i/k)$.
+"""
+function root_of_unity(C::AcbField, k::Int)
+   k <= 0 && throw(ArgumentError("Order must be positive ($k)"))
+   z = C()
+   ccall((:acb_unit_root, libarb), Nothing, (Ref{acb}, UInt, Int), z, k, C.prec)
    return z
 end
 

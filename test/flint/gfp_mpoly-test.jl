@@ -60,6 +60,17 @@
    end
 end
 
+@testset "gfp_mpoly.printing..." begin
+   S, (x, y) = PolynomialRing(GF(23), ["x", "y"])
+
+   @test !occursin(r"{", string(S))
+
+   @test string(zero(S)) == "0"
+   @test string(one(S)) == "1"
+   @test string(x) == "x"
+   @test string(y) == "y"
+end
+
 @testset "gfp_mpoly.manipulation..." begin
    R = GF(23)
 
@@ -484,6 +495,8 @@ end
    end
 
    check_factor(3*x^23+2*y^23+z^23, 23)
+   fac = factor(3*x^23+2*y^23+z^23)
+   @test occursin("x", sprint(show, "text/plain", fac))
    check_factor(x^99-y^99*z^33, 22)
 end
 

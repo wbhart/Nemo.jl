@@ -437,6 +437,25 @@ end
 #
 ################################################################################
 
+function inv(a::fmpz_mod_mat)
+  !issquare(a) && error("Matrix must be a square matrix")
+  if isprobable_prime(modulus(base_ring(a)))
+     X, d = pseudo_inv(a)
+     if !isunit(d)
+        error("Matrix is not invertible")
+     end
+     return divexact(X, d)
+  else
+     b = map_entries(x -> x.data, a)
+     c, d = pseudo_inv(b)
+     R = base_ring(a)
+     if !isone(gcd(d, modulus(R)))
+        error("Matrix not invertible")
+     end
+     return change_base_ring(R, c) * inv(R(d))
+  end
+end
+
 #= Not implemented in Flint yet
 
 function inv(a::T) where T <: Zmod_fmpz_mat

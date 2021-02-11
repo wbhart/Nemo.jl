@@ -545,9 +545,18 @@ end
 
   @test c == parent(aa)([12 13 1; 14 13 15; 4 4 1])
 
-  @test_throws DomainError inv(a)
+  @test_throws ErrorException inv(a)
 
   @test_throws ErrorException inv(transpose(a)*a)
+
+  R = ResidueRing(ZZ, 8)
+  G = matrix(R, 2, 2, [2 ,1 ,1 , 2])
+  Ginv = @inferred inv(G)
+  @test isone(G * Ginv)
+
+  G = matrix(R, 2, 2, [4, 0, 0, 2])
+  @test_throws ErrorException inv(G)
+  @test_throws ErrorException inv(matrix(R, 2, 1, [1, 1]))
 end
 
 #=  Not implemented in Flint yet
