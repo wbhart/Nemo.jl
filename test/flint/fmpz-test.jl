@@ -658,6 +658,14 @@ end
 
    @test divisible(fmpz(12), fmpz(6))
 
+   n = fmpz(2^2 * 3 * 13^2)
+   d = fmpz.([1, 2, 3, 4, 6, 12, 13, 26, 39, 52, 78, 156, 169, 338, 507, 676, 1014, 2028])
+   p = fmpz.([2, 3, 13])
+   divsr = divisors(n)
+   pdivsr = prime_divisors(n)
+   @test all([k in divsr for k in d])
+   @test all([k in pdivsr for k in p])
+   
    @test issquare(fmpz(36))
 
    @test factorial(ZZ(100)) == fmpz("93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000")
