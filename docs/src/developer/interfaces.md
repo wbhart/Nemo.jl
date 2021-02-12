@@ -124,16 +124,16 @@ can be iterated over.
 of Julia view types, views of matrices in Nemo can only be constructed for
 submatrices consisting of contiguous blocks in the original matrix.
 
-* map and similar : we implement the map and similar interfaces with the
+* `map` and `similar` : we implement the map and similar interfaces with the
 caveat that we generally use parent objects where Julia would use types. See
 the specific documentation for the module of interest to see details.
 
-* zero and one : these are implemented for parent types, which is not what
+* `zero` and `one` : these are implemented for parent types, which is not what
 Julia typically expects. Exceptions include the Flint `fmpz` and `fmpq` types,
 as their parents are not parameterised, which makes it possible to implement
 these functions for the types as well as the parents.
 
-* rand : we have a Nemo specific `rand` interface, which passes the tail of
+* `rand` : we have a Nemo specific `rand` interface, which passes the tail of
 a given `rand` invocation to the `rand` function for the base ring, e.g. to
 create random matrix elements or polynomial coefficients and so on. In addition
 to this custom `rand` interface, we also support much of the Julia `rand`
@@ -144,7 +144,7 @@ where necessary.
 we would certainly like to see that done in the future. It's not automatic
 because of the C objects that underly many of our constructions.
 
-* Number : Nemo number types do NOT belong to Julia's `Number` hierarchy, as
+* `Number` : Nemo number types do NOT belong to Julia's `Number` hierarchy, as
 we must make all our ring element types belong to our `RingElem` abstract
 type. To make some Julia `Number` types cooperate with Nemo, we define the
 unions `RingElement` and `FieldElement` which include some Julia types, such
@@ -154,15 +154,16 @@ using Nemo integer types if one wants good performance for small machine
 word sized integers, but no overflow when the integer becomes large (Nemo
 integers are based on Flint's multiprecision `fmpz` type).
 
-* hash : we implement hash functions for all major element types in Nemo.
+* `hash` : we implement hash functions for all major element types in Nemo.
 
-* getindex/setindex! : we implement these to access elements of Nemo matrices,
-however see the note below on row major representation. In addition, we allow
-creation of matrices using the notation `R[a b; c d]` etc. This is done by
-overloading `getindex` for the parent object `R` instead of a type as Julia
-would normally expect. Note that we also provide this overload for the types
-`fmpz` and `fmpq` as these types are not parameterised and so matrices can
-be constructed using the type only.
+* `getindex`/`setindex!`/`typed_hvcat` : we implement these to access elements
+of Nemo matrices, however see the note below on row major representation. In 
+addition, we allow creation of matrices using the notation `R[a b; c d]` etc.
+This is done by overloading `typed_hvcat` for the parent object `R` instead of
+a type as Julia would normally expect. This produces a Nemo matrix rather than
+a Julia one. Note that when passed a type, Julia's `typed_hvcat` can only
+construct Julia matrices for Nemo types such as `fmpz` and `fmpq` where
+elements can be constructed from types alone.
 
 Many other Julia interfaces are either not yet implemented or only very
 partially implemented.
