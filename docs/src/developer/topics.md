@@ -42,8 +42,8 @@ ring `R` it must be able to find `q` and `r` such that `a = bq + r` with `r`
 smaller than `a` with respect to some fixed Euclidean function on `R`.
 There are some restrictions imposed by Julia however.
 
-Firstly, defining `rem` in Julia automatically defines `%` in the same way, so
-these are not actually two independent functions.
+Firstly, `%` is a constant alias of `rem` in Julia, so these are not actually
+two independent functions but the same function.
 
 Julia defines `div`, `rem` and `divrem` for integers as a triple of functions
 that return Euclidean quotient and remainder, where the remainder has the same
@@ -51,15 +51,16 @@ sign as the dividend, e.g. `rem(1, 3) == 1` but `rem(-2, 3) == -2`. In other
 words, this triple of functions gives Euclidean division, but without a
 consistent set of representatives.
 
-When using Nemo at the console `div`, `rem` and `divrem` return the same values
-as Julia and these functions follows the Julia convention of making the sign of
-the remainder the same as the dividend over `ZZ`, e.g. `rem(ZZ(1), ZZ(3)) == 1`
-but `rem(ZZ(-2), ZZ(3)) == -2`.
+When using Nemo at the console (or indeed inside any other package without
+importing the internal Nemo definitions) `div`, `rem` and `divrem` return the
+same values as Julia and these functions follows the Julia convention of making
+the sign of the remainder the same as the dividend over `ZZ`, e.g.
+`rem(ZZ(1), ZZ(3)) == 1` but `rem(ZZ(-2), ZZ(3)) == -2`.
 
-Internally however, this is not convenient. For example, Hermite normal form
-over `ZZ` will only return a unique result if there is a consistent choice of
-representatives for the Euclidean division. The Julia definition of `rem` will
-not suffice.
+Internally to Nemo however, this is not convenient. For example, Hermite normal
+form over `ZZ` will only return a unique result if there is a consistent choice
+of representatives for the Euclidean division. The Julia definition of `rem`
+will not suffice.
 
 Furthermore, as Nemo wraps Flint, it is convenient that Euclidean division
 inside Nemo should operate the way Flint operates. This is critical if for
@@ -74,7 +75,7 @@ same sign as the *divisor*, i.e. `mod(1, 3) == 1` but `mod(1, -3) == -2`.
 Therefore internally, Nemo chooses `div`, `mod` and `divrem` to be a consistent
 triple of functions for Euclidean division, with `mod` defined as per Julia.
 Thus in particular, `div` and `divrem` behave differently to Julia inside of
-Nemo itself, viz. `Nemo.divrem(1, 3) == (0, 1)`.
+Nemo itself, viz. `Nemo.divrem(-1, 3) == (-1, 2)`.
 
 The same definitions for `div`, `mod` and `divrem` are used internally to
 AbstractAlgebra as well, even for Julia integers, so that AbstractAlgebra and
@@ -200,9 +201,9 @@ automatically available, even when exported from the Generic submodule.
 Two additional things are required, namely an import from Generic into
 AbstractAlgebra and then and export from AbstractAlgebra to the user.
 
-Two large tables exist in `src/AbstractAlgebra` with these imports and exports.
-These are kept in alphabetical order to prevent duplicate imports/exports being
-added over time.
+Two large tables exist in `src/AbstractAlgebra.jl` with these imports and
+exports. These are kept in alphabetical order to prevent duplicate
+imports/exports being added over time.
 
 If one wishes to extend a definition provided by Base, one can simply overload
 `Base.blah` inside the Generic submodule directly. Exceptions to this include
@@ -212,8 +213,8 @@ For AbstractAlgebra types, one still defines these exceptions `blah` by
 overloading `Base.blah` directly inside Generic. However, for the versions that
 would conflict with the Julia definition (e.g. the definition for `Int`), we
 instead define `AbstractAlgebra.blah` for that specific type and a fallback
-`AbstractAlgebra.blah(a::T) where T` which calls the Base version of the
-function for all other types `T`. Of course we do not export `blah` from
+`AbstractAlgebra.blah(a) = Base.blah(a)` which calls the Base version of the
+function for all other types. Of course we do not export `blah` from
 AbstractAlgebra.
 
 In order to make the AbstractAlgebra version available in Generic (rather than
@@ -274,7 +275,7 @@ a = addeq!(a, b)
 ```
 
 In the case of a mutable type, `addeq!` will simply modify the original `a`.
-The modified object will be returned and assigned to the exact same place,
+The modified object will be returned and assigned to the exact same variable,
 which has no effect.
 
 In the case of an immutable type, `addeq!` does not modify the original object
@@ -357,12 +358,12 @@ code given the constraints mentioned above.
 
 * matrices are viewed as containers which may contain elements that alias one
 another. Other objects, e.g. polynomials, series, etc., are constructed from
-objects that do not alias one another, *even in part*.
+objects that do not alias one another, *even in part*
 
-* standard unsafe operators, addeq!, mul!, addmul!, zero!, add!, are allowed
-to mutate their outputs iff the output is entirely under the control of the
-caller, i.e. it was created for the purpose of accumulation, but otherwise
-must not modify any inputs or outputs
+* standard unsafe operators, addeq!, mul!, addmul!, zero!, add! which mutate
+their outputs are allow to be used iff that output is entirely under the
+control of the caller, i.e. it was created for the purpose of accumulation, but
+otherwise must not be used
 
 * all arithmetic functions unary minus, `+`, `-`, `*`, `^` and deepcopy must
 return new objects and cannot return one of their inputs
@@ -373,7 +374,7 @@ return new objects and cannot return one of their inputs
 occur as entries of the output matrix, though should be allowed to arbitrarily
 replace/swap the entries that appear in the matrix. In other words, these
 functions should be interpreted as inplace operations, rather than operations
-that are allowed to mutate the actual entries themselves.
+that are allowed to mutate the actual entries themselves
 
 * `R(a)` where `R` is the parent of `a`, always just returns `a` and not a copy
 
