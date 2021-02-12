@@ -409,3 +409,24 @@ that aliases another somewhere else, even in part
 are not matrices) that take an array as input, must ensure that the
 coefficients being placed into the object do not alias, even in part
 
+## The SparsePoly module
+
+The SparsePoly module in AbstractAlgebra is a generic module for sparse
+univariate polynomials over a given base ring.
+
+This module is used internally, e.g. in the generic multivariate gcd code,
+however it is not particularly suitable for general use.
+
+Firstly, whilst the representation is sparse (recursive) the algorithms
+used generally are not. This is because the amount of time taken by the
+Jit in Julia is simply too large (upwards of 6s for the first multivariate
+gcd).
+
+Secondly, the order of terms in that representation is not the one which a
+developer would expect for a sparse univariate format.
+
+If the Julia Jit is ever made orders of magnitude faster, it may be worth
+cleaning up this module and making it generally available. But for now, it
+should be considered internal and heavily incomplete.
+
+
