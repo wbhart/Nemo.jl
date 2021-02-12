@@ -59,14 +59,17 @@ the sign of the remainder the same as the dividend over `ZZ`, e.g.
 
 Internally to Nemo however, this is not convenient. For example, Hermite normal
 form over `ZZ` will only return a unique result if there is a consistent choice
-of representatives for the Euclidean division. The Julia definition of `rem`
-will not suffice.
+of representatives for the Euclidean division. This applies to the generic HNF
+code in AbstractAlgebra, but similar problems exist for the generic finitely
+presented module code in AbstractAlgebra, even when used over Nemo integers.
+Thus the Julia definition of `rem` will not suffice.
 
 Furthermore, as Nemo wraps Flint, it is convenient that Euclidean division
 inside Nemo should operate the way Flint operates. This is critical if for
 example one wants the result of a Hermite normal form coming from Flint to be
 reduced using the same definition of Euclidean remainder as used elsewhere
-throughout the Nemo module.
+throughout the Nemo module and to return the same answers as the generic HNF
+code in AbstractAlgebra for example.
 
 In particular, Flint defines Euclidean remainder over the integers in line with
 the Julia function `mod`, namely by returning the smallest remainder with the
@@ -91,12 +94,12 @@ aware that many tickets will be opened complaining about some inconsistency.
 When reflecting on the choice we have made, one must consider the following:
 
 * Nemo must internally behave as Flint does for consistency
-* There are also functions such as `powmod`, `invmod`
-* hnf requires a consistent set of representatives for uniqueness over `ZZ`
+* There are also functions such as `powmod`, `invmod` that reduce as per mod
+* HNF requires a consistent set of representatives for uniqueness over `ZZ`
 
-Also note that Julia's rem does not provide symmetric mod, a misconception that
-often arises. The issues here are independent of the decision to use positive
-remainder (for positive modulus) in Flint, rather than symmetric mod.
+Also note that Julia's `rem` does not provide symmetric mod, a misconception
+that often arises. The issues here are independent of the decision to use
+positive remainder (for positive modulus) in Flint, rather than symmetric mod.
 
 We are aware that the conventions we have chosen have inconsistencies with
 Julia and do not have the nice property that `div`, `rem` and `divrem` are a
@@ -127,8 +130,10 @@ input and otherwise raising an exception.
 For example, `AbstractAlgebra.sqrt(4) == 2`, `AbstractAlgebra.inv(-1) == -1`
 and `AbstractAlgebra.exp(0) == 1`.
 
-Of course these definitions are not exported by `AbstractAlgebra` so that the
-behaviour at the console is not affected by these internal definitions.
+Naturally these definitions are not so terribly useful to a user and are only
+needed for internal consistency. Therefore, of course these definitions are not
+exported by `AbstractAlgebra` so that the behaviour at the console is not
+affected by these definitions.
 
 There is currently some inconsistency in that Nemo follows the Julia numerical
 definitions internally rather than following the algebraic definitions provided
@@ -164,6 +169,20 @@ explicitly importing `sqrt` from Base, etc.
 In the Generic module discussed below, we import the definitions from
 AbstractAlgebra rather than Base.
 
+### Determinant
+
+Another function which Nemo handles differently to Julia is `det` for
+determinant of matrices. If the input is an integer matrix, Nemo outputs an
+integer rather than a floating point number for the determinant.
+
+However, this is not such an acute problem as Julia's `det` has now been placed
+in `LinearAlgebra` rather than `Base`. Moreover, Nemo has its own matrices and
+so does not conflict with the definition of `det` for Julia matrices.
+
+It is important for developers to understand this difference however. It is not
+generally wise to use the Julia linear algebra functionality on the Julia
+matrices underlying generic Nemo matrices for this reason.
+
 ## The Generic submodule
 
 In AbstractAlgebra we define a submodule called Generic. The purpose of this
@@ -197,11 +216,10 @@ to export `PolynomialRing` from AbstractAlgebra (also in that file).
 
 Similarly, all functions provided for generic polynomial rings are not
 automatically available, even when exported from the Generic submodule.
-
 Two additional things are required, namely an import from Generic into
-AbstractAlgebra and then and export from AbstractAlgebra to the user.
+AbstractAlgebra and then an export from AbstractAlgebra to the user.
 
-Two large tables exist in `src/AbstractAlgebra.jl` with these imports and
+Two large lists exist in `src/AbstractAlgebra.jl` with these imports and
 exports. These are kept in alphabetical order to prevent duplicate
 imports/exports being added over time.
 
@@ -274,6 +292,9 @@ For example, to set the existing value `a` to `a + b` one must write
 a = addeq!(a, b)
 ```
 
+i.e. one must have an explicit assignment to the left of the `addeq!` call and
+indeed all the unsafe operator calls.
+
 In the case of a mutable type, `addeq!` will simply modify the original `a`.
 The modified object will be returned and assigned to the exact same variable,
 which has no effect.
@@ -290,28 +311,28 @@ it changes the object without the user knowing, this can result in incorrect
 results in user code due to the value of their objects changing from under
 them.
 
-This is typically only difficult to ensure in cases where the input and output
-of a function alias, e.g. `a = my_function(a, b)`. In all other cases one
-simply has the rule that inputs to a function should never be modified and so
-are not suitable for use with unsafe operators.
+In the first instance, functions should never modify their inputs. But further
+problems can also occur if the output of an unsafe operator happens to alias
+one of the other inputs. Such cases need to be handled exceptionally carefully.
 
-As Nemo is based on Flint, which has its own aliasing rules which are distinct
-from the default expectation in Julia, this leads to some interesting corner
-cases.
+A second issue arises as Nemo is based on Flint, which has its own aliasing
+rules which are distinct from the default expectation in Julia. This leads to
+some interesting corner cases.
 
-In particularly, Flint always allows aliasing in its polynomial functions but
-expects matrix functions to have return values that are distinct from their
-inputs.
+In particularly, Flint always allows aliasing of inputs and outputs in its
+polynomial functions but expects matrix functions to have output matrices that
+are distinct from their inputs, except in a handful of functions that are
+specially documented to be inplace operations.
 
-Moreover, when assigning an element to a coefficient of a polynomial or matrix
-Flint always makes a copy of the element being assigned to that location. In
-Julia however, if one assigns an element to some index of an array, the
-existing object at that location is replaced with the new object. This means
-that inplace modification of Julia array elements is not safe as it would
-modify the original object that was assigned to that location, whereas in Flint
-inplace modification is highly desirable for performance reasons and is
-completely safe due to the fact that a copy was made when the assignment
-happened.
+Moreover, when assigning an element to a coefficient of a polynomial or entry
+of a matrix Flint always makes a copy of the element being assigned to that
+location. In Julia however, if one assigns an element to some index of an
+array, the existing object at that location is replaced with the new object.
+This means that inplace modification of Julia array elements is not safe as it
+would modify the original object that was assigned to that location, whereas in
+Flint inplace modification is highly desirable for performance reasons and is
+completely safe due to the fact that a copy was made when the value was
+assigned to that location.
 
 We have developed over a period of many years a set of rules that maximise the
 performance benefit we get from our unsafe operators, whilst keeping the
@@ -331,9 +352,10 @@ Whenever an arithmetic operation is used, i.e. `+`, `-`, `*`, unary minus and
 functions.
 
 Note that if `R` is a type and an element `a` of that type is passed to it,
-e.g. `R(a)` then, the Julia convention is that `a` will be returned rather
-than a copy of `a`. This convention ensures there is not an additional cost
-when coercing values that are already of the right type.
+e.g. `R(a)` then, the Julia convention is that the original object `a` will be
+returned rather than a copy of `a`. This convention ensures there is not an
+additional cost when coercing values that are already of the right type, e.g
+in generic code where coercion may or may not be needed depending on the type.
 
 We extend this convention to parent objects `R` and elements `a` of that
 parent. In particular, `R(a)` cannot be used to make a copy of `a` for use
@@ -342,7 +364,8 @@ in an unsafe function if `R` is the parent of `a`.
 All other functions *may* also return the input object if they wish. In other
 words, the return value of all other functions is not suitable for use in
 an unsafe function. Only return values of arithmetic operations and `deepcopy`
-will be suitable for such use.
+or objects freshly created using inner constructors will be suitable for such
+use.
 
 This convention has been chosen to maximise performance of Nemo. Low level
 operations (where performance matters) make a new object, even if the result
@@ -365,8 +388,8 @@ their outputs are allow to be used iff that output is entirely under the
 control of the caller, i.e. it was created for the purpose of accumulation, but
 otherwise must not be used
 
-* all arithmetic functions unary minus, `+`, `-`, `*`, `^` and deepcopy must
-return new objects and cannot return one of their inputs
+* all arithmetic functions i.e. unary minus, `+`, `-`, `*`, `^`, and deepcopy
+must return new objects and cannot return one of their inputs
 
 * all other functions are allowed to return their inputs as outputs
 
@@ -380,7 +403,7 @@ that are allowed to mutate the actual entries themselves
 
 * `setcoeff!` and `setindex!` and `getcoeff` and `getindex` should not make
 copies. Note that this implies that setcoeff! should not be passed an element
-that aliases another somewhere else, even in part!
+that aliases another somewhere else, even in part
 
 * Constructors for polynomials, series and similar ring element objects (that
 are not matrices) that take an array as input, must ensure that the
