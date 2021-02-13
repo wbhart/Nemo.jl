@@ -429,4 +429,97 @@ If the Julia Jit is ever made orders of magnitude faster, it may be worth
 cleaning up this module and making it generally available. But for now, it
 should be considered internal and heavily incomplete.
 
+## Parent object caching
+
+Parent objects in Nemo must be unique given the data that is used to create
+them. For this purpose most parent objects are cached globally and looked
+up upon creation. If a parent object with that data already exists, it is
+returned from the cache instead of creating a new one.
+
+There are two situations where this can be problematic however.
+
+The first situation is if one is doing some parallel programming. Here global
+objects are a blight and it may be necessary to turn off caching and simply
+ensure that that same data is only ever used once when creating parent objects.
+
+The second situation is when doing multimodular algorithms, where many similar
+parent objects with different moduli are created. The cache can become
+overwhelmed slowing the code down or even grinding to a halt.
+
+In both these situations one can pass `false` as an additional argument
+to a parent constructor to avoid caching the parent object it creates. This
+parameter normally has a default value of `true` and under normal circumstances
+doesn't need to be supplied..
+
+## Throw/nothrow for `check_parent`
+
+By default the `check_parent` functions throw an exception if parents do not
+match. However sometimes one would like to know if they match without throwing.
+
+For this purpose one can pass an addition `false` argument to `check_parent`.
+This supresses the exception that would be thrown if the parent objects didn't
+match. Instead the function simply returns `true` or `false` to indicate
+whether they matched or not.
+
+## Delayed reduction
+
+When working in residue rings, various functions will perform an arithmetic
+operation followed by a reduction modulo the modulus of the residue ring.
+
+Some accumulations, e.g. in linear algebra or polynomial arithmetic, can be
+dramatically sped up if one can delay the reductions that would happen after
+each operation in the accumulation.
+
+Some of the Generic code in Nemo is designed to allow such delayed reduction
+if the ring supports it and to simply use fallbacks that do the reduction
+after every intermediate operation if they don't.
+
+To support delayed reduction, a ring must support the delayed reduction
+interface which we describe here.
+
+Two additional functions must be supplied for the element type. We give
+examples for the Nemo `nf_elem` type:
+
+```julia
+mul_red!(z::nf_elem, x::nf_elem, y::nf_elem, red::Bool)
+```
+
+This function behaves as per `mul!` but only performs reduction if the
+additional boolean argument `red` is set to `true`. This function can
+assume that both the inputs are reduced.
+
+```julia
+reduce!(x::nf_elem)
+```
+
+This function must perform reduction on an unreduced element (mutating it).
+Note that it must return the mutated value as per all unsafe operators.
+
+Finally, the `add!` and `addeq!` operators must be able to add nonreduced
+values.
+
+If one wishes to speed up generic code for rings that provide delayed
+reduction, one makes use of the function `addmul_delayed_reduction!` in the
+accumulation loop. Here is an example for accumulation into a two dimensional
+matrix element in Generic in a matrix multiplication routine:
+
+```julia
+A[i, j] = base_ring(X)()
+for k = 1:ncols(X)
+    A[i, j] = addmul_delayed_reduction!(A[i, j], x[i, k], y[k, j], C)
+end
+A[i, j] = reduce!(A[i, j])
+```
+
+Here `C` is a temporary element of the same type as the other inputs which is
+used internally in `addmul_delayed_reduction!` if needed.
+
+Notice the final call to `reduce!` to reduce the accumulated value after the
+accumulation loop has finished.
+
+Note that `mul_red!` is never called directly but is called inside the generic
+implementation of `addmul_delayed_reduction!` for rings that support delayed
+reduction. That generic code falls back to a call to `addmul!` which in turn
+falls back to `mul!` and `addeq!` where delayed reduction or `addmul!` are not
+available.
 
