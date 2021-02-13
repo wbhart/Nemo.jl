@@ -380,34 +380,34 @@ relatively confident by now that following these rules will result in correct
 code given the constraints mentioned above.
 
 * matrices are viewed as containers which may contain elements that alias one
-another. Other objects, e.g. polynomials, series, etc., are constructed from
-objects that do not alias one another, *even in part*
+  another. Other objects, e.g. polynomials, series, etc., are constructed from
+  objects that do not alias one another, *even in part*
 
 * standard unsafe operators, addeq!, mul!, addmul!, zero!, add! which mutate
-their outputs are allow to be used iff that output is entirely under the
-control of the caller, i.e. it was created for the purpose of accumulation, but
-otherwise must not be used
+  their outputs are allow to be used iff that output is entirely under the
+  control of the caller, i.e. it was created for the purpose of accumulation,
+  but otherwise must not be used
 
 * all arithmetic functions i.e. unary minus, `+`, `-`, `*`, `^`, and deepcopy
-must return new objects and cannot return one of their inputs
+  must return new objects and cannot return one of their inputs
 
 * all other functions are allowed to return their inputs as outputs
 
 * matrix functions with an exclamation mark should not mutate the objects that
-occur as entries of the output matrix, though should be allowed to arbitrarily
-replace/swap the entries that appear in the matrix. In other words, these
-functions should be interpreted as inplace operations, rather than operations
-that are allowed to mutate the actual entries themselves
+  occur as entries of the output matrix, though should be allowed to
+  arbitrarily replace/swap the entries that appear in the matrix. In other
+  words, these functions should be interpreted as inplace operations, rather
+  than operations that are allowed to mutate the actual entries themselves
 
 * `R(a)` where `R` is the parent of `a`, always just returns `a` and not a copy
 
 * `setcoeff!` and `setindex!` and `getcoeff` and `getindex` should not make
-copies. Note that this implies that setcoeff! should not be passed an element
-that aliases another somewhere else, even in part
+  copies. Note that this implies that setcoeff! should not be passed an element
+  that aliases another somewhere else, even in part
 
 * Constructors for polynomials, series and similar ring element objects (that
-are not matrices) that take an array as input, must ensure that the
-coefficients being placed into the object do not alias, even in part
+  are not matrices) that take an array as input, must ensure that the
+  coefficients being placed into the object do not alias, even in part
 
 ## The SparsePoly module
 
