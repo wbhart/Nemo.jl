@@ -449,14 +449,14 @@ overwhelmed slowing the code down or even grinding to a halt.
 In both these situations one can pass `false` as an additional argument
 to a parent constructor to avoid caching the parent object it creates. This
 parameter normally has a default value of `true` and under normal circumstances
-doesn't need to be supplied..
+doesn't need to be supplied.
 
 ## Throw/nothrow for `check_parent`
 
 By default the `check_parent` functions throw an exception if parents do not
 match. However sometimes one would like to know if they match without throwing.
 
-For this purpose one can pass an addition `false` argument to `check_parent`.
+For this purpose one can pass an additional `false` argument to `check_parent`.
 This supresses the exception that would be thrown if the parent objects didn't
 match. Instead the function simply returns `true` or `false` to indicate
 whether they matched or not.
