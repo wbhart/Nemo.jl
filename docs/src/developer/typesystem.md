@@ -217,3 +217,8 @@ similarly expanded to make it easier for the user.
 
 The map type system is currently considered experimental and our observation so
 far is that it is not intuitive for developers.
+
+## Type hierarchy diagram
+
+![alt text](img/types.svg)
+
