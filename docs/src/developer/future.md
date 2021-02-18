@@ -24,7 +24,8 @@ The Antic C library is used for number field elements, but matrices and
 polynomials over these are handled by Julia. There is nothing explicitly
 wrong with this, except that the jit compilation is costly for such basic
 operations and the code is not as easy for others to use in other projects
-if it is not in C.
+e.g. if they are using a different language or do not want additional
+dependencies outside the Antic C library they are using.
 
 We plan to write some routines in C in the Antic library to handle at least
 univariate polynomials over number fields and matrices as well. These should
@@ -41,8 +42,8 @@ fairly near future.
 
 Users of Nemo should be unaffected, as Nemo will continue to exist as a
 separate package in the OscarMono.jl repository, even if it does become part of
-this repository. Julia apparently supports multiple packages in the same
-repository nowadays.
+this repository. Julia supports multiple packages in the same repository
+nowadays.
 
 The possibility will always exist to separate the repositories again if the
 experiment is unsuccessful or serves its purpose and is no longer needed.
@@ -86,7 +87,7 @@ A number of things must be taken into account when making such moves:
   `AbstractAlgebra` prepended to their calls, as per the developer documentation
   on parent object constructors.
 
-* Some functions such as `exp` and the like requires `Base` to be prepended, as
+* Some functions such as `exp` and the like require `Base` to be prepended, as
   we do not import these functions from `Base` into `Generic`.
 
 * Some of the code calls back into convenience functions found only in Hecke.
