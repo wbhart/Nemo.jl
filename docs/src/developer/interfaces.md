@@ -115,55 +115,55 @@ topic) we cannot support all Julia interfaces fully.
 We do however partially implement some Julia interfaces.
 
 * Iteration : iterators are currently provided for multivariate polynomials to
-iterate over the coefficients, terms and monomials. Nemo matrices can also be
-iterated over. Iteration proceeds down each column in turn. One can also
-iterate over all permutations and partitions. Finally, all finite field types
-can be iterated over.
+  iterate over the coefficients, terms and monomials. Nemo matrices can also be
+  iterated over. Iteration proceeds down each column in turn. One can also
+  iterate over all permutations and partitions. Finally, all finite field types
+  can be iterated over.
 
 * Views : because C libraries cannot be expected to implement the full range
-of Julia view types, views of matrices in Nemo can only be constructed for
-submatrices consisting of contiguous blocks in the original matrix.
+  of Julia view types, views of matrices in Nemo can only be constructed for
+  submatrices consisting of contiguous blocks in the original matrix.
 
 * `map` and `similar` : we implement the map and similar interfaces with the
-caveat that we generally use parent objects where Julia would use types. See
-the specific documentation for the module of interest to see details.
+  caveat that we generally use parent objects where Julia would use types. See
+  the specific documentation for the module of interest to see details.
 
 * `zero` and `one` : these are implemented for parent types, which is not what
-Julia typically expects. Exceptions include the Flint `fmpz` and `fmpq` types,
-as their parents are not parameterised, which makes it possible to implement
-these functions for the types as well as the parents.
+  Julia typically expects. Exceptions include the Flint `fmpz` and `fmpq` types,
+  as their parents are not parameterised, which makes it possible to implement
+  these functions for the types as well as the parents.
 
 * `rand` : we have a Nemo specific `rand` interface, which passes the tail of
-a given `rand` invocation to the `rand` function for the base ring, e.g. to
-create random matrix elements or polynomial coefficients and so on. In addition
-to this custom `rand` interface, we also support much of the Julia `rand`
-interface, with the usual caveat that we use parent objects instead of types
-where necessary.
+  a given `rand` invocation to the `rand` function for the base ring, e.g. to
+  create random matrix elements or polynomial coefficients and so on. In addition
+  to this custom `rand` interface, we also support much of the Julia `rand`
+  interface, with the usual caveat that we use parent objects instead of types
+  where necessary.
 
 * serialisation : unfortunately this is currently NOT implemented by Nemo, but
-we would certainly like to see that done in the future. It's not automatic
-because of the C objects that underly many of our constructions.
+  we would certainly like to see that done in the future. It's not automatic
+  because of the C objects that underly many of our constructions.
 
 * `Number` : Nemo number types do NOT belong to Julia's `Number` hierarchy, as
-we must make all our ring element types belong to our `RingElem` abstract
-type. To make some Julia `Number` types cooperate with Nemo, we define the
-unions `RingElement` and `FieldElement` which include some Julia types, such
-as `BigInt` and `Rational{BigInt}`, etc. Note that fixed precision integer
-types cannot be expected to be well-behaved when they overflow. We recommend
-using Nemo integer types if one wants good performance for small machine
-word sized integers, but no overflow when the integer becomes large (Nemo
-integers are based on Flint's multiprecision `fmpz` type).
+  we must make all our ring element types belong to our `RingElem` abstract
+  type. To make some Julia `Number` types cooperate with Nemo, we define the
+  unions `RingElement` and `FieldElement` which include some Julia types, such
+  as `BigInt` and `Rational{BigInt}`, etc. Note that fixed precision integer
+  types cannot be expected to be well-behaved when they overflow. We recommend
+  using Nemo integer types if one wants good performance for small machine
+  word sized integers, but no overflow when the integer becomes large (Nemo
+  integers are based on Flint's multiprecision `fmpz` type).
 
 * `hash` : we implement hash functions for all major element types in Nemo.
 
 * `getindex`/`setindex!`/`typed_hvcat` : we implement these to access elements
-of Nemo matrices, however see the note below on row major representation. In 
-addition, we allow creation of matrices using the notation `R[a b; c d]` etc.
-This is done by overloading `typed_hvcat` for the parent object `R` instead of
-a type as Julia would normally expect. This produces a Nemo matrix rather than
-a Julia one. Note that when passed a type, Julia's `typed_hvcat` can only
-construct Julia matrices for Nemo types such as `fmpz` and `fmpq` where
-elements can be constructed from types alone.
+  of Nemo matrices, however see the note below on row major representation. In 
+  addition, we allow creation of matrices using the notation `R[a b; c d]` etc.
+  This is done by overloading `typed_hvcat` for the parent object `R` instead of
+  a type as Julia would normally expect. This produces a Nemo matrix rather than
+  a Julia one. Note that when passed a type, Julia's `typed_hvcat` can only
+  construct Julia matrices for Nemo types such as `fmpz` and `fmpq` where
+  elements can be constructed from types alone.
 
 Many other Julia interfaces are either not yet implemented or only very
 partially implemented.
