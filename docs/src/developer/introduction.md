@@ -230,7 +230,7 @@ Binaries of C libraries for Nemo are currently made in a separate repository:
 https://github.com/oscar-system/FLINT_jll.jl
 
 If code is added to any of the C libraries used by Nemo, this jll package must
-be updated first and the version in updated Nemo.jl before the new
+be updated first and the version updated in Nemo.jl before the new
 functionality can be used. Ask the core developers for help with this as
 various other tasks must be completed at the same time.
 
