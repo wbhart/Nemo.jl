@@ -248,4 +248,3 @@ See the Oscar website for further details:
 
 https://oscar.computeralgebra.de/
 
-rather than `sqrt` internally for all rings.
