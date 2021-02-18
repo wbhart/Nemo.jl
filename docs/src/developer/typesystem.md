@@ -194,7 +194,7 @@ map types whose first two parameters are `D` and `C`, and where the remaining
 two parameters are arbitrary.
 
 However one can also pass a map class or a concrete type `U` to a `Map`
-function to compute the class of all maps of the given map class or type..
+function to compute the class of all maps of the given map class or type.
 
 For example, to write a function which accepts all maps of "type"
 `MyRingHomomorphism`, including all compositions of such maps, one inserts
