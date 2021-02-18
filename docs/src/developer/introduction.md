@@ -185,7 +185,7 @@ order. You may have completely forgotten what those older commits were about,
 so this can become very difficult if not done regularly.
 
 Once you have pushed your changes to your GitHub account, go to the official
-project GitHub page and your should see your branch mentioned near the top of
+project GitHub page and you should see your branch mentioned near the top of
 the page. Open a pull request.
 
 Someone will review your code and suggest changes they'd like made. Simply
