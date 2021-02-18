@@ -35,7 +35,8 @@ makedocs(
 			      "developer/typesystem.md",
 			      "developer/parents.md",
 			      "developer/interfaces.md",
-			      "developer/topics.md" ]
+			      "developer/topics.md",
+			      "developer/future.md" ]
          ]
 )
 
