@@ -11,7 +11,7 @@ Currently all commutative ring types belong to `Ring` and their elements to
 rings and elements thereof, i.e. `NCRing` and `NCRingElem` etc.
 
 However, it would be more logical to use `Ring` for not necessarily
-commutative rings and CommRing`, `CRing` or `CommutativeRing` (the name has
+commutative rings and `CommRing`, `CRing` or `CommutativeRing` (the name has
 not been decided on yet) for commutative rings.
 
 This is a big change and should happen with plenty of warning for the
