@@ -1947,9 +1947,9 @@ end
 @doc Markdown.doc"""
       simplest_rational_inside(x::arb)
 
-Return the simplest fraction inside the ball `x`. A canonical fraction
-`a_1/b_1` is defined to be simpler than `a_2/b_2` iff `b_1 < b_2` or `b_1 =
-b_2` and `a_1 < a_2`.
+Return the simplest fraction inside the ball $x$. A canonical fraction
+$a_1/b_1$ is defined to be simpler than $a_2/b_2$ iff $b_1 < b_2$ or $b_1 =
+b_2$ and $a_1 < a_2$.
 """
 function simplest_rational_inside(x::arb)
    a = fmpz()
