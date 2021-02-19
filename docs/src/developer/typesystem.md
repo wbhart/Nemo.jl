@@ -220,5 +220,12 @@ far is that it is not intuitive for developers.
 
 ## Type hierarchy diagram
 
+The most important abstract types in the system are the element types. Their
+hierarchy is shown in the following diagram.
+
 ![alt text](img/types.svg)
 
+Most of the element types have a corresponding parent abstract type. These are
+shown in the following diagram.
+
+![alt text](img/types2.svg)
