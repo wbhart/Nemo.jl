@@ -20,38 +20,38 @@ the words, e.g. `zip` and `jacobi_symbol`.
 We follow these conventions in Nemo with some exceptions:
 
 * When interfacing C libraries the types use the same spelling and
-capitalisation in Nemo as they do in C, e.g. the Flint library's `fmpz_poly`
-remains uncapitalised in Nemo.
+  capitalisation in Nemo as they do in C, e.g. the Flint library's `fmpz_poly`
+  remains uncapitalised in Nemo.
 
 * Types such as `gfp_poly` which don't exist under that name on the C side
-also use the lowercase convention as they wrap an actual C type which must be
-split into more than one type on the Julia side. For example `nmod_poly` and
-`gfp_poly` on the Julia side both represent Flint `nmod_poly`'s on the C side.
+  also use the lowercase convention as they wrap an actual C type which must be
+  split into more than one type on the Julia side. For example `nmod_poly` and
+  `gfp_poly` on the Julia side both represent Flint `nmod_poly`'s on the C side.
 
 * Types of rings and fields, modules, maps, etc. are capitalised whether they
-correspond to a C type or not, e.g. `FqNmodFiniteField` for the type of an
-object representing the field that `fq_nmod`'s belong to.
+  correspond to a C type or not, e.g. `FqNmodFiniteField` for the type of an
+  object representing the field that `fq_nmod`'s belong to.
 .
 * We omit an underscore if the first word of a method is "is" or "has", e.g.
-`iseven`.
+  `iseven`.
 
 * Underscores are omitted if the method name is already well established
-without an underscore in Julia itself, e.g. `setindex`.
+  without an underscore in Julia itself, e.g. `setindex`.
 
 * Constructors with the same name as a type use the same spelling and
-capitalisation as that type, e.g. `fmpz(1)`.
+  capitalisation as that type, e.g. `fmpz(1)`.
 
 * Functions for creating rings, fields, modules, maps, etc. (rather than the
-elements thereof) use CamelCase, e.g. `PolynomialRing`. We refer to these 
-functions as parent constructors. Note that we do not follow the Julia
-convention here, e.g. `PolynomialRing` is a function and not a type constructor
-(in fact we often return a tuple consisting of a parent object and other
-objects such as generators with this type of function) yet we capitalise it.
+  elements thereof) use CamelCase, e.g. `PolynomialRing`. We refer to these 
+  functions as parent constructors. Note that we do not follow the Julia
+  convention here, e.g. `PolynomialRing` is a function and not a type constructor
+  (in fact we often return a tuple consisting of a parent object and other
+  objects such as generators with this type of function) yet we capitalise it.
 
 * We prefer words to not be abbreviated, e.g. `denominator` instead of `den`.
 
 * Exceptions always exist where the result would be offensive in any major
-spoken language (example omitted).
+  spoken language (example omitted).
 
 It is easy to find counterexamples to virtually all these rules. However we
 have been making efforts to remove the most egregious cases from our codebase
@@ -127,27 +127,27 @@ follows:
 * A header stating what the file is for, and if needed, any copyright notices
 
 * Functions applying to any "types" used in the file, e.g. `parent_type`,
-`elem_type`, `base_ring`, `parent`, `check_parent`.
+  `elem_type`, `base_ring`, `parent`, `check_parent`.
 
 * Basic manipulation, including hashes, predicates, getters/setters, functions
-for creating special values (e.g. `one`, `zero` and the like),
-`deepcopy_internal`. These are usually fairly short functions, often a single
-line.
+  for creating special values (e.g. `one`, `zero` and the like),
+  `deepcopy_internal`. These are usually fairly short functions, often a single
+  line.
 
 * Indexing (`getindex`, `setindex`), iteration, views.
 
 * String I/O (`expressify` and file access, etc.)
 
 * Arithmetic operations, usually in multiple sections, such as unary
-operations, binary operations, ad hoc binary operations (e.g. multiplication
-of a complex object by a scalar), comparisons, ad hoc comparisons, division,
-etc.
+  operations, binary operations, ad hoc binary operations (e.g. multiplication
+  of a complex object by a scalar), comparisons, ad hoc comparisons, division,
+  etc.
 
 * More complex functionality separated into sections based on functionality
-provided, e.g. gcd, interpolation, special functions, solving, etc.
+  provided, e.g. gcd, interpolation, special functions, solving, etc.
 
 * Functions for mapping between different types, coercion, changing base ring,
-etc.
+  etc.
 
 * Unsafe operators, e.g. `mul!`, `add!`, `addeq!` etc.
 
@@ -156,10 +156,10 @@ etc.
 * Promotion rules
 
 * Parent object call overload (e.g. for implementing `R(2)` where `R` is an
-object representing a ring or field, etc.)
+  object representing a ring or field, etc.)
 
 * Additional constructors, e.g. `matrix`, which might be used instead of a
-parent object to construct elements.
+  parent object to construct elements.
 
 * Parent object constructors, e.g. `PolynomialRing`, etc.
 
