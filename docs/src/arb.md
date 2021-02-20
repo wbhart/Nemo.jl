@@ -173,30 +173,42 @@ f = accuracy_bits(a)
 ### Printing
 
 Printing real balls can at first sight be confusing. Lets look at the following
-example.
+example:
+
+```julia
+RR = RealField(64)
+
+a = RR(1)
+b = RR(2)
+c = RR(12)
+
+x = ball(a, b)
+y = ball(c, b)
+
+mid = midpoint(x)
+rad = radius(x)
+
+print(x, "\n", y, "\n", mid, "\n", rad)
+```
+
+which generates
 
 ```
-julia> RR = RealField(64);
-
-julia> a = RR(1);
-
-julia> b = RR(2);
-
-julia> c = ball(a, b)
 [+/- 3.01]
-
-julia> midpoint(c)
-1.000000000
-
-julia> radius(c)
-[2.000000004 +/- 2.75e-10]
+[1e+1 +/- 4.01]
+1.0000000000000000000
+[2.0000000037252902985 +/- 3.81e-20]
 ```
 
-Note that Nemo does not print `c` as `[1 +/- 2]`. This is because the midpoint
-does not have a greater exponent than the radius in its scientific notation.
+The first reason that `c` does not get printed as `[1 +/- 2]` is because the
+midpoint does not have a greater exponent than the radius in its scientific
+notation. By similair reasons we also have that `y` does not get printed as
+`[12 +/- 2]`.
 
-We also have that `radius(c)` is not strictly equal to $2$, which occurs
-because real balls keeps track of rounding errors.
+The second reason is that we an additional error term after our addition. As we
+see, `radius(c)` is not equal to $2$, which when printing rounds it up to a
+reasonable decimal place for printing. This is because real balls keep track of
+rounding errors of basic arithmetic.
 
 ### Containment
 
