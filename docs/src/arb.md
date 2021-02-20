@@ -170,6 +170,34 @@ d = midpoint(b)
 f = accuracy_bits(a)
 ```
 
+### Printing
+
+Printing real balls can at first sight be confusing. Lets look at the following
+example.
+
+```
+julia> RR = RealField(64);
+
+julia> a = RR(1);
+
+julia> b = RR(2);
+
+julia> c = ball(a, b)
+[+/- 3.01]
+
+julia> midpoint(c)
+1.000000000
+
+julia> radius(c)
+[2.000000004 +/- 2.75e-10]
+```
+
+Note that Nemo does not print `c` as `[1 +/- 2]`. This is because the midpoint
+does not have a greater exponent than the radius in its scientific notation.
+
+We also have that `radius(c)` is not strictly equal to $2$, which occurs
+because real balls keeps track of rounding errors.
+
 ### Containment
 
 It is often necessary to determine whether a given exact value or ball is
