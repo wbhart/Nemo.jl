@@ -18,20 +18,6 @@ This is a big change and should happen with plenty of warning for the
 community. It would be convenient if a script could be made available to
 automate this.
 
-## Matrices and polynomials over number fields
-
-The Antic C library is used for number field elements, but matrices and
-polynomials over these are handled by Julia. There is nothing explicitly
-wrong with this, except that the jit compilation is costly for such basic
-operations and the code is not as easy for others to use in other projects
-e.g. if they are using a different language or do not want additional
-dependencies outside the Antic C library they are using.
-
-We plan to write some routines in C in the Antic library to handle at least
-univariate polynomials over number fields and matrices as well. These should
-use highly optimised routines based on the algorithms with best complexity
-for these operations.
-
 ## Mono repository
 
 There is currently a proposal to place all Oscar related repositories, or some
