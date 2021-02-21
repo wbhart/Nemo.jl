@@ -205,7 +205,7 @@ midpoint does not have a greater exponent than the radius in its scientific
 notation. By similair reasons we also have that `y` does not get printed as
 `[12 +/- 2]`.
 
-The second reason is that we an additional error term after our addition. As we
+The second reason is that we get an additional error term after our addition. As we
 see, `radius(c)` is not equal to $2$, which when printing rounds it up to a
 reasonable decimal place for printing. This is because real balls keep track of
 rounding errors of basic arithmetic.
