@@ -29,6 +29,7 @@ pages:
 - Type System:                  developer/typesystem.md
 - Parent Objects:               developer/parents.md
 - Interfaces:                   developer/interfaces.md
+- Specific topics:              developer/topics.md
 
 markdown_extensions:
   - extra
