@@ -597,7 +597,7 @@ end
     log(a::qadic)
 
 Return the $q$-adic logarithm of $a$. We define this only when the valuation
-of $a$ is zero (but not for $a == 0$). The precision of the output will be
+of $a$ is zero (but not for $a = 0$). The precision of the output will be
 the same as the precision of the input. If the input is not valid an
 exception is thrown.
 """
