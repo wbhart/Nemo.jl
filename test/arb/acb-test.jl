@@ -405,8 +405,8 @@ end
 
 @testset "acb.lindep..." begin
    CC = ComplexField(512)
-   tau1 = CC(rand(), abs(rand()) + eps())
-   tau2 = CC(rand(), abs(rand()) + eps())
+   tau1 = CC(1//3, 8//7)
+   tau2 = CC(1//5, 9//8)
    A1 = modweber_f1(tau1)^8; B1 = modweber_f1(2*tau1)^8
 
    vals1 = [A1^i*B1^j for i in 0:2 for j in 0:2];
