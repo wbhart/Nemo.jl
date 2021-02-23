@@ -61,7 +61,7 @@ univariate polynomials over `fmpz` integers, and so on.
 The `fmpq` prefix is for Flint rationals, `fq` for Flint finite fields with
 multiprecision characteristic, `fq_nmod` is the same but for single word
 characteristic. The `padic` prefix is for the field of p-adic numbers for a
-given `p`. The `nmod` prefix is for Z/nZ for a given n. The `gfp` prefix is
+given `p`. The `nmod` prefix is for `Z/nZ` for a given `n`. The `gfp` prefix is
 the same as `Z/nZ` but where `n` is prime, so that we are dealing with a field.
 
 The `FlintTypes.jl` file contains the implementation of all the Flint types.
@@ -227,7 +227,7 @@ This ticket is updated every so often.
 
 Binaries of C libraries for Nemo are currently made in a separate repository:
 
-https://github.com/oscar-system/FLINT_jll.jl
+https://github.com/JuliaPackaging/Yggdrasil
 
 If code is added to any of the C libraries used by Nemo, this jll package must
 be updated first and the version updated in Nemo.jl before the new
