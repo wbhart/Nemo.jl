@@ -809,9 +809,9 @@ end
 @doc Markdown.doc"""
       simplest_between(l::fmpq, r::fmpq)
 
-Return the simplest fraction in the closed interval `[l, r]`. A canonical
-fraction `a_1/b_1` is defined to be simpler than `a_2/b_2` iff `b_1 < b_2` or
-`b_1 = b_2` and `a_1 < a_2`.
+Return the simplest fraction in the closed interval $[l, r]$. A canonical
+fraction $a_1 / b_1$ is defined to be simpler than $a_2 / b_2$ if and only if
+$b_1 < b_2$ or $b_1 = b_2$ and $a_1 < a_2$.
 """
 function simplest_between(l::fmpq, r::fmpq)
    z = fmpq()
