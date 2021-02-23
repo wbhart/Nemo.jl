@@ -567,10 +567,10 @@ end
 ################################################################################
 
 @doc Markdown.doc"""
-    ball(mid::arb, rad::arb)
+    ball(x::arb, y::arb)
 
-Constructs an `arb` enclosing the range $[m-|r|, m+|r|]$, given the pair
-$(m, r)$.
+Constructs an Arb ball enclosing $x_m \pm (|x_r| + |y_m| + |y_r|)$, given the
+pair $(x, y) = (x_m \pm x_r, y_m \pm y_r)$.
 """
 function ball(mid::arb, rad::arb)
   z = arb(mid, rad)

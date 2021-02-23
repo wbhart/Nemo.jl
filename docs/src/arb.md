@@ -69,7 +69,7 @@ parent object to coerce values into the resulting field.
 RR = RealField(64)
 
 a = RR("0.25")
-b = RR("0.1")
+b = RR("0.1 +/- 0.001")
 c = RR(0.5)
 d = RR(12)
 ```
