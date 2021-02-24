@@ -1,4 +1,4 @@
-@testset "fq_nmod_embed.embed..." begin
+@testset "fq_nmod_embed.embed" begin
 
     for i in 1:10
 
@@ -79,7 +79,7 @@
     end
 end
 
-@testset "fq_nmod_embed.preimage_map..." begin
+@testset "fq_nmod_embed.preimage_map" begin
 
     for i in 1:10
 
@@ -102,7 +102,7 @@ end
     end
 end
 
-@testset "fq_nmod_embed.transitive_closure..." begin
+@testset "fq_nmod_embed.transitive_closure" begin
 
     S = Set(2:997)
     for i in 1:40

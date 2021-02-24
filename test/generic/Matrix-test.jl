@@ -40,7 +40,7 @@ function is_snf(A::Generic.Mat)
    return true
 end
 
-@testset "Matrix.binary_ops_delayed_reduction..." begin
+@testset "Matrix.binary_ops_delayed_reduction" begin
    R, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
    S = MatrixSpace(K, 5, 5)
@@ -55,7 +55,7 @@ end
    end
 end
 
-@testset "Matrix.lu_delayed_reduction..." begin
+@testset "Matrix.lu_delayed_reduction" begin
    R, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
    S = MatrixSpace(K, 5, 5)
@@ -71,7 +71,7 @@ end
    end
 end
 
-@testset "Matrix.fflu_delayed_reduction..." begin
+@testset "Matrix.fflu_delayed_reduction" begin
    R, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
    S = MatrixSpace(K, 5, 5)
@@ -95,7 +95,7 @@ end
    end
 end
 
-@testset "Matrix.minpoly_delayed_reduction..." begin
+@testset "Matrix.minpoly_delayed_reduction" begin
    # Tests reduce_row!
 
    R, t = PolynomialRing(QQ, "t")
@@ -122,7 +122,7 @@ end
    @test p1 == p2
 end
 
-@testset "Matrix.solve_fflu_delayed_reduction..." begin
+@testset "Matrix.solve_fflu_delayed_reduction" begin
    R, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
 
@@ -144,7 +144,7 @@ end
    end
 end
 
-@testset "Matrix.solve_lu_delayed_reduction..." begin
+@testset "Matrix.solve_lu_delayed_reduction" begin
    R, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
 
@@ -166,7 +166,7 @@ end
    end
 end
 
-@testset "Matrix.solve_triu_delayed_reduction..." begin
+@testset "Matrix.solve_triu_delayed_reduction" begin
    R, x = PolynomialRing(QQ, "x")
    K, a = NumberField(x^3 + 3x + 1, "a")
 
@@ -183,7 +183,7 @@ end
    end
 end
 
-@testset "Matrix.charpoly_delayed_reduction..." begin
+@testset "Matrix.charpoly_delayed_reduction" begin
    R, x = PolynomialRing(QQ, "x")
    K, a = NumberField(x^3 + 3x + 1, "a")
 
@@ -204,7 +204,7 @@ end
    end
 end
 
-@testset "Matrix.hnf_delayed_reduction..." begin
+@testset "Matrix.hnf_delayed_reduction" begin
    R, x = PolynomialRing(QQ, "x")
    K, a = NumberField(x^3 + 3x + 1, "a")
    S = MatrixSpace(K, 6, 6)
@@ -240,7 +240,7 @@ end
    end
 end
 
-@testset "Matrix.snf_delayed_reduction..." begin
+@testset "Matrix.snf_delayed_reduction" begin
    R, x = PolynomialRing(QQ, "x")
    K, a = NumberField(x^3 + 3x + 1, "a")
    S = MatrixSpace(K, 6, 6)

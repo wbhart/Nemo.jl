@@ -1,4 +1,4 @@
-@testset "fmpz_mpoly.constructors..." begin
+@testset "fmpz_mpoly.constructors" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -57,7 +57,7 @@
    end
 end
 
-@testset "fmpz_mpoly.printing..." begin
+@testset "fmpz_mpoly.printing" begin
    S, (x, y) = PolynomialRing(FlintZZ, ["x", "y"])
 
    @test !occursin(r"{", string(S))
@@ -68,7 +68,7 @@ end
    @test string(y) == "y"
 end
 
-@testset "fmpz_mpoly.manipulation..." begin
+@testset "fmpz_mpoly.manipulation" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -170,7 +170,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.multivariate_coeff..." begin
+@testset "fmpz_mpoly.multivariate_coeff" begin
    R = FlintZZ
 
    for ord in Nemo.flint_orderings
@@ -188,7 +188,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.unary_ops..." begin
+@testset "fmpz_mpoly.unary_ops" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -205,7 +205,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.binary_ops..." begin
+@testset "fmpz_mpoly.binary_ops" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -228,7 +228,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.adhoc_binary..." begin
+@testset "fmpz_mpoly.adhoc_binary" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -264,7 +264,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.adhoc_comparison..." begin
+@testset "fmpz_mpoly.adhoc_comparison" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -286,7 +286,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.powering..." begin
+@testset "fmpz_mpoly.powering" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -313,7 +313,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.divides..." begin
+@testset "fmpz_mpoly.divides" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -342,7 +342,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.euclidean_division..." begin
+@testset "fmpz_mpoly.euclidean_division" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -378,7 +378,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.ideal_reduction..." begin
+@testset "fmpz_mpoly.ideal_reduction" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -427,7 +427,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.gcd..." begin
+@testset "fmpz_mpoly.gcd" begin
    for num_vars = 1:4
       var_names = ["x$j" for j in 1:num_vars]
       ord = rand_ordering()
@@ -451,7 +451,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.factor..." begin
+@testset "fmpz_mpoly.factor" begin
    R, (x, y, z) = PolynomialRing(FlintZZ, ["x", "y", "z"])
 
    function check_factor(a, esum)
@@ -469,7 +469,7 @@ end
    check_factor(x^99-y^99*z^33, 4)
 end
 
-@testset "fmpz_mpoly.sqrt..." begin
+@testset "fmpz_mpoly.sqrt" begin
    for num_vars = 1:4
       var_names = ["x$j" for j in 1:num_vars]
       ord = rand_ordering()
@@ -493,7 +493,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.evaluation..." begin
+@testset "fmpz_mpoly.evaluation" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -548,7 +548,7 @@ end
    @test f(M1, M2) == T([124 219; 271 480])
 end
 
-@testset "fmpz_mpoly.valuation..." begin
+@testset "fmpz_mpoly.valuation" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -586,7 +586,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.derivative..." begin
+@testset "fmpz_mpoly.derivative" begin
    R = FlintZZ
 
    for num_vars = 1:10
@@ -606,7 +606,7 @@ end
    end
 end
 
-@testset "fmpz_mpoly.combine_like_terms..." begin
+@testset "fmpz_mpoly.combine_like_terms" begin
   for num_vars = 1:10
      var_names = ["x$j" for j in 1:num_vars]
      ord = rand_ordering()
@@ -640,7 +640,7 @@ end
   end
 end
 
-@testset "fmpz_mpoly.exponents..." begin
+@testset "fmpz_mpoly.exponents" begin
   for num_vars = 1:10
      var_names = ["x$j" for j in 1:num_vars]
      ord = rand_ordering()

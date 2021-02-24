@@ -1,4 +1,4 @@
-@testset "fq_poly.constructors..." begin
+@testset "fq_poly.constructors" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -59,7 +59,7 @@
    @test isa(r, PolyElem)
 end
 
-@testset "fq_poly.printing..." begin
+@testset "fq_poly.printing" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
    T, z = PolynomialRing(S, "z")
@@ -69,7 +69,7 @@ end
    @test sprint(show, "text/plain", f) == "z + y^3 + x^2 + 1"
 end
 
-@testset "fq_poly.manipulation..." begin
+@testset "fq_poly.manipulation" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -100,7 +100,7 @@ end
    @test deepcopy(h) == h
 end
 
-@testset "fq_poly.binary_ops..." begin
+@testset "fq_poly.binary_ops" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -114,7 +114,7 @@ end
    @test f*g == (x^2+x)*y^3+(x^4+3*x^2+4*x+1)*y^2+(x^4+x^3+2*x^2+7*x+5)*y+(3*x^3+6*x+6)
 end
 
-@testset "fq_poly.adhoc_binary..." begin
+@testset "fq_poly.adhoc_binary" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -150,7 +150,7 @@ end
    @test fmpz(7) - g == -(g - fmpz(7))
 end
 
-@testset "fq_poly.comparison..." begin
+@testset "fq_poly.comparison" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -162,7 +162,7 @@ end
    @test isequal(f, g)
 end
 
-@testset "fq_poly.adhoc_comparison..." begin
+@testset "fq_poly.adhoc_comparison" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -179,7 +179,7 @@ end
    @test S(7) == fmpz(7)
 end
 
-@testset "fq_poly.unary_ops..." begin
+@testset "fq_poly.unary_ops" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -188,7 +188,7 @@ end
    @test -f == -x*y^2 - (x + 1)*y - 3
 end
 
-@testset "fq_poly.truncation..." begin
+@testset "fq_poly.truncation" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -204,7 +204,7 @@ end
    @test_throws DomainError mullow(f, g, -1)
 end
 
-@testset "fq_poly.reverse..." begin
+@testset "fq_poly.reverse" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -215,7 +215,7 @@ end
    @test_throws DomainError reverse(f, -1)
 end
 
-@testset "fq_poly.shift..." begin
+@testset "fq_poly.shift" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -230,7 +230,7 @@ end
    @test_throws DomainError shift_right(f, -1)
 end
 
-@testset "fq_poly.powering..." begin
+@testset "fq_poly.powering" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -241,7 +241,7 @@ end
    @test_throws DomainError f^-1
 end
 
-@testset "fq_poly.modular_arithmetic..." begin
+@testset "fq_poly.modular_arithmetic" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -262,7 +262,7 @@ end
    @test powmod(f, -fmpz(3), g) == (18*x^4+x^3+7*x^2+15*x+5)*y+(16*x^4+14*x^3+15*x^2+5*x+21)
 end
 
-@testset "fq_poly.exact_division..." begin
+@testset "fq_poly.exact_division" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -272,7 +272,7 @@ end
    @test divexact(f*g, f) == g
 end
 
-@testset "fq_poly.adhoc_exact_division..." begin
+@testset "fq_poly.adhoc_exact_division" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -283,7 +283,7 @@ end
    @test divexact(x*f, x) == f
 end
 
-@testset "fq_poly.euclidean_division..." begin
+@testset "fq_poly.euclidean_division" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -295,7 +295,7 @@ end
    @test divrem(k, l) == ((18*x^4+5*x^3+18*x^2+5*x+3)*y+(5*x^4+18*x^3+5*x^2+18*x+21), (18*x^4+5*x^3+17*x^2+7*x+1)*y+(5*x^4+17*x^3+6*x^2+15*x+1))
 end
 
-@testset "fq_poly.content_primpart_gcd..." begin
+@testset "fq_poly.content_primpart_gcd" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -317,7 +317,7 @@ end
    @test gcdinv(r, s) == (1, 3*y^4+8*y^3+18*y^2+4*y+2)
 end
 
-@testset "fq_poly.evaluation..." begin
+@testset "fq_poly.evaluation" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -341,7 +341,7 @@ if VERSION >= v"0.5.0-dev+3171"
 end
 end
 
-@testset "fq_poly.composition..." begin
+@testset "fq_poly.composition" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -351,7 +351,7 @@ end
    @test compose(f, g) == (x^3+2*x^2+x)*y^2+(2*x^5+2*x^4+4*x^3+9*x^2+6*x+1)*y+(x^7+4*x^5+5*x^4+5*x^3+10*x^2+8*x+5)
 end
 
-@testset "fq_poly.derivative..." begin
+@testset "fq_poly.derivative" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -360,7 +360,7 @@ end
    @test derivative(h) == 2x*y + x + 1
 end
 
-@testset "fq_poly.integral..." begin
+@testset "fq_poly.integral" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -369,7 +369,7 @@ end
    @test integral(f) == (8*x^2+16*x+8)*y^3+(12*x+12)*y^2+(21*x+4)*y
 end
 
-@testset "fq_poly.resultant..." begin
+@testset "fq_poly.resultant" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -379,7 +379,7 @@ end
    @test resultant(f, g) == 3*x^7+6*x^5-6*x^3+96*x^2+192*x+96
 end
 
-@testset "fq_poly.discriminant..." begin
+@testset "fq_poly.discriminant" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -388,7 +388,7 @@ end
    @test discriminant(f) == x^2-10*x+1
 end
 
-@testset "fq_poly.gcdx..." begin
+@testset "fq_poly.gcdx" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -398,7 +398,7 @@ end
    @test gcdx(f, g) == (1, 18*x^4+8*x^3+6*x^2+17*x+13, (7*x^4+12*x^3+8*x^2+18*x+12)*y+(12*x^4+5*x^3+22*x^2+4*x+4))
 end
 
-@testset "fq_poly.special..." begin
+@testset "fq_poly.special" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -407,7 +407,7 @@ end
    @test chebyshev_u(15, y) == 32768*y^15-114688*y^13+159744*y^11-112640*y^9+42240*y^7-8064*y^5+672*y^3-16*y
 end
 
-@testset "fq_poly.inflation_deflation..." begin
+@testset "fq_poly.inflation_deflation" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -416,7 +416,7 @@ end
    @test deflate(inflate(f, 3), 3) == f
 end
 
-@testset "fq_poly.isirreducible..." begin
+@testset "fq_poly.isirreducible" begin
   R, a = FiniteField(fmpz(23), 1, "a")
   Rx, x = PolynomialRing(R, "x")
 
@@ -429,7 +429,7 @@ end
   @test isirreducible(x^16+2*x^9+x^8+x^2+x+1)
 end
 
-@testset "fq_poly.issquarefree..." begin
+@testset "fq_poly.issquarefree" begin
   R, a = FiniteField(fmpz(23), 1, "a")
   Rx, x = PolynomialRing(R, "x")
 
@@ -440,7 +440,7 @@ end
   @test issquarefree((x+1)*(x+2)*(x+3))
 end
 
-@testset "fq_poly.factor..." begin
+@testset "fq_poly.factor" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -472,7 +472,7 @@ end
    @test 11*prod([h for (e,h) = B]) == ((y + 1)*g*(y^5+y^3+y+1))
 end
 
-@testset "fq_poly.remove_valuation..." begin
+@testset "fq_poly.remove_valuation" begin
    R, x = FiniteField(23, 5, "x")
    S, y = PolynomialRing(R, "y")
 

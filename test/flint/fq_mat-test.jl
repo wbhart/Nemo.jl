@@ -1,4 +1,4 @@
-@testset "fq_mat.constructors..." begin
+@testset "fq_mat.constructors" begin
   F4, a = FiniteField(fmpz(2), 2, "a")
   F9, b = FiniteField(fmpz(3), 2, "b")
 
@@ -166,7 +166,7 @@
    @test !(a in keys(Dict(b => 1)))
 end
 
-@testset "fq_mat.similar..." begin
+@testset "fq_mat.similar" begin
    F9, b = FiniteField(fmpz(3), 2, "b")
    S = MatrixSpace(F9, 3, 3)
    s = S(fmpz(3))
@@ -194,7 +194,7 @@ end
    end
 end
 
-@testset "fq_mat.printing..." begin
+@testset "fq_mat.printing" begin
   F4, _  = FiniteField(fmpz(2), 2, "a")
   R = FqMatSpace(F4, 2, 2)
 
@@ -204,7 +204,7 @@ end
   @test !occursin(string(typeof(a)), string(a))
 end
 
-@testset "fq_mat.manipulation..." begin
+@testset "fq_mat.manipulation" begin
   F4, _ = FiniteField(fmpz(2), 2, "a")
   R = FqMatSpace(F4, 2, 2)
   F9, _ = FiniteField(fmpz(3), 2, "b")
@@ -272,7 +272,7 @@ end
   @test_throws ErrorConstrDimMismatch transpose!(R([ 1 2 ;]))
 end
 
-@testset "fq_mat.unary_ops..." begin
+@testset "fq_mat.unary_ops" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
 
   R = MatrixSpace(F17, 3, 4)
@@ -289,7 +289,7 @@ end
   @test d == R([ 15 16 0 16; 0 0 0 0; 0 16 15 0])
 end
 
-@testset "fq_mat.binary_ops..." begin
+@testset "fq_mat.binary_ops" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
 
   R = MatrixSpace(F17, 3, 4)
@@ -317,7 +317,7 @@ end
   @test d == MatrixSpace(F17, 4, 4)([11 11 8 7; 11 0 14 6; 8 14 14 5; 7 6 5 5])
 end
 
-@testset "fq_mat.row_col_swapping..." begin
+@testset "fq_mat.row_col_swapping" begin
    R, _ = FlintFiniteField(fmpz(17), 1, "a")
 
    a = matrix(R, [1 2; 3 4; 5 6])
@@ -356,7 +356,7 @@ end
    @test a == matrix(R, [3 2 1; 5 4 3; 7 6 5])
 end
 
-@testset "fq_mat.adhoc_binary..." begin
+@testset "fq_mat.adhoc_binary" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
 
   R = MatrixSpace(F17, 3, 4)
@@ -395,7 +395,7 @@ end
   @test_throws ErrorException F2(1)*a
 end
 
-@testset "fq_mat.comparison..." begin
+@testset "fq_mat.comparison" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
 
   R = MatrixSpace(F17, 3, 4)
@@ -409,7 +409,7 @@ end
   @test a != R([0 1 3 1; 2 1 4 2; 1 1 1 1])
 end
 
-@testset "fq_mat.adhoc_comparison..." begin
+@testset "fq_mat.adhoc_comparison" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
 
   R = MatrixSpace(F17, 3, 4)
@@ -423,7 +423,7 @@ end
   @test F17(5) == R(5)
 end
 
-@testset "fq_mat.powering..." begin
+@testset "fq_mat.powering" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
 
   R = MatrixSpace(F17, 3, 4)
@@ -437,7 +437,7 @@ end
   @test g == MatrixSpace(F17, 3, 3)([1 2 2; 2 13 12; 2 12 15])
 end
 
-@testset "fq_mat.row_echelon_form..." begin
+@testset "fq_mat.row_echelon_form" begin
   F17, _ = FlintFiniteField(fmpz(17), 1, "a")
   R = MatrixSpace(F17, 3, 4)
   RR = MatrixSpace(F17, 4, 3)
@@ -466,7 +466,7 @@ end
   @test r == 2
 end
 
-@testset "fq_mat.trace_det..." begin
+@testset "fq_mat.trace_det" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
   R = MatrixSpace(F17, 3, 4)
   RR = MatrixSpace(F17, 4, 3)
@@ -498,7 +498,7 @@ end
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
 end
 
-@testset "fq_mat.rank..." begin
+@testset "fq_mat.rank" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
   R = MatrixSpace(F17, 3, 4)
   RR = MatrixSpace(F17, 4, 3)
@@ -522,7 +522,7 @@ end
   @test c == 2
 end
 
-@testset "fq_mat.inv..." begin
+@testset "fq_mat.inv" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
   R = MatrixSpace(F17, 3, 4)
   RR = MatrixSpace(F17, 4, 3)
@@ -542,7 +542,7 @@ end
   @test_throws ErrorException inv(transpose(a)*a)
 end
 
-@testset "fq_mat.solve..." begin
+@testset "fq_mat.solve" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
   R = MatrixSpace(F17, 3, 3)
   S = MatrixSpace(F17, 3, 4)
@@ -631,7 +631,7 @@ end
    @test_throws ErrorException can_solve(A, B, side = :garbage)
 end
 
-@testset "fq_mat.lu..." begin
+@testset "fq_mat.lu" begin
 
   F17, _ = FiniteField(fmpz(17), 1, "a")
   R = MatrixSpace(F17, 3, 3)
@@ -659,7 +659,7 @@ end
   @test l*u == P*c
 end
 
-@testset "fq_mat.view..." begin
+@testset "fq_mat.view" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
   R = MatrixSpace(F17, 3, 3)
   S = MatrixSpace(F17, 3, 4)
@@ -695,7 +695,7 @@ end
   @test t[1, 1] == 2
 end
 
-@testset "fq_mat.sub..." begin
+@testset "fq_mat.sub" begin
    F17, _ = FiniteField(fmpz(17), 1, "a")
    S = MatrixSpace(F17, 3, 3)
 
@@ -719,7 +719,7 @@ end
    @test A == S([1 2 3; 4 5 6; 7 8 9])
 end
 
-@testset "fq_mat.concatenation..." begin
+@testset "fq_mat.concatenation" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
   R = MatrixSpace(F17, 3, 3)
   S = MatrixSpace(F17, 3, 4)
@@ -755,7 +755,7 @@ end
   @test_throws ErrorException vcat(a,b)
 end
 
-@testset "fq_mat.conversion..." begin
+@testset "fq_mat.conversion" begin
   F17, _ = FiniteField(fmpz(17), 1, "a")
   R = MatrixSpace(F17, 3, 3)
 
@@ -766,7 +766,7 @@ end
                      F17(0) F17(0) F17(2) ]
 end
 
-@testset "fq_mat.charpoly..." begin
+@testset "fq_mat.charpoly" begin
    F17, _ = FiniteField(fmpz(17), 1, "a")
 
    for dim = 0:5
@@ -786,7 +786,7 @@ end
    end
 end
 
-@testset "fq_mat.rand..." begin
+@testset "fq_mat.rand" begin
    F17, _ = FiniteField(fmpz(17), 1, "a")
    S = MatrixSpace(F17, 3, 3)
    M = rand(S)

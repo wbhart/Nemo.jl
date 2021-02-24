@@ -1,4 +1,4 @@
-@testset "padic.constructors..." begin
+@testset "padic.constructors" begin
    R = PadicField(7, 30)
 
    @test elem_type(R) == padic
@@ -36,7 +36,7 @@
    @test parent(t) === R
 end
 
-@testset "padic.printing..." begin
+@testset "padic.printing" begin
    R = PadicField(7, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
@@ -62,7 +62,7 @@ end
    @test string(a) == "31*7^1 + O(7^3)"
 end
 
-@testset "padic.manipulation..." begin
+@testset "padic.manipulation" begin
    R = PadicField(7, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
@@ -86,7 +86,7 @@ end
    @test characteristic(R) == 0
 end
 
-@testset "padic.unary_ops..." begin
+@testset "padic.unary_ops" begin
    R = PadicField(7, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
@@ -97,7 +97,7 @@ end
    @test iszero(-b)
 end
 
-@testset "padic.binary_ops..." begin
+@testset "padic.binary_ops" begin
    R = PadicField(7, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
@@ -116,7 +116,7 @@ end
    @test a*d == 2 + 4*7^1 + 1*7^2 + O(R, 7^3)
 end
 
-@testset "padic.adhoc_binary..." begin
+@testset "padic.adhoc_binary" begin
    R = PadicField(7, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
@@ -145,7 +145,7 @@ end
    @test c*(fmpz(1)//7) == O(R, 7^2)
 end
 
-@testset "padic.comparison..." begin
+@testset "padic.comparison" begin
    R = PadicField(7, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
@@ -162,7 +162,7 @@ end
    @test d == R(2)
 end
 
-@testset "padic.adhoc_comparison..." begin
+@testset "padic.adhoc_comparison" begin
    R = PadicField(7, 30)
 
    a = 1 + O(R, 7^3)
@@ -180,7 +180,7 @@ end
    @test a == fmpz(344)//1
 end
 
-@testset "padic.powering..." begin
+@testset "padic.powering" begin
    R = PadicField(7, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
@@ -194,7 +194,7 @@ end
    @test c^7 == 2 + 4*7^1 + 2*7^2
 end
 
-@testset "padic.inversion..." begin
+@testset "padic.inversion" begin
    R = PadicField(7, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
@@ -213,7 +213,7 @@ end
    @test inv(R(1)) == 1
 end
 
-@testset "padic.exact_division..." begin
+@testset "padic.exact_division" begin
    R = PadicField(7, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
@@ -230,7 +230,7 @@ end
    @test divexact(R(34), R(17)) == 2
 end
 
-@testset "padic.adhoc_exact_division..." begin
+@testset "padic.adhoc_exact_division" begin
    R = PadicField(7, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
@@ -251,7 +251,7 @@ end
    @test divexact(fmpz(5)//7, R(5)) == fmpz(1)//7
 end
 
-@testset "padic.divides..." begin
+@testset "padic.divides" begin
    R = PadicField(7, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
@@ -263,7 +263,7 @@ end
    @test q == divexact(a, b)
 end
 
-@testset "padic.adhoc_gcd..." begin
+@testset "padic.adhoc_gcd" begin
    R = PadicField(7, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
@@ -274,7 +274,7 @@ end
    @test gcd(zero(R), zero(R)) == 0
 end
 
-@testset "padic.square_root..." begin
+@testset "padic.square_root" begin
    R = PadicField(7, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
@@ -290,7 +290,7 @@ end
    @test sqrt(R(121)) == 3 + 5*7^1 + 6*7^2 + 6*7^3 + 6*7^4 + 6*7^5 + O(R, 7^6)
 end
 
-@testset "padic.special_functions..." begin
+@testset "padic.special_functions" begin
    R = PadicField(7, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)

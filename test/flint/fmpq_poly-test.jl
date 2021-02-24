@@ -1,4 +1,4 @@
-@testset "fmpq_poly.constructors..." begin
+@testset "fmpq_poly.constructors" begin
    S, y = PolynomialRing(QQ, "y")
 
    @test elem_type(S) == fmpq_poly
@@ -81,13 +81,13 @@
    @test PolynomialRing(R, "x", cached = true)[1] === PolynomialRing(R, "x", cached = true)[1]
 end
 
-@testset "fmpq_poly.printing..." begin
+@testset "fmpq_poly.printing" begin
    S, y = PolynomialRing(QQ, "y")
 
    @test sprint(show, "text/plain", y + y^2) == "y^2 + y"
 end
 
-@testset "fmpq_poly.manipulation..." begin
+@testset "fmpq_poly.manipulation" begin
    S, y = PolynomialRing(QQ, "y")
 
    @test iszero(zero(S))
@@ -121,7 +121,7 @@ end
    @test characteristic(S) == 0
 end
 
-@testset "fmpq_poly.binary_ops..." begin
+@testset "fmpq_poly.binary_ops" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 3*y^2 + 7*y + 3
@@ -134,7 +134,7 @@ end
    @test f*g == 6*y^3 + 47*y^2 + 83*y + 33
 end
 
-@testset "fmpq_poly.adhoc_binary..." begin
+@testset "fmpq_poly.adhoc_binary" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 3*y^2 + 7*y + 3
@@ -201,7 +201,7 @@ end
    @test g - (BigInt(5)//BigInt(7)) == 2*y+fmpz(72)//7
 end
 
-@testset "fmpq_poly.comparison..." begin
+@testset "fmpq_poly.comparison" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 3*y^2 + 7*y + 3
@@ -212,7 +212,7 @@ end
    @test isequal(f, g)
 end
 
-@testset "fmpq_poly.adhoc_comparison..." begin
+@testset "fmpq_poly.adhoc_comparison" begin
    S, y = PolynomialRing(QQ, "y")
 
    @test S(1) == 1
@@ -238,7 +238,7 @@ end
    @test BigInt(3)//BigInt(5) != y + 1
 end
 
-@testset "fmpq_poly.unary_ops..." begin
+@testset "fmpq_poly.unary_ops" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 3*y^2 + 2*y + 3
@@ -246,7 +246,7 @@ end
    @test -f == -3*y^2 - 2*y - 3
 end
 
-@testset "fmpq_poly.truncation..." begin
+@testset "fmpq_poly.truncation" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 3*y^2 + 7*y + 3
@@ -261,7 +261,7 @@ end
    @test_throws DomainError mullow(f, g, -1)
 end
 
-@testset "fmpq_poly.reverse..." begin
+@testset "fmpq_poly.reverse" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 3*y^2 + 7*y + 3
@@ -271,7 +271,7 @@ end
    @test_throws DomainError reverse(f, -1)
 end
 
-@testset "fmpq_poly.shift..." begin
+@testset "fmpq_poly.shift" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 3*y^2 + 7*y + 3
@@ -285,7 +285,7 @@ end
    @test_throws DomainError shift_right(f, -1)
 end
 
-@testset "fmpq_poly.powering..." begin
+@testset "fmpq_poly.powering" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 3*y^2 + 7*y + 3
@@ -295,7 +295,7 @@ end
    @test_throws DomainError f^(-1)
 end
 
-@testset "fmpq_poly.modular_arithmetic..." begin
+@testset "fmpq_poly.modular_arithmetic" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 7y + 1
@@ -309,7 +309,7 @@ end
    @test powmod(f, 3, h) == 343*y^3 + 147*y^2 + 21*y + 1
 end
 
-@testset "fmpq_poly.exact_division..." begin
+@testset "fmpq_poly.exact_division" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 3*y^2 + 7*y + 3
@@ -318,7 +318,7 @@ end
    @test divexact(f*g, f) == g
 end
 
-@testset "fmpq_poly.adhoc_exact_division..." begin
+@testset "fmpq_poly.adhoc_exact_division" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 3*y^2 + 7*y + 3
@@ -334,7 +334,7 @@ end
    @test divexact(fmpz(12)//7*f, BigInt(12)//BigInt(7)) == f
 end
 
-@testset "fmpq_poly.euclidean_division..." begin
+@testset "fmpq_poly.euclidean_division" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = y^3 + 3*y^2 + 7*y + 3
@@ -345,7 +345,7 @@ end
    @test divrem(f, g) == (fmpz(1)//11*y+fmpz(31)//121, fmpz(752)//121*y+fmpz(270)//121)
 end
 
-@testset "fmpq_poly.content_primpart_gcd..." begin
+@testset "fmpq_poly.content_primpart_gcd" begin
    S, y = PolynomialRing(QQ, "y")
 
    k = 3y^2 + 7y + 3
@@ -361,7 +361,7 @@ end
    @test lcm(k*m, l*m) == k*l*m
 end
 
-@testset "fmpq_poly.evaluation..." begin
+@testset "fmpq_poly.evaluation" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = fmpz(12)//7
@@ -395,7 +395,7 @@ if VERSION >= v"0.5.0-dev+3171"
 end
 end
 
-@testset "fmpq_poly.composition..." begin
+@testset "fmpq_poly.composition" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 7y^2 + 12y + 3
@@ -404,7 +404,7 @@ end
    @test compose(f, g) == 847*y^2 + 1518*y + 678
 end
 
-@testset "fmpq_poly.derivative..." begin
+@testset "fmpq_poly.derivative" begin
    S, y = PolynomialRing(QQ, "y")
 
    h = 17y^2 + 2y + 3
@@ -412,7 +412,7 @@ end
    @test derivative(h) == 34y + 2
 end
 
-@testset "fmpq_poly.integral..." begin
+@testset "fmpq_poly.integral" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 17y^2 + 2y - 11
@@ -420,7 +420,7 @@ end
    @test integral(f) == fmpz(17)//3*y^3 + y^2 - 11y
 end
 
-@testset "fmpq_poly.resultant..." begin
+@testset "fmpq_poly.resultant" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 13y^2 + 7y + 3
@@ -429,7 +429,7 @@ end
    @test resultant(f, g) == 1219
 end
 
-@testset "fmpq_poly.discriminant..." begin
+@testset "fmpq_poly.discriminant" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 17y^2 + 11y + 3
@@ -437,7 +437,7 @@ end
    @test discriminant(f) == -83
 end
 
-@testset "fmpq_poly.gcdx..." begin
+@testset "fmpq_poly.gcdx" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = 17y^2 + 11y + 3
@@ -446,7 +446,7 @@ end
    @test gcdx(f, g) == (1, fmpz(3721)//18579, -fmpz(1037)//18579*y-fmpz(824)//18579)
 end
 
-@testset "fmpq_poly.factor..." begin
+@testset "fmpq_poly.factor" begin
    S, y = PolynomialRing(QQ, "y")
 
    f = (2y + 1)^10*(5*y^3 + 1)^100*(-fmpq(1,5))
@@ -457,7 +457,7 @@ end
    @test occursin("y", sprint(show, "text/plain", fac))
 end
 
-@testset "fmpq_poly.signature..." begin
+@testset "fmpq_poly.signature" begin
    R, x = PolynomialRing(QQ, "x")
 
    f = (x^3 + 3x + QQ(2)//QQ(3))
@@ -465,7 +465,7 @@ end
    @test signature(f) == (1, 1)
 end
 
-@testset "fmpq_poly.special..." begin
+@testset "fmpq_poly.special" begin
    S, y = PolynomialRing(QQ, "y")
 
    @test chebyshev_t(20, y) == 524288*y^20-2621440*y^18+5570560*y^16-6553600*y^14+4659200*y^12-2050048*y^10+549120*y^8-84480*y^6+6600*y^4-200*y^2+1
@@ -473,7 +473,7 @@ end
    @test chebyshev_u(15, y) == 32768*y^15-114688*y^13+159744*y^11-112640*y^9+42240*y^7-8064*y^5+672*y^3-16*y
 end
 
-@testset "fmpq_poly.Polynomials..." begin
+@testset "fmpq_poly.Polynomials" begin
    R, x = PolynomialRing(QQ, "x")
    S, y = PolynomialRing(R, "y")
 
@@ -482,7 +482,7 @@ end
    @test f^40*f^60 == f^50*f^50
 end
 
-@testset "fmpq_poly.remove_valuation..." begin
+@testset "fmpq_poly.remove_valuation" begin
    S, y = PolynomialRing(FlintQQ, "y")
 
    f = 7y^2 + 3y + 2

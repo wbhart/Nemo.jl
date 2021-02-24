@@ -1,4 +1,4 @@
-@testset "fmpq_mpoly.constructors..." begin
+@testset "fmpq_mpoly.constructors" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -57,7 +57,7 @@
    end
 end
 
-@testset "fmpq_mpoly.printing..." begin
+@testset "fmpq_mpoly.printing" begin
    S, (x, y) = PolynomialRing(FlintQQ, ["x", "y"])
 
    @test !occursin(r"{", string(S))
@@ -68,7 +68,7 @@ end
    @test string(y) == "y"
 end
 
-@testset "fmpq_mpoly.manipulation..." begin
+@testset "fmpq_mpoly.manipulation" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -181,7 +181,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.multivariate_coeff..." begin
+@testset "fmpq_mpoly.multivariate_coeff" begin
    R = FlintQQ
 
    for ord in Nemo.flint_orderings
@@ -200,7 +200,7 @@ z^4-4*x*y-10*x*z^2+8*y^2*z^5-9*y^2*z^3
    end
 end
 
-@testset "fmpq_mpoly.unary_ops..." begin
+@testset "fmpq_mpoly.unary_ops" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -217,7 +217,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.binary_ops..." begin
+@testset "fmpq_mpoly.binary_ops" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -240,7 +240,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.adhoc_binary..." begin
+@testset "fmpq_mpoly.adhoc_binary" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -280,7 +280,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.adhoc_comparison..." begin
+@testset "fmpq_mpoly.adhoc_comparison" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -306,7 +306,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.powering..." begin
+@testset "fmpq_mpoly.powering" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -333,7 +333,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.divides..." begin
+@testset "fmpq_mpoly.divides" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -362,7 +362,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.euclidean_division..." begin
+@testset "fmpq_mpoly.euclidean_division" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -398,7 +398,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.ideal_reduction..." begin
+@testset "fmpq_mpoly.ideal_reduction" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -447,7 +447,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.gcd..." begin
+@testset "fmpq_mpoly.gcd" begin
    for num_vars = 1:4
       var_names = ["x$j" for j in 1:num_vars]
       ord = rand_ordering()
@@ -471,7 +471,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.factor..." begin
+@testset "fmpq_mpoly.factor" begin
    R, (x, y, z) = PolynomialRing(FlintQQ, ["x", "y", "z"])
 
    function check_factor(a, esum)
@@ -489,7 +489,7 @@ end
    check_factor(x^99-y^99*z^33//8, 2)
 end
 
-@testset "fmpq_mpoly.sqrt..." begin
+@testset "fmpq_mpoly.sqrt" begin
    for num_vars = 1:4
       var_names = ["x$j" for j in 1:num_vars]
       ord = rand_ordering()
@@ -513,7 +513,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.evaluation..." begin
+@testset "fmpq_mpoly.evaluation" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -568,7 +568,7 @@ end
    @test f(M1, M2) == T([124 219; 271 480])
 end
 
-@testset "fmpq_mpoly.valuation..." begin
+@testset "fmpq_mpoly.valuation" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -606,7 +606,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.derivative_integral..." begin
+@testset "fmpq_mpoly.derivative_integral" begin
    R = FlintQQ
 
    for num_vars = 1:10
@@ -626,7 +626,7 @@ end
    end
 end
 
-@testset "fmpq_mpoly.combine_like_terms..." begin
+@testset "fmpq_mpoly.combine_like_terms" begin
   for num_vars = 1:10
      var_names = ["x$j" for j in 1:num_vars]
      ord = rand_ordering()
@@ -660,7 +660,7 @@ end
   end
 end
 
-@testset "fmpq_mpoly.exponents..." begin
+@testset "fmpq_mpoly.exponents" begin
   for num_vars = 1:10
      var_names = ["x$j" for j in 1:num_vars]
      ord = rand_ordering()

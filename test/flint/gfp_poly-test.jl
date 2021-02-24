@@ -1,4 +1,4 @@
-@testset "gfp_poly.constructors..." begin
+@testset "gfp_poly.constructors" begin
   R = GF(17)
   Rx, x = PolynomialRing(R, "x")
 
@@ -85,7 +85,7 @@
   @test isa(m, PolyElem)
 end
 
-@testset "gfp_poly.printing..." begin
+@testset "gfp_poly.printing" begin
   R = GF(17)
   Rx, x = PolynomialRing(R, "x")
 
@@ -94,7 +94,7 @@ end
   @test sprint(show, "text/plain", a) == "x^3 + x + 1"
 end
 
-@testset "gfp_poly.manipulation..." begin
+@testset "gfp_poly.manipulation" begin
   R = GF(17)
   Rx, x = PolynomialRing(R, "x")
 
@@ -127,7 +127,7 @@ end
   @test characteristic(Rx) == 17
 end
 
-@testset "gfp_poly.unary_ops..." begin
+@testset "gfp_poly.unary_ops" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -136,7 +136,7 @@ end
   @test -f ==  R(22)*x^2 + R(10)*x + R(18)
 end
 
-@testset "gfp_poly.binary_ops..." begin
+@testset "gfp_poly.binary_ops" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -153,7 +153,7 @@ end
   @test h*(f+g) == x^4 + R(22)*x^3 + R(5)*x^2
 end
 
-@testset "gfp_poly.adhoc_binary..." begin
+@testset "gfp_poly.adhoc_binary" begin
   R = GF(113)
   Rx, x = PolynomialRing(R, "x")
 
@@ -189,7 +189,7 @@ end
   @test_throws ErrorException f - S(1)
 end
 
-@testset "gfp_poly.powering..." begin
+@testset "gfp_poly.powering" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -202,7 +202,7 @@ end
   @test_throws DomainError f^(-1)
 end
 
-@testset "gfp_poly.comparison..." begin
+@testset "gfp_poly.comparison" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
   Ry, y = PolynomialRing(R, "y")
@@ -211,7 +211,7 @@ end
   @test_throws ErrorException x^2 + x != y^2 + y
 end
 
-@testset "gfp_poly.adhoc_comparison..." begin
+@testset "gfp_poly.adhoc_comparison" begin
    R = GF(7)
    S, x = PolynomialRing(R, "x")
 
@@ -230,7 +230,7 @@ end
    @test R(5) != x + 1
 end
 
-@testset "gfp_poly.truncation..." begin
+@testset "gfp_poly.truncation" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -245,7 +245,7 @@ end
   @test truncate(f,10) == f
 end
 
-@testset "gfp_poly.mullow..." begin
+@testset "gfp_poly.mullow" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -256,7 +256,7 @@ end
   @test mullow(f,g,7) == truncate(f*g,7)
 end
 
-@testset "gfp_poly.reverse..." begin
+@testset "gfp_poly.reverse" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -269,7 +269,7 @@ end
   @test isone(reverse(x))
 end
 
-@testset "gfp_poly.shift..." begin
+@testset "gfp_poly.shift" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -291,7 +291,7 @@ end
   @test_throws DomainError shift_right(f,-1)
 end
 
-@testset "gfp_poly.division..." begin
+@testset "gfp_poly.division" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -331,7 +331,7 @@ end
   @test r == Rx(14)
 end
 
-@testset "gfp_poly.adhoc_exact_division..." begin
+@testset "gfp_poly.adhoc_exact_division" begin
    R = GF(23)
    S, x = PolynomialRing(R, "x")
 
@@ -344,7 +344,7 @@ end
    @test divexact(R(7)*f, R(7)) == f
 end
 
-@testset "gfp_poly.gcd..." begin
+@testset "gfp_poly.gcd" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -361,7 +361,7 @@ end
   @test k == s*f + t*g
 end
 
-@testset "gfp_poly.modular_arithmetic..." begin
+@testset "gfp_poly.modular_arithmetic" begin
   R = GF(487326487)
   S, x = PolynomialRing(R, "x")
 
@@ -380,7 +380,7 @@ end
   @test powmod(f, -10, g) == 484381224*x+14566177
 end
 
-@testset "gfp_poly.resultant..." begin
+@testset "gfp_poly.resultant" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -395,7 +395,7 @@ end
   @test g == 4
 end
 
-@testset "gfp_poly.evaluate..." begin
+@testset "gfp_poly.evaluate" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -422,7 +422,7 @@ if VERSION >= v"0.5.0-dev+3171"
 end
 end
 
-@testset "gfp_poly.derivative..." begin
+@testset "gfp_poly.derivative" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -435,7 +435,7 @@ end
   @test ff == 5*x^4 + 4*x^3 + 4*x + 1
 end
 
-@testset "gfp_poly.integral..." begin
+@testset "gfp_poly.integral" begin
   R = GF(7)
   S, x = PolynomialRing(R, "x")
 
@@ -444,7 +444,7 @@ end
   @test integral(f) == 5x^3 + x^2 + x
 end
 
-@testset "gfp_poly.compose..." begin
+@testset "gfp_poly.compose" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -458,7 +458,7 @@ end
   @test ff == x^5 + 6*x^4 + 14*x^3 + 18*x^2 + 14*x + 5
 end
 
-@testset "gfp_poly.interpolate..." begin
+@testset "gfp_poly.interpolate" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -472,7 +472,7 @@ end
   @test f == x^2
 end
 
-@testset "gfp_poly.inflate..." begin
+@testset "gfp_poly.inflate" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -486,7 +486,7 @@ end
   @test_throws DomainError inflate(f,-1)
 end
 
-@testset "gfp_poly.deflate..." begin
+@testset "gfp_poly.deflate" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -500,7 +500,7 @@ end
   @test_throws DomainError deflate(f,-1)
 end
 
-@testset "gfp_poly.lifting..." begin
+@testset "gfp_poly.lifting" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
   Zy,y = PolynomialRing(ZZ, "y")
@@ -512,7 +512,7 @@ end
   @test Rx(Zf) == f
 end
 
-@testset "gfp_poly.isirreducible..." begin
+@testset "gfp_poly.isirreducible" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -525,7 +525,7 @@ end
   @test isirreducible(x^16+2*x^9+x^8+x^2+x+1)
 end
 
-@testset "gfp_poly.issquarefree..." begin
+@testset "gfp_poly.issquarefree" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -536,7 +536,7 @@ end
   @test issquarefree((x+1)*(x+2)*(x+3))
 end
 
-@testset "gfp_poly.factor..." begin
+@testset "gfp_poly.factor" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
@@ -564,14 +564,14 @@ end
   @test fac == Dict(2=>x^4+3*x^2+2,1=>x^2 + x)
 end
 
-@testset "gfp_poly.canonicalization..." begin
+@testset "gfp_poly.canonicalization" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 
   @test canonical_unit(5*x) == R(5)
 end
 
-@testset "gfp_poly.remove_valuation..." begin
+@testset "gfp_poly.remove_valuation" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
 

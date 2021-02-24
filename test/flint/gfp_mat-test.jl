@@ -1,4 +1,4 @@
-@testset "gfp_mat.constructors..." begin
+@testset "gfp_mat.constructors" begin
   Z2 = GF(2)
   Z3 = GF(3)
 
@@ -170,7 +170,7 @@
    @test M == matrix(Z3, 2, 2, [-1, -2, -3, -4])
 end
 
-@testset "gfp_mat.similar..." begin
+@testset "gfp_mat.similar" begin
    Z13 = GF(13)
    S = GFPMatSpace(Z13, 2, 2)
    s = S(fmpz(3))
@@ -198,7 +198,7 @@ end
    end
 end
 
-@testset "gfp_mat.printing..." begin
+@testset "gfp_mat.printing" begin
   Z2 = GF(2)
   R = GFPMatSpace(Z2, 2, 2)
 
@@ -208,7 +208,7 @@ end
   @test !occursin(string(typeof(a)), string(a))
 end
 
-@testset "gfp_mat.manipulation..." begin
+@testset "gfp_mat.manipulation" begin
   Z11 = GF(11)
   R = GFPMatSpace(Z11, 2, 2)
   Z23 = GF(23)
@@ -280,7 +280,7 @@ end
   @test_throws ErrorConstrDimMismatch transpose!(R([ 1 2 ;]))
 end
 
-@testset "gfp_mat.unary_ops..." begin
+@testset "gfp_mat.unary_ops" begin
   Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -299,7 +299,7 @@ end
   @test d == R([ 15 16 0 16; 0 0 0 0; 0 16 15 0])
 end
 
-@testset "gfp_mat.binary_ops..." begin
+@testset "gfp_mat.binary_ops" begin
   Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -327,7 +327,7 @@ end
   @test d == MatrixSpace(Z17, 4, 4)([11 11 8 7; 11 0 14 6; 8 14 14 5; 7 6 5 5])
 end
 
-@testset "gfp_mat.row_col_swapping..." begin
+@testset "gfp_mat.row_col_swapping" begin
    R = ResidueField(FlintZZ, 17)
 
    a = matrix(R, [1 2; 3 4; 5 6])
@@ -366,7 +366,7 @@ end
    @test a == matrix(R, [3 2 1; 5 4 3; 7 6 5])
 end
 
-@testset "gfp_mat.adhoc_binary..." begin
+@testset "gfp_mat.adhoc_binary" begin
   Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -405,7 +405,7 @@ end
   @test_throws ErrorException Z2(1)*a
 end
 
-@testset "gfp_mat.comparison..." begin
+@testset "gfp_mat.comparison" begin
   Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -419,7 +419,7 @@ end
   @test a != R([0 1 3 1; 2 1 4 2; 1 1 1 1])
 end
 
-@testset "gfp_mat.adhoc_comparison..." begin
+@testset "gfp_mat.adhoc_comparison" begin
   Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -433,7 +433,7 @@ end
   @test Z17(5) == R(5)
 end
 
-@testset "gfp_mat.powering..." begin
+@testset "gfp_mat.powering" begin
   Z17 = GF(17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -453,7 +453,7 @@ end
   @test_throws ErrorException f^(ZZ(2)^1000)
 end
 
-@testset "gfp_mat.row_echelon_form..." begin
+@testset "gfp_mat.row_echelon_form" begin
   for iters = 1:100
     m = rand(0:100)
     n = rand(0:100)
@@ -494,7 +494,7 @@ end
   @test r == 2
 end
 
-@testset "gfp_mat.howell_form..." begin
+@testset "gfp_mat.howell_form" begin
   Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
 
@@ -514,7 +514,7 @@ end
   @test strong_echelon_form(a) == matrix(Z17, [0 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1])
 end
 
-@testset "gfp_mat.trace_det..." begin
+@testset "gfp_mat.trace_det" begin
   Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -548,7 +548,7 @@ end
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
 end
 
-@testset "gfp_mat.rank..." begin
+@testset "gfp_mat.rank" begin
   Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -574,7 +574,7 @@ end
   @test c == 2
 end
 
-@testset "gfp_mat.inv..." begin
+@testset "gfp_mat.inv" begin
   Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -596,7 +596,7 @@ end
   @test_throws ErrorException inv(transpose(a)*a)
 end
 
-@testset "gfp_mat.solve..." begin
+@testset "gfp_mat.solve" begin
   Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
@@ -685,7 +685,7 @@ end
    @test_throws ErrorException can_solve(A, B, side = :garbage)
 end
 
-@testset "gfp_mat.lu..." begin
+@testset "gfp_mat.lu" begin
 
   Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
@@ -713,7 +713,7 @@ end
   @test l*u == P*c
 end
 
-@testset "gfp_mat.swap_rows..." begin
+@testset "gfp_mat.swap_rows" begin
   Z17 = GF(17)
 
   A = matrix(Z17, 5, 1, [1, 2, 3, 4, 5])
@@ -727,7 +727,7 @@ end
   @test_throws BoundsError swap_rows(A, 0, 5)
   @test_throws BoundsError swap_rows(A, 4, 6)
 end
-@testset "gfp_mat.view..." begin
+@testset "gfp_mat.view" begin
   Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
@@ -784,7 +784,7 @@ end
   @test B[1, 1] == 20
 end
 
-@testset "gfp_mat.sub..." begin
+@testset "gfp_mat.sub" begin
    Z17 = GF(17)
    S = MatrixSpace(Z17, 3, 3)
 
@@ -808,7 +808,7 @@ end
    @test A == S([1 2 3; 4 5 6; 7 8 9])
 end
 
-@testset "gfp_mat.concatenation..." begin
+@testset "gfp_mat.concatenation" begin
   Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
@@ -844,7 +844,7 @@ end
   @test_throws ErrorException vcat(a,b)
 end
 
-@testset "gfp_mat.conversion..." begin
+@testset "gfp_mat.conversion" begin
   Z17 = GF(17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(ZZ, 3, 3)
@@ -867,7 +867,7 @@ end
   @test c == S([ 1 2 3; 3 2 1; 0 0 2])
 end
 
-@testset "gfp_mat.charpoly..." begin
+@testset "gfp_mat.charpoly" begin
    R = GF(17)
 
    for dim = 0:5
@@ -885,7 +885,7 @@ end
    end
 end
 
-@testset "gfp_mat.rand..." begin
+@testset "gfp_mat.rand" begin
    R = GF(17)
    S = MatrixSpace(R, 3, 3)
 

@@ -1,4 +1,4 @@
-@testset "fmpz_puiseux_series.constructors..." begin
+@testset "fmpz_puiseux_series.constructors" begin
    R, x = PuiseuxSeriesRing(ZZ, 30, "x")
 
    @test elem_type(R) == FlintPuiseuxSeriesRingElem{fmpz_laurent_series}
@@ -24,7 +24,7 @@
    @test isa(k1, FlintPuiseuxSeriesElem)
 end
 
-@testset "fmpz_puiseux_series.printing..." begin
+@testset "fmpz_puiseux_series.printing" begin
    R, x = PuiseuxSeriesRing(ZZ, 30, "x")
 
    @test !occursin(r"{", string(R))
@@ -32,7 +32,7 @@ end
    @test occursin(r"x", string(x^(-1//2) + 1 - x + x^2 + x^5))
 end
 
-@testset "fmpz_puiseux_series.rand..." begin
+@testset "fmpz_puiseux_series.rand" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    test_rand(R, -12:12, 1:6, -10:10)
    test_rand(R, -12:12, 1:6, make(ZZ, -10:10))
@@ -42,7 +42,7 @@ end
    test_rand(R, -12:12, 1:6, make(ZZ, -10:10))
 end
 
-@testset "fmpz_puiseux_series.manipulation..." begin
+@testset "fmpz_puiseux_series.manipulation" begin
    S, x = PuiseuxSeriesRing(ZZ, 30, "x")
 
    @test max_precision(S) == 30
@@ -83,7 +83,7 @@ end
 
 end
 
-@testset "fmpz_puiseux_series.unary_ops..." begin
+@testset "fmpz_puiseux_series.unary_ops" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = rand(R, -12:12, 1:6, -10:10)
@@ -93,7 +93,7 @@ end
    end
 end
 
-@testset "fmpz_puiseux_series.binary_ops..." begin
+@testset "fmpz_puiseux_series.binary_ops" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    for iter = 1:100
       f = rand(R, -12:12, 1:6, -10:10)
@@ -110,7 +110,7 @@ end
    end
 end
 
-@testset "fmpz_puiseux_series.adhoc_binary_ops..." begin
+@testset "fmpz_puiseux_series.adhoc_binary_ops" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    for iter = 1:500
       f = rand(R, -12:12, 1:6, -10:10)
@@ -131,7 +131,7 @@ end
    end
 end
 
-@testset "fmpz_puiseux_series.comparison..." begin
+@testset "fmpz_puiseux_series.comparison" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    for iter = 1:500
       f = rand(R, -12:12, 1:6, -10:10)
@@ -148,7 +148,7 @@ end
    end
 end
 
-@testset "fmpz_puiseux_series.adhoc_comparison..." begin
+@testset "fmpz_puiseux_series.adhoc_comparison" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    for iter = 1:500
       f = R()
@@ -171,7 +171,7 @@ end
    end
 end
 
-@testset "fmpz_puiseux_series.powering..." begin
+@testset "fmpz_puiseux_series.powering" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
 
    for iter = 1:100
@@ -192,7 +192,7 @@ end
    @test isone((1-2*x+x^2)*(1-x)^-2)
 end
 
-@testset "fmpz_puiseux_series.inversion..." begin
+@testset "fmpz_puiseux_series.inversion" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = R()
@@ -204,7 +204,7 @@ end
    end
 end
 
-@testset "fmpz_puiseux_series.square_root..." begin
+@testset "fmpz_puiseux_series.square_root" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = rand(R, -12:12, 1:6, -10:10)
@@ -216,7 +216,7 @@ end
    @test sqrt(1+4*x)*x^(1//2) == sqrt(x+4*x^2)
 end
 
-@testset "fmpz_puiseux_series.exact_division..." begin
+@testset "fmpz_puiseux_series.exact_division" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = rand(R, -12:12, 1:6, -10:10)
@@ -229,7 +229,7 @@ end
    end
 end
 
-@testset "fmpz_puiseux_series.adhoc_exact_division..." begin
+@testset "fmpz_puiseux_series.adhoc_exact_division" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    for iter = 1:300
       f = rand(R, -12:12, 1:6, -10:10)
@@ -242,7 +242,7 @@ end
    end
 end
 
-@testset "fmpz_puiseux_series.special_functions..." begin
+@testset "fmpz_puiseux_series.special_functions" begin
    S, x = PuiseuxSeriesRing(ZZ, 100, "x")
 
    @test isequal(exp(2x - x^2 + O(x^3)), 1+2*x+x^2+O(x^3))
@@ -250,7 +250,7 @@ end
    @test isequal(eta_qexp(x), x^(1//24)-x^(25//24)-x^(49//24)+O(x^(101//24)))
 end
 
-@testset "fmpz_puiseux_series.unsafe..." begin
+@testset "fmpz_puiseux_series.unsafe" begin
    R, x = PuiseuxSeriesRing(ZZ, 10, "x")
    a = x
    zero!(a)

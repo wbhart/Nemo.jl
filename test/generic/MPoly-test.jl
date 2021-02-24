@@ -1,4 +1,4 @@
-@testset "MPoly.binary_ops_delayed_reduction..." begin
+@testset "MPoly.binary_ops_delayed_reduction" begin
    S, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
 
@@ -22,7 +22,7 @@
    end
 end
 
-@testset "MPoly.powering_delayed_reduction..." begin
+@testset "MPoly.powering_delayed_reduction" begin
    S, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
 
@@ -47,7 +47,7 @@ end
    end
 end
 
-@testset "MPoly.divides_delayed_reduction..." begin
+@testset "MPoly.divides_delayed_reduction" begin
    S, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
 
@@ -82,7 +82,7 @@ end
    end
 end
 
-@testset "MPoly.euclidean_division_delayed_reduction..." begin
+@testset "MPoly.euclidean_division_delayed_reduction" begin
    S, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
 

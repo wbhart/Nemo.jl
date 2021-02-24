@@ -1,4 +1,4 @@
-@testset "fmpz.abstract_types..." begin
+@testset "fmpz.abstract_types" begin
    @test fmpz <: RingElem
 
    @test FlintIntegerRing <: Nemo.Ring
@@ -8,7 +8,7 @@
    @test parent_type(fmpz) == FlintIntegerRing
 end
 
-@testset "fmpz.constructors..." begin
+@testset "fmpz.constructors" begin
    a = fmpz(-123)
    @test isa(a, RingElem)
 
@@ -31,7 +31,7 @@ end
    @test isa(f, RingElem)
 end
 
-@testset "fmpz.rand..." begin
+@testset "fmpz.rand" begin
    test_rand(FlintZZ, 1:9)
    test_rand(FlintZZ(1):FlintZZ(9))
 
@@ -79,13 +79,13 @@ end
    end
 end
 
-@testset "fmpz.printing..." begin
+@testset "fmpz.printing" begin
    a = fmpz(-123)
 
    @test string(a) == "-123"
 end
 
-@testset "fmpz.convert..." begin
+@testset "fmpz.convert" begin
    a = fmpz(-123)
    b = fmpz(12)
 
@@ -101,7 +101,7 @@ end
    @test_throws InexactError UInt(fmpz(typemin(Int)))
 end
 
-@testset "fmpz.manipulation..." begin
+@testset "fmpz.manipulation" begin
    a = one(FlintIntegerRing())
    b = zero(FlintIntegerRing())
    c = zero(fmpz)
@@ -149,7 +149,7 @@ end
    @test characteristic(ZZ) == 0
 end
 
-@testset "fmpz.binary_ops..." begin
+@testset "fmpz.binary_ops" begin
    a = fmpz(12)
    b = fmpz(26)
 
@@ -168,7 +168,7 @@ end
    @test xor(b, a) == 22
 end
 
-@testset "fmpz.division..." begin
+@testset "fmpz.division" begin
    a = fmpz(12)
    b = fmpz(26)
 
@@ -190,7 +190,7 @@ end
    @test Nemo.div(-fmpz(2), 3) == -1
 end
 
-@testset "fmpz.remainder..." begin
+@testset "fmpz.remainder" begin
    a = fmpz(12)
    b = fmpz(26)
 
@@ -205,26 +205,26 @@ end
    @test rem(b, 12) == 2
 end
 
-@testset "fmpz.exact_division..." begin
+@testset "fmpz.exact_division" begin
    @test divexact(fmpz(24), fmpz(12)) == 2
    @test_throws ArgumentError divexact(fmpz(24), fmpz(11))
 end
 
-@testset "fmpz.inverse..." begin
+@testset "fmpz.inverse" begin
    @test inv(fmpz(1)) == 1
    @test inv(-fmpz(1)) == -1
    @test_throws DivideError inv(fmpz(0))
    @test_throws ArgumentError inv(fmpz(2))
 end
 
-@testset "fmpz.divides..." begin
+@testset "fmpz.divides" begin
    flag, q = divides(fmpz(12), fmpz(0))
    @test flag == false
    @test divides(fmpz(12), fmpz(6)) == (true, fmpz(2))
    @test divides(fmpz(0), fmpz(0)) == (true, fmpz(0))
 end
 
-@testset "fmpz.gcd_lcm..." begin
+@testset "fmpz.gcd_lcm" begin
    a = fmpz(12)
    b = fmpz(26)
 
@@ -257,7 +257,7 @@ end
    @test lcm(fmpz[2, 3, 2]) == 6
 end
 
-@testset "fmpz.logarithm..." begin
+@testset "fmpz.logarithm" begin
    a = fmpz(12)
    b = fmpz(26)
 
@@ -278,7 +278,7 @@ end
    @test_throws DomainError clog(b, -12)
 end
 
-@testset "fmpz.adhoc_binary..." begin
+@testset "fmpz.adhoc_binary" begin
    a = fmpz(-12)
 
    @test 3 + a == -9
@@ -296,7 +296,7 @@ end
    @test a%5 == -2
 end
 
-@testset "fmpz.adhoc_division..." begin
+@testset "fmpz.adhoc_division" begin
    a = fmpz(-12)
 
    @test fdiv(a, 5) == -3
@@ -340,7 +340,7 @@ end
    @test a << 4 == -192
 end
 
-@testset "fmpz.powering..." begin
+@testset "fmpz.powering" begin
    a = fmpz(-12)
 
    @test a^5 == -248832
@@ -376,7 +376,7 @@ end
    end
 end
 
-@testset "fmpz.comparison..." begin
+@testset "fmpz.comparison" begin
    a = fmpz(-12)
    b = fmpz(5)
 
@@ -403,7 +403,7 @@ end
    @test fmpz(2) < 476327486873264873264873264873264837624982
 end
 
-@testset "fmpz.adhoc_comparison..." begin
+@testset "fmpz.adhoc_comparison" begin
    a = fmpz(-12)
 
    @test a < 7
@@ -457,17 +457,17 @@ end
    @test UInt(4) != a
 end
 
-@testset "fmpz.unary_ops..." begin
+@testset "fmpz.unary_ops" begin
    @test -fmpz(12) == -12
 
    @test ~fmpz(-5) == 4
 end
 
-@testset "fmpz.abs..." begin
+@testset "fmpz.abs" begin
    @test abs(fmpz(-12)) == 12
 end
 
-@testset "fmpz.divrem..." begin
+@testset "fmpz.divrem" begin
    @test fdivrem(fmpz(12), fmpz(5)) == (fmpz(2), fmpz(2))
 
    @test tdivrem(fmpz(12), fmpz(5)) == (fmpz(2), fmpz(2))
@@ -483,7 +483,7 @@ end
    @test Nemo.divrem(-fmpz(2), 3) == (-fmpz(1), fmpz(1))
 end
 
-@testset "fmpz.roots..." begin
+@testset "fmpz.roots" begin
    @test isqrt(fmpz(12)) == 3
 
    @test_throws DomainError isqrt(-fmpz(12))
@@ -499,7 +499,7 @@ end
    @test_throws DomainError root(fmpz(1000), -3)
 end
 
-@testset "fmpz.extended_gcd..." begin
+@testset "fmpz.extended_gcd" begin
    @test gcdx(fmpz(12), fmpz(5)) == (1, -2, 5)
    @test gcdx(fmpz(12), 5) == (1, -2, 5)
    @test gcdx(12, fmpz(5)) == (1, -2, 5)
@@ -519,7 +519,7 @@ end
    end
 end
 
-@testset "fmpz.bit_twiddling..." begin
+@testset "fmpz.bit_twiddling" begin
    a = fmpz(12)
 
    @test popcount(a) == 2
@@ -549,7 +549,7 @@ end
    @test_throws DomainError clrbit!(a, -1)
 end
 
-@testset "fmpz.bases..." begin
+@testset "fmpz.bases" begin
    a = fmpz(12)
 
    @test bin(a) == "1100"
@@ -571,13 +571,13 @@ end
    @test ndigits(a, 257) == 8
 end
 
-@testset "fmpz.string_io..." begin
+@testset "fmpz.string_io" begin
    a = fmpz(12)
 
    @test string(a) == "12"
 end
 
-@testset "fmpz.modular_arithmetic..." begin
+@testset "fmpz.modular_arithmetic" begin
    @test powmod(fmpz(12), fmpz(110), fmpz(13)) == 1
 
    @test_throws DomainError powmod(fmpz(12), fmpz(110), fmpz(-1))
@@ -605,7 +605,7 @@ end
    @test_throws DomainError crt(fmpz(5), fmpz(13), -7, -37, true)
 end
 
-@testset "fmpz.factor..." begin
+@testset "fmpz.factor" begin
    a = fmpz(-3*5*7*11*13^10)
 
    fact = factor(a)
@@ -649,7 +649,7 @@ end
    @test prod(p^e for (p, e) in d) == n
 end
 
-@testset "fmpz.number_theoretic..." begin
+@testset "fmpz.number_theoretic" begin
    @test isprime(fmpz(13))
 
    @test isprime(13)
@@ -752,7 +752,7 @@ end
    end
 end
 
-@testset "fmpz.square_root..." begin
+@testset "fmpz.square_root" begin
    @test sqrt(fmpz(4)) == 2
 
    @test_throws DomainError sqrt(-fmpz(4))

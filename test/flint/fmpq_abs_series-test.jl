@@ -1,4 +1,4 @@
-@testset "fmpq_abs_series.constructors..." begin
+@testset "fmpq_abs_series.constructors" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    @test elem_type(R) == fmpq_abs_series
@@ -31,7 +31,7 @@
    @test isa(R(), SeriesElem)
 end
 
-@testset "fmpq_abs_series.printing..." begin
+@testset "fmpq_abs_series.printing" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    b = x^2 + 3x + O(x^4)
@@ -39,7 +39,7 @@ end
    @test sprint(show, "text/plain", b) == "3*x + x^2 + O(x^4)"
 end
 
-@testset "fmpq_abs_series.manipulation..." begin
+@testset "fmpq_abs_series.manipulation" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 2x + x^3
@@ -60,7 +60,7 @@ end
    @test characteristic(R) == 0
 end
 
-@testset "fmpq_abs_series.unary_ops..." begin
+@testset "fmpq_abs_series.unary_ops" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 2x + x^3
@@ -71,7 +71,7 @@ end
    @test -b == -1 - 2x - x^2 + O(x^3)
 end
 
-@testset "fmpq_abs_series.binary_ops..." begin
+@testset "fmpq_abs_series.binary_ops" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 2x + x^3
@@ -90,7 +90,7 @@ end
    @test a*d == -x^7+3*x^6-x^5+6*x^4+2*x^3
 end
 
-@testset "fmpq_abs_series.adhoc_binary_ops..." begin
+@testset "fmpq_abs_series.adhoc_binary_ops" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 2x + x^3
@@ -151,7 +151,7 @@ end
    @test (BigInt(2)//3)*c == 2*x^2 + fmpz(2)//3*x + fmpz(2)//3+O(x^5)
 end
 
-@testset "fmpq_abs_series.comparison..." begin
+@testset "fmpq_abs_series.comparison" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 2x + x^3
@@ -166,7 +166,7 @@ end
    @test c != d
 end
 
-@testset "fmpq_abs_series.adhoc_comparison..." begin
+@testset "fmpq_abs_series.adhoc_comparison" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 2x + x^3
@@ -201,7 +201,7 @@ end
    @test ZZ(1) == c
 end
 
-@testset "fmpq_abs_series.powering..." begin
+@testset "fmpq_abs_series.powering" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 2x + x^3
@@ -220,7 +220,7 @@ end
    @test_throws DomainError a^(-1)
 end
 
-@testset "fmpq_abs_series.shift..." begin
+@testset "fmpq_abs_series.shift" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 2x + x^3
@@ -241,7 +241,7 @@ end
    @test shift_right(d, 3) == 1+O(x^1)
 end
 
-@testset "fmpq_abs_series.truncation..." begin
+@testset "fmpq_abs_series.truncation" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 2x + x^3
@@ -260,7 +260,7 @@ end
    @test truncate(d, 5) == x^3+2*x+O(x^4)
 end
 
-@testset "fmpq_abs_series.exact_division..." begin
+@testset "fmpq_abs_series.exact_division" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = x + x^3
@@ -277,7 +277,7 @@ end
    @test divexact(d, c) == -2*x^5+2*x^4-x^2+x+O(x^6)
 end
 
-@testset "fmpq_abs_series.adhoc_exact_division..." begin
+@testset "fmpq_abs_series.adhoc_exact_division" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = x + x^3
@@ -302,7 +302,7 @@ end
    @test isequal(divexact(9d, BigInt(9)//1), d)
 end
 
-@testset "fmpq_abs_series.inversion..." begin
+@testset "fmpq_abs_series.inversion" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 1 + x + 2x^2 + O(x^5)
@@ -313,7 +313,7 @@ end
    @test inv(b) == -1
 end
 
-@testset "fmpq_abs_series.special..." begin
+@testset "fmpq_abs_series.special" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 
    a = 1 + x + 3x^2 + O(x^5)

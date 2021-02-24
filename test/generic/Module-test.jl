@@ -19,7 +19,7 @@ function rand_module(R::AbstractAlgebra.Ring, vals...)
    return M
 end
 
-@testset "Module.invariant_factors..." begin
+@testset "Module.invariant_factors" begin
    for R in [ZZ, QQ]
       for iter = 1:100
          M = rand_module(R, -10:10)

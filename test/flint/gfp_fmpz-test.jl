@@ -1,4 +1,4 @@
-@testset "gfp_fmpz.constructors..." begin
+@testset "gfp_fmpz.constructors" begin
    R = GF(ZZ(13))
 
    @test_throws DomainError GF(-ZZ(13))
@@ -58,21 +58,21 @@
    @test !(S === T)
 end
 
-@testset "gfp_fmpz.rand..." begin
+@testset "gfp_fmpz.rand" begin
    R = GF(ZZ(13))
 
    test_rand(R)
    test_rand(R, 1:9)
 end
 
-@testset "gfp_fmpz.printing..." begin
+@testset "gfp_fmpz.printing" begin
    R = GF(ZZ(13))
 
    @test string(R(3)) == "3"
    @test string(R()) == "0"
 end
 
-@testset "gfp_fmpz.manipulation..." begin
+@testset "gfp_fmpz.manipulation" begin
    R = GF(ZZ(13))
 
    @test iszero(zero(R))
@@ -93,7 +93,7 @@ end
    @test degree(R) == 1
 end
 
-@testset "gfp_fmpz.unary_ops..." begin
+@testset "gfp_fmpz.unary_ops" begin
    for i = 1:1000
       p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
       if Nemo.isprobable_prime(ZZ(p))
@@ -121,7 +121,7 @@ end
    end
 end
 
-@testset "gfp_fmpz.binary_ops..." begin
+@testset "gfp_fmpz.binary_ops" begin
    for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -167,7 +167,7 @@ end
    end
 end
 
-@testset "gfp_fmpz.adhoc_binary..." begin
+@testset "gfp_fmpz.adhoc_binary" begin
    for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -219,7 +219,7 @@ end
    end
 end
 
-@testset "gfp_fmpz.powering..." begin
+@testset "gfp_fmpz.powering" begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -293,7 +293,7 @@ end
    end
 end
 
-@testset "gfp_fmpz.comparison..." begin
+@testset "gfp_fmpz.comparison" begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -333,7 +333,7 @@ end
    end
 end
 
-@testset "gfp_fmpz.adhoc_comparison..." begin
+@testset "gfp_fmpz.adhoc_comparison" begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -369,7 +369,7 @@ end
    end
 end
 
-@testset "gfp_fmpz.inversion..." begin
+@testset "gfp_fmpz.inversion" begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -401,7 +401,7 @@ end
    end
 end
 
-@testset "gfp_fmpz.exact_division..." begin
+@testset "gfp_fmpz.exact_division" begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))

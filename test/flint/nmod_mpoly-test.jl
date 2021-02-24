@@ -1,4 +1,4 @@
-@testset "nmod_mpoly.constructors..." begin
+@testset "nmod_mpoly.constructors" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -60,7 +60,7 @@
    end
 end
 
-@testset "nmod_mpoly.printing..." begin
+@testset "nmod_mpoly.printing" begin
    S, (x, y) = PolynomialRing(ResidueRing(FlintZZ, 23), ["x", "y"])
 
    @test !occursin(r"{", string(S))
@@ -71,7 +71,7 @@ end
    @test string(y) == "y"
 end
 
-@testset "nmod_mpoly.manipulation..." begin
+@testset "nmod_mpoly.manipulation" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -193,7 +193,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.multivariate_coeff..." begin
+@testset "nmod_mpoly.multivariate_coeff" begin
    R = ResidueRing(FlintZZ, 23)
 
    for ord in Nemo.flint_orderings
@@ -211,7 +211,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.unary_ops..." begin
+@testset "nmod_mpoly.unary_ops" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -228,7 +228,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.binary_ops..." begin
+@testset "nmod_mpoly.binary_ops" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -251,7 +251,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.adhoc_binary..." begin
+@testset "nmod_mpoly.adhoc_binary" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -287,7 +287,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.adhoc_comparison..." begin
+@testset "nmod_mpoly.adhoc_comparison" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -309,7 +309,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.powering..." begin
+@testset "nmod_mpoly.powering" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -336,7 +336,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.divides..." begin
+@testset "nmod_mpoly.divides" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -370,7 +370,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.euclidean_division..." begin
+@testset "nmod_mpoly.euclidean_division" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -406,7 +406,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.ideal_reduction..." begin
+@testset "nmod_mpoly.ideal_reduction" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -455,7 +455,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.gcd..." begin
+@testset "nmod_mpoly.gcd" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:4
@@ -481,7 +481,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.factor..." begin
+@testset "nmod_mpoly.factor" begin
    R = ResidueRing(FlintZZ, 23)
    R, (x, y, z) = PolynomialRing(R, ["x", "y", "z"])
 
@@ -498,7 +498,7 @@ end
    check_factor(x^99-y^99*z^33, 22)
 end
 
-@testset "nmod_mpoly.sqrt..." begin
+@testset "nmod_mpoly.sqrt" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:4
@@ -524,7 +524,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.evaluation..." begin
+@testset "nmod_mpoly.evaluation" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -582,7 +582,7 @@ end
    @test evaluate(f, [UInt(20), UInt(30)]) == R(20^2*30^2+2*20+1)
 end
 
-@testset "nmod_mpoly.valuation..." begin
+@testset "nmod_mpoly.valuation" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -620,7 +620,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.derivative..." begin
+@testset "nmod_mpoly.derivative" begin
    R = ResidueRing(FlintZZ, 23)
 
    for num_vars = 1:10
@@ -640,7 +640,7 @@ end
    end
 end
 
-@testset "nmod_mpoly.unsafe..." begin
+@testset "nmod_mpoly.unsafe" begin
   R23 = ResidueRing(FlintZZ, 23)
 
   for num_vars = 1:10
@@ -698,7 +698,7 @@ end
    @test f == (y^2 + x*y + x^2)*x
 end
 
-@testset "nmod_mpoly.exponents..." begin
+@testset "nmod_mpoly.exponents" begin
   R23 = ResidueRing(FlintZZ, 23)
 
   for num_vars = 1:10

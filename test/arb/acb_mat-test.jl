@@ -1,7 +1,7 @@
 CC = AcbField(64)
 RR = ArbField(64)
 
-@testset "acb_mat.constructors..." begin
+@testset "acb_mat.constructors" begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -94,7 +94,7 @@ RR = ArbField(64)
    @test !(a in [b])
 end
 
-@testset "acb_mat.similar..." begin
+@testset "acb_mat.similar" begin
    S = MatrixSpace(CC, 3, 3)
    s = S(fmpz(3))
 
@@ -121,7 +121,7 @@ end
    end
 end
 
-@testset "acb_mat.printing..." begin
+@testset "acb_mat.printing" begin
    S = MatrixSpace(CC, 3, 3)
    f = S(fmpz(3))
 
@@ -129,7 +129,7 @@ end
    @test !occursin(string(typeof(f)), string(f))
 end
 
-@testset "acb_mat.manipulation..." begin
+@testset "acb_mat.manipulation" begin
    S = MatrixSpace(CC, 3, 3)
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
    B = S([fmpz(1) 4 7; 9 6 7; 4 3 3])
@@ -147,7 +147,7 @@ end
    @test deepcopy(A) == A
 end
 
-@testset "acb_mat.unary_ops..." begin
+@testset "acb_mat.unary_ops" begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -157,7 +157,7 @@ end
    @test contains(-A, B)
 end
 
-@testset "acb_mat.transpose..." begin
+@testset "acb_mat.transpose" begin
    S = MatrixSpace(CC, 3, 3)
    T = MatrixSpace(ZZ, 3, 3)
 
@@ -172,7 +172,7 @@ end
    @test overlaps(transpose(C), C)
 end
 
-@testset "acb_mat.binary_ops..." begin
+@testset "acb_mat.binary_ops" begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -186,7 +186,7 @@ end
    @test contains(A*B, R([49 41 50; 65 49 56; 75 81 114]))
 end
 
-@testset "acb_mat.adhoc_binary..." begin
+@testset "acb_mat.adhoc_binary" begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
    T = MatrixSpace(QQ, 3, 3)
@@ -234,7 +234,7 @@ end
    @test contains(A*qq, C*qq)
 end
 
-@testset "acb_mat.shifting..." begin
+@testset "acb_mat.shifting" begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -247,7 +247,7 @@ end
    @test contains(C, 16*B)
 end
 
-@testset "acb_mat.comparison..." begin
+@testset "acb_mat.comparison" begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -269,7 +269,7 @@ end
    @test contains(C, A)
 end
 
-@testset "acb_mat.adhoc_comparison..." begin
+@testset "acb_mat.adhoc_comparison" begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
    T = MatrixSpace(QQ, 3, 3)
@@ -290,7 +290,7 @@ end
    @test B == A
 end
 
-@testset "acb_mat.predicates..." begin
+@testset "acb_mat.predicates" begin
    S = MatrixSpace(CC, 3, 3)
    A = S([1 2 1000; 0 3 1; 0 2 1])
 
@@ -301,7 +301,7 @@ end
    @test !isreal(A)
 end
 
-@testset "acb_mat.inversion..." begin
+@testset "acb_mat.inversion" begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -314,7 +314,7 @@ end
    @test contains(C, B)
 end
 
-@testset "acb_mat.divexact..." begin
+@testset "acb_mat.divexact" begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -325,7 +325,7 @@ end
    @test contains(divexact(one(S), A), B)
 end
 
-@testset "acb_mat.adhoc_divexact..." begin
+@testset "acb_mat.adhoc_divexact" begin
    S = MatrixSpace(CC, 3, 3)
    R = MatrixSpace(ZZ, 3, 3)
 
@@ -340,7 +340,7 @@ end
    @test contains(divexact(A, CC("3.0 +/- 0.5")), B)
 end
 
-@testset "acb_mat.charpoly..." begin
+@testset "acb_mat.charpoly" begin
    S = MatrixSpace(CC, 3, 3)
    R, x = PolynomialRing(CC, "x")
    ZZy, y = PolynomialRing(ZZ, "y")
@@ -356,7 +356,7 @@ end
    @test contains(g, f)
 end
 
-@testset "acb_mat.det..." begin
+@testset "acb_mat.det" begin
    S = MatrixSpace(CC, 3, 3)
 
    A = S(["2.0 +/- 0.1" "3.0 +/- 0.1" "5.0 +/- 0.1";
@@ -368,7 +368,7 @@ end
    @test contains(d, 24)
 end
 
-@testset "acb_mat.exp..." begin
+@testset "acb_mat.exp" begin
    S = MatrixSpace(CC, 3, 3)
 
    A = S(["2.0 +/- 0.1" "0.0 +/- 0.1" "0.0 +/- 0.1";
@@ -382,7 +382,7 @@ end
    @test overlaps(B, C)
 end
 
-@testset "acb_mat.linear_solving..." begin
+@testset "acb_mat.linear_solving" begin
    S = MatrixSpace(CC, 3, 3)
    T = MatrixSpace(ZZ, 3, 3)
 
@@ -414,7 +414,7 @@ end
    @test contains(transpose(y), ZZ[1 1 1])
 end
 
-@testset "acb_mat.bound_inf_norm..." begin
+@testset "acb_mat.bound_inf_norm" begin
    S = MatrixSpace(CC, 3, 3)
 
    A = S([2 3 5; 1 4 7; 9 6 3])
@@ -428,7 +428,7 @@ end
    end
 end
 
-@testset "acb_mat.eigvals..." begin
+@testset "acb_mat.eigvals" begin
    A = matrix(CC, 3, 3, [1, 2, 3, 0, 4, 5, 0, 0, 6])
 
    E = eigvals(A)

@@ -1,4 +1,4 @@
-@testset "fmpz_mat.constructors..." begin
+@testset "fmpz_mat.constructors" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    @test elem_type(S) == fmpz_mat
@@ -75,7 +75,7 @@
    @test !(a in keys(Dict(b => 1)))
 end
 
-@testset "fmpz_mat.$sim_zero..." for sim_zero in (similar, zero)
+@testset "fmpz_mat.$sim_zero" for sim_zero in (similar, zero)
    S = MatrixSpace(FlintZZ, 3, 3)
    s = S(fmpz(3))
 
@@ -110,7 +110,7 @@ end
    end
 end
 
-@testset "fmpz_mat.printing..." begin
+@testset "fmpz_mat.printing" begin
    S = MatrixSpace(FlintZZ, 3, 3)
    f = S(fmpz(3))
 
@@ -118,7 +118,7 @@ end
    @test !occursin(string(typeof(f)), string(f))
 end
 
-@testset "fmpz_mat.convert..." begin
+@testset "fmpz_mat.convert" begin
    # Basic tests.
    A = [[1 2 3]; [4 5 6]]
    Abig = BigInt[[1 2 3]; [4 5 6]]
@@ -133,7 +133,7 @@ end
    @test_throws ErrorException Matrix{Int}(B)
 end
 
-@testset "fmpz_mat.manipulation..." begin
+@testset "fmpz_mat.manipulation" begin
    S = MatrixSpace(FlintZZ, 3, 3)
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
    B = S([fmpz(1) 4 7; 9 6 7; 4 3 3])
@@ -151,7 +151,7 @@ end
    @test deepcopy(A) == A
 end
 
-@testset "fmpz_mat.view..." begin
+@testset "fmpz_mat.view" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([1 2 3; 4 5 6; 7 8 9])
@@ -179,7 +179,7 @@ end
    @test B[1, 1] == 20
 end
 
-@testset "fmpz_mat.sub..." begin
+@testset "fmpz_mat.sub" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([1 2 3; 4 5 6; 7 8 9])
@@ -202,7 +202,7 @@ end
    @test A == S([1 2 3; 4 5 6; 7 8 9])
 end
 
-@testset "fmpz_mat.unary_ops..." begin
+@testset "fmpz_mat.unary_ops" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -211,7 +211,7 @@ end
    @test -A == B
 end
 
-@testset "fmpz_mat.binary_ops..." begin
+@testset "fmpz_mat.binary_ops" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -224,7 +224,7 @@ end
    @test A*B == S([49 41 50; 65 49 56; 75 81 114])
 end
 
-@testset "fmpz_mat.adhoc_binary..." begin
+@testset "fmpz_mat.adhoc_binary" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -237,7 +237,7 @@ end
    @test fmpz(3)*A == A*fmpz(3)
 end
 
-@testset "fmpz_mat.kronecker_product..." begin
+@testset "fmpz_mat.kronecker_product" begin
    S = MatrixSpace(ZZ, 2, 3)
    S2 = MatrixSpace(ZZ, 2, 2)
    S3 = MatrixSpace(ZZ, 3, 3)
@@ -250,7 +250,7 @@ end
    @test kronecker_product(B*A,A*C) == kronecker_product(B,A) * kronecker_product(A,C)
 end
 
-@testset "fmpz_mat.comparison..." begin
+@testset "fmpz_mat.comparison" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -261,7 +261,7 @@ end
    @test A != one(S)
 end
 
-@testset "fmpz_mat.adhoc_comparison..." begin
+@testset "fmpz_mat.adhoc_comparison" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -274,7 +274,7 @@ end
    @test one(S) == one(S)
 end
 
-@testset "fmpz_mat.powering..." begin
+@testset "fmpz_mat.powering" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -286,7 +286,7 @@ end
    @test_throws DomainError A^-1
 end
 
-@testset "fmpz_mat.adhoc_exact_division..." begin
+@testset "fmpz_mat.adhoc_exact_division" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -295,7 +295,7 @@ end
    @test divexact(12*A, fmpz(12)) == A
 end
 
-@testset "fmpz_mat.gram..." begin
+@testset "fmpz_mat.gram" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -303,7 +303,7 @@ end
    @test gram(A) == S([38 49 51; 49 66 54; 51 54 126])
 end
 
-@testset "fmpz_mat.trace..." begin
+@testset "fmpz_mat.trace" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -311,7 +311,7 @@ end
    @test tr(A) == 9
 end
 
-@testset "fmpz_mat.content..." begin
+@testset "fmpz_mat.content" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -319,7 +319,7 @@ end
    @test content(17*A) == 17
 end
 
-@testset "fmpz_mat.transpose..." begin
+@testset "fmpz_mat.transpose" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -333,7 +333,7 @@ end
    @test transpose(C) == C
 end
 
-@testset "fmpz_mat.row_col_swapping..." begin
+@testset "fmpz_mat.row_col_swapping" begin
    a = matrix(FlintZZ, [1 2; 3 4; 5 6])
 
    @test swap_rows(a, 1, 3) == matrix(FlintZZ, [5 6; 3 4; 1 2])
@@ -370,7 +370,7 @@ end
    @test a == matrix(FlintZZ, [3 2 1; 5 4 3; 7 6 5])
 end
 
-@testset "fmpz_mat.scaling..." begin
+@testset "fmpz_mat.scaling" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 6 3])
@@ -381,7 +381,7 @@ end
    @test_throws DomainError (A>>-1)
 end
 
-@testset "fmpz_mat.inversion..." begin
+@testset "fmpz_mat.inversion" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
@@ -394,7 +394,7 @@ end
    @test inv(A)*A == one(S)
 end
 
-@testset "fmpz_mat.pseudo_inversion..." begin
+@testset "fmpz_mat.pseudo_inversion" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([1 2 3; 1 2 3; 1 2 3])
@@ -406,7 +406,7 @@ end
    @test B*C == S(d)
 end
 
-@testset "fmpz_mat.exact_division..." begin
+@testset "fmpz_mat.exact_division" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
@@ -415,7 +415,7 @@ end
    @test divexact(B*A, A) == B
 end
 
-@testset "fmpz_mat.modular_reduction..." begin
+@testset "fmpz_mat.modular_reduction" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
@@ -426,7 +426,7 @@ end
    @test reduce_mod(A, fmpz(3)) == B
 end
 
-@testset "fmpz_mat.det..." begin
+@testset "fmpz_mat.det" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 19 3 7])
@@ -440,13 +440,13 @@ end
    @test det_given_divisor(A, fmpz(9)) == 27
 end
 
-@testset "fmpz_mat.hadamard..." begin
+@testset "fmpz_mat.hadamard" begin
    S = MatrixSpace(FlintZZ, 4, 4)
 
    @test ishadamard(hadamard(S))
 end
 
-@testset "fmpz_mat.fflu..." begin
+@testset "fmpz_mat.fflu" begin
    for iters = 1:100
       m = rand(0:20)
       n = rand(0:20)
@@ -478,7 +478,7 @@ end
    end
 end
 
-@testset "fmpz_mat.hnf..." begin
+@testset "fmpz_mat.hnf" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 19 3 7])
@@ -501,7 +501,7 @@ end
    @test S([1 0 0; 0 2 0; 0 0 4]) == MM
 end
 
-@testset "fmpz_mat.lll..." begin
+@testset "fmpz_mat.lll" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 19 3 7])
@@ -533,7 +533,7 @@ end
    @test B == lll_gram(gram(A))
 end
 
-@testset "fmpz_mat.nullspace..." begin
+@testset "fmpz_mat.nullspace" begin
    S = MatrixSpace(FlintZZ, 3, 3)
    T = MatrixSpace(FlintZZ, 3, 1)
 
@@ -546,7 +546,7 @@ end
    @test iszero(A*N)
 end
 
-@testset "fmpz_mat.rank..." begin
+@testset "fmpz_mat.rank" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 4 1 1])
@@ -554,7 +554,7 @@ end
    @test rank(A) == 2
 end
 
-@testset "fmpz_mat.rref..." begin
+@testset "fmpz_mat.rref" begin
    for iters = 1:100
       m = rand(0:100)
       n = rand(0:100)
@@ -580,7 +580,7 @@ end
    @test r == 2
 end
 
-@testset "fmpz_mat.snf..." begin
+@testset "fmpz_mat.snf" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 19 3 7])
@@ -594,7 +594,7 @@ end
    @test issnf(snf_diagonal(B))
 end
 
-@testset "fmpz_mat.solve_rational..." begin
+@testset "fmpz_mat.solve_rational" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
@@ -616,7 +616,7 @@ end
    @test reduce_mod(Y, k) == reduce_mod(X, k)
 end
 
-@testset "fmpz_mat.solve..." begin
+@testset "fmpz_mat.solve" begin
    S = MatrixSpace(FlintZZ, 3, 3)
 
    A = S([fmpz(2) 3 5; 1 4 7; 9 2 2])
@@ -632,7 +632,7 @@ end
 end
 
 
-@testset "fmpz_mat.concat..." begin
+@testset "fmpz_mat.concat" begin
    S = MatrixSpace(FlintZZ, 3, 3)
    T = MatrixSpace(FlintZZ, 3, 6)
    U = MatrixSpace(FlintZZ, 6, 3)
@@ -645,7 +645,7 @@ end
    @test vcat(A, B) == U([2 3 5; 1 4 7; 9 6 3; 1 4 7; 9 6 7; 4 3 3])
 end
 
-@testset "fmpz_mat.rand..." begin
+@testset "fmpz_mat.rand" begin
    S = MatrixSpace(FlintZZ, 3, 3)
    M = rand(S, 1:9)
    @test parent(M) == S

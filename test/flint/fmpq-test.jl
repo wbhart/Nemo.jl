@@ -1,4 +1,4 @@
-@testset "fmpq.constructors..." begin
+@testset "fmpq.constructors" begin
    R = FractionField(ZZ)
 
    @test elem_type(R) == fmpq
@@ -54,7 +54,7 @@
    @test fmpq(typemin(Int)) == typemin(Int)
 end
 
-@testset "fmpq.rand..." begin
+@testset "fmpq.rand" begin
    for bits in 1:100
       t = rand_bits(FlintQQ, bits)
       @test height_bits(t) <= bits
@@ -67,19 +67,19 @@ end
    end
 end
 
-@testset "fmpq.printing..." begin
+@testset "fmpq.printing" begin
    a = FlintQQ(1, 2)
 
    @test string(a) == "1//2"
 end
 
-@testset "fmpq.conversions..." begin
+@testset "fmpq.conversions" begin
    @test Rational(fmpz(12)) == 12
 
    @test Rational(fmpq(3, 7)) == 3//7
 end
 
-@testset "fmpq.manipulation..." begin
+@testset "fmpq.manipulation" begin
    R = FractionField(ZZ)
 
    @test zero(fmpq) == 0
@@ -122,13 +122,13 @@ end
    @test ceil(fmpq(2, 1)) == 2
 end
 
-@testset "fmpq.unary_ops..." begin
+@testset "fmpq.unary_ops" begin
    a = fmpq(-2, 3)
 
    @test -a == fmpq(2, 3)
 end
 
-@testset "fmpq.binary_ops..." begin
+@testset "fmpq.binary_ops" begin
    a = fmpq(-2, 3)
    b = fmpz(5)//7
 
@@ -139,7 +139,7 @@ end
    @test a*b == fmpq(-10, 21)
 end
 
-@testset "fmpq.adhoc_binary..." begin
+@testset "fmpq.adhoc_binary" begin
    a = fmpq(-2, 3)
 
    @test a + 3 == fmpq(7, 3)
@@ -195,7 +195,7 @@ end
    @test fmpq(1, 2) // (1//2) == 1
 end
 
-@testset "fmpq.comparison..." begin
+@testset "fmpq.comparison" begin
    a = fmpq(-2, 3)
    b = fmpz(1)//2
 
@@ -212,7 +212,7 @@ end
    @test a != b
 end
 
-@testset "fmpq.adhoc_comparison..." begin
+@testset "fmpq.adhoc_comparison" begin
    a = -fmpz(2)//3
 
    @test a < 1
@@ -270,7 +270,7 @@ end
    @test BigInt(1)//BigInt(2) == fmpq(1, 2)
 end
 
-@testset "fmpq.shifting..." begin
+@testset "fmpq.shifting" begin
    a = -fmpz(2)//3
    b = fmpq(1, 2)
 
@@ -279,7 +279,7 @@ end
    @test b >> 5 == fmpz(1)//64
 end
 
-@testset "fmpq.powering..." begin
+@testset "fmpq.powering" begin
    a = -fmpz(2)//3
 
    @test a^(-12) == fmpz(531441)//4096
@@ -287,7 +287,7 @@ end
    @test_throws DivideError fmpq(0)^-1
 end
 
-@testset "fmpq.inversion..." begin
+@testset "fmpq.inversion" begin
    a = -fmpz(2)//3
 
    @test inv(a) == fmpz(-3)//2
@@ -295,7 +295,7 @@ end
    @test_throws ErrorException inv(fmpq(0))
 end
 
-@testset "fmpq.exact_division..." begin
+@testset "fmpq.exact_division" begin
    a = -fmpz(2)//3
    b = fmpz(1)//2
    c = fmpz(0)//1
@@ -305,7 +305,7 @@ end
    @test_throws DivideError divexact(a, c)
 end
 
-@testset "fmpq.adhoc_exact_division..." begin
+@testset "fmpq.adhoc_exact_division" begin
    a = -fmpz(2)//3
 
    @test divexact(a, 3) == fmpz(-2)//9
@@ -335,7 +335,7 @@ end
    @test_throws DivideError divexact(ZZ(12), QQ(0))
 end
 
-@testset "fmpq.modular_arithmetic..." begin
+@testset "fmpq.modular_arithmetic" begin
    a = -fmpz(2)//3
    b = fmpz(1)//2
 
@@ -344,14 +344,14 @@ end
    @test mod(b, fmpz(5)) == 3
 end
 
-@testset "fmpq.gcd..." begin
+@testset "fmpq.gcd" begin
    a = -fmpz(2)//3
    b = fmpz(1)//2
 
    @test gcd(a, b) == fmpz(1)//6
 end
 
-@testset "fmpq.square_root..." begin
+@testset "fmpq.square_root" begin
    a = fmpz(4)//9
    b = fmpz(0)//1
 
@@ -359,7 +359,7 @@ end
    @test sqrt(b) == 0
 end
 
-@testset "fmpq.rational_reconstruction..." begin
+@testset "fmpq.rational_reconstruction" begin
    @test reconstruct(7, 13) == fmpz(1)//2
 
    @test reconstruct(fmpz(15), 31) == -fmpz(1)//2
@@ -369,7 +369,7 @@ end
    @test reconstruct(123, fmpz(237)) == fmpz(9)//2
 end
 
-@testset "fmpq.rational_enumeration..." begin
+@testset "fmpq.rational_enumeration" begin
    @test next_minimal(fmpz(2)//3) == fmpz(3)//2
 
    @test_throws DomainError next_minimal(fmpz(-1)//1)
@@ -383,7 +383,7 @@ end
    @test next_signed_calkin_wilf(-fmpz(51)//17) == fmpz(1)//4
 end
 
-@testset "fmpq.special_functions..." begin
+@testset "fmpq.special_functions" begin
    @test harmonic(12) == fmpz(86021)//27720
 
    @test_throws DomainError harmonic(-1)
@@ -397,14 +397,14 @@ end
    @test dedekind_sum(fmpz(-120), 1305) == -fmpz(575)//522
 end
 
-@testset "fmpq.adhoc_remove_valuation..." begin
+@testset "fmpq.adhoc_remove_valuation" begin
    a = fmpq(2, 3)
 
    @test remove(a, 3) == (-1, fmpq(2, 1))
    @test valuation(a, 3) == -1
 end
 
-@testset "fmpq.simplest_between..." begin
+@testset "fmpq.simplest_between" begin
    @test @inferred simplest_between(fmpq(-2//2), fmpq(1)) == -1
    @test simplest_between(fmpq(1//10), fmpq(3//10)) == 1//4
    @test simplest_between(fmpq(11//10), fmpq(21//10)) == 2

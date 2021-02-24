@@ -1,4 +1,4 @@
-@testset "fmpz_poly.constructors..." begin
+@testset "fmpz_poly.constructors" begin
    R, x = PolynomialRing(ZZ, "x")
 
    @test elem_type(R) == fmpz_poly
@@ -35,14 +35,14 @@
    @test PolynomialRing(R, "x", cached = true)[1] === PolynomialRing(R, "x", cached = true)[1]
 end
 
-@testset "fmpz_poly.printing..." begin
+@testset "fmpz_poly.printing" begin
    R, x = PolynomialRing(ZZ, "x")
    f = x^3 + 2x^2 + x + 1
 
    @test sprint(show, "text/plain", f) == "x^3 + 2*x^2 + x + 1"
 end
 
-@testset "fmpz_poly.manipulation..." begin
+@testset "fmpz_poly.manipulation" begin
    R, x = PolynomialRing(ZZ, "x")
 
    @test iszero(zero(R))
@@ -74,7 +74,7 @@ end
    @test height(2*x^2 - 7*x + 1) == 7
 end
 
-@testset "fmpz_poly.binary_ops..." begin
+@testset "fmpz_poly.binary_ops" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -87,7 +87,7 @@ end
    @test f - g == -x^3+x^2-x-1
 end
 
-@testset "fmpz_poly.adhoc_binary..." begin
+@testset "fmpz_poly.adhoc_binary" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -118,7 +118,7 @@ end
    @test fmpz(12) - g == -x^3-3*x+10
 end
 
-@testset "fmpz_poly.comparison..." begin
+@testset "fmpz_poly.comparison" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -129,7 +129,7 @@ end
    @test isequal(f, deepcopy(f))
 end
 
-@testset "fmpz_poly.adhoc_comparison..." begin
+@testset "fmpz_poly.adhoc_comparison" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -143,7 +143,7 @@ end
    @test fmpz(7) != f
 end
 
-@testset "fmpz_poly.unary_ops..." begin
+@testset "fmpz_poly.unary_ops" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -151,7 +151,7 @@ end
    @test -f == -x^2 - 2x - 1
 end
 
-@testset "fmpz_poly.truncation..." begin
+@testset "fmpz_poly.truncation" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -166,7 +166,7 @@ end
    @test_throws DomainError mullow(f, g, -1)
 end
 
-@testset "fmpz_poly.reverse..." begin
+@testset "fmpz_poly.reverse" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 3
@@ -174,7 +174,7 @@ end
    @test reverse(f) == 3x^2 + 2x + 1
 end
 
-@testset "fmpz_poly.shift..." begin
+@testset "fmpz_poly.shift" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -188,7 +188,7 @@ end
    @test_throws DomainError shift_right(f, -1)
 end
 
-@testset "fmpz_poly.powering..." begin
+@testset "fmpz_poly.powering" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -196,7 +196,7 @@ end
    @test f^12 == x^24+24*x^23+276*x^22+2024*x^21+10626*x^20+42504*x^19+134596*x^18+346104*x^17+735471*x^16+1307504*x^15+1961256*x^14+2496144*x^13+2704156*x^12+2496144*x^11+1961256*x^10+1307504*x^9+735471*x^8+346104*x^7+134596*x^6+42504*x^5+10626*x^4+2024*x^3+276*x^2+24*x+1
 end
 
-@testset "fmpz_poly.exact_division..." begin
+@testset "fmpz_poly.exact_division" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -205,7 +205,7 @@ end
    @test divexact(f*g, f) == g
 end
 
-@testset "fmpz_poly.adhoc_exact_division..." begin
+@testset "fmpz_poly.adhoc_exact_division" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -215,7 +215,7 @@ end
    @test divexact(3*f, 3) == f
 end
 
-@testset "fmpz_poly.pseudodivision..." begin
+@testset "fmpz_poly.pseudodivision" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -226,7 +226,7 @@ end
    @test pseudodivrem(f, g) == (0, x^2+2*x+1)
 end
 
-@testset "fmpz_poly.remove_valuation..." begin
+@testset "fmpz_poly.remove_valuation" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -242,7 +242,7 @@ end
    @test !v
 end
 
-@testset "fmpz_poly.content_primpart_gcd..." begin
+@testset "fmpz_poly.content_primpart_gcd" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -258,7 +258,7 @@ end
    @test lcm(f*h, g*h) == f*g*h
 end
 
-@testset "fmpz_poly.evaluation..." begin
+@testset "fmpz_poly.evaluation" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -276,7 +276,7 @@ if VERSION >= v"0.5.0-dev+3171"
 end
 end
 
-@testset "fmpz_poly.composition..." begin
+@testset "fmpz_poly.composition" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -285,7 +285,7 @@ end
    @test compose(f, g) == x^6+6*x^4+4*x^3+9*x^2+12*x+4
 end
 
-@testset "fmpz_poly.derivative..." begin
+@testset "fmpz_poly.derivative" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -293,7 +293,7 @@ end
    @test derivative(f) == 2x + 2
 end
 
-@testset "fmpz_poly.resultant..." begin
+@testset "fmpz_poly.resultant" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = 5x^2 + 2x + 1
@@ -302,7 +302,7 @@ end
    @test resultant(f, g) == 212
 end
 
-@testset "fmpz_poly.discriminant..." begin
+@testset "fmpz_poly.discriminant" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^2 + 2x + 1
@@ -310,7 +310,7 @@ end
    @test discriminant(f) == 0
 end
 
-@testset "fmpz_poly.resx..." begin
+@testset "fmpz_poly.resx" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = 5x^2 + 2x + 1
@@ -319,7 +319,7 @@ end
    @test resx(f, g) == (212, 146*x^2-58*x+213, -365*x-1)
 end
 
-@testset "fmpz_poly.signature..." begin
+@testset "fmpz_poly.signature" begin
    R, x = PolynomialRing(ZZ, "x")
 
    f = x^3 + 3x + 1
@@ -327,7 +327,7 @@ end
    @test signature(f) == (1, 1)
 end
 
-@testset "fmpz_poly.interpolate..." begin
+@testset "fmpz_poly.interpolate" begin
   Rx, x = PolynomialRing(ZZ, "x")
 
   xval = [ ZZ(0), ZZ(1), ZZ(2), ZZ(3) ]
@@ -340,7 +340,7 @@ end
   @test f == x^2
 end
 
-@testset "fmpz_poly.factor..." begin
+@testset "fmpz_poly.factor" begin
   Rx, x = PolynomialRing(FlintZZ, "x")
 
   f = x^24 - x^23 + x^19 - x^18 + x^17 - x^16 + x^14 - x^13 + x^12 - x^11 + x^10 - x^8 + x^7 - x^6 + x^5 - x + 1
@@ -363,7 +363,7 @@ end
   @test !isirreducible(x^2)
 end
 
-@testset "fmpz_poly.square_root..." begin
+@testset "fmpz_poly.square_root" begin
   R, x = PolynomialRing(ZZ, "x")
 
   f = rand(R, 0:10, -10:10)
@@ -372,7 +372,7 @@ end
   @test sqrt(g)^2 == g
 end
 
-@testset "fmpz_poly.special..." begin
+@testset "fmpz_poly.special" begin
    R, x = PolynomialRing(ZZ, "x")
 
    @test chebyshev_t(20, x) == 524288*x^20-2621440*x^18+5570560*x^16-6553600*x^14+4659200*x^12-2050048*x^10+549120*x^8-84480*x^6+6600*x^4-200*x^2+1
@@ -392,7 +392,7 @@ end
    @test eta_qexp(24, 30, x) == -29211840*x^29+128406630*x^28+24647168*x^27-73279080*x^26+13865712*x^25-25499225*x^24+21288960*x^23+18643272*x^22-12830688*x^21-4219488*x^20-7109760*x^19+10661420*x^18+2727432*x^17-6905934*x^16+987136*x^15+1217160*x^14+401856*x^13-577738*x^12-370944*x^11+534612*x^10-115920*x^9-113643*x^8+84480*x^7-16744*x^6-6048*x^5+4830*x^4-1472*x^3+252*x^2-24*x+1
 end
 
-@testset "fmpz_poly.Polynomials..." begin
+@testset "fmpz_poly.Polynomials" begin
    R, x = PolynomialRing(ZZ, "x")
    S, y = PolynomialRing(R, "y")
 
