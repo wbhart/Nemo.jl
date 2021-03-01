@@ -1,4 +1,4 @@
-@testset "gfp_mpoly.constructors..." begin
+@testset "gfp_mpoly.constructors" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -60,7 +60,7 @@
    end
 end
 
-@testset "gfp_mpoly.printing..." begin
+@testset "gfp_mpoly.printing" begin
    S, (x, y) = PolynomialRing(GF(23), ["x", "y"])
 
    @test !occursin(r"{", string(S))
@@ -71,7 +71,7 @@ end
    @test string(y) == "y"
 end
 
-@testset "gfp_mpoly.manipulation..." begin
+@testset "gfp_mpoly.manipulation" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -193,7 +193,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.multivariate_coeff..." begin
+@testset "gfp_mpoly.multivariate_coeff" begin
    R = GF(23)
 
    for ord in Nemo.flint_orderings
@@ -211,7 +211,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.unary_ops..." begin
+@testset "gfp_mpoly.unary_ops" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -228,7 +228,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.binary_ops..." begin
+@testset "gfp_mpoly.binary_ops" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -251,7 +251,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.adhoc_binary..." begin
+@testset "gfp_mpoly.adhoc_binary" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -287,7 +287,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.adhoc_comparison..." begin
+@testset "gfp_mpoly.adhoc_comparison" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -309,7 +309,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.powering..." begin
+@testset "gfp_mpoly.powering" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -336,7 +336,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.divides..." begin
+@testset "gfp_mpoly.divides" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -370,7 +370,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.euclidean_division..." begin
+@testset "gfp_mpoly.euclidean_division" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -406,7 +406,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.ideal_reduction..." begin
+@testset "gfp_mpoly.ideal_reduction" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -455,7 +455,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.gcd..." begin
+@testset "gfp_mpoly.gcd" begin
    R = GF(23)
 
    for num_vars = 1:4
@@ -481,7 +481,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.factor..." begin
+@testset "gfp_mpoly.factor" begin
    R = GF(23)
    R, (x, y, z) = PolynomialRing(R, ["x", "y", "z"])
 
@@ -500,7 +500,7 @@ end
    check_factor(x^99-y^99*z^33, 22)
 end
 
-@testset "gfp_mpoly.sqrt..." begin
+@testset "gfp_mpoly.sqrt" begin
    R = GF(23)
 
    for num_vars = 1:4
@@ -526,7 +526,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.evaluation..." begin
+@testset "gfp_mpoly.evaluation" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -584,7 +584,7 @@ end
    @test evaluate(f, [UInt(20), UInt(30)]) == R(20^2*30^2+2*20+1)
 end
 
-@testset "gfp_mpoly.valuation..." begin
+@testset "gfp_mpoly.valuation" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -622,7 +622,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.derivative..." begin
+@testset "gfp_mpoly.derivative" begin
    R = GF(23)
 
    for num_vars = 1:10
@@ -642,7 +642,7 @@ end
    end
 end
 
-@testset "gfp_mpoly.unsafe..." begin
+@testset "gfp_mpoly.unsafe" begin
   R23 = GF(23)
 
   for num_vars = 1:10
@@ -700,7 +700,7 @@ end
    @test f == (y^2 + x*y + x^2)*x
 end
 
-@testset "gfp_mpoly.exponents..." begin
+@testset "gfp_mpoly.exponents" begin
   R23 = GF(23)
 
   for num_vars = 1:10

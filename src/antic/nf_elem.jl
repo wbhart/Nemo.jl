@@ -1192,7 +1192,7 @@ rand(K::AnticNumberField, r) = rand(Random.GLOBAL_RNG, K, r)
     NumberField(f::fmpq_poly, s::AbstractString; cached::Bool = true, check::Bool = true)
 
 Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
-of the number field $\mathbb{Q}/(f)$ where $f$ is the supplied polynomial.
+of the number field $\mathbb{Q}[x]/(f)$ where $f$ is the supplied polynomial.
 The supplied string `s` specifies how the generator of the number field
 should be printed.
 """

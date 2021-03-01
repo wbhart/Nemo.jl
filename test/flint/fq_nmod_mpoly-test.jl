@@ -1,4 +1,4 @@
-@testset "fq_nmod_mpoly.constructors..." begin
+@testset "fq_nmod_mpoly.constructors" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -57,7 +57,7 @@
    end
 end
 
-@testset "fq_nmod_mpoly.printing..." begin
+@testset "fq_nmod_mpoly.printing" begin
    R, a = FiniteField(23, 5, "a")
    S, (x, y) = PolynomialRing(R, ["x", "y"])
 
@@ -70,7 +70,7 @@ end
    @test string(y) == "y"
 end
 
-@testset "fq_nmod_mpoly.manipulation..." begin
+@testset "fq_nmod_mpoly.manipulation" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -187,7 +187,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.multivariate_coeff..." begin
+@testset "fq_nmod_mpoly.multivariate_coeff" begin
    R, a = FiniteField(23, 5, "a")
 
    for ord in Nemo.flint_orderings
@@ -205,7 +205,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.unary_ops..." begin
+@testset "fq_nmod_mpoly.unary_ops" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -222,7 +222,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.binary_ops..." begin
+@testset "fq_nmod_mpoly.binary_ops" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -245,7 +245,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.adhoc_binary..." begin
+@testset "fq_nmod_mpoly.adhoc_binary" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -281,7 +281,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.adhoc_comparison..." begin
+@testset "fq_nmod_mpoly.adhoc_comparison" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -303,7 +303,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.powering..." begin
+@testset "fq_nmod_mpoly.powering" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -330,7 +330,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.divides..." begin
+@testset "fq_nmod_mpoly.divides" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -359,7 +359,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.euclidean_division..." begin
+@testset "fq_nmod_mpoly.euclidean_division" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -395,7 +395,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.ideal_reduction..." begin
+@testset "fq_nmod_mpoly.ideal_reduction" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -444,7 +444,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.gcd..." begin
+@testset "fq_nmod_mpoly.gcd" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:4
@@ -470,7 +470,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.factor..." begin
+@testset "fq_nmod_mpoly.factor" begin
    R, a = FiniteField(23, 5, "a")
    R, (x, y, z) = PolynomialRing(R, ["x", "y", "z"])
 
@@ -487,7 +487,7 @@ end
    check_factor(x^99-a^33*y^99*z^33, 22)
 end
 
-@testset "fq_nmod_mpoly.sqrt..." begin
+@testset "fq_nmod_mpoly.sqrt" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:4
@@ -513,7 +513,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.evaluation..." begin
+@testset "fq_nmod_mpoly.evaluation" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -568,7 +568,7 @@ end
    @test f(M1, M2) == T([9 12; 18 20])
 end
 
-@testset "fq_nmod_mpoly.valuation..." begin
+@testset "fq_nmod_mpoly.valuation" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -606,7 +606,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.derivative..." begin
+@testset "fq_nmod_mpoly.derivative" begin
    R, a = FiniteField(23, 5, "a")
 
    for num_vars = 1:10
@@ -626,7 +626,7 @@ end
    end
 end
 
-@testset "fq_nmod_mpoly.combine_like_terms..." begin
+@testset "fq_nmod_mpoly.combine_like_terms" begin
   R23, a = FiniteField(23, 5, "a")
 
   for num_vars = 1:10
@@ -662,7 +662,7 @@ end
   end
 end
 
-@testset "fq_nmod_mpoly.exponents..." begin
+@testset "fq_nmod_mpoly.exponents" begin
   R23, a = FiniteField(23, 5, "a")
 
   for num_vars = 1:10

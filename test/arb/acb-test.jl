@@ -1,7 +1,7 @@
 RR = ArbField(64)
 CC = AcbField(64)
 
-@testset "acb.constructors..." begin
+@testset "acb.constructors" begin
    @test isa(CC, AcbField)
    @test isa(CC(2), FieldElem)
 
@@ -15,7 +15,7 @@ CC = AcbField(64)
    @test AcbField(11, cached = false) !== AcbField(11, cached = false)
 end
 
-@testset "acb.printing..." begin
+@testset "acb.printing" begin
    @test occursin(r"\A0\Z", string(CC(0)))
    @test occursin(r"\A1\.[0]+\Z", string(CC(1)))
    @test occursin(r"\A1\.[0]+[ ]*\*[ ]*?im\Z", string(onei(CC)))
@@ -23,7 +23,7 @@ end
                                                       string(CC(1) + onei(CC)))
 end
 
-@testset "acb.basic_ops..." begin
+@testset "acb.basic_ops" begin
    @test one(CC) == 1
    @test zero(CC) == 0
 
@@ -62,7 +62,7 @@ end
    @test characteristic(CC) == 0
 end
 
-@testset "acb.comparison..." begin
+@testset "acb.comparison" begin
    exact3 = CC(3)
    exact4 = CC(4)
    approx3 = CC("3 +/- 0.000001")
@@ -96,7 +96,7 @@ end
 end
 
 
-@testset "acb.predicates..." begin
+@testset "acb.predicates" begin
    @test iszero(CC(0))
    @test !iszero(CC(1))
    @test !iszero(CC("0 +/- 0.01"))
@@ -121,14 +121,14 @@ end
    @test !isint(CC("3 +/- 0.01"))
 end
 
-@testset "acb.unary_ops..." begin
+@testset "acb.unary_ops" begin
    @test -CC(3) == CC(-3)
    @test abs(-CC(3)) == 3
    @test abs(CC(3)) == 3
    @test inv(CC(2)) == CC(QQ(1,2))
 end
 
-@testset "acb.binary_ops..." begin
+@testset "acb.binary_ops" begin
    x = CC(2)
    y = CC(4)
 
@@ -163,7 +163,7 @@ end
    end
 end
 
-@testset "acb.misc_ops..." begin
+@testset "acb.misc_ops" begin
    @test ldexp(CC(3), 2) == 12
    @test ldexp(CC(3), ZZ(2)) == 12
    @test contains(trim(CC("1.1 +/- 0.001")), CC("1.1"))
@@ -183,7 +183,7 @@ end
    @test !uniq
 end
 
-@testset "acb.unsafe_ops..." begin
+@testset "acb.unsafe_ops" begin
    z = CC(1)
    x = CC(2)
    y = CC(3)
@@ -201,11 +201,11 @@ end
    @test z == 1.5
 end
 
-@testset "acb.constants..." begin
+@testset "acb.constants" begin
    @test overlaps(const_pi(CC), CC("3.141592653589793238462643 +/- 4.03e-25"))
 end
 
-@testset "acb.functions..." begin
+@testset "acb.functions" begin
    z = CC("0.2", "0.3")
    a = CC("0.3", "0.4")
    b = CC("0.4", "0.5")
@@ -403,10 +403,10 @@ end
    @test overlaps(prod_sqr, CC(2))
 end
 
-@testset "acb.lindep..." begin
+@testset "acb.lindep" begin
    CC = ComplexField(512)
-   tau1 = CC(rand(), abs(rand()) + eps())
-   tau2 = CC(rand(), abs(rand()) + eps())
+   tau1 = CC(1//3, 8//7)
+   tau2 = CC(1//5, 9//8)
    A1 = modweber_f1(tau1)^8; B1 = modweber_f1(2*tau1)^8
 
    vals1 = [A1^i*B1^j for i in 0:2 for j in 0:2];
@@ -434,7 +434,7 @@ end
    CC = ComplexField(64)
 end
 
-@testset "acb.integration..." begin
+@testset "acb.integration" begin
    res = Nemo.integrate(CC, x->x,  -1, 1)
    @test contains(res, CC(0))
    @test imag(res) == CC(0)

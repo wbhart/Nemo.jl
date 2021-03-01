@@ -48,7 +48,7 @@ f = x^3 + 3x + 1
 g = R(12)
 ```
 
-In this example, `R` is the parent object and we use it to convert the `Int` value $12$ to an element
+In this example, $R$ is the parent object and we use it to convert the `Int` value $12$ to an element
 of the polynomial ring $\mathbb{Z}[x]$.
 
 ## List of parent object constructors
@@ -63,7 +63,7 @@ they represent.
 | $R = \mathbb{F}_{p^n}$                | `R, a = FiniteField(p, n, "a")`               |
 | $R = \mathbb{Z}/n\mathbb{Z}$          | `R = ResidueRing(ZZ, n)`                      |
 | $S = R[x]$                            | `S, x = PolynomialRing(R, "x")`               |
-| $S = R[x, y]$                         | `S, (x, y) = PolynomialRing(R, ["x", "y"])    |
+| $S = R[x, y]$                         | `S, (x, y) = PolynomialRing(R, ["x", "y"])`   |
 | $S = R[[x]]$ (to precision $n$)       | `S, x = PowerSeriesRing(R, n, "x")`           |
 | $S = R((x))$ (to precision $n$)       | `S, x = LaurentSeriesRing(R, n, "x")`         |
 | $S = \mathrm{Frac}_R$                 | `S = FractionField(R)`                        |

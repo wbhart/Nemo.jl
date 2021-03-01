@@ -1,7 +1,7 @@
 RR = AcbField(64)
 CC = AcbField(64)
 
-@testset "acb_poly.constructors..." begin
+@testset "acb_poly.constructors" begin
    R, x = PolynomialRing(CC, "x")
 
    @test elem_type(R) == acb_poly
@@ -39,7 +39,7 @@ CC = AcbField(64)
    end
 end
 
-@testset "acb_poly.printing..." begin
+@testset "acb_poly.printing" begin
    R, x = PolynomialRing(CC, "x")
    f = x^3 + 2x^2 + x + 1
 
@@ -47,7 +47,7 @@ end
    @test occursin(r"2.[0]+", string(f))
 end
 
-@testset "acb_poly.manipulation..." begin
+@testset "acb_poly.manipulation" begin
    R, x = PolynomialRing(CC, "x")
 
    @test iszero(zero(R))
@@ -77,7 +77,7 @@ end
    @test characteristic(R) == 0
 end
 
-@testset "acb_poly.binary_ops..." begin
+@testset "acb_poly.binary_ops" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -90,7 +90,7 @@ end
    @test f - g == -x^3+x^2-x-1
 end
 
-@testset "acb_poly.adhoc_binary..." begin
+@testset "acb_poly.adhoc_binary" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -117,7 +117,7 @@ end
    end
 end
 
-@testset "acb_poly.comparison..." begin
+@testset "acb_poly.comparison" begin
    R, x = PolynomialRing(CC, "x")
    Zx, zx = PolynomialRing(ZZ, "x")
    Qx, qx = PolynomialRing(QQ, "x")
@@ -163,7 +163,7 @@ end
    @test !uniq
 end
 
-@testset "acb_poly.adhoc_comparison..." begin
+@testset "acb_poly.adhoc_comparison" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -187,7 +187,7 @@ end
    @test R(7) == RR(7.0)
 end
 
-@testset "acb_poly.unary_ops..." begin
+@testset "acb_poly.unary_ops" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -195,7 +195,7 @@ end
    @test -f == -x^2 - 2x - 1
 end
 
-@testset "acb_poly.truncation..." begin
+@testset "acb_poly.truncation" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -210,7 +210,7 @@ end
    @test_throws DomainError mullow(f, g, -1)
 end
 
-@testset "acb_poly.reverse..." begin
+@testset "acb_poly.reverse" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 3
@@ -218,7 +218,7 @@ end
    #@test reverse(f) == 3x^2 + 2x + 1
 end
 
-@testset "acb_poly.shift..." begin
+@testset "acb_poly.shift" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -232,7 +232,7 @@ end
    @test_throws DomainError shift_right(f, -1)
 end
 
-@testset "acb_poly.powering..." begin
+@testset "acb_poly.powering" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -242,7 +242,7 @@ end
    @test_throws DomainError f^-1
 end
 
-@testset "acb_poly.exact_division..." begin
+@testset "acb_poly.exact_division" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -251,7 +251,7 @@ end
    @test divexact(f*g, f) == g
 end
 
-@testset "acb_poly.scalar_division..." begin
+@testset "acb_poly.scalar_division" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -267,7 +267,7 @@ end
    @test divexact(2*f, 2.0) == f
 end
 
-@testset "acb_poly.evaluation..." begin
+@testset "acb_poly.evaluation" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -293,7 +293,7 @@ end
    @test evaluate2(f, CC(10)) == (121, 22)
 end
 
-@testset "acb_poly.roots..." begin
+@testset "acb_poly.roots" begin
    R, x = PolynomialRing(CC, "x")
 
    f = (x - 1)*(x - 2)*(x - CC("5 +/- 0.001"))
@@ -305,7 +305,7 @@ end
    @test contains(r[3], 5)
 end
 
-@testset "acb_poly.composition..." begin
+@testset "acb_poly.composition" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -314,7 +314,7 @@ end
    @test compose(f, g) == x^6+6*x^4+4*x^3+9*x^2+12*x+4
 end
 
-@testset "acb_poly.derivative_integral..." begin
+@testset "acb_poly.derivative_integral" begin
    R, x = PolynomialRing(CC, "x")
 
    f = x^2 + 2x + 1
@@ -324,7 +324,7 @@ end
    @test contains(derivative(integral(f)), f)
 end
 
-@testset "acb_poly.evaluation_interpolation..." begin
+@testset "acb_poly.evaluation_interpolation" begin
    R, x = PolynomialRing(CC, "x")
 
    n = 5
@@ -368,7 +368,7 @@ end
    end
 end
 
-@testset "acb_poly.root_bound..." begin
+@testset "acb_poly.root_bound" begin
    Rx, x = PolynomialRing(CC, "x")
 
    for i in 1:2

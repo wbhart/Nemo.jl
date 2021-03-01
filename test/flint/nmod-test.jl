@@ -1,4 +1,4 @@
-@testset "nmod.constructors..." begin
+@testset "nmod.constructors" begin
    R = ResidueRing(ZZ, 13)
 
    @test_throws DomainError ResidueRing(ZZ, -13)
@@ -39,21 +39,21 @@
    end
 end
 
-@testset "nmod.rand..." begin
+@testset "nmod.rand" begin
    R = ResidueRing(ZZ, 13)
 
    test_rand(R)
    test_rand(R, 1:9)
 end
 
-@testset "nmod.printing..." begin
+@testset "nmod.printing" begin
    R = ResidueRing(ZZ, 13)
 
    @test string(R(3)) == "3"
    @test string(R()) == "0"
 end
 
-@testset "nmod.manipulation..." begin
+@testset "nmod.manipulation" begin
    R = ResidueRing(ZZ, 13)
 
    @test iszero(zero(R))
@@ -80,7 +80,7 @@ end
    @test characteristic(S) == 1
 end
 
-@testset "nmod.unary_ops..." begin
+@testset "nmod.unary_ops" begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(UInt(1):typemax(UInt)))
 
@@ -102,7 +102,7 @@ end
    end
 end
 
-@testset "nmod.binary_ops..." begin
+@testset "nmod.binary_ops" begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -142,7 +142,7 @@ end
    end
 end
 
-@testset "nmod.adhoc_binary..." begin
+@testset "nmod.adhoc_binary" begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -188,7 +188,7 @@ end
    end
 end
 
-@testset "nmod.powering..." begin
+@testset "nmod.powering" begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -256,7 +256,7 @@ end
    end
 end
 
-@testset "nmod.comparison..." begin
+@testset "nmod.comparison" begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -290,7 +290,7 @@ end
    end
 end
 
-@testset "nmod.adhoc_comparison..." begin
+@testset "nmod.adhoc_comparison" begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -320,7 +320,7 @@ end
    end
 end
 
-@testset "nmod.inversion..." begin
+@testset "nmod.inversion" begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -346,7 +346,7 @@ end
    end
 end
 
-@testset "nmod.exact_division..." begin
+@testset "nmod.exact_division" begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -378,7 +378,7 @@ end
    end
 end
 
-@testset "nmod.gcd..." begin
+@testset "nmod.gcd" begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 
@@ -392,7 +392,7 @@ end
    end
 end
 
-@testset "nmod.gcdx..." begin
+@testset "nmod.gcdx" begin
    for i = 1:100
       R = ResidueRing(ZZ, rand(1:24))
 

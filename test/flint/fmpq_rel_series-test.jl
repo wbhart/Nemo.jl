@@ -1,4 +1,4 @@
-@testset "fmpq_rel_series.constructors..." begin
+@testset "fmpq_rel_series.constructors" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    @test elem_type(R) == fmpq_rel_series
@@ -37,7 +37,7 @@
    @test isa(R(), SeriesElem)
 end
 
-@testset "fmpq_rel_series.printing..." begin
+@testset "fmpq_rel_series.printing" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = x^3 + 2x + 1
@@ -45,7 +45,7 @@ end
    @test sprint(show, "text/plain", a) == "1 + 2*x + x^3 + O(x^30)"
 end
 
-@testset "fmpq_rel_series.manipulation..." begin
+@testset "fmpq_rel_series.manipulation" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 2x + x^3
@@ -66,7 +66,7 @@ end
    @test characteristic(R) == 0
 end
 
-@testset "fmpq_rel_series.unary_ops..." begin
+@testset "fmpq_rel_series.unary_ops" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 2x + x^3
@@ -77,7 +77,7 @@ end
    @test -b == -1 - 2x - x^2 + O(x^3)
 end
 
-@testset "fmpq_rel_series.binary_ops..." begin
+@testset "fmpq_rel_series.binary_ops" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 2x + x^3
@@ -214,7 +214,7 @@ end
    @test isequal(m1 - m4, 1+x+O(x^4))
 end
 
-@testset "fmpq_rel_series.adhoc_binary_ops..." begin
+@testset "fmpq_rel_series.adhoc_binary_ops" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 2x + x^3
@@ -246,7 +246,7 @@ end
    @test fmpq(2, 3)*c == 2*x^2 + fmpz(2)//3*x + fmpz(2)//3+O(x^5)
 end
 
-@testset "fmpq_rel_series.comparison..." begin
+@testset "fmpq_rel_series.comparison" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 2x + x^3
@@ -261,7 +261,7 @@ end
    @test c != d
 end
 
-@testset "fmpq_rel_series.adhoc_comparison..." begin
+@testset "fmpq_rel_series.adhoc_comparison" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 2x + x^3
@@ -283,7 +283,7 @@ end
    end
 end
 
-@testset "fmpq_rel_series.powering..." begin
+@testset "fmpq_rel_series.powering" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 2x + x^3
@@ -302,7 +302,7 @@ end
    @test_throws DomainError d^-1
 end
 
-@testset "fmpq_rel_series.shift..." begin
+@testset "fmpq_rel_series.shift" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 2x + x^3
@@ -323,7 +323,7 @@ end
    @test shift_right(d, 3) == 1+O(x^1)
 end
 
-@testset "fmpq_rel_series.truncation..." begin
+@testset "fmpq_rel_series.truncation" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 2x + x^3
@@ -342,7 +342,7 @@ end
    @test truncate(d, 5) == x^3+2*x+O(x^4)
 end
 
-@testset "fmpq_rel_series.exact_division..." begin
+@testset "fmpq_rel_series.exact_division" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = x + x^3
@@ -359,7 +359,7 @@ end
    @test divexact(d, c) == -2*x^5+2*x^4-x^2+x+O(x^6)
 end
 
-@testset "fmpq_rel_series.adhoc_exact_division..." begin
+@testset "fmpq_rel_series.adhoc_exact_division" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = x + x^3
@@ -380,7 +380,7 @@ end
    @test isequal(divexact(94872394861923874346987123694871329847a, 94872394861923874346987123694871329847), a)
 end
 
-@testset "fmpq_rel_series.inversion..." begin
+@testset "fmpq_rel_series.inversion" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 1 + x + 2x^2 + O(x^5)
@@ -391,7 +391,7 @@ end
    @test inv(b) == -1
 end
 
-@testset "fmpq_rel_series.special..." begin
+@testset "fmpq_rel_series.special" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
    a = 1 + x + 3x^2 + O(x^5)

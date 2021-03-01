@@ -1,4 +1,4 @@
-@testset "Poly.binary_ops_delayed_reduction..." begin
+@testset "Poly.binary_ops_delayed_reduction" begin
    S, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
    R, x = PolynomialRing(K, "x")
@@ -14,7 +14,7 @@
    end
 end
 
-@testset "Poly.truncation_delayed_reduction..." begin
+@testset "Poly.truncation_delayed_reduction" begin
    S, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
    R, x = PolynomialRing(K, "x")

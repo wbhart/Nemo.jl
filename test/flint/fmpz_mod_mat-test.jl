@@ -1,4 +1,4 @@
-@testset "fmpz_mod_mat.constructors..." begin
+@testset "fmpz_mod_mat.constructors" begin
   Z2 = ResidueRing(ZZ, ZZ(2))
   Z3 = ResidueRing(ZZ, ZZ(3))
 
@@ -140,7 +140,7 @@
    @test !(a in keys(Dict(b => 1)))
 end
 
-@testset "fmpz_mod_mat.similar..." begin
+@testset "fmpz_mod_mat.similar" begin
    Z13 = ResidueRing(ZZ, ZZ(13))
    S = FmpzModMatSpace(Z13, 2, 2)
    s = S(fmpz(3))
@@ -162,7 +162,7 @@ end
    end
 end
 
-@testset "fmpz_mod_mat.printing..." begin
+@testset "fmpz_mod_mat.printing" begin
   Z2 = ResidueRing(ZZ, ZZ(2))
   R = FmpzModMatSpace(Z2, 2, 2)
 
@@ -172,7 +172,7 @@ end
   @test !occursin(string(typeof(a)), string(a))
 end
 
-@testset "fmpz_mod_mat.manipulation..." begin
+@testset "fmpz_mod_mat.manipulation" begin
   Z10 = ResidueRing(ZZ, ZZ(10))
   R = FmpzModMatSpace(Z10, 2, 2)
   Z20 = ResidueRing(ZZ, ZZ(20))
@@ -244,7 +244,7 @@ end
   @test_throws ErrorConstrDimMismatch transpose!(R([ 1 2 ;]))
 end
 
-@testset "fmpz_mod_mat.unary_ops..." begin
+@testset "fmpz_mod_mat.unary_ops" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
 
   R = MatrixSpace(Z17, 3, 4)
@@ -263,7 +263,7 @@ end
   @test d == R([ 15 16 0 16; 0 0 0 0; 0 16 15 0])
 end
 
-@testset "fmpz_mod_mat.binary_ops..." begin
+@testset "fmpz_mod_mat.binary_ops" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
 
   R = MatrixSpace(Z17, 3, 4)
@@ -291,7 +291,7 @@ end
   @test d == MatrixSpace(Z17, 4, 4)([11 11 8 7; 11 0 14 6; 8 14 14 5; 7 6 5 5])
 end
 
-@testset "fmpz_mod_mat.row_col_swapping..." begin
+@testset "fmpz_mod_mat.row_col_swapping" begin
    R = ResidueRing(FlintZZ, ZZ(17))
 
    a = matrix(R, [1 2; 3 4; 5 6])
@@ -330,7 +330,7 @@ end
    @test a == matrix(R, [3 2 1; 5 4 3; 7 6 5])
 end
 
-@testset "fmpz_mod_mat.adhoc_binary..." begin
+@testset "fmpz_mod_mat.adhoc_binary" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
 
   R = MatrixSpace(Z17, 3, 4)
@@ -369,7 +369,7 @@ end
   @test_throws ErrorException Z2(1)*a
 end
 
-@testset "fmpz_mod_mat.comparison..." begin
+@testset "fmpz_mod_mat.comparison" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
 
   R = MatrixSpace(Z17, 3, 4)
@@ -383,7 +383,7 @@ end
   @test a != R([0 1 3 1; 2 1 4 2; 1 1 1 1])
 end
 
-@testset "fmpz_mod_mat.adhoc_comparison..." begin
+@testset "fmpz_mod_mat.adhoc_comparison" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
 
   R = MatrixSpace(Z17, 3, 4)
@@ -397,7 +397,7 @@ end
   @test Z17(5) == R(5)
 end
 
-@testset "fmpz_mod_mat.powering..." begin
+@testset "fmpz_mod_mat.powering" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
 
   R = MatrixSpace(Z17, 3, 4)
@@ -417,7 +417,7 @@ end
   @test_throws ErrorException f^(ZZ(2)^1000)
 end
 
-@testset "fmpz_mod_mat.row_echelon_form..." begin
+@testset "fmpz_mod_mat.row_echelon_form" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -451,7 +451,7 @@ end
   @test den == Z17(2)
 end
 
-@testset "fmpz_mod_mat.howell_form..." begin
+@testset "fmpz_mod_mat.howell_form" begin
   Z17 = ResidueRing(ZZ, ZZ(12))
   R = MatrixSpace(Z17, 3, 3)
 
@@ -468,7 +468,7 @@ end
   @test strong_echelon_form(d) == R([4 0 0; 0 0 0; 0 0 1])
 end
 
-@testset "fmpz_mod_mat.trace_det..." begin
+@testset "fmpz_mod_mat.trace_det" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -502,7 +502,7 @@ end
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
 end
 
-@testset "fmpz_mod_mat.rank..." begin
+@testset "fmpz_mod_mat.rank" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -528,7 +528,7 @@ end
   @test c == 2
 end
 
-@testset "fmpz_mod_mat.inv..." begin
+@testset "fmpz_mod_mat.inv" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -561,7 +561,7 @@ end
 
 #=  Not implemented in Flint yet
 
-@testset "fmpz_mod_mat.solve..." begin
+@testset "fmpz_mod_mat.solve" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
@@ -585,7 +585,7 @@ end
 
 #= Not implemented in Flint yet
 
-@testset "fmpz_mod_mat.lu..." begin
+@testset "fmpz_mod_mat.lu" begin
 
   Z17 = ResidueRing(ZZ, ZZ(17))
   R = MatrixSpace(Z17, 3, 3)
@@ -615,7 +615,7 @@ end
 
 =#
 
-@testset "fmpz_mod_mat.swap_rows..." begin
+@testset "fmpz_mod_mat.swap_rows" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
 
   A = matrix(Z17, 5, 1, [1, 2, 3, 4, 5])
@@ -630,7 +630,7 @@ end
   @test_throws BoundsError swap_rows(A, 4, 6)
 end
 
-@testset "fmpz_mod_mat.view..." begin
+@testset "fmpz_mod_mat.view" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
@@ -687,7 +687,7 @@ end
   @test B[1, 1] == 20
 end
 
-@testset "fmpz_mod_mat.sub..." begin
+@testset "fmpz_mod_mat.sub" begin
    Z17 = ResidueRing(ZZ, ZZ(17))
    S = MatrixSpace(Z17, 3, 3)
 
@@ -711,7 +711,7 @@ end
    @test A == S([1 2 3; 4 5 6; 7 8 9])
 end
 
-@testset "fmpz_mod_mat.concatenation..." begin
+@testset "fmpz_mod_mat.concatenation" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
@@ -747,7 +747,7 @@ end
   @test_throws ErrorException vcat(a,b)
 end
 
-@testset "fmpz_mod_mat.conversion..." begin
+@testset "fmpz_mod_mat.conversion" begin
   Z17 = ResidueRing(ZZ, ZZ(17))
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(ZZ, 3, 3)
@@ -773,7 +773,7 @@ end
 
 end
 
-@testset "fmpz_mod_mat.charpoly..." begin
+@testset "fmpz_mod_mat.charpoly" begin
    R = ResidueRing(ZZ, ZZ(17))
 
    for dim = 0:5
@@ -791,7 +791,7 @@ end
    end
 end
 
-@testset "fmpz_mod_mat.rand..." begin
+@testset "fmpz_mod_mat.rand" begin
    R = ResidueRing(ZZ, ZZ(17))
    S = MatrixSpace(R, 3, 3)
 

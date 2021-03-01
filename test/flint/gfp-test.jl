@@ -1,4 +1,4 @@
-@testset "gfp.constructors..." begin
+@testset "gfp.constructors" begin
    R = GF(13)
 
    @test_throws DomainError GF(-13)
@@ -62,21 +62,21 @@
    @test_throws MethodError GF(0x3)
 end
 
-@testset "gfp.rand..." begin
+@testset "gfp.rand" begin
    R = GF(13)
 
    test_rand(R)
    test_rand(R, 1:9)
 end
 
-@testset "gfp.printing..." begin
+@testset "gfp.printing" begin
    R = GF(13)
 
    @test string(R(3)) == "3"
    @test string(R()) == "0"
 end
 
-@testset "gfp.manipulation..." begin
+@testset "gfp.manipulation" begin
    R = GF(13)
 
    @test iszero(zero(R))
@@ -96,7 +96,7 @@ end
    @test degree(R) == 1
 end
 
-@testset "gfp.unary_ops..." begin
+@testset "gfp.unary_ops" begin
    for i = 1:100
       p = rand(UInt(1):typemax(UInt))
       if Nemo.isprime(ZZ(p))
@@ -124,7 +124,7 @@ end
    end
 end
 
-@testset "gfp.binary_ops..." begin
+@testset "gfp.binary_ops" begin
    for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -170,7 +170,7 @@ end
    end
 end
 
-@testset "gfp.adhoc_binary..." begin
+@testset "gfp.adhoc_binary" begin
    for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -222,7 +222,7 @@ end
    end
 end
 
-@testset "gfp.powering..." begin
+@testset "gfp.powering" begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -296,7 +296,7 @@ end
    end
 end
 
-@testset "gfp.comparison..." begin
+@testset "gfp.comparison" begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -336,7 +336,7 @@ end
    end
 end
 
-@testset "gfp.adhoc_comparison..." begin
+@testset "gfp.adhoc_comparison" begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -372,7 +372,7 @@ end
    end
 end
 
-@testset "gfp.inversion..." begin
+@testset "gfp.inversion" begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))
@@ -404,7 +404,7 @@ end
    end
 end
 
-@testset "gfp.exact_division..." begin
+@testset "gfp.exact_division" begin
   for i = 1:100
       p = rand(1:24)
       if Nemo.isprime(ZZ(p))

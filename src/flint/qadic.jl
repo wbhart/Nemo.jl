@@ -597,7 +597,7 @@ end
     log(a::qadic)
 
 Return the $q$-adic logarithm of $a$. We define this only when the valuation
-of $a$ is zero (but not for $a == 0$). The precision of the output will be
+of $a$ is zero (but not for $a = 0$). The precision of the output will be
 the same as the precision of the input. If the input is not valid an
 exception is thrown.
 """
@@ -717,6 +717,17 @@ function (R::FlintQadicField)()
 end
 
 function gen(R::FlintQadicField)
+   if degree(R) == 1
+      # Work around flint limitation
+      # https://github.com/wbhart/flint2/issues/898
+      a = fmpz()
+      GC.@preserve R begin
+         ccall((:fmpz_set, libflint), Nothing, (Ref{fmpz}, Ptr{fmpz}),
+                                               a, reinterpret(Ptr{fmpz}, R.a))
+      end
+      return R(-a)
+   end
+
    z = qadic(R.prec_max)
    ccall((:qadic_gen, libflint), Nothing,
          (Ref{qadic}, Ref{FlintQadicField}), z, R)
@@ -753,7 +764,7 @@ function (R::FlintQadicField)(a::Int)
 end
 
 function (R::FlintQadicField)(n::fmpz)
-   if isone(n)
+   if iszero(n) || isone(n)
       N = 0
    else
       p = prime(R)

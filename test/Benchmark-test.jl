@@ -1,4 +1,4 @@
-@testset "Benchmark.fateman..." begin
+@testset "Benchmark.fateman" begin
    R, x = PolynomialRing(ZZ, "x")
    S, y = PolynomialRing(R, "y")
    T, z = PolynomialRing(S, "z")
@@ -11,7 +11,7 @@
    @test length(q) == 41
 end
 
-@testset "Benchmark.pearce..." begin
+@testset "Benchmark.pearce" begin
    R, x = PolynomialRing(ZZ, "x")
    S, y = PolynomialRing(R, "y")
    T, z = PolynomialRing(S, "z")
@@ -26,7 +26,7 @@ end
    @test length(q) == 61
 end
 
-@testset "Benchmark.resultant..." begin
+@testset "Benchmark.resultant" begin
    R, x = FlintFiniteField(7, 11, "x")
    S, y = PolynomialRing(R, "y")
    T = ResidueRing(S, y^3 + 3x*y + 1)
@@ -43,7 +43,7 @@ end
    @test r == (x^10+4*x^8+6*x^7+3*x^6+4*x^5+x^4+6*x^3+5*x^2+x)*y^2+(5*x^10+x^8+4*x^7+3*x^5+5*x^4+3*x^3+x^2+x+6)*y+(2*x^10+6*x^9+5*x^8+5*x^7+x^6+6*x^5+5*x^4+4*x^3+x+3)
 end
 
-@testset "Benchmark.poly_nf_elem..." begin
+@testset "Benchmark.poly_nf_elem" begin
    R, x = CyclotomicField(20, "x")
    S, y = PolynomialRing(R, "y")
 

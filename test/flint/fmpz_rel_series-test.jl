@@ -1,4 +1,4 @@
-@testset "fmpz_rel_series.constructors..." begin
+@testset "fmpz_rel_series.constructors" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    @test elem_type(R) == fmpz_rel_series
@@ -23,14 +23,14 @@
    @test isa(R(), SeriesElem)
 end
 
-@testset "fmpz_rel_series.printing..." begin
+@testset "fmpz_rel_series.printing" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
    a = x^3 + 2x + 1
 
    @test sprint(show, "text/plain", a) == "1 + 2*x + x^3 + O(x^30)"
 end
 
-@testset "fmpz_rel_series.manipulation..." begin
+@testset "fmpz_rel_series.manipulation" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = 2x + x^3
@@ -51,7 +51,7 @@ end
    @test characteristic(R) == 0
 end
 
-@testset "fmpz_rel_series.unary_ops..." begin
+@testset "fmpz_rel_series.unary_ops" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = 2x + x^3
@@ -62,7 +62,7 @@ end
    @test -b == -1 - 2x - x^2 + O(x^3)
 end
 
-@testset "fmpz_rel_series.binary_ops..." begin
+@testset "fmpz_rel_series.binary_ops" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = 2x + x^3
@@ -199,7 +199,7 @@ end
    @test isequal(m1 - m4, 1+x+O(x^4))
 end
 
-@testset "fmpz_rel_series.adhoc_binary_ops..." begin
+@testset "fmpz_rel_series.adhoc_binary_ops" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = 2x + x^3
@@ -218,7 +218,7 @@ end
    @test d*ZZ(3) == 3x^2 + 9x^3 - 3x^4
 end
 
-@testset "fmpz_rel_series.comparison..." begin
+@testset "fmpz_rel_series.comparison" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = 2x + x^3
@@ -233,7 +233,7 @@ end
    @test c != d
 end
 
-@testset "fmpz_rel_series.adhoc_comparison..." begin
+@testset "fmpz_rel_series.adhoc_comparison" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = 2x + x^3
@@ -252,7 +252,7 @@ end
    @test ZZ(1) == c
 end
 
-@testset "fmpz_rel_series.powering..." begin
+@testset "fmpz_rel_series.powering" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = 2x + x^3
@@ -271,7 +271,7 @@ end
    @test_throws DomainError a^-1
 end
 
-@testset "fmpz_rel_series.shift..." begin
+@testset "fmpz_rel_series.shift" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = 2x + x^3
@@ -292,7 +292,7 @@ end
    @test_throws DomainError shift_right(a, -1)
 end
 
-@testset "fmpz_rel_series.truncation..." begin
+@testset "fmpz_rel_series.truncation" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = 2x + x^3
@@ -311,7 +311,7 @@ end
    @test_throws DomainError truncate(a, -1)
 end
 
-@testset "fmpz_rel_series.exact_division..." begin
+@testset "fmpz_rel_series.exact_division" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = x + x^3
@@ -328,7 +328,7 @@ end
    @test divexact(d, c) == -2*x^5+2*x^4-x^2+x+O(x^6)
 end
 
-@testset "fmpz_rel_series.adhoc_exact_division..." begin
+@testset "fmpz_rel_series.adhoc_exact_division" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = x + x^3
@@ -347,7 +347,7 @@ end
    @test isequal(divexact(94872394861923874346987123694871329847a, 94872394861923874346987123694871329847), a)
 end
 
-@testset "fmpz_rel_series.inversion..." begin
+@testset "fmpz_rel_series.inversion" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = 1 + x + 2x^2 + O(x^5)
@@ -358,7 +358,7 @@ end
    @test inv(b) == -1
 end
 
-@testset "fmpz_rel_series.square_root..." begin
+@testset "fmpz_rel_series.square_root" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
    a = rand(R, 0:10, -10:10)

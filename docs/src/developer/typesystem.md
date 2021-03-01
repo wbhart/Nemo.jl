@@ -86,7 +86,7 @@ Nemo does not currently use type traits, though the map types in Nemo do make
 use of a custom analogue of this.
 
 Note that unlike class based systems that dispatch on the type of a (sometimes
-implicit) `this` or `self' parameter, Julia methods dispatch on the type of all
+implicit) `this` or `self` parameter, Julia methods dispatch on the type of all
 arguments. This is a natural fit for mathematics where all sorts of ad hoc left
 and right operations may be required.
 
@@ -194,7 +194,7 @@ map types whose first two parameters are `D` and `C`, and where the remaining
 two parameters are arbitrary.
 
 However one can also pass a map class or a concrete type `U` to a `Map`
-function to compute the class of all maps of the given map class or type..
+function to compute the class of all maps of the given map class or type.
 
 For example, to write a function which accepts all maps of "type"
 `MyRingHomomorphism`, including all compositions of such maps, one inserts
@@ -217,3 +217,15 @@ similarly expanded to make it easier for the user.
 
 The map type system is currently considered experimental and our observation so
 far is that it is not intuitive for developers.
+
+## Type hierarchy diagram
+
+The most important abstract types in the system are the element types. Their
+hierarchy is shown in the following diagram.
+
+![alt text](img/types.svg)
+
+Most of the element types have a corresponding parent abstract type. These are
+shown in the following diagram.
+
+![alt text](img/types2.svg)

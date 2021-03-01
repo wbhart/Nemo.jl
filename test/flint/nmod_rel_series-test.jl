@@ -1,4 +1,4 @@
-@testset "nmod_rel_series.constructors..." begin
+@testset "nmod_rel_series.constructors" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -40,7 +40,7 @@
    @test isa(l, SeriesElem)
 end
 
-@testset "nmod_rel_series.printing..." begin
+@testset "nmod_rel_series.printing" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
    b = x^2 + x + O(x^4)
@@ -48,7 +48,7 @@ end
    @test sprint(show, "text/plain", b) == "x + x^2 + O(x^4)"
 end
 
-@testset "nmod_rel_series.manipulation..." begin
+@testset "nmod_rel_series.manipulation" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -84,7 +84,7 @@ end
    @test characteristic(S) == 17
 end
 
-@testset "nmod_rel_series.unary_ops..." begin
+@testset "nmod_rel_series.unary_ops" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -96,7 +96,7 @@ end
    @test isequal(-b, -1 - 2x - x^2 + O(x^3))
 end
 
-@testset "nmod_rel_series.binary_ops..." begin
+@testset "nmod_rel_series.binary_ops" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -234,7 +234,7 @@ end
    @test isequal(m1 - m4, 1+x+O(x^4))
 end
 
-@testset "nmod_rel_series.adhoc_binary_ops..." begin
+@testset "nmod_rel_series.adhoc_binary_ops" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -252,7 +252,7 @@ end
    @test isequal(d*fmpz(3), 3x^2 + 9x^3 - 3x^4 + O(x^32))
 end
 
-@testset "nmod_rel_series.comparison..." begin
+@testset "nmod_rel_series.comparison" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -272,7 +272,7 @@ end
    @test !isequal(b, d)
 end
 
-@testset "nmod_rel_series.adhoc_comparison..." begin
+@testset "nmod_rel_series.adhoc_comparison" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -292,7 +292,7 @@ end
    @test fmpz(1) == c
 end
 
-@testset "nmod_rel_series.powering..." begin
+@testset "nmod_rel_series.powering" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -312,7 +312,7 @@ end
    @test_throws DomainError a^-1
 end
 
-@testset "nmod_rel_series.shift..." begin
+@testset "nmod_rel_series.shift" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -334,7 +334,7 @@ end
    @test_throws DomainError shift_right(a, -1)
 end
 
-@testset "nmod_rel_series.truncation..." begin
+@testset "nmod_rel_series.truncation" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -354,7 +354,7 @@ end
    @test_throws DomainError truncate(a, -1)
 end
 
-@testset "nmod_rel_series.inversion..." begin
+@testset "nmod_rel_series.inversion" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -366,7 +366,7 @@ end
    @test isequal(inv(b), -1+O(x^30))
 end
 
-@testset "nmod_rel_series.exact_division..." begin
+@testset "nmod_rel_series.exact_division" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -384,7 +384,7 @@ end
    @test isequal(divexact(d, c), -2*x^5+2*x^4-x^2+x+O(x^6))
 end
 
-@testset "nmod_rel_series.adhoc_exact_division..." begin
+@testset "nmod_rel_series.adhoc_exact_division" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 
@@ -406,7 +406,7 @@ end
    @test isequal(divexact(R(5)*a, R(5)), a)
 end
 
-@testset "nmod_rel_series.special_functions..." begin
+@testset "nmod_rel_series.special_functions" begin
    R = ResidueRing(ZZ, 17)
    S, x = PowerSeriesRing(R, 30, "x")
 

@@ -1,4 +1,4 @@
-@testset "nmod_mat.constructors..." begin
+@testset "nmod_mat.constructors" begin
   Z2 = ResidueRing(ZZ, 2)
   Z3 = ResidueRing(ZZ, 3)
 
@@ -166,7 +166,7 @@
    @test !(a in keys(Dict(b => 1)))
 end
 
-@testset "nmod_mat.similar..." begin
+@testset "nmod_mat.similar" begin
    Z13 = ResidueRing(ZZ, 13)
    S = NmodMatSpace(Z13, 2, 2)
    s = S(fmpz(3))
@@ -194,7 +194,7 @@ end
    end
 end
 
-@testset "nmod_mat.printing..." begin
+@testset "nmod_mat.printing" begin
   Z2 = ResidueRing(ZZ, 2)
   R = NmodMatSpace(Z2, 2, 2)
 
@@ -204,7 +204,7 @@ end
   @test !occursin(string(typeof(a)), string(a))
 end
 
-@testset "nmod_mat.manipulation..." begin
+@testset "nmod_mat.manipulation" begin
   Z10 = ResidueRing(ZZ, 10)
   R = NmodMatSpace(Z10, 2, 2)
   Z20 = ResidueRing(ZZ, 20)
@@ -276,7 +276,7 @@ end
   @test_throws ErrorConstrDimMismatch transpose!(R([ 1 2 ;]))
 end
 
-@testset "nmod_mat.unary_ops..." begin
+@testset "nmod_mat.unary_ops" begin
   Z17 = ResidueRing(ZZ,17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -295,7 +295,7 @@ end
   @test d == R([ 15 16 0 16; 0 0 0 0; 0 16 15 0])
 end
 
-@testset "nmod_mat.binary_ops..." begin
+@testset "nmod_mat.binary_ops" begin
   Z17 = ResidueRing(ZZ, 17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -323,7 +323,7 @@ end
   @test d == MatrixSpace(Z17, 4, 4)([11 11 8 7; 11 0 14 6; 8 14 14 5; 7 6 5 5])
 end
 
-@testset "nmod_mat.row_col_swapping..." begin
+@testset "nmod_mat.row_col_swapping" begin
    R = ResidueRing(FlintZZ, 17)
 
    a = matrix(R, [1 2; 3 4; 5 6])
@@ -362,7 +362,7 @@ end
    @test a == matrix(R, [3 2 1; 5 4 3; 7 6 5])
 end
 
-@testset "nmod_mat.adhoc_binary..." begin
+@testset "nmod_mat.adhoc_binary" begin
   Z17 = ResidueRing(ZZ,17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -401,7 +401,7 @@ end
   @test_throws ErrorException Z2(1)*a
 end
 
-@testset "nmod_mat.comparison..." begin
+@testset "nmod_mat.comparison" begin
   Z17 = ResidueRing(ZZ,17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -415,7 +415,7 @@ end
   @test a != R([0 1 3 1; 2 1 4 2; 1 1 1 1])
 end
 
-@testset "nmod_mat.adhoc_comparison..." begin
+@testset "nmod_mat.adhoc_comparison" begin
   Z17 = ResidueRing(ZZ,17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -429,7 +429,7 @@ end
   @test Z17(5) == R(5)
 end
 
-@testset "nmod_mat.powering..." begin
+@testset "nmod_mat.powering" begin
   Z17 = ResidueRing(ZZ,17)
 
   R = MatrixSpace(Z17, 3, 4)
@@ -449,7 +449,7 @@ end
   @test_throws ErrorException f^(ZZ(2)^1000)
 end
 
-@testset "nmod_mat.row_echelon_form..." begin
+@testset "nmod_mat.row_echelon_form" begin
   Z17 = ResidueRing(ZZ,17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -483,7 +483,7 @@ end
   @test den == Z17(2)
 end
 
-@testset "nmod_mat.howell_form..." begin
+@testset "nmod_mat.howell_form" begin
   Z17 = ResidueRing(ZZ, 12)
   R = MatrixSpace(Z17, 3, 3)
 
@@ -500,7 +500,7 @@ end
   @test strong_echelon_form(d) == R([4 0 0; 0 0 0; 0 0 1])
 end
 
-@testset "nmod_mat.trace_det..." begin
+@testset "nmod_mat.trace_det" begin
   Z17 = ResidueRing(ZZ,17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -534,7 +534,7 @@ end
   a = R([ 1 2 3 1; 3 2 1 2; 1 3 2 0])
 end
 
-@testset "nmod_mat.rank..." begin
+@testset "nmod_mat.rank" begin
   Z17 = ResidueRing(ZZ,17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -560,7 +560,7 @@ end
   @test c == 2
 end
 
-@testset "nmod_mat.inv..." begin
+@testset "nmod_mat.inv" begin
   Z17 = ResidueRing(ZZ,17)
   R = MatrixSpace(Z17, 3, 4)
   RR = MatrixSpace(Z17, 4, 3)
@@ -591,7 +591,7 @@ end
   @test_throws ErrorException inv(matrix(R, 2, 1, [1, 1]))
 end
 
-@testset "nmod_mat.solve..." begin
+@testset "nmod_mat.solve" begin
   Z17 = ResidueRing(ZZ,17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
@@ -611,7 +611,7 @@ end
   @test_throws ErrorException  solve(a,c)
 end
 
-@testset "nmod_mat.lu..." begin
+@testset "nmod_mat.lu" begin
 
   Z17 = ResidueRing(ZZ,17)
   R = MatrixSpace(Z17, 3, 3)
@@ -639,7 +639,7 @@ end
   @test l*u == P*c
 end
 
-@testset "nmod_mat.swap_rows..." begin
+@testset "nmod_mat.swap_rows" begin
   Z17 = ResidueRing(ZZ, 17)
 
   A = matrix(Z17, 5, 1, [1, 2, 3, 4, 5])
@@ -654,7 +654,7 @@ end
   @test_throws BoundsError swap_rows(A, 4, 6)
 end
 
-@testset "nmod_mat.view..." begin
+@testset "nmod_mat.view" begin
   Z17 = ResidueRing(ZZ, 17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
@@ -711,7 +711,7 @@ end
   @test B[1, 1] == 20
 end
 
-@testset "nmod_mat.sub..." begin
+@testset "nmod_mat.sub" begin
    Z17 = ResidueRing(ZZ, 17)
    S = MatrixSpace(Z17, 3, 3)
 
@@ -735,7 +735,7 @@ end
    @test A == S([1 2 3; 4 5 6; 7 8 9])
 end
 
-@testset "nmod_mat.concatenation..." begin
+@testset "nmod_mat.concatenation" begin
   Z17 = ResidueRing(ZZ,17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(Z17, 3, 4)
@@ -771,7 +771,7 @@ end
   @test_throws ErrorException vcat(a,b)
 end
 
-@testset "nmod_mat.conversion..." begin
+@testset "nmod_mat.conversion" begin
   Z17 = ResidueRing(ZZ, 17)
   R = MatrixSpace(Z17, 3, 3)
   S = MatrixSpace(ZZ, 3, 3)
@@ -794,7 +794,7 @@ end
   @test c == S([ 1 2 3; 3 2 1; 0 0 2])
 end
 
-@testset "nmod_mat.charpoly..." begin
+@testset "nmod_mat.charpoly" begin
    R = ResidueRing(ZZ, 17)
 
    for dim = 0:5
@@ -812,7 +812,7 @@ end
    end
 end
 
-@testset "nmod_mat.rand..." begin
+@testset "nmod_mat.rand" begin
    R = ResidueRing(ZZ, 17)
    S = MatrixSpace(R, 3, 3)
 

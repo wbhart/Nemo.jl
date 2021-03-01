@@ -1,4 +1,4 @@
-@testset "fq_abs_series.constructors..." begin
+@testset "fq_abs_series.constructors" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -24,7 +24,7 @@
    @test isa(R(), SeriesElem)
 end
 
-@testset "fq_abs_series.printing..." begin
+@testset "fq_abs_series.printing" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -33,7 +33,7 @@ end
    @test sprint(show, "text/plain", b) == "3*x + x^2 + O(x^4)"
 end
 
-@testset "fq_abs_series.manipulation..." begin
+@testset "fq_abs_series.manipulation" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -55,7 +55,7 @@ end
    @test characteristic(R) == 23
 end
 
-@testset "fq_abs_series.unary_ops..." begin
+@testset "fq_abs_series.unary_ops" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -67,7 +67,7 @@ end
    @test -b == -1 - 2x - x^2 + O(x^3)
 end
 
-@testset "fq_abs_series.binary_ops..." begin
+@testset "fq_abs_series.binary_ops" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -87,7 +87,7 @@ end
    @test a*d == -x^7+3*x^6-x^5+6*x^4+2*x^3
 end
 
-@testset "fq_abs_series.adhoc_binary_ops..." begin
+@testset "fq_abs_series.adhoc_binary_ops" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -105,7 +105,7 @@ end
    @test d*ZZ(3) == 3x^2 + 9x^3 - 3x^4
 end
 
-@testset "fq_abs_series.comparison..." begin
+@testset "fq_abs_series.comparison" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -121,7 +121,7 @@ end
    @test c != d
 end
 
-@testset "fq_abs_series.adhoc_comparison..." begin
+@testset "fq_abs_series.adhoc_comparison" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -141,7 +141,7 @@ end
    @test ZZ(1) == c
 end
 
-@testset "fq_abs_series.powering..." begin
+@testset "fq_abs_series.powering" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -161,7 +161,7 @@ end
    @test_throws DomainError a^-1
 end
 
-@testset "fq_abs_series.shift..." begin
+@testset "fq_abs_series.shift" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -183,7 +183,7 @@ end
    @test_throws DomainError shift_right(a, -1)
 end
 
-@testset "fq_abs_series.truncation..." begin
+@testset "fq_abs_series.truncation" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -203,7 +203,7 @@ end
    @test_throws DomainError truncate(a, -1)
 end
 
-@testset "fq_abs_series.exact_division..." begin
+@testset "fq_abs_series.exact_division" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 
@@ -221,7 +221,7 @@ end
    @test divexact(d, c) == -2*x^5+2*x^4-x^2+x+O(x^6)
 end
 
-@testset "fq_abs_series.adhoc_exact_division..." begin
+@testset "fq_abs_series.adhoc_exact_division" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(ZZ, 30, "x", model=:capped_absolute)
 
@@ -241,7 +241,7 @@ end
    @test isequal(divexact(94872394861923874346987123694871329847a, 94872394861923874346987123694871329847), a)
 end
 
-@testset "fq_abs_series.inversion..." begin
+@testset "fq_abs_series.inversion" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
 

@@ -1,4 +1,4 @@
-@testset "fmpq_mat.constructors..." begin
+@testset "fmpq_mat.constructors" begin
    S = MatrixSpace(QQ, 3, 3)
 
    @test elem_type(S) == fmpq_mat
@@ -119,7 +119,7 @@
    @test !(a in keys(Dict(b => 1)))
 end
 
-@testset "fmpq_mat.similar..." begin
+@testset "fmpq_mat.similar" begin
    S = MatrixSpace(QQ, 3, 3)
    s = S(fmpz(3))
 
@@ -146,14 +146,14 @@ end
    end
 end
 
-@testset "fmpq_mat.printing..." begin
+@testset "fmpq_mat.printing" begin
    a = MatrixSpace(QQ, 2, 2)(1)
 
   # test that default Julia printing is not used
   @test !occursin(string(typeof(a)), string(a))
 end
 
-@testset "fmpq_mat.manipulation..." begin
+@testset "fmpq_mat.manipulation" begin
    S = MatrixSpace(QQ, 3, 3)
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
    B = S([fmpq(1) 4 7; 9 6 7; 4 3 3])
@@ -187,7 +187,7 @@ end
    @test deepcopy(A) == A
 end
 
-@testset "fmpq_mat.view..." begin
+@testset "fmpq_mat.view" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([1 2 3; 4 5 6; 7 8 9])
@@ -215,7 +215,7 @@ end
    @test B[1, 1] == 20
 end
 
-@testset "fmpq_mat.sub..." begin
+@testset "fmpq_mat.sub" begin
    S = MatrixSpace(FlintQQ, 3, 3)
 
    A = S([1 2 3; 4 5 6; 7 8 9])
@@ -238,7 +238,7 @@ end
    @test A == S([1 2 3; 4 5 6; 7 8 9])
 end
 
-@testset "fmpq_mat.unary_ops..." begin
+@testset "fmpq_mat.unary_ops" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -247,7 +247,7 @@ end
    @test -A == B
 end
 
-@testset "fmpq_mat.binary_ops..." begin
+@testset "fmpq_mat.binary_ops" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -260,7 +260,7 @@ end
    @test A*B == S([49 41 50; 65 49 56; 75 81 114])
 end
 
-@testset "fmpq_mat.adhoc_binary..." begin
+@testset "fmpq_mat.adhoc_binary" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -285,7 +285,7 @@ end
    @test (BigInt(3)//1)*A == A*fmpq(3)
 end
 
-@testset "fmpq_mat.kronecker_product..." begin
+@testset "fmpq_mat.kronecker_product" begin
    S = MatrixSpace(QQ, 2, 3)
    S2 = MatrixSpace(QQ, 2, 2)
    S3 = MatrixSpace(QQ, 3, 3)
@@ -298,7 +298,7 @@ end
    @test kronecker_product(B*A,A*C) == kronecker_product(B,A) * kronecker_product(A,C)
 end
 
-@testset "fmpq_mat.comparison..." begin
+@testset "fmpq_mat.comparison" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -309,7 +309,7 @@ end
    @test A != one(S)
 end
 
-@testset "fmpq_mat.adhoc_comparison..." begin
+@testset "fmpq_mat.adhoc_comparison" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -330,7 +330,7 @@ end
    @test one(S) == one(S)
 end
 
-@testset "fmpq_mat.powering..." begin
+@testset "fmpq_mat.powering" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -340,7 +340,7 @@ end
    @test A^0 == one(S)
 end
 
-@testset "fmpq_mat.adhoc_exact_division..." begin
+@testset "fmpq_mat.adhoc_exact_division" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -353,7 +353,7 @@ end
    @test divexact(3*A, BigInt(3)//1) == A
 end
 
-@testset "fmpq_mat.gso..." begin
+@testset "fmpq_mat.gso" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -363,7 +363,7 @@ end
                       fmpq(9) fmpq(-30, 43) fmpq(-3, 23)])
 end
 
-@testset "fmpq_mat.trace..." begin
+@testset "fmpq_mat.trace" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -371,7 +371,7 @@ end
    @test tr(A) == 9
 end
 
-@testset "fmpq_mat.transpose..." begin
+@testset "fmpq_mat.transpose" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 6 3])
@@ -385,7 +385,7 @@ end
    @test transpose(C) == C
 end
 
-@testset "fmpq_mat.row_col_swapping..." begin
+@testset "fmpq_mat.row_col_swapping" begin
    a = matrix(FlintQQ, [1 2; 3 4; 5 6])
 
    @test swap_rows(a, 1, 3) == matrix(FlintQQ, [5 6; 3 4; 1 2])
@@ -422,7 +422,7 @@ end
    @test a == matrix(FlintQQ, [3 2 1; 5 4 3; 7 6 5])
 end
 
-@testset "fmpq_mat.inversion..." begin
+@testset "fmpq_mat.inversion" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 2 2])
@@ -440,7 +440,7 @@ end
    @test C*inv(C) == one(S)
 end
 
-@testset "fmpq_mat.exact_division..." begin
+@testset "fmpq_mat.exact_division" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 2 2])
@@ -449,7 +449,7 @@ end
    @test divexact(B*A, A) == B
 end
 
-@testset "fmpq_mat.det..." begin
+@testset "fmpq_mat.det" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 19 3 7])
@@ -457,7 +457,7 @@ end
    @test det(A) == 27
 end
 
-@testset "fmpq_mat.hilbert..." begin
+@testset "fmpq_mat.hilbert" begin
    S = MatrixSpace(QQ, 4, 4)
 
    c4 = fmpz(2)^2*fmpz(3)
@@ -467,7 +467,7 @@ end
    @test det(hilbert(S)) == c4^4//c8
 end
 
-@testset "fmpq_mat.nullspace..." begin
+@testset "fmpq_mat.nullspace" begin
    S = MatrixSpace(QQ, 3, 3)
    T = MatrixSpace(QQ, 3, 1)
 
@@ -480,7 +480,7 @@ end
    @test iszero(A*N)
 end
 
-@testset "fmpq_mat.rank..." begin
+@testset "fmpq_mat.rank" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 4 1 1])
@@ -488,7 +488,7 @@ end
    @test rank(A) == 2
 end
 
-@testset "fmpq_mat.rref..." begin
+@testset "fmpq_mat.rref" begin
    for iters = 1:50
       m = rand(0:50)
       n = rand(0:50)
@@ -506,7 +506,7 @@ end
    @test rref(A) == (2, S([1 0 fmpq(-1, 5); 0 1 fmpq(9, 5); 0 0 0]))
 end
 
-@testset "fmpq_mat.solve..." begin
+@testset "fmpq_mat.solve" begin
    S = MatrixSpace(QQ, 3, 3)
 
    A = S([fmpq(2) 3 5; 1 4 7; 9 2 2])
@@ -596,7 +596,7 @@ end
    @test_throws ErrorException can_solve(A, B, side = :garbage)
 end
 
-@testset "fmpq_mat.concat..." begin
+@testset "fmpq_mat.concat" begin
    S = MatrixSpace(QQ, 3, 3)
    T = MatrixSpace(QQ, 3, 6)
    U = MatrixSpace(QQ, 6, 3)
@@ -609,7 +609,7 @@ end
    @test vcat(A, B) == U([fmpq(2) 3 5; 1 4 7; 9 6 3; 1 4 7; 9 6 7; 4 3 3])
 end
 
-@testset "fmpq_mat.charpoly..." begin
+@testset "fmpq_mat.charpoly" begin
    S = MatrixSpace(QQ, 3, 3)
    R, x = PolynomialRing(QQ, "x")
 
@@ -618,7 +618,7 @@ end
    @test charpoly(R, A) == x^3 - 9*x^2 - 64*x + 30
 end
 
-@testset "fmpq_mat.minpoly..." begin
+@testset "fmpq_mat.minpoly" begin
    S = MatrixSpace(QQ, 10, 10)
    R, x = PolynomialRing(QQ, "x")
    M = S()
@@ -638,7 +638,7 @@ end
    @test degree(minpoly(R, M)) == 5
 end
 
-@testset "fmpq_mat.rand..." begin
+@testset "fmpq_mat.rand" begin
    S = MatrixSpace(QQ, 10, 10)
    M = rand(S, 1:9)
    @test parent(M) == S

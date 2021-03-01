@@ -1,4 +1,4 @@
-@testset "fmpz_mod.constructors..." begin
+@testset "fmpz_mod.constructors" begin
    R = ResidueRing(ZZ, ZZ(13))
 
    @test_throws DomainError ResidueRing(ZZ, -ZZ(13))
@@ -39,21 +39,21 @@
    end
 end
 
-@testset "fmpz_mod.rand..." begin
+@testset "fmpz_mod.rand" begin
    R = ResidueRing(ZZ, ZZ(13))
 
    test_rand(R)
    test_rand(R, 1:9)
 end
 
-@testset "fmpz_mod.printing..." begin
+@testset "fmpz_mod.printing" begin
    R = ResidueRing(ZZ, ZZ(13))
 
    @test string(R(3)) == "3"
    @test string(R()) == "0"
 end
 
-@testset "fmpz_mod.manipulation..." begin
+@testset "fmpz_mod.manipulation" begin
    R = ResidueRing(ZZ, ZZ(13))
 
    @test iszero(zero(R))
@@ -80,7 +80,7 @@ end
    @test characteristic(R) == 13
 end
 
-@testset "fmpz_mod.unary_ops..." begin
+@testset "fmpz_mod.unary_ops" begin
    for i = 1:100
       R = ResidueRing(ZZ, ZZ(rand(1:56987432569869432769438752)))
 
@@ -102,7 +102,7 @@ end
    end
 end
 
-@testset "fmpz_mod.binary_ops..." begin
+@testset "fmpz_mod.binary_ops" begin
    for i = 1:100
       R = ResidueRing(ZZ, ZZ(rand(1:24)))
 
@@ -142,7 +142,7 @@ end
    end
 end
 
-@testset "fmpz_mod.adhoc_binary..." begin
+@testset "fmpz_mod.adhoc_binary" begin
    for i = 1:100
       R = ResidueRing(ZZ, ZZ(rand(1:24)))
 
@@ -188,7 +188,7 @@ end
    end
 end
 
-@testset "fmpz_mod.powering..." begin
+@testset "fmpz_mod.powering" begin
    for i = 1:100
       R = ResidueRing(ZZ, ZZ(rand(1:56987432569869432769438752)))
 
@@ -256,7 +256,7 @@ end
    end
 end
 
-@testset "fmpz_mod.comparison..." begin
+@testset "fmpz_mod.comparison" begin
    for i = 1:100
       R = ResidueRing(ZZ, ZZ(rand(1:24)))
 
@@ -290,7 +290,7 @@ end
    end
 end
 
-@testset "fmpz_mod.adhoc_comparison..." begin
+@testset "fmpz_mod.adhoc_comparison" begin
    for i = 1:100
       R = ResidueRing(ZZ, ZZ(rand(1:24)))
 
@@ -320,7 +320,7 @@ end
    end
 end
 
-@testset "fmpz_mod.inversion..." begin
+@testset "fmpz_mod.inversion" begin
    for i = 1:100
       R = ResidueRing(ZZ, ZZ(rand(1:24)))
 
@@ -346,7 +346,7 @@ end
    end
 end
 
-@testset "fmpz_mod.exact_division..." begin
+@testset "fmpz_mod.exact_division" begin
    for i = 1:100
       R = ResidueRing(ZZ, ZZ(rand(1:24)))
 
@@ -378,7 +378,7 @@ end
    end
 end
 
-@testset "fmpz_mod.gcd..." begin
+@testset "fmpz_mod.gcd" begin
    for i = 1:100
       R = ResidueRing(ZZ, ZZ(rand(1:24)))
 
@@ -392,7 +392,7 @@ end
    end
 end
 
-@testset "fmpz_mod.gcdx..." begin
+@testset "fmpz_mod.gcdx" begin
    for i = 1:100
       R = ResidueRing(ZZ, ZZ(rand(1:24)))
 

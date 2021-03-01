@@ -69,7 +69,7 @@ parent object to coerce values into the resulting field.
 RR = RealField(64)
 
 a = RR("0.25")
-b = RR("0.1")
+b = RR("0.1 +/- 0.001")
 c = RR(0.5)
 d = RR(12)
 ```
@@ -687,4 +687,21 @@ simplest_rational_inside(::arb)
 ```julia
 RR = RealField(64)
 simplest_rational_inside(const_pi(RR))
+```
+
+### Random generation
+
+```@docs
+rand(::ArbField)
+```
+
+**Examples**
+
+```julia
+RR = RealField(100)
+
+a = rand(RR)
+b = rand(RR; randtype = :null_exact)
+c = rand(RR; randtype = :exact)
+d = rand(RR; randtype = :special)
 ```

@@ -1,4 +1,4 @@
-@testset "fq.constructors..." begin
+@testset "fq.constructors" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    @test elem_type(R) == fq
@@ -47,7 +47,7 @@
    @test_throws DomainError FiniteField(yyy^2+1, "z")
 end
 
-@testset "fq.printing..." begin
+@testset "fq.printing" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    a = 3x^4 + 2x^3 + 4x^2 + x + 1
@@ -55,7 +55,7 @@ end
    @test sprint(show, "text/plain", a) == "3*x^4 + 2*x^3 + 4*x^2 + x + 1"
 end
 
-@testset "fq.manipulation..." begin
+@testset "fq.manipulation" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    @test iszero(zero(R))
@@ -79,7 +79,7 @@ end
    @test_throws DomainError  coeff(2x + 1, -1)
 end
 
-@testset "fq.unary_ops..." begin
+@testset "fq.unary_ops" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    a = x^4 + 3x^2 + 6x + 1
@@ -87,7 +87,7 @@ end
    @test -a == 6*x^4+4*x^2+x+6
 end
 
-@testset "fq.binary_ops..." begin
+@testset "fq.binary_ops" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    a = x^4 + 3x^2 + 6x + 1
@@ -100,7 +100,7 @@ end
    @test a*b == 3*x^3+2
 end
 
-@testset "fq.adhoc_binary..." begin
+@testset "fq.adhoc_binary" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    a = x^4 + 3x^2 + 6x + 1
@@ -118,7 +118,7 @@ end
    @test a*12345678901234567890123 == 3*x^4+2*x^2+4*x+3
 end
 
-@testset "fq.powering..." begin
+@testset "fq.powering" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    a = x^4 + 3x^2 + 6x + 1
@@ -128,7 +128,7 @@ end
    @test a^fmpz(-5) == x^4+4*x^3+6*x^2+6*x+2
 end
 
-@testset "fq.comparison..." begin
+@testset "fq.comparison" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    a = x^4 + 3x^2 + 6x + 1
@@ -139,7 +139,7 @@ end
    @test isequal(R(3), R(3))
 end
 
-@testset "fq.inversion..." begin
+@testset "fq.inversion" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    a = x^4 + 3x^2 + 6x + 1
@@ -151,7 +151,7 @@ end
    @test b == a^-1
 end
 
-@testset "fq.exact_division..." begin
+@testset "fq.exact_division" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    a = x^4 + 3x^2 + 6x + 1
@@ -162,7 +162,7 @@ end
    @test b//a == 4*x^2+6*x+5
 end
 
-@testset "fq.gcd..." begin
+@testset "fq.gcd" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    a = x^4 + 3x^2 + 6x + 1
@@ -173,7 +173,7 @@ end
    @test gcd(R(0), R(0)) == 0
 end
 
-@testset "fq.special_functions..." begin
+@testset "fq.special_functions" begin
    R, x = FiniteField(fmpz(7), 5, "x")
 
    a = x^4 + 3x^2 + 6x + 1
@@ -203,13 +203,13 @@ end
    @test !issquare_with_square_root(x*a^2)[1]
 end
 
-@testset "fq.rand..." begin
+@testset "fq.rand" begin
    R, x = FiniteField(fmpz(17), 3, "x")
 
    test_rand(R)
 end
 
-@testset "fq.iteration..." begin
+@testset "fq.iteration" begin
    for n = [2, 3, 5, 13, 31]
       R, _ = FiniteField(fmpz(n), 1, "x")
       elts = Nemo.AbstractAlgebra.test_iterate(R)

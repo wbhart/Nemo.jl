@@ -25,8 +25,13 @@ pages:
 - Complex boxes:                acb.md
 - Number fields:                numberfield.md
 - Factorization:                factor.md
+- Developer Introduction:       developer/introduction.md
 - Conventions:                  developer/conventions.md
 - Type System:                  developer/typesystem.md
+- Parent Objects:               developer/parents.md
+- Interfaces:                   developer/interfaces.md
+- Specific topics:              developer/topics.md
+- Future plans:                 developer/future.md
 
 markdown_extensions:
   - extra
