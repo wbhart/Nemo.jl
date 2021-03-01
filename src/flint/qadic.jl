@@ -717,6 +717,17 @@ function (R::FlintQadicField)()
 end
 
 function gen(R::FlintQadicField)
+   if degree(R) == 1
+      # Work around flint limitation
+      # https://github.com/wbhart/flint2/issues/898
+      a = fmpz()
+      GC.@preserve R begin
+         ccall((:fmpz_set, libflint), Nothing, (Ref{fmpz}, Ptr{fmpz}),
+                                               a, reinterpret(Ptr{fmpz}, R.a))
+      end
+      return R(-a)
+   end
+
    z = qadic(R.prec_max)
    ccall((:qadic_gen, libflint), Nothing,
          (Ref{qadic}, Ref{FlintQadicField}), z, R)
