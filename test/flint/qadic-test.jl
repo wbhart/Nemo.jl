@@ -38,6 +38,10 @@
    @test isa(t, qadic)
 
    @test parent(t) === R
+
+   R = QadicField(13, 1, 10)
+   a = gen(R)
+   @test a isa qadic
 end
 
 @testset "qadic.printing..." begin
