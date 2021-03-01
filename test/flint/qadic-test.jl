@@ -38,6 +38,10 @@
    @test isa(t, qadic)
 
    @test parent(t) === R
+   
+   Q = QadicField(13, 3, 10)
+   _, t = PolynomialRing(FlintZZ, "t")
+   @test Q(t^4) == Q(t)^4
 end
 
 @testset "qadic.printing..." begin
