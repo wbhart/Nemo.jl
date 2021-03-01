@@ -797,10 +797,8 @@ end
 
 function (R::FlintQadicField)(n::fmpz_poly)
    z = qadic(R.prec_max)
-   ccall((:padic_poly_set_fmpz_poly, libflint), Nothing,
+   ccall((:qadic_set_fmpz_poly, libflint), Nothing,
          (Ref{qadic}, Ref{fmpz_poly}, Ref{FlintQadicField}), z, n, R)
-   ccall((:qadic_reduce, libflint), Nothing,
-         (Ref{qadic}, Ref{FlintQadicField}), z, R)
    z.parent = R
    return z
 end
