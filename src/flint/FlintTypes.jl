@@ -2647,7 +2647,8 @@ mutable struct FlintQadicField <: FlintLocalField
    var::Cstring   # char*
    prec_max::Int
 
-   function FlintQadicField(p::fmpz, d::Int, prec::Int; cached::Bool = true, check::Bool = true)
+   function FlintQadicField(p::fmpz, d::Int, prec::Int, var::String = "a"; cached::Bool = true, check::Bool = true)
+
       check && !isprobable_prime(p) && throw(DomainError(p, "Characteristic must be prime"))
 
       if cached
@@ -2660,7 +2661,7 @@ mutable struct FlintQadicField <: FlintLocalField
       z = new()
       ccall((:qadic_ctx_init, libflint), Nothing,
            (Ref{FlintQadicField}, Ref{fmpz}, Int, Int, Int, Cstring, Cint),
-                                     z, p, d, 0, 0, "a", 0)
+                                     z, p, d, 0, 0, var, 0)
       finalizer(_qadic_ctx_clear_fn, z)
       z.prec_max = prec
 

@@ -241,7 +241,11 @@ characteristic(R::FlintQadicField) = 0
 #
 ###############################################################################
 
-function expressify(b::qadic, x = :a; context = nothing)
+function var(Q::FlintQadicField)
+  return Symbol(unsafe_string(Q.var))
+end
+
+function expressify(b::qadic, x = var(parent(b)); context = nothing)
    R = FlintPadicField(prime(parent(b)), parent(b).prec_max)
    if iszero(b)
       return 0
@@ -795,8 +799,8 @@ function (R::FlintQadicField)(n::fmpq)
    return z
 end
 
-function (R::FlintQadicField)(n::fmpz_poly)
-   z = qadic(R.prec_max)
+function (R::FlintQadicField)(n::fmpz_poly, pr::Int = R.prec_max)
+   z = qadic(pr)
    ccall((:qadic_set_fmpz_poly, libflint), Nothing,
          (Ref{qadic}, Ref{fmpz_poly}, Ref{FlintQadicField}), z, n, R)
    z.parent = R
@@ -842,12 +846,12 @@ end
 # inner constructor is also used directly
 
 @doc Markdown.doc"""
-    FlintQadicField(p::Integer, d::Int, prec::Int)
+    FlintQadicField(p::Integer, d::Int, prec::Int, var::String = "a")
 
 Returns the parent object for the $q$-adic field for given prime $p$ and
 degree $d$, where the default absolute precision of elements of the field
-is given by `prec`.
+is given by `prec` and the generator is printed as `var`.
 """
-function FlintQadicField(p::Integer, d::Int, prec::Int)
-   return FlintQadicField(fmpz(p), d, prec)
+function FlintQadicField(p::Integer, d::Int, prec::Int, var::String = "a"; cached::Bool = true)
+   return FlintQadicField(fmpz(p), d, prec, var, cached = cached)
 end
