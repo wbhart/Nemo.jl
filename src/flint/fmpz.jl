@@ -942,16 +942,22 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    gcd(x::fmpz, y::fmpz)
+    gcd(x::fmpz, y::fmpz, z::fmpz...)
 
-Return the greatest common divisor of $x$ and $y$. The returned result will
-always be nonnegative and will be zero iff $x$ and $y$ are zero.
+Return the greatest common divisor of $(x, y, ...)$. The returned result will
+always be nonnegative and will be zero iff all inputs are zero.
 """
-function gcd(x::fmpz, y::fmpz)
-   z = fmpz()
+function gcd(x::fmpz, y::fmpz, z::fmpz...)
+   d = fmpz()
    ccall((:fmpz_gcd, libflint), Nothing,
-         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
-   return z
+         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), d, x, y)
+   length(z) == 0 && return d
+
+   for ix in 1:length(z)
+     ccall((:fmpz_gcd, libflint), Nothing,
+           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), d, d, z[ix])
+   end
+   return d
 end
 
 @doc Markdown.doc"""
@@ -984,16 +990,22 @@ function gcd(x::Array{fmpz, 1})
 end
 
 @doc Markdown.doc"""
-    lcm(x::fmpz, y::fmpz)
+    lcm(x::fmpz, y::fmpz, z::fmpz...)
 
-Return the least common multiple of $x$ and $y$. The returned result will
-always be nonnegative and will be zero iff $x$ and $y$ are zero.
+Return the least common multiple of $(x, y, ...)$. The returned result will
+always be nonnegative and will be zero if any input is zero.
 """
-function lcm(x::fmpz, y::fmpz)
-   z = fmpz()
+function lcm(x::fmpz, y::fmpz, z::fmpz...)
+   m = fmpz()
    ccall((:fmpz_lcm, libflint), Nothing,
-         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
-   return z
+         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), m, x, y)
+   length(z) == 0 && return m
+
+   for ix in 1:length(z)
+     ccall((:fmpz_lcm, libflint), Nothing,
+           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), m, m, z[ix])
+   end
+   return m
 end
 
 @doc Markdown.doc"""
