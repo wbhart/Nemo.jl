@@ -954,9 +954,8 @@ function gcd(x::fmpz, y::fmpz, z::fmpz...)
    length(z) == 0 && return d
 
    for ix in 1:length(z)
-     tmp = d
      ccall((:fmpz_gcd, libflint), Nothing,
-           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), d, tmp, z[ix])
+           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), d, d, z[ix])
    end
    return d
 end
@@ -1003,9 +1002,8 @@ function lcm(x::fmpz, y::fmpz, z::fmpz...)
    length(z) == 0 && return m
 
    for ix in 1:length(z)
-     tmp = m
      ccall((:fmpz_lcm, libflint), Nothing,
-           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), m, tmp, z[ix])
+           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), m, m, z[ix])
    end
    return m
 end
