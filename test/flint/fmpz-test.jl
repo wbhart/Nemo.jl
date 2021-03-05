@@ -232,6 +232,14 @@ end
    @test gcd(a, 26) == 2
    @test gcd(12, b) == 2
 
+   c = fmpz(2^2 * 3 * 5^2 * 7)
+   zero = fmpz(0)
+   one = fmpz(1)
+
+   @test gcd(130 * c, 618 * c, 817 * c, 177 * c) == c
+   @test gcd(one, one, one, one, one) == 1
+   @test gcd(zero, zero, zero, zero) == 0
+
    @test_throws ErrorException gcd(fmpz[])
 
    @test gcd(fmpz[8]) == 8
@@ -245,6 +253,14 @@ end
    @test lcm(a, b) == 156
    @test lcm(12, b) == 156
    @test lcm(a, 26) == 156
+
+   c = fmpz(2^2 * 3 * 5^2 * 7)
+   zero = fmpz(0)
+   one = fmpz(1)
+
+   @test lcm(2 * c, 2 * c, 3 * c, 19 * c) == 114 * c
+   @test lcm(one, one, one, one, one) == 1
+   @test lcm(zero, one, one, one, one, one) == 0
 
    @test_throws ErrorException lcm(fmpz[])
 
