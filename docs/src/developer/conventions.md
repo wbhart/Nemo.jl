@@ -62,7 +62,7 @@ times take a back seat.
 
 All code and printed output in Nemo should use ASCII characters only. This is
 because we have developers who are using versions of the WSL that cannot
-correctly display such characters.
+correctly display non-ASCII characters.
 
 This extends to function and operator names, which saves people having to
 learn how to enter them to use the system.
