@@ -2654,7 +2654,8 @@ mutable struct FlintQadicField <: FlintLocalField
       if cached
          a = (p, d, prec)
          if haskey(QadicBase, a)
-            return QadicBase[a]
+            Q = QadicBase[a]
+            return Q, gen(Q)
          end
       end
 
@@ -2670,7 +2671,7 @@ mutable struct FlintQadicField <: FlintLocalField
          QadicBase[(p, d, prec)] = z
       end
 
-      return z
+      return z, gen(z)
    end
 end
 

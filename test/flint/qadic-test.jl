@@ -1,6 +1,6 @@
 @testset "qadic.constructors" begin
-   R     = QadicField(7, 1, 30)
-   K     = QadicField(7, 3, 30) 
+   R, _     = QadicField(7, 1, 30)
+   K, _     = QadicField(7, 3, 30) 
    QX, x = PolynomialRing(FlintQQ, "x") 
 
    @test elem_type(R) == qadic
@@ -9,7 +9,7 @@
 
    @test isa(R, FlintQadicField)
 
-   S = QadicField(fmpz(1009), 1, 30)
+   S, _ = QadicField(fmpz(1009), 1, 30)
 
    @test isa(S, FlintQadicField)
 
@@ -39,17 +39,17 @@
 
    @test parent(t) === R
    
-   Q = QadicField(13, 3, 10)
+   Q, _ = QadicField(13, 3, 10)
    _, t = PolynomialRing(FlintZZ, "t")
    @test Q(t^4) == Q(t)^4
 
-   R = QadicField(13, 1, 10)
+   R, _ = QadicField(13, 1, 10)
    a = gen(R)
    @test a isa qadic
 end
 
 @testset "qadic.printing" begin
-   R = QadicField(7, 3, 30)
+   R, _ = QadicField(7, 3, 30)
 
    @test string(zero(R)) isa String
    @test string(one(R)) isa String
@@ -58,7 +58,7 @@ end
 end
 
 @testset "qadic.manipulation" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
    b = 7^2 + 3*7^3 + O(R, 7^5)
@@ -80,7 +80,7 @@ end
 end
 
 @testset "qadic.unary_ops" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
    b = R(0)
@@ -91,7 +91,7 @@ end
 end
 
 @testset "qadic.binary_ops" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
    b = 7^2 + 3*7^3 + O(R, 7^5)
@@ -110,7 +110,7 @@ end
 end
 
 @testset "qadic.adhoc_binary" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
    b = 7^2 + 3*7^3 + O(R, 7^5)
@@ -139,7 +139,7 @@ end
 end
 
 @testset "qadic.comparison" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
    b = 3*7^3 + O(R, 7^5)
@@ -156,7 +156,7 @@ end
 end
 
 @testset "qadic.adhoc_comparison" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + O(R, 7^3)
    b = O(R, 7^5)
@@ -174,7 +174,7 @@ end
 end
 
 @testset "qadic.powering" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
    b = O(R, 7^5)
@@ -188,7 +188,7 @@ end
 end
 
 @testset "qadic.inversion" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
    b = 2 + 3*7 + O(R, 7^5)
@@ -207,7 +207,7 @@ end
 end
 
 @testset "qadic.exact_division" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
    b = 2 + 3*7 + O(R, 7^5)
@@ -224,7 +224,7 @@ end
 end
 
 @testset "qadic.adhoc_exact_division" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
    b = 2 + 3*7 + O(R, 7^5)
@@ -245,7 +245,7 @@ end
 end
 
 @testset "qadic.divides" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
    b = 2 + 3*7 + O(R, 7^5)
@@ -257,7 +257,7 @@ end
 end
 
 @testset "qadic.adhoc_gcd" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
    b = 2 + 3*7 + O(R, 7^5)
@@ -268,7 +268,7 @@ end
 end
 
 @testset "qadic.square_root" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
    b = 2 + 3*7 + O(R, 7^5)
@@ -284,7 +284,7 @@ end
 end
 
 @testset "qadic.special_functions" begin
-   R = QadicField(7, 1, 30)
+   R, _ = QadicField(7, 1, 30)
 
    a = 1 + 7 + 2*7^2 + O(R, 7^3)
    b = 2 + 5*7 + 3*7^2 + O(R, 7^3)

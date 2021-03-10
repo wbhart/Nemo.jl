@@ -58,7 +58,7 @@ FlintQadicField(p::fmpz, d::Int, prec::Int)
 
 Returns the parent object for the $q$-adic field for given prime $p$ and degree
 $d$, where the default absolute precision of elements of the field is given by
-`prec`.
+`prec`. It also return the uniformizer `p` with the default precision.
 
 Here are some examples of creating $q$-adic fields and making use of the
 resulting parent objects to coerce various elements into those fields.
@@ -66,8 +66,8 @@ resulting parent objects to coerce various elements into those fields.
 **Examples**
 
 ```julia
-R = QadicField(7, 1, 30)
-S = QadicField(ZZ(65537), 1, 30)
+R, p = QadicField(7, 1, 30)
+S, _ = QadicField(ZZ(65537), 1, 30)
 
 a = R()
 b = S(1)
@@ -93,8 +93,8 @@ $p^n$ as in the examples.
 **Examples**
 
 ```julia
-R = QadicField(7, 30)
-S = QadicField(ZZ(65537), 30)
+R, _ = QadicField(7, 30)
+S, _ = QadicField(ZZ(65537), 30)
 
 c = 1 + 2*7 + 4*7^2 + O(R, 7^3)
 d = 13 + 357*ZZ(65537) + O(S, ZZ(65537)^12)
@@ -128,7 +128,7 @@ lift(::FmpzPolyRing, ::qadic)
 **Examples**
 
 ```julia
-R = QadicField(7, 1, 30)
+R, _ = QadicField(7, 1, 30)
 
 a = 1 + 2*7 + 4*7^2 + O(R, 7^3)
 b = 7^2 + 3*7^3 + O(R, 7^5)
@@ -152,7 +152,7 @@ Base.sqrt(::qadic)
 **Examples**
 
 ```julia
-R = QadicField(7, 1, 30)
+R, _ = QadicField(7, 1, 30)
 
 a = 1 + 7 + 2*7^2 + O(R, 7^3)
 b = 2 + 3*7 + O(R, 7^5)
@@ -185,7 +185,7 @@ frobenius(::qadic, ::Int)
 **Examples**
 
 ```julia
-R = QadicField(7, 30)
+R, _ = QadicField(7, 30)
 
 a = 1 + 7 + 2*7^2 + O(R, 7^3)
 b = 2 + 5*7 + 3*7^2 + O(R, 7^3)
