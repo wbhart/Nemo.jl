@@ -58,6 +58,15 @@ have been making efforts to remove the most egregious cases from our codebase
 over time. As perfect consistency is not possible, work on this has to at
 times take a back seat.
 
+### Use of ASCII characters
+
+All code and printed output in Nemo should use ASCII characters only. This is
+because we have developers who are using versions of the WSL that cannot
+correctly display non-ASCII characters.
+
+This extends to function and operator names, which saves people having to
+learn how to enter them to use the system.
+
 ### Spacing and tabs
 
 All function bodies and control blocks should be indented using spaces.
