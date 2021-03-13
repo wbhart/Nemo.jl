@@ -359,36 +359,37 @@ end
 @testset "fmpz.powering" begin
    a = fmpz(-12)
 
-   @test a^5 == -248832
+   @test a^5 == a^fmpz(5) == -248832
 
-   @test a^1 == a
-   @test a^1 !== a
+   @test isone(a^0) && isone(a^fmpz(0))
 
-   @test isone(a^0)
+   a = fmpz(2)
+   @test_throws InexactError a^(a^200)
 
    for a in fmpz.(-5:5)
       for e = -5:-1
          if a != 1 && a != -1
             @test_throws DomainError a^e
+            @test_throws DomainError a^fmpz(e)
          end
       end
-      @test a^1 == a
-      @test a^1 !== a
+      @test a^1 == a^fmpz(1) == a
+      @test a^1 !== a^fmpz(1) !== a
    end
 
    a = fmpz(1)
    for e = -2:2
-      @test isone(a^e)
-      @test a^e !== a
+      @test isone(a^e) && isone(a^fmpz(e))
+      @test a^e !== a^fmpz(e) !== a
    end
 
    a = fmpz(-1)
    for e = [-3, -1, 1, 3, 5]
-      @test a^e == a
-      @test a^e !== a
+      @test a^e == a^fmpz(e) == a
+      @test a^e !== a^fmpz(e) !== a
    end
    for e = [-2, 0, 2, 4]
-      @test isone(a^e )
+      @test isone(a^e) && isone(a^fmpz(e))
    end
 end
 
@@ -681,7 +682,7 @@ end
    pdivsr = prime_divisors(n)
    @test all([k in divsr for k in d])
    @test all([k in pdivsr for k in p])
-   
+
    @test issquare(fmpz(36))
 
    @test factorial(ZZ(100)) == fmpz("93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000")
