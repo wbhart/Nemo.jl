@@ -565,6 +565,7 @@ function addeq!(a::fq_rel_series, b::fq_rel_series)
    ctx = base_ring(a)
    if a.val < b.val
       z = fq_rel_series(base_ring(a))
+      z.parent = parent(a)
       lenz = max(lena, lenb + b.val - a.val)
       ccall((:fq_poly_set_trunc, libflint), Nothing,
             (Ref{fq_rel_series}, Ref{fq_rel_series}, Int, Ref{FqFiniteField}),
