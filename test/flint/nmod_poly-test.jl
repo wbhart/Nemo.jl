@@ -112,7 +112,7 @@ end
 
   @test coeff(x^6 + R(2)*x^5, 5) == R(2)
 
-  @test lead(R(3)*x^2 + x) == R(3)
+  @test leading_coefficient(R(3)*x^2 + x) == R(3)
 
   @test canonical_unit(-x + 1) == R(-1)
 

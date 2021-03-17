@@ -259,7 +259,7 @@ Return the factorisation of $x$.
 """
 function factor(x::gfp_fmpz_poly)
   fac = _factor(x)
-  return Fac(parent(x)(lead(x)), fac)
+  return Fac(parent(x)(leading_coefficient(x)), fac)
 end
 
 function _factor(x::gfp_fmpz_poly)
@@ -289,7 +289,7 @@ Return the squarefree factorisation of $x$.
 """
 function factor_squarefree(x::gfp_fmpz_poly)
   fac = _factor_squarefree(x)
-  return Fac(parent(x)(lead(x)), fac)
+  return Fac(parent(x)(leading_coefficient(x)), fac)
 end
 
 function _factor_squarefree(x::gfp_fmpz_poly)

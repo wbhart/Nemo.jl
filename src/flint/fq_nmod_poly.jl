@@ -86,7 +86,7 @@ characteristic(R::FqNmodPolyRing) = characteristic(base_ring(R))
 #
 ################################################################################
 
-canonical_unit(a::fq_nmod_poly) = canonical_unit(lead(a))
+canonical_unit(a::fq_nmod_poly) = canonical_unit(leading_coefficient(a))
 
 ################################################################################
 #
@@ -628,7 +628,8 @@ Return the squarefree factorisation of $x$.
 """
 function factor_squarefree(x::fq_nmod_poly)
   # _factor_squareefree does weird things if the polynomial is not monic
-  return Fac(parent(x)(lead(x)), _factor_squarefree(divexact(x, lead(x))))
+  return Fac(parent(x)(leading_coefficient(x)),
+	     _factor_squarefree(divexact(x, leading_coefficient(x))))
 end
 
 function _factor_squarefree(x::fq_nmod_poly)

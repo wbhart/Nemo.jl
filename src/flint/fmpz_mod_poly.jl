@@ -103,7 +103,7 @@ end
 #
 ################################################################################
 
-canonical_unit(a::Zmodn_fmpz_poly) = canonical_unit(lead(a))
+canonical_unit(a::Zmodn_fmpz_poly) = canonical_unit(leading_coefficient(a))
 
 ################################################################################
 #
@@ -749,7 +749,7 @@ Return the factorisation of $x$.
 function factor(x::fmpz_mod_poly)
   !isprobable_prime(modulus(x)) && error("Modulus not prime in factor")
   fac = _factor(x)
-  return Fac(parent(x)(lead(x)), fac)
+  return Fac(parent(x)(leading_coefficient(x)), fac)
 end
 
 function _factor(x::fmpz_mod_poly)
@@ -779,7 +779,7 @@ Return the squarefree factorisation of $x$.
 function factor_squarefree(x::fmpz_mod_poly)
   !isprobable_prime(modulus(x)) && error("Modulus not prime in factor_squarefree")
   fac = _factor_squarefree(x)
-  return Fac(parent(x)(lead(x)), fac)
+  return Fac(parent(x)(leading_coefficient(x)), fac)
 end
 
 function _factor_squarefree(x::fmpz_mod_poly)

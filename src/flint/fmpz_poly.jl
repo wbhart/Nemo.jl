@@ -75,7 +75,7 @@ end
 #
 ###############################################################################
 
-canonical_unit(a::fmpz_poly) = canonical_unit(lead(a))
+canonical_unit(a::fmpz_poly) = canonical_unit(leading_coefficient(a))
 
 ###############################################################################
 #
@@ -409,7 +409,7 @@ function pseudorem(x::fmpz_poly, y::fmpz_poly)
    ccall((:fmpz_poly_pseudo_rem, libflint), Nothing,
      (Ref{fmpz_poly}, Ptr{Int}, Ref{fmpz_poly}, Ref{fmpz_poly}), r, d, x, y)
    if (diff > d[1])
-      return lead(y)^(diff - d[1])*r
+      return leading_coefficient(y)^(diff - d[1])*r
    else
       return r
    end
@@ -426,7 +426,7 @@ function pseudodivrem(x::fmpz_poly, y::fmpz_poly)
     (Ref{fmpz_poly}, Ref{fmpz_poly}, Ptr{Int}, Ref{fmpz_poly}, Ref{fmpz_poly}),
                q, r, d, x, y)
    if (diff > d[1])
-      m = lead(y)^(diff - d[1])
+      m = leading_coefficient(y)^(diff - d[1])
       return m*q, m*r
    else
       return q, r

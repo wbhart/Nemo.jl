@@ -77,7 +77,7 @@ end
 #
 ###############################################################################
 
-canonical_unit(a::fmpq_poly) = canonical_unit(lead(a))
+canonical_unit(a::fmpq_poly) = canonical_unit(leading_coefficient(a))
 
 ###############################################################################
 #

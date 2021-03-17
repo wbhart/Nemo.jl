@@ -100,7 +100,7 @@ end
 
    f = 2y + fmpz(11)//7 + 1
 
-   @test lead(f) == 2
+   @test leading_coefficient(f) == 2
 
    @test degree(f) == 1
 

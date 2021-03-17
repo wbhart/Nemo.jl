@@ -374,7 +374,7 @@ end
 Return the squarefree factorisation of $x$.
 """
 function factor_squarefree(x::gfp_poly)
-  return Fac(parent(x)(lead(x)), _factor_squarefree(x))
+  return Fac(parent(x)(leading_coefficient(x)), _factor_squarefree(x))
 end
 
 function _factor_squarefree(x::gfp_poly)

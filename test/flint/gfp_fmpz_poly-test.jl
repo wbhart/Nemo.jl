@@ -72,7 +72,7 @@ end
 
    f = x^2 + 2x + 1
 
-   @test lead(f) == 1
+   @test leading_coefficient(f) == 1
 
    @test degree(f) == 2
 

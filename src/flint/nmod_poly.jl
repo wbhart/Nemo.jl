@@ -127,7 +127,9 @@ end
 #
 ################################################################################
 
-canonical_unit(a::T) where T <: Zmodn_poly = canonical_unit(lead(a))
+function canonical_unit(a::T) where T <: Zmodn_poly
+  return canonical_unit(leading_coefficient(a))
+end
 
 ################################################################################
 #
@@ -764,7 +766,7 @@ Return the squarefree factorisation of $x$.
 """
 function factor_squarefree(x::nmod_poly)
   !isprime(modulus(x)) && error("Modulus not prime in factor_squarefree")
-  return Fac(parent(x)(lead(x)), _factor_squarefree(x))
+  return Fac(parent(x)(leading_coefficient(x)), _factor_squarefree(x))
 end
 
 function _factor_squarefree(x::nmod_poly)
