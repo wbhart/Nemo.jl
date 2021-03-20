@@ -82,7 +82,7 @@ end
 
    f = 2x*y + x^2 + 1
 
-   @test lead(f) == 2x
+   @test leading_coefficient(f) == 2x
 
    @test degree(f) == 1
 
@@ -455,10 +455,10 @@ end
    A = factor_squarefree(f^2*g)
 
    @test unit(A)*prod([h^e for (h,e)=A]) == f^2*g
-   @test divexact(g, lead(g)) in A
-   @test A[divexact(g, lead(g))] == 1
-   @test divexact(f, lead(f)) in A
-   @test A[divexact(f, lead(f))] == 2
+   @test divexact(g, leading_coefficient(g)) in A
+   @test A[divexact(g, leading_coefficient(g))] == 1
+   @test divexact(f, leading_coefficient(f)) in A
+   @test A[divexact(f, leading_coefficient(f))] == 2
 
    C = factor_shape(f^2 * g)
    @test C == Dict(2 => 3, 1 => 1)

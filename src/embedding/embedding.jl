@@ -91,7 +91,7 @@ function berlekamp_massey(a::Array{Y, 1}, n::Int) where Y <: FieldElem
     R1 = R
   end
 
-  return V1*lead(V1)^(-1)
+  return V1*leading_coefficient(V1)^(-1)
 end
 
 @doc Markdown.doc"""
