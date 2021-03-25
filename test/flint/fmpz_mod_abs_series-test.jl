@@ -253,3 +253,14 @@ end
 
    @test inv(b) == -1
 end
+
+@testset "fmpz_mod_abs_series.integral_derivative" begin
+   S = ResidueRing(ZZ, ZZ(31))
+   R, x = PowerSeriesRing(S, 10, "x"; model=:capped_absolute)
+
+   for iter = 1:100
+      f = rand(R, 0:0, -10:10)
+
+      @test integral(derivative(f)) == f - coeff(f, 0)
+   end
+end

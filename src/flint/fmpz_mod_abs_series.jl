@@ -523,11 +523,22 @@ function zero!(z::fmpz_mod_abs_series)
    return z
 end
 
+function fit!(z::fmpz_mod_abs_series, n::Int)
+   ccall((:fmpz_mod_poly_fit_length, libflint), Nothing,
+         (Ref{fmpz_mod_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+	 z, n, z.parent.base_ring.ninv)
+   return nothing
+end
+
 function setcoeff!(z::fmpz_mod_abs_series, n::Int, x::fmpz)
    ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
          (Ref{fmpz_mod_abs_series}, Int, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
          z, n, x, z.parent.base_ring.ninv)
    return z
+end
+
+function setcoeff!(z::fmpz_mod_abs_series, n::Int, x::fmpz_mod)
+   return setcoeff!(z, n, data(x))
 end
 
 function mul!(z::fmpz_mod_abs_series, a::fmpz_mod_abs_series, b::fmpz_mod_abs_series)
