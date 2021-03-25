@@ -739,6 +739,12 @@ function zero!(z::fmpq_abs_series)
    return z
 end
 
+function fit!(z::fmpq_abs_series, n::Int)
+   ccall((:fmpq_poly_fit_length, libflint), Nothing,
+                (Ref{fmpq_abs_series}, Int), z, n)
+   return nothing
+end
+
 function setcoeff!(z::fmpq_abs_series, n::Int, x::fmpq)
    ccall((:fmpq_poly_set_coeff_fmpq, libflint), Nothing,
                 (Ref{fmpq_abs_series}, Int, Ref{fmpq}),
