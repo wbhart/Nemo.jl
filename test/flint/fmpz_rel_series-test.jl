@@ -358,6 +358,16 @@ end
    @test inv(b) == -1
 end
 
+@testset "fmpz_rel_series.integral_derivative" begin
+   R, x = PowerSeriesRing(ZZ, 10, "x")
+
+   for iter = 1:100
+      f = rand(R, 0:0, -10:10)
+
+      @test integral(derivative(f)) == f - coeff(f, 0)
+   end
+end
+]
 @testset "fmpz_rel_series.square_root" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
