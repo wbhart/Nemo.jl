@@ -3426,7 +3426,8 @@ mutable struct fmpz_mod_abs_series <: AbsSeriesElem{fmpz_mod}
             z, len, p)
       for i = 1:len
          ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
-                     (Ref{fmpz_mod_abs_series}, Int, Ref{fmpz}), z, i - 1, data(a[i]))
+            (Ref{fmpz_mod_abs_series}, Int, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+		     z, i - 1, data(a[i]), p)
       end
       z.prec = prec
       finalizer(_fmpz_mod_abs_series_clear_fn, z)
