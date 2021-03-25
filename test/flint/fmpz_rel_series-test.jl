@@ -367,7 +367,7 @@ end
       @test integral(derivative(f)) == f - coeff(f, 0)
    end
 end
-]
+
 @testset "fmpz_rel_series.square_root" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
