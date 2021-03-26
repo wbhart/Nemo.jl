@@ -488,6 +488,12 @@ function zero!(z::fmpz_abs_series)
    return z
 end
 
+function fit!(z::fmpz_abs_series, n::Int)
+   ccall((:fmpz_poly_fit_length, libflint), Nothing,
+                 (Ref{fmpz_abs_series}, Int), z, n)
+   return nothing
+end
+
 function setcoeff!(z::fmpz_abs_series, n::Int, x::fmpz)
    ccall((:fmpz_poly_set_coeff_fmpz, libflint), Nothing,
                 (Ref{fmpz_abs_series}, Int, Ref{fmpz}),

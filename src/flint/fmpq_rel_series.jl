@@ -920,6 +920,12 @@ function zero!(z::fmpq_rel_series)
    return z
 end
 
+function fit!(z::fmpq_rel_series, n::Int)
+   ccall((:fmpq_poly_fit_length, libflint), Nothing,
+                 (Ref{fmpq_rel_series}, Int), z, n)
+   return nothing
+end
+
 function setcoeff!(z::fmpq_rel_series, n::Int, x::fmpq)
    ccall((:fmpq_poly_set_coeff_fmpq, libflint), Nothing,
                 (Ref{fmpq_rel_series}, Int, Ref{fmpq}),

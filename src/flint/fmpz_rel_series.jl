@@ -564,6 +564,12 @@ function zero!(x::fmpz_rel_series)
   return x
 end
 
+function fit!(z::fmpz_rel_series, n::Int)
+   ccall((:fmpz_poly_fit_length, libflint), Nothing,
+                 (Ref{fmpz_rel_series}, Int), z, n)
+   return nothing
+end
+
 function setcoeff!(z::fmpz_rel_series, n::Int, x::fmpz)
    ccall((:fmpz_poly_set_coeff_fmpz, libflint), Nothing,
                 (Ref{fmpz_rel_series}, Int, Ref{fmpz}),
