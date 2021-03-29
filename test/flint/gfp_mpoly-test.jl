@@ -191,6 +191,14 @@ end
       @test (total_degree_fmpz(h) == max(sum.(monomialexp)...)) || (h == 0 && total_degree(h) == -1)
       @test total_degree_fits_int(h)
    end
+
+   S, (x, y) = PolynomialRing(R, ["x", "y"])
+
+   @test trailing_coefficient(3x^2*y^2 + 2x*y + 5x + y + 7) == 7
+   @test trailing_coefficient(3x^2*y^2 + 2x*y + 5x) == 5
+   @test trailing_coefficient(x) == 1
+   @test trailing_coefficient(S(2)) == 2
+   @test trailing_coefficient(S()) == 0
 end
 
 @testset "gfp_mpoly.multivariate_coeff" begin

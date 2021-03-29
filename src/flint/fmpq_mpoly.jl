@@ -180,6 +180,14 @@ function coeff(a::fmpq_mpoly, b::fmpq_mpoly)
    return z
 end
 
+function trailing_coefficient(p::fmpq_mpoly)
+   if iszero(p)
+      return zero(base_ring(p))
+   else
+      return coeff(p, length(p))
+   end
+end
+
 ###############################################################################
 #
 #   Basic manipulation
