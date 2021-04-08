@@ -82,7 +82,7 @@ export error_dim_negative, ErrorConstrDimMismatch
 
 export iswindows64
 
-export ComplexField, PadicField, QadicField
+export ComplexField, PadicField, QadicField, NGFiniteField
 
 # Things/constants which are also defined in AbstractAlgebra:
 export ZZ, QQ, RealField, FiniteField, NumberField
