@@ -5278,6 +5278,142 @@ const Zmodn_mat = Union{nmod_mat, gfp_mat}
 
 ###############################################################################
 #
+#   FqDefaultPolyRing / fq_default_poly
+#
+###############################################################################
+
+mutable struct FqDefaultPolyRing <: PolyRing{fq_default}
+   base_ring::FqDefaultFiniteField
+   S::Symbol
+ 
+   function FqDefaultPolyRing(R::FqDefaultFiniteField, s::Symbol, cached::Bool = true)
+      if cached && haskey(FqDefaultPolyID, (R, s))
+         return FqDefaultPolyID[(R, s)]
+      else
+         z = new(R,s)
+         if cached
+            FqDefaultPolyID[(R, s)] = z
+         end
+         return z
+      end
+   end
+end
+ 
+const FqDefaultPolyID = Dict{Tuple{FqDefaultFiniteField, Symbol}, FqDefaultPolyRing}()
+ 
+mutable struct fq_default_poly <: PolyElem{fq_default}
+   # fq_default_poly_struct is 24 bytes on 64 bit machine
+   opaque::NTuple{24, Int8} 
+   # end of flint struct
+
+   parent::FqDefaultPolyRing
+ 
+   function fq_default_poly(ctx::FqDefaultFiniteField)
+      z = new()
+      ccall((:fq_default_poly_init, libflint), Nothing,
+            (Ref{fq_default_poly}, Ref{FqDefaultFiniteField}), z, ctx)
+      finalizer(_fq_default_poly_clear_fn, z)
+      return z
+   end
+ 
+   function fq_default_poly(a::fq_default_poly, ctx::FqDefaultFiniteField)
+      z = new()
+      ccall((:fq_default_poly_init, libflint), Nothing,
+            (Ref{fq_default_poly}, Ref{FqDefaultFiniteField}), z, ctx)
+      ccall((:fq_default_poly_set, libflint), Nothing,
+            (Ref{fq_default_poly}, Ref{fq_default_poly}, Ref{FqDefaultFiniteField}),
+            z, a, ctx)
+       finalizer(_fq_default_poly_clear_fn, z)
+       return z
+   end
+ 
+   function fq_default_poly(a::fq_default, ctx::FqDefaultFiniteField)
+      z = new()
+      ccall((:fq_default_poly_init, libflint), Nothing,
+            (Ref{fq_default_poly}, Ref{FqDefaultFiniteField}), z, ctx)
+      ccall((:fq_default_poly_set_fq_default, libflint), Nothing,
+            (Ref{fq_default_poly}, Ref{fq_default}, Ref{FqDefaultFiniteField}),
+             z, a, ctx)
+      finalizer(_fq_default_poly_clear_fn, z)
+      return z
+   end
+ 
+   function fq_default_poly(a::Array{fq_default, 1}, ctx::FqDefaultFiniteField)
+      z = new()
+      ccall((:fq_default_poly_init2, libflint), Nothing,
+            (Ref{fq_default_poly}, Int, Ref{FqDefaultFiniteField}),
+            z, length(a), ctx)
+      for i = 1:length(a)
+         ccall((:fq_default_poly_set_coeff, libflint), Nothing,
+               (Ref{fq_default_poly}, Int, Ref{fq_default}, Ref{FqDefaultFiniteField}),
+                z, i - 1, a[i], ctx)
+      end
+      finalizer(_fq_default_poly_clear_fn, z)
+      return z
+   end
+ 
+   function fq_default_poly(a::Array{fmpz, 1}, ctx::FqDefaultFiniteField)
+      z = new()
+      temp = ctx()
+      ccall((:fq_default_poly_init2, libflint), Nothing,
+            (Ref{fq_default_poly}, Int, Ref{FqDefaultFiniteField}),
+             z, length(a), ctx)
+      for i = 1:length(a)
+         temp = ctx(a[i])
+         ccall((:fq_default_poly_set_coeff, libflint), Nothing,
+               (Ref{fq_default_poly}, Int, Ref{fq_default}, Ref{FqDefaultFiniteField}),
+                z, i - 1, temp, ctx)
+      end
+      finalizer(_fq_default_poly_clear_fn, z)
+      return z
+   end
+ 
+   function fq_default_poly(a::fmpz_poly, ctx::FqDefaultFiniteField)
+      z = new()
+      ccall((:fq_default_poly_init2, libflint), Nothing,
+             (Ref{fq_default_poly}, Int, Ref{FqDefaultFiniteField}),
+              z, length(a), ctx)
+      for i = 1:length(a)
+         temp = ctx(coeff(a, i - 1))
+         ccall((:fq_default_poly_set_coeff, libflint), Nothing,
+               (Ref{fq_default_poly}, Int, Ref{fq_default}, Ref{FqDefaultFiniteField}),
+                z, i - 1, temp, ctx)
+      end
+      finalizer(_fq_default_poly_clear_fn, z)
+      return z
+   end
+end
+ 
+function _fq_default_poly_clear_fn(a::fq_default_poly)
+   ccall((:fq_default_poly_clear, libflint), Nothing,
+         (Ref{fq_default_poly}, Ref{FqDefaultFiniteField}),
+          a, base_ring(a))
+end
+ 
+mutable struct fq_default_poly_factor
+   # fq_default_ctx_struct is 32 bytes on 64 bit machine
+   opaque::NTuple{32, Int8} 
+   # end of flint struct
+   base_field::FqDefaultFiniteField
+ 
+   function fq_default_poly_factor(ctx::FqDefaultFiniteField)
+      z = new()
+      ccall((:fq_default_poly_factor_init, libflint), Nothing,
+            (Ref{fq_default_poly_factor}, Ref{FqDefaultFiniteField}), z, ctx)
+      z.base_field = ctx
+      finalizer(_fq_default_poly_factor_clear_fn, z)
+      return z
+   end
+end
+ 
+function _fq_default_poly_factor_clear_fn(a::fq_default_poly_factor)
+   ccall((:fq_default_poly_factor_clear, libflint), Nothing,
+         (Ref{fq_default_poly_factor}, Ref{FqDefaultFiniteField}),
+          a, a.base_field)
+end
+
+###############################################################################
+#
 #   FqPolyRing / fq_poly
 #
 ###############################################################################
