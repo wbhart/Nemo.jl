@@ -86,6 +86,8 @@ include("flint/fq_poly.jl")
 
 include("flint/fq_nmod_poly.jl")
 
+include("flint/fq_default_poly.jl")
+
 include("arb/arb_poly.jl")
 
 include("arb/acb_poly.jl")
