@@ -340,8 +340,9 @@ function isequal(x::fq_default_abs_series, y::fq_default_abs_series)
       return false
    end
    return Bool(ccall((:fq_default_poly_equal, libflint), Cint,
-             (Ref{fq_default_abs_series}, Ref{fq_default_abs_series}, Int, Ref{FqDefaultFiniteField}),
-               x, y, length(x), base_ring(x)))
+             (Ref{fq_default_abs_series}, Ref{fq_default_abs_series},
+              Ref{FqDefaultFiniteField}),
+              x, y, base_ring(x)))
 end
 
 ###############################################################################
