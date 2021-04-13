@@ -64,6 +64,8 @@ include("flint/fq_mat.jl")
 
 include("flint/fq_nmod_mat.jl")
 
+include("flint/fq_default_mat.jl")
+
 include("Fields.jl")
 
 include("flint/fmpq_poly.jl")
