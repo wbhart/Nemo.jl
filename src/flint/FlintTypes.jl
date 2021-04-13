@@ -4156,11 +4156,11 @@ end
 ###############################################################################
 
 mutable struct FqDefaultRelSeriesRing <: SeriesRing{fq_default}
-   base_ring::FqFiniteField
+   base_ring::FqDefaultFiniteField
    prec_max::Int
    S::Symbol
  
-   function FqDefaultRelSeriesRing(R::FqFiniteField, prec::Int, s::Symbol,
+   function FqDefaultRelSeriesRing(R::FqDefaultFiniteField, prec::Int, s::Symbol,
                              cached::Bool = true)
       if cached && haskey(FqDefaultRelSeriesID, (R, prec, s))
          return FqDefaultRelSeriesID[R, prec, s]
@@ -4174,7 +4174,7 @@ mutable struct FqDefaultRelSeriesRing <: SeriesRing{fq_default}
    end
 end
  
-const FqDefaultRelSeriesID = Dict{Tuple{FqFiniteField, Int, Symbol}, FqDefaultRelSeriesRing}()
+const FqDefaultRelSeriesID = Dict{Tuple{FqDefaultFiniteField, Int, Symbol}, FqDefaultRelSeriesRing}()
  
 mutable struct fq_default_rel_series <: RelSeriesElem{fq_default}
    # fq_default_poly_struct is 24 bytes on 64 bit machine
@@ -4185,22 +4185,22 @@ mutable struct fq_default_rel_series <: RelSeriesElem{fq_default}
    val::Int
    parent::FqDefaultRelSeriesRing
  
-   function fq_default_rel_series(ctx::FqFiniteField)
+   function fq_default_rel_series(ctx::FqDefaultFiniteField)
       z = new()
       ccall((:fq_default_poly_init, libflint), Nothing,
-            (Ref{fq_default_rel_series}, Ref{FqFiniteField}), z, ctx)
+            (Ref{fq_default_rel_series}, Ref{FqDefaultFiniteField}), z, ctx)
       finalizer(_fq_default_rel_series_clear_fn, z)
       return z
    end
  
-   function fq_default_rel_series(ctx::FqFiniteField, a::Array{fq_default, 1}, len::Int, prec::Int, val::Int)
+   function fq_default_rel_series(ctx::FqDefaultFiniteField, a::Array{fq_default, 1}, len::Int, prec::Int, val::Int)
       z = new()
       ccall((:fq_default_poly_init2, libflint), Nothing,
-            (Ref{fq_default_rel_series}, Int, Ref{FqFiniteField}), z, len, ctx)
+            (Ref{fq_default_rel_series}, Int, Ref{FqDefaultFiniteField}), z, len, ctx)
       for i = 1:len
          ccall((:fq_default_poly_set_coeff, libflint), Nothing,
-               (Ref{fq_default_rel_series}, Int, Ref{fq_default}, Ref{FqFiniteField}),
-                                                z, i - 1, a[i], ctx)
+               (Ref{fq_default_rel_series}, Int, Ref{fq_default},
+                Ref{FqDefaultFiniteField}), z, i - 1, a[i], ctx)
       end
       z.prec = prec
       z.val = val
@@ -4208,12 +4208,13 @@ mutable struct fq_default_rel_series <: RelSeriesElem{fq_default}
       return z
    end
  
-   function fq_default_rel_series(ctx::FqFiniteField, a::fq_default_rel_series)
+   function fq_default_rel_series(ctx::FqDefaultFiniteField, a::fq_default_rel_series)
       z = new()
       ccall((:fq_default_poly_init, libflint), Nothing,
-            (Ref{fq_default_rel_series}, Ref{FqFiniteField}), z, ctx)
+            (Ref{fq_default_rel_series}, Ref{FqDefaultFiniteField}), z, ctx)
       ccall((:fq_default_poly_set, libflint), Nothing,
-            (Ref{fq_default_rel_series}, Ref{fq_default_rel_series}, Ref{FqFiniteField}), z, a, ctx)
+            (Ref{fq_default_rel_series}, Ref{fq_default_rel_series},
+             Ref{FqDefaultFiniteField}), z, a, ctx)
       finalizer(_fq_default_rel_series_clear_fn, z)
       return z
    end
@@ -4222,7 +4223,7 @@ end
 function _fq_default_rel_series_clear_fn(a::fq_default_rel_series)
    ctx = base_ring(a)
    ccall((:fq_default_poly_clear, libflint), Nothing,
-         (Ref{fq_default_rel_series}, Ref{FqFiniteField}), a, ctx)
+         (Ref{fq_default_rel_series}, Ref{FqDefaultFiniteField}), a, ctx)
 end
 
 ###############################################################################

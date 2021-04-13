@@ -428,9 +428,8 @@ function isequal(x::($etype), y::($etype))
       return false
    end
    return Bool(ccall(($(flint_fn*"_equal"), libflint), Cint,
-                     (Ref{($etype)}, Ref{($etype)}, Int,
-                      Ref{($ctype)}),
-                     x, y, length(x), x.parent.base_ring.ninv))
+                     (Ref{($etype)}, Ref{($etype)}, Ref{($ctype)}),
+                     x, y, x.parent.base_ring.ninv))
 end
 
 ###############################################################################

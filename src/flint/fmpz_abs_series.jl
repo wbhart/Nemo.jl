@@ -394,8 +394,8 @@ function isequal(x::fmpz_abs_series, y::fmpz_abs_series)
       return false
    end
    return Bool(ccall((:fmpz_poly_equal, libflint), Cint,
-                (Ref{fmpz_abs_series}, Ref{fmpz_abs_series}, Int),
-               x, y, length(x)))
+                (Ref{fmpz_abs_series}, Ref{fmpz_abs_series}),
+               x, y))
 end
 
 ###############################################################################
