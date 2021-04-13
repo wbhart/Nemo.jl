@@ -1083,6 +1083,12 @@ function add!(c::fmpq_rel_series, a::fmpq_rel_series, b::fmpq_rel_series)
    return c
 end
 
+function set_length!(a::fmpq_rel_series, n::Int)
+   ccall((:_fmpq_poly_set_length, libflint), Nothing,
+         (Ref{fmpq_rel_series}, Int), a, n)
+   return a
+end
+
 ###############################################################################
 #
 #   Promotion rules

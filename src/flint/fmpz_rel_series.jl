@@ -727,6 +727,12 @@ function add!(c::fmpz_rel_series, a::fmpz_rel_series, b::fmpz_rel_series)
    return c
 end
 
+function set_length!(a::fmpz_rel_series, n::Int)
+   ccall((:_fmpz_poly_set_length, libflint), Nothing,
+         (Ref{fmpz_rel_series}, Int), a, n)
+   return a
+end
+
 ###############################################################################
 #
 #   Promotion rules

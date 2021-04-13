@@ -651,6 +651,13 @@ function add!(c::($etype), a::($etype), b::($etype))
    return c
 end
 
+function set_length!(a::fmpz_abs_series, n::Int)
+   ccall((:_fmpz_mod_poly_set_length, libflint), Nothing,
+         (Ref{fmpz_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+	                                         a, n, a.parent.base_ring.ninv)
+   return a
+end
+
 ###############################################################################
 #
 #   Promotion rules

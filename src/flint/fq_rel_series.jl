@@ -702,6 +702,13 @@ function add!(c::($etype), a::($etype), b::($etype))
    return c
 end
 
+function set_length!(a::fq_nmod_rel_series, n::Int)
+   ccall((:_fq_nmod_poly_set_length, libflint), Nothing,
+         (Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
+          a, n, base_ring(a))
+   return a
+end
+
 ###############################################################################
 #
 #   Promotion rules
