@@ -4151,6 +4151,82 @@ end
 
 ###############################################################################
 #
+#   FqDefaultRelSeriesRing / fq_default_rel_series
+#
+###############################################################################
+
+mutable struct FqDefaultRelSeriesRing <: SeriesRing{fq_default}
+   base_ring::FqFiniteField
+   prec_max::Int
+   S::Symbol
+ 
+   function FqDefaultRelSeriesRing(R::FqFiniteField, prec::Int, s::Symbol,
+                             cached::Bool = true)
+      if cached && haskey(FqDefaultRelSeriesID, (R, prec, s))
+         return FqDefaultRelSeriesID[R, prec, s]
+      else
+         z = new(R, prec, s)
+         if cached
+            FqDefaultRelSeriesID[R, prec, s] = z
+         end
+         return z
+      end
+   end
+end
+ 
+const FqDefaultRelSeriesID = Dict{Tuple{FqFiniteField, Int, Symbol}, FqDefaultRelSeriesRing}()
+ 
+mutable struct fq_default_rel_series <: RelSeriesElem{fq_default}
+   # fq_default_poly_struct is 24 bytes on 64 bit machine
+   opaque::NTuple{24, Int8} 
+   # end of flint struct
+
+   prec::Int
+   val::Int
+   parent::FqDefaultRelSeriesRing
+ 
+   function fq_default_rel_series(ctx::FqFiniteField)
+      z = new()
+      ccall((:fq_default_poly_init, libflint), Nothing,
+            (Ref{fq_default_rel_series}, Ref{FqFiniteField}), z, ctx)
+      finalizer(_fq_default_rel_series_clear_fn, z)
+      return z
+   end
+ 
+   function fq_default_rel_series(ctx::FqFiniteField, a::Array{fq_default, 1}, len::Int, prec::Int, val::Int)
+      z = new()
+      ccall((:fq_default_poly_init2, libflint), Nothing,
+            (Ref{fq_default_rel_series}, Int, Ref{FqFiniteField}), z, len, ctx)
+      for i = 1:len
+         ccall((:fq_default_poly_set_coeff, libflint), Nothing,
+               (Ref{fq_default_rel_series}, Int, Ref{fq_default}, Ref{FqFiniteField}),
+                                                z, i - 1, a[i], ctx)
+      end
+      z.prec = prec
+      z.val = val
+      finalizer(_fq_default_rel_series_clear_fn, z)
+      return z
+   end
+ 
+   function fq_default_rel_series(ctx::FqFiniteField, a::fq_default_rel_series)
+      z = new()
+      ccall((:fq_default_poly_init, libflint), Nothing,
+            (Ref{fq_default_rel_series}, Ref{FqFiniteField}), z, ctx)
+      ccall((:fq_default_poly_set, libflint), Nothing,
+            (Ref{fq_default_rel_series}, Ref{fq_default_rel_series}, Ref{FqFiniteField}), z, a, ctx)
+      finalizer(_fq_default_rel_series_clear_fn, z)
+      return z
+   end
+end
+ 
+function _fq_default_rel_series_clear_fn(a::fq_default_rel_series)
+   ctx = base_ring(a)
+   ccall((:fq_default_poly_clear, libflint), Nothing,
+         (Ref{fq_default_rel_series}, Ref{FqFiniteField}), a, ctx)
+end
+
+###############################################################################
+#
 #   FqRelSeriesRing / fq_rel_series
 #
 ###############################################################################
@@ -4222,6 +4298,80 @@ function _fq_rel_series_clear_fn(a::fq_rel_series)
    ctx = base_ring(a)
    ccall((:fq_poly_clear, libflint), Nothing,
          (Ref{fq_rel_series}, Ref{FqFiniteField}), a, ctx)
+end
+
+###############################################################################
+#
+#   FqDefaultAbsSeriesRing / fq_default_abs_series
+#
+###############################################################################
+
+mutable struct FqDefaultAbsSeriesRing <: SeriesRing{fq_default}
+   base_ring::FqDefaultFiniteField
+   prec_max::Int
+   S::Symbol
+ 
+   function FqDefaultAbsSeriesRing(R::FqDefaultFiniteField, prec::Int, s::Symbol,
+                             cached::Bool = true)
+      if cached && haskey(FqDefaultAbsSeriesID, (R, prec, s))
+         return FqDefaultAbsSeriesID[R, prec, s]
+      else
+         z = new(R, prec, s)
+         if cached
+            FqDefaultAbsSeriesID[R, prec, s] = z
+         end
+         return z
+      end
+   end
+end
+ 
+const FqDefaultAbsSeriesID = Dict{Tuple{FqDefaultFiniteField, Int, Symbol}, FqDefaultAbsSeriesRing}()
+ 
+mutable struct fq_default_abs_series <: AbsSeriesElem{fq_default}
+   # fq_default_poly_struct is 24 bytes on 64 bit machine
+   opaque::NTuple{24, Int8} 
+   # end of flint struct
+
+   prec::Int
+   parent::FqDefaultAbsSeriesRing
+ 
+   function fq_default_abs_series(ctx::FqDefaultFiniteField)
+      z = new()
+      ccall((:fq_default_poly_init, libflint), Nothing,
+            (Ref{fq_default_abs_series}, Ref{FqDefaultFiniteField}), z, ctx)
+      finalizer(_fq_default_abs_series_clear_fn, z)
+      return z
+   end
+ 
+   function fq_default_abs_series(ctx::FqDefaultFiniteField, a::Array{fq_default, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:fq_default_poly_init2, libflint), Nothing,
+            (Ref{fq_default_abs_series}, Int, Ref{FqDefaultFiniteField}), z, len, ctx)
+      for i = 1:len
+         ccall((:fq_default_poly_set_coeff, libflint), Nothing,
+               (Ref{fq_default_abs_series}, Int, Ref{fq_default}, Ref{FqDefaultFiniteField}),
+                                                z, i - 1, a[i], ctx)
+      end
+      z.prec = prec
+      finalizer(_fq_default_abs_series_clear_fn, z)
+      return z
+   end
+ 
+   function fq_default_abs_series(ctx::FqDefaultFiniteField, a::fq_default_abs_series)
+      z = new()
+      ccall((:fq_default_poly_init, libflint), Nothing,
+            (Ref{fq_default_abs_series}, Ref{FqDefaultFiniteField}), z, ctx)
+      ccall((:fq_default_poly_set, libflint), Nothing,
+            (Ref{fq_default_abs_series}, Ref{fq_default_abs_series}, Ref{FqDefaultFiniteField}), z, a, ctx)
+      finalizer(_fq_default_abs_series_clear_fn, z)
+      return z
+   end
+end
+ 
+function _fq_default_abs_series_clear_fn(a::fq_default_abs_series)
+   ctx = base_ring(a)
+   ccall((:fq_default_poly_clear, libflint), Nothing,
+         (Ref{fq_default_abs_series}, Ref{FqDefaultFiniteField}), a, ctx)
 end
 
 ###############################################################################
