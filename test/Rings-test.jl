@@ -43,6 +43,7 @@ include("flint/fmpz_mod_mat-test.jl")
 include("flint/gfp_mat-test.jl")
 include("flint/fq_mat-test.jl")
 include("flint/fq_nmod_mat-test.jl")
+include("flint/fq_default_mat-test.jl")
 include("flint/fmpz_mat-test.jl")
 include("flint/fmpq_mat-test.jl")
 

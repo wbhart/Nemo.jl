@@ -5686,6 +5686,201 @@ end
 
 ###############################################################################
 #
+#   FqDefaultMatSpace/fq_default_mat
+#
+###############################################################################
+
+mutable struct FqDefaultMatSpace <: MatSpace{fq_default}
+   base_ring::FqDefaultFiniteField
+   nrows::Int
+   ncols::Int
+ 
+   function FqDefaultMatSpace(R::FqDefaultFiniteField, r::Int, c::Int, cached::Bool = true)
+     (r < 0 || c < 0) && throw(error_dim_negative)
+     if cached && haskey(FqDefaultMatID, (R, r, c))
+       return FqDefaultMatID[R, r, c]
+     else
+       z = new(R, r, c)
+       if cached
+         FqDefaultMatID[R, r, c] = z
+       end
+       return z
+     end
+   end
+ end
+ 
+ const FqDefaultMatID = Dict{Tuple{FqDefaultFiniteField, Int, Int}, FqDefaultMatSpace}()
+ 
+ mutable struct fq_default_mat <: MatElem{fq_default}
+    # fq_default_mat_struct is 32 bytes on 64 bit machine
+    opaque::NTuple{32, Int8} 
+    # end of flint struct
+    
+    base_ring::FqDefaultFiniteField
+    view_parent
+ 
+    # used by windows, not finalised!!
+    function fq_default_mat()
+       return new()
+    end
+ 
+    function fq_default_mat(r::Int, c::Int, ctx::FqDefaultFiniteField)
+       z = new()
+       ccall((:fq_default_mat_init, libflint), Nothing,
+             (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+              z, r, c, ctx)
+       z.base_ring = ctx
+       finalizer(_fq_default_mat_clear_fn, z)
+       return z
+    end
+ 
+    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{fq_default, 2}, ctx::FqDefaultFiniteField)
+       z = new()
+       ccall((:fq_default_mat_init, libflint), Nothing,
+             (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+              z, r, c, ctx)
+       for i = 1:r
+          for j = 1:c
+             ccall((:fq_default_mat_entry_set, libflint), Nothing,
+                   (Ref{fq_default_mat}, Int, Int, Ref{fq_default},
+                    Ref{FqDefaultFiniteField}),
+                    z, i - 1, j - 1, arr[i, j], ctx)
+          end
+       end
+       z.base_ring = ctx
+       finalizer(_fq_default_mat_clear_fn, z)
+       return z
+    end
+ 
+    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{fq_default, 1}, ctx::FqDefaultFiniteField)
+       z = new()
+       ccall((:fq_default_mat_init, libflint), Nothing,
+             (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+              z, r, c, ctx)
+       for i = 1:r
+          for j = 1:c
+             ccall((:fq_default_mat_entry_set, libflint), Nothing,
+                   (Ref{fq_default_mat}, Int, Int, Ref{fq_default},
+                    Ref{FqDefaultFiniteField}),
+                    z, i - 1, j - 1, arr[(i - 1) * c + j], ctx)
+          end
+       end
+       z.base_ring = ctx
+       finalizer(_fq_default_mat_clear_fn, z)
+       return z
+    end
+ 
+    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 2}, ctx::FqDefaultFiniteField)
+       z = new()
+       ccall((:fq_default_mat_init, libflint), Nothing,
+             (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+              z, r, c, ctx)
+       for i = 1:r
+          for j = 1:c
+             ccall((:fq_default_mat_entry_set_fmpz, libflint), Nothing,
+                  (Ref{fq_default_mat}, Int, Int, Ref{fmpz},
+                   Ref{FqDefaultFiniteField}),
+                   z, i - 1, j - 1, arr[i, j], ctx)
+          end
+       end
+       z.base_ring = ctx
+       finalizer(_fq_default_mat_clear_fn, z)
+       return z
+    end
+ 
+    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 1}, ctx::FqDefaultFiniteField)
+       z = new()
+       ccall((:fq_default_mat_init, libflint), Nothing,
+             (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+              z, r, c, ctx)
+       for i = 1:r
+          for j = 1:c
+             ccall((:fq_default_mat_entry_set_fmpz, libflint), Nothing,
+                   (Ref{fq_default_mat}, Int, Int, Ref{fmpz},
+                    Ref{FqDefaultFiniteField}),
+                    z, i - 1, j - 1, arr[(i - 1) * c + j], ctx)
+          end
+       end
+       z.base_ring = ctx
+       finalizer(_fq_default_mat_clear_fn, z)
+       return z
+    end
+ 
+    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{T, 2}, ctx::FqDefaultFiniteField) where {T <: Integer}
+       z = new()
+       ccall((:fq_default_mat_init, libflint), Nothing,
+             (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+              z, r, c, ctx)
+       for i = 1:r
+          for j = 1:c
+             ccall((:fq_default_mat_entry_set, libflint), Nothing,
+                     (Ref{fq_default_mat}, Int, Int, Ref{fq_default},
+                      Ref{FqDefaultFiniteField}),
+                      z, i - 1, j - 1, ctx(arr[i, j]), ctx)
+          end
+       end
+       z.base_ring = ctx
+       finalizer(_fq_default_mat_clear_fn, z)
+       return z
+    end
+ 
+    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{T, 1}, ctx::FqDefaultFiniteField) where {T <: Integer}
+       z = new()
+       ccall((:fq_default_mat_init, libflint), Nothing,
+             (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+              z, r, c, ctx)
+       for i = 1:r
+          for j = 1:c
+             ccall((:fq_default_mat_entry_set, libflint), Nothing,
+                   (Ref{fq_default_mat}, Int, Int, Ref{fq_default},
+                    Ref{FqDefaultFiniteField}),
+                    z, i - 1, j - 1, ctx(arr[(i - 1) * c + j]), ctx)
+          end
+       end
+       z.base_ring = ctx
+       finalizer(_fq_default_mat_clear_fn, z)
+       return z
+    end
+ 
+    function fq_default_mat(r::Int, c::Int, d::fq_default)
+       z = new()
+       ctx = parent(d)
+       ccall((:fq_default_mat_init, libflint), Nothing,
+             (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+              z, r, c, ctx)
+       for i = 1:min(r, c)
+          ccall((:fq_default_mat_entry_set, libflint), Nothing,
+                (Ref{fq_default_mat}, Int, Int, Ref{fq_default},
+                 Ref{FqDefaultFiniteField}), z, i - 1, i - 1, d, ctx)
+       end
+       z.base_ring = ctx
+       finalizer(_fq_default_mat_clear_fn, z)
+       return z
+    end
+ 
+    function fq_default_mat(m::fmpz_mat, ctx::FqDefaultFiniteField)
+       z = new()
+       r = nrows(m)
+       c = ncols(m)
+       ccall((:fq_default_mat_init, libflint), Nothing,
+             (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+              z, r, c, ctx)
+       ccall((:fq_default_mat_set_fmpz_mat, libflint), Nothing,
+             (Ref{fq_default_mat}, Ref{fmpz_mat}, Ref{FqDefaultFiniteField}),
+             z, m, ctx)
+       z.base_ring = ctx
+       finalizer(_fq_default_mat_clear_fn, z)
+       return z
+    end
+ end
+ 
+ function _fq_default_mat_clear_fn(a::fq_default_mat)
+    ccall((:fq_default_mat_clear, libflint), Nothing,
+          (Ref{fq_default_mat}, Ref{FqDefaultFiniteField}), a, base_ring(a))
+ end
+
+###############################################################################
+#
 #   FqMatSpace/fq_mat
 #
 ###############################################################################
