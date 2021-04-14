@@ -173,6 +173,14 @@ function coeff(a::($etype), b::($etype))
    return base_ring(parent(a))(z)
 end
 
+function trailing_coefficient(p::($etype))
+   if iszero(p)
+      return zero(base_ring(p))
+   else
+      return coeff(p, length(p))
+   end
+end
+
 ###############################################################################
 #
 #   Basic manipulation

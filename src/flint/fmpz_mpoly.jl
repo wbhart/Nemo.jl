@@ -4,7 +4,7 @@
 #
 ###############################################################################
 
-export FmpzMPolyRing, fmpz_mpoly
+export FmpzMPolyRing, fmpz_mpoly, trailing_coefficient
 
 ###############################################################################
 #
@@ -157,6 +157,14 @@ function coeff(a::fmpz_mpoly, b::fmpz_mpoly)
          (Ref{fmpz}, Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),
          z, a, b, parent(a))
    return z
+end
+
+function trailing_coefficient(p::fmpz_poly)
+   if iszero(p)
+      return zero(base_ring(p))
+   else
+      return coeff(p, length(p))
+   end
 end
 
 ###############################################################################
