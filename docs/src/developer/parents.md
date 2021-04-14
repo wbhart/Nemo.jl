@@ -123,8 +123,8 @@ Similarly it may be useful to create the matrix or polynomial that results by
 applying a given map/function/lambda to each of the entries or coefficients.
 
 For this purpose Julia's `map` function is overloaded. There are also functions
-specific to polynomials and matrices called `map_coeffs` and `map_entries`
-respectively, which essentially do the same thing.
+specific to polynomials and matrices called `map_coefficients` and
+`map_entries` respectively, which essentially do the same thing.
 
 Note that the implementation of such functions must make use of the functions
 discussed above to ensure that a matrix/polynomial of the right type is output.
