@@ -15,3 +15,9 @@
 @deprecate prec(x::AcbField) precision(x)
 
 @deprecate prec(x::ArbField) precision(x)
+
+# Deprecated in 0.22.*
+
+@deprecate binom(x::arb, n::UInt) binomial(x, n)
+
+@deprecate binom(n::UInt, k::UInt, r::ArbField) binomial(n, k, r)

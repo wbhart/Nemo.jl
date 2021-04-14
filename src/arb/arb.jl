@@ -14,7 +14,7 @@ export ball, radius, midpoint, contains, contains_zero,
        contains_nonpositive, convert, iszero,
        isnonzero, isexact, isint, ispositive, isfinite,
        isnonnegative, isnegative, isnonpositive, add!, mul!,
-       sub!, div!, prec, overlaps, unique_integer,
+       sub!, div!, overlaps, unique_integer,
        accuracy_bits, trim, ldexp, setunion, setintersection,
        const_pi, const_e, const_log2, const_log10, const_euler,
        const_catalan, const_khinchin, const_glaisher,
@@ -23,7 +23,7 @@ export ball, radius, midpoint, contains, contains_zero,
        tanpi, cotpi, sinh, cosh, tanh, coth, atan, asin, acos,
        atanh, asinh, acosh, gamma, lgamma, rgamma, digamma, zeta,
        sincos, sincospi, sinhcosh, atan2,
-       agm, fac, binom, fib, bernoulli, risingfac, risingfac2, polylog,
+       agm, fac, binomial, fib, bernoulli, risingfac, risingfac2, polylog,
        chebyshev_t, chebyshev_t2, chebyshev_u, chebyshev_u2, bell, numpart,
        lindep, canonical_unit, simplest_rational_inside
 
@@ -1645,11 +1645,11 @@ Return the factorial of $n$ in the given Arb field.
 fac(n::Int, r::ArbField) = n < 0 ? fac(r(n)) : fac(UInt(n), r)
 
 @doc Markdown.doc"""
-    binom(x::arb, n::UInt)
+    binomial(x::arb, n::UInt)
 
 Return the binomial coefficient ${x \choose n}$.
 """
-function binom(x::arb, n::UInt)
+function binomial(x::arb, n::UInt)
   z = parent(x)()
   ccall((:arb_bin_ui, libarb), Nothing,
               (Ref{arb}, Ref{arb}, UInt, Int), z, x, n, parent(x).prec)
@@ -1657,11 +1657,11 @@ function binom(x::arb, n::UInt)
 end
 
 @doc Markdown.doc"""
-    binom(n::UInt, k::UInt, r::ArbField)
+    binomial(n::UInt, k::UInt, r::ArbField)
 
 Return the binomial coefficient ${n \choose k}$ in the given Arb field.
 """
-function binom(n::UInt, k::UInt, r::ArbField)
+function binomial(n::UInt, k::UInt, r::ArbField)
   z = r()
   ccall((:arb_bin_uiui, libarb), Nothing,
               (Ref{arb}, UInt, UInt, Int), z, n, k, r.prec)

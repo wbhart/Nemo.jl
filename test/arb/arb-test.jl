@@ -344,8 +344,8 @@ end
    @test fac(UInt(10), RR) == 3628800
    @test fac(Int(10), RR) == 3628800
 
-   @test overlaps(binom(x, UInt(3)), RR("0.0641293851417059390703256 +/- 4.37e-26"))
-   @test overlaps(binom(UInt(10), UInt(3), RR), RR("120.0000000000000000000000"))
+   @test overlaps(binomial(x, UInt(3)), RR("0.0641293851417059390703256 +/- 4.37e-26"))
+   @test overlaps(binomial(UInt(10), UInt(3), RR), RR("120.0000000000000000000000"))
 
    @test fib(ZZ(10), RR) == 55
    @test fib(10, RR) == 55
