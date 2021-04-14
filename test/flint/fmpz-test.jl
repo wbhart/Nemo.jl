@@ -566,6 +566,30 @@ end
    @test_throws DomainError clrbit!(a, -1)
 end
 
+@testset "fmpz.unsafe" begin
+  a = fmpz(32)
+  b = fmpz(23)
+  c = one(FlintZZ)
+  b_copy = deepcopy(b)
+  c_copy = deepcopy(c)
+
+  zero!(a)
+  @test iszero(a)
+  mul!(a, a, b)
+  @test iszero(a)
+  add!(a, a, b)
+  @test a == b
+  addeq!(a, b^2)
+  @test a == b + b^2
+  mul!(a, a, b)
+  @test a == (b + b^2) * b
+  addmul!(a, a, c)
+  @test a == 2 * (b + b^2) * b
+
+  @test b_copy == b
+  @test c_copy == c
+end
+
 @testset "fmpz.bases" begin
    a = fmpz(12)
 

@@ -1867,11 +1867,13 @@ function mul!(z::fmpz, x::fmpz, y::fmpz)
    return z
 end
 
-function addmul!(z::fmpz, x::fmpz, y::fmpz, c::fmpz)
+function addmul!(z::fmpz, x::fmpz, y::fmpz)
    ccall((:fmpz_addmul, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
    return z
 end
+
+addmul!(z::fmpz, x::fmpz, y::fmpz, ::fmpz) = addmul!(z, x, y)
 
 function addeq!(z::fmpz, x::fmpz)
    ccall((:fmpz_add, libflint), Nothing,
