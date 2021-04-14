@@ -702,9 +702,9 @@ function add!(c::($etype), a::($etype), b::($etype))
    return c
 end
 
-function set_length!(a::fq_nmod_rel_series, n::Int)
-   ccall((:_fq_nmod_poly_set_length, libflint), Nothing,
-         (Ref{fq_nmod_rel_series}, Int, Ref{FqNmodFiniteField}),
+function set_length!(a::($etype), n::Int)
+   ccall(($(flint_fn*"_set_length"), libflint), Nothing,
+         (Ref{($etype)}, Int, Ref{($ctype)}),
           a, n, base_ring(a))
    return a
 end
