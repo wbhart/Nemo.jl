@@ -6163,6 +6163,51 @@ mutable struct FqDefaultMatSpace <: MatSpace{fq_default}
        finalizer(_fq_default_mat_clear_fn, z)
        return z
     end
+
+    function fq_default_mat(m::fmpz_mod_mat, ctx::FqDefaultFiniteField)
+      z = new()
+      r = nrows(m)
+      c = ncols(m)
+      ccall((:fq_default_mat_init, libflint), Nothing,
+            (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+             z, r, c, ctx)
+      ccall((:fq_default_mat_set_fmpz_mod_mat, libflint), Nothing,
+            (Ref{fq_default_mat}, Ref{fmpz_mod_mat}, Ref{FqDefaultFiniteField}),
+            z, m, ctx)
+      z.base_ring = ctx
+      finalizer(_fq_default_mat_clear_fn, z)
+      return z
+   end
+
+   function fq_default_mat(m::nmod_mat, ctx::FqDefaultFiniteField)
+      z = new()
+      r = nrows(m)
+      c = ncols(m)
+      ccall((:fq_default_mat_init, libflint), Nothing,
+            (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+             z, r, c, ctx)
+      ccall((:fq_default_mat_set_nmod_mat, libflint), Nothing,
+            (Ref{fq_default_mat}, Ref{nmod_mat}, Ref{FqDefaultFiniteField}),
+            z, m, ctx)
+      z.base_ring = ctx
+      finalizer(_fq_default_mat_clear_fn, z)
+      return z
+   end
+
+   function fq_default_mat(m::gfp_mat, ctx::FqDefaultFiniteField)
+      z = new()
+      r = nrows(m)
+      c = ncols(m)
+      ccall((:fq_default_mat_init, libflint), Nothing,
+            (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
+             z, r, c, ctx)
+      ccall((:fq_default_mat_set_nmod_mat, libflint), Nothing,
+            (Ref{fq_default_mat}, Ref{gfp_mat}, Ref{FqDefaultFiniteField}),
+            z, m, ctx)
+      z.base_ring = ctx
+      finalizer(_fq_default_mat_clear_fn, z)
+      return z
+   end
  end
  
  function _fq_default_mat_clear_fn(a::fq_default_mat)

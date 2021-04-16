@@ -729,11 +729,25 @@ function (a::FqDefaultMatSpace)(arr::AbstractArray{fq_default, 1})
 end
 
 function (a::FqDefaultMatSpace)(b::fmpz_mat)
-  (ncols(a) != ncols(b) || nrows(a) != nrows(b)) && error("Dimensions do not fit")
-  return fq_default_mat(b, base_ring(a))
+   (ncols(a) != ncols(b) || nrows(a) != nrows(b)) && error("Dimensions do not fit")
+   return fq_default_mat(b, base_ring(a))
 end
-
-###############################################################################
+ 
+function (a::FqDefaultMatSpace)(b::Union{nmod_mat, gfp_mat})
+   characteristic(base_ring(b)) != characteristic(base_ring(a)) &&
+                                   error("Incompatible characteristic")
+   (ncols(a) != ncols(b) || nrows(a) != nrows(b)) && error("Dimensions do not fit")
+   return fq_default_mat(b, base_ring(a))
+end
+ 
+function (a::FqDefaultMatSpace)(b::Zmod_fmpz_mat)
+   characteristic(base_ring(b)) != characteristic(base_ring(a)) &&
+                                   error("Incompatible characteristic")
+   (ncols(a) != ncols(b) || nrows(a) != nrows(b)) && error("Dimensions do not fit")
+   return fq_default_mat(b, base_ring(a))
+end
+ 
+ ###############################################################################
 #
 #   Matrix constructor
 #
