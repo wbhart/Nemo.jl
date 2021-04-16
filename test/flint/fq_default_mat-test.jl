@@ -164,6 +164,15 @@
    @test !(a in [b])
    @test a in keys(Dict(a => 1))
    @test !(a in keys(Dict(b => 1)))
+
+   R, x = NGFiniteField(fmpz(23), 5, "x")
+   S = MatrixSpace(R, 2, 2)
+
+   for R in [FlintZZ, ResidueRing(FlintZZ, 23), ResidueRing(FlintZZ, ZZ(23)), GF(23)]
+      M = matrix(R, 2, 2, [1, 2, 3, 4])
+
+      @test isa(S(M), MatElem)
+   end
 end
 
 @testset "fq_default_mat.similar" begin
