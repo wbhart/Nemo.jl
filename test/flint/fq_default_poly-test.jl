@@ -57,6 +57,14 @@
    r = S([ZZ(1), ZZ(2), ZZ(3)])
 
    @test isa(r, PolyElem)
+
+   for R in [FlintZZ, ResidueRing(FlintZZ, 23), ResidueRing(FlintZZ, ZZ(23)), GF(23), GF(ZZ(23))]
+      T, y = PolynomialRing(R, "y")
+
+      f = 3y^2 + 2y + 1
+
+      @test isa(S(f), PolyElem)
+   end
 end
 
 @testset "fq_default_poly.printing" begin
