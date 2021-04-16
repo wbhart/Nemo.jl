@@ -183,6 +183,52 @@ end
 
 ###############################################################################
 #
+#   Lifts and conversions
+#
+###############################################################################
+
+function lift(R::FmpzPolyRing, x::fq_default)
+   p = R()
+   ccall((:fq_default_get_fmpz_poly, libflint), Nothing,
+         (Ref{fmpz_poly}, Ref{fq_default}, Ref{FqDefaultFiniteField}),
+          p, x, parent(x))
+   return p
+end
+
+function (R::NmodPolyRing)(x::fq_default)
+   p = R()
+   ccall((:fq_default_get_nmod_poly, libflint), Nothing,
+         (Ref{nmod_poly}, Ref{fq_default}, Ref{FqDefaultFiniteField}),
+          p, x, parent(x))
+   return p
+end
+
+function (R::GFPPolyRing)(x::fq_default)
+   p = R()
+   ccall((:fq_default_get_nmod_poly, libflint), Nothing,
+         (Ref{gfp_poly}, Ref{fq_default}, Ref{FqDefaultFiniteField}),
+          p, x, parent(x))
+   return p
+end
+
+function (R::FmpzModPolyRing)(x::fq_default)
+   p = R()
+   ccall((:fq_default_get_fmpz_mod_poly, libflint), Nothing,
+         (Ref{fmpz_mod_poly}, Ref{fq_default}, Ref{FqDefaultFiniteField}),
+          p, x, parent(x))
+   return p
+end
+
+function (R::GFPFmpzPolyRing)(x::fq_default)
+   p = R()
+   ccall((:fq_default_get_fmpz_mod_poly, libflint), Nothing,
+         (Ref{gfp_fmpz_poly}, Ref{fq_default}, Ref{FqDefaultFiniteField}),
+          p, x, parent(x))
+   return p
+end
+
+###############################################################################
+#
 #   Canonicalisation
 #
 ###############################################################################
