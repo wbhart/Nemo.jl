@@ -7,22 +7,31 @@
 
    Sy, y = PolynomialRing(ResidueRing(FlintZZ, 36893488147419103363), "y")
    Syy, yy = PolynomialRing(GF(fmpz(36893488147419103363)), "y")
+   St, t = PolynomialRing(ResidueRing(FlintZZ, 23), "t")
+   Stt, tt = PolynomialRing(GF(23), "y")
 
    T, z = NGFiniteField(y^2 + 1, "z")
    T2, z2 = NGFiniteField(yy^2 + 1, "z")
+   T3, z3 = NGFiniteField(t^2 + 1, "z")
+   T4, z4 = NGFiniteField(tt^2 + 1, "z")
 
    @test isa(R, FqDefaultFiniteField)
    @test isa(T, FqDefaultFiniteField)
    @test isa(T2, FqDefaultFiniteField)
+   @test isa(T3, FqDefaultFiniteField)
+   @test isa(T4, FqDefaultFiniteField)
 
    @test characteristic(R) == fmpz(7)
    @test characteristic(T) == fmpz(36893488147419103363)
    @test characteristic(T2) == fmpz(36893488147419103363)
-
+   @test characteristic(T3) == 23
+   @test characteristic(T4) == 23
 
    @test isa(3x^4 + 2x^3 + 4x^2 + x + 1, fq_default)
    @test isa(z^2 + z + 1, fq_default)
    @test isa(z2^2 + z2 + 1, fq_default)
+   @test isa(z3^2 + z3 + 1, fq_default)
+   @test isa(z4^2 + z4 + 1, fq_default)
 
    a = R()
 

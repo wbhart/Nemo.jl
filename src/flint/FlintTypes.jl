@@ -2235,6 +2235,42 @@ mutable struct FqDefaultFiniteField <: FinField
       end
    end
 
+   function FqDefaultFiniteField(f::nmod_poly, s::Symbol, cached::Bool = true; check::Bool = true)
+      check && !isprime(modulus(f)) &&
+         throw(DomainError(base_ring(f), "the base ring of the polynomial must be a field"))
+      if cached && haskey(FqDefaultFiniteFieldIDNmodPol, (f, s))
+         return FqDefaultFiniteFieldIDNmodPol[f, s]
+      else
+         z = new()
+         z.var = string(s)
+         ccall((:fq_default_ctx_init_modulus_nmod, libflint), Nothing,
+               (Ref{FqDefaultFiniteField}, Ref{nmod_poly}, Ptr{UInt8}),
+                  z, f, string(s))
+         if cached
+            FqDefaultFiniteFieldIDNmodPol[f, s] = z
+         end
+         finalizer(_FqDefaultFiniteField_clear_fn, z)
+         return z
+      end
+   end
+
+   function FqDefaultFiniteField(f::gfp_poly, s::Symbol, cached::Bool = true; check::Bool = true)
+      # check ignored
+      if cached && haskey(FqDefaultFiniteFieldIDGFPNmodPol, (f, s))
+         return FqDefaultFiniteFieldIDGFPNmodPol[f, s]
+      else
+         z = new()
+         z.var = string(s)
+         ccall((:fq_default_ctx_init_modulus_nmod, libflint), Nothing,
+               (Ref{FqDefaultFiniteField}, Ref{gfp_poly}, Ptr{UInt8}),
+                  z, f, string(s))
+         if cached
+            FqDefaultFiniteFieldIDGFPNmodPol[f, s] = z
+         end
+         finalizer(_FqDefaultFiniteField_clear_fn, z)
+         return z
+      end
+   end
 end
 
 const FqDefaultFiniteFieldID = Dict{Tuple{fmpz, Int, Symbol}, FqDefaultFiniteField}()
@@ -2242,6 +2278,10 @@ const FqDefaultFiniteFieldID = Dict{Tuple{fmpz, Int, Symbol}, FqDefaultFiniteFie
 const FqDefaultFiniteFieldIDFmpzPol = Dict{Tuple{fmpz_mod_poly, Symbol}, FqDefaultFiniteField}()
 
 const FqDefaultFiniteFieldIDGFPPol = Dict{Tuple{gfp_fmpz_poly, Symbol}, FqDefaultFiniteField}()
+
+const FqDefaultFiniteFieldIDNmodPol = Dict{Tuple{nmod_poly, Symbol}, FqDefaultFiniteField}()
+
+const FqDefaultFiniteFieldIDGFPNmodPol = Dict{Tuple{gfp_poly, Symbol}, FqDefaultFiniteField}()
 
 function _FqDefaultFiniteField_clear_fn(a :: FqDefaultFiniteField)
    ccall((:fq_default_ctx_clear, libflint), Nothing, (Ref{FqDefaultFiniteField},), a)

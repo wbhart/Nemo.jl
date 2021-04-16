@@ -628,7 +628,7 @@ The string $s$ is used to designate how the finite field
 generator will be printed. The generator will not be multiplicative in
 general.
 """
-function NGFiniteField(pol::Union{fmpz_mod_poly, gfp_fmpz_poly},
+function NGFiniteField(pol::Union{fmpz_mod_poly, gfp_fmpz_poly, nmod_poly, gfp_poly},
                           s::AbstractString; cached = true, check::Bool=true)
    S = Symbol(s)
    parent_obj = FqDefaultFiniteField(pol, S, cached, check=check)
