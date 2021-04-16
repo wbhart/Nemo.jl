@@ -584,6 +584,25 @@ function (a::FqDefaultFiniteField)(b::fmpz)
    return z
 end
 
+function (a::FqDefaultFiniteField)(b::fmpz_poly)
+   z = fq_default(a, b)
+   return z
+end
+
+function (a::FqDefaultFiniteField)(b::Union{nmod_poly, gfp_poly})
+   characteristic(parent(b)) != characteristic(a) &&
+                        error("Incompatible characteristic")
+   z = fq_default(a, b)
+   return z
+end
+
+function (a::FqDefaultFiniteField)(b::Union{fmpz_mod_poly, gfp_fmpz_poly})
+   characteristic(parent(b)) != characteristic(a) &&
+                        error("Incompatible characteristic")
+   z = fq_default(a, b)
+   return z
+end
+
 function (a::FqDefaultFiniteField)(b::fq_default)
    parent(b) != a && error("Coercion between finite fields not implemented")
    return b
