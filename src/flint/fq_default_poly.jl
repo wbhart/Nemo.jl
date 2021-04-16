@@ -818,6 +818,22 @@ function (R::FqDefaultPolyRing)(x::fmpz_poly)
    return z
 end
 
+function (R::FqDefaultPolyRing)(x::Union{nmod_poly, gfp_poly})
+   characteristic(base_ring(x)) != characteristic(base_ring(R)) &&
+                                   error("Incompatible characteristic")
+   z = fq_default_poly(x, base_ring(R))
+   z.parent = R
+   return z
+end
+
+function (R::FqDefaultPolyRing)(x::Union{fmpz_mod_poly, gfp_fmpz_poly})
+   characteristic(base_ring(x)) != characteristic(base_ring(R)) &&
+                                   error("Incompatible characteristic")
+   z = fq_default_poly(x, base_ring(R))
+   z.parent = R
+   return z
+end
+
 function (R::FqDefaultPolyRing)(x::fq_default_poly)
   parent(x) != R && error("Unable to coerce to polynomial")
   return x
