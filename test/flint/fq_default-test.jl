@@ -88,6 +88,22 @@ end
    @test_throws DomainError  coeff(2x + 1, -1)
 end
 
+@testset "fq_default.conversions" begin
+   U, a = NGFiniteField(fmpz(7), 5, "a")
+
+   f = 3a^4 + 2a^3 + a + 5
+
+   for R in [ResidueRing(FlintZZ, 7), ResidueRing(FlintZZ, ZZ(7)), GF(7), GF(ZZ(7))]
+      S, y = PolynomialRing(R, "y")
+
+      @test f == U(S(f))
+   end
+
+   S, y = PolynomialRing(ZZ, "y")
+
+   @test f == U(lift(S, f))
+end
+
 @testset "fq_default.unary_ops" begin
    R, x = NGFiniteField(fmpz(7), 5, "x")
 
