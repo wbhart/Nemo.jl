@@ -66,6 +66,32 @@ end
 
 characteristic(R::GFPPolyRing) = characteristic(base_ring(R))
 
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::PolyElem, R::GaloisField, var::Symbol=var(parent(f)); cached::Bool=true)
+   z = gfp_poly(R.n)
+   z.parent = GFPPolyRing(R, var, cached)
+   return z
+end
+
+###############################################################################
+#
+#   polynomial constructor
+#
+###############################################################################
+
+function polynomial(R::GaloisField, arr::Vector{T}, var::String="x"; cached::Bool=true) where T
+   coeffs = map(R, arr)
+   coeffs = length(coeffs) == 0 ? gfp_elem[] : coeffs
+   z = gfp_poly(R.n, coeffs)
+   z.parent = GFPPolyRing(R, Symbol(var), cached)
+   return z
+end
+
 ################################################################################
 #
 #  AbstractString I/O

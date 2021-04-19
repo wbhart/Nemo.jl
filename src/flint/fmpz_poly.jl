@@ -71,6 +71,32 @@ end
 
 ###############################################################################
 #
+#   Similar
+#
+###############################################################################
+
+function similar(f::PolyElem, R::FlintIntegerRing, var::Symbol=var(parent(f)); cached::Bool=true)
+   z = fmpz_poly()
+   z.parent = FmpzPolyRing(R, var, cached)
+   return z
+end
+
+###############################################################################
+#
+#   polynomial constructor
+#
+###############################################################################
+
+function polynomial(R::FlintIntegerRing, arr::Vector{T}, var::String="x"; cached::Bool=true) where T
+   coeffs = T == fmpz ? arr : map(R, arr)
+   coeffs = length(coeffs) == 0 ? fmpz[] : coeffs
+   z = fmpz_poly(coeffs)
+   z.parent = FmpzPolyRing(R, Symbol(var), cached)
+   return z
+end
+
+###############################################################################
+#
 #   Canonicalisation
 #
 ###############################################################################

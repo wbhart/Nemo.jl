@@ -105,6 +105,41 @@ end
    @test modulus(R) == 123456789012345678949
 end
 
+@testset "fmpz_mod_poly.polynomial" begin
+   R = ResidueRing(ZZ, ZZ(23))
+
+   f = polynomial(R, [])
+   g = polynomial(R, [1, 2, 3])
+   h = polynomial(R, fmpz[1, 2, 3])
+   k = polynomial(R, [R(1), R(2), R(3)])
+   p = polynomial(R, [1, 2, 3], "y")
+
+   @test isa(f, fmpz_mod_poly)
+   @test isa(g, fmpz_mod_poly)
+   @test isa(h, fmpz_mod_poly)
+   @test isa(k, fmpz_mod_poly)
+   @test isa(p, fmpz_mod_poly)
+
+   q = polynomial(R, [1, 2, 3], cached=false)
+
+   @test parent(g) != parent(q)
+end
+
+@testset "fmpz_mod_poly.similar" begin
+   R = ResidueRing(ZZ, ZZ(23))
+
+   f = polynomial(R, [1, 2, 3])
+   g = similar(f)
+   h = similar(f, "y")
+
+   @test isa(g, fmpz_mod_poly)
+   @test isa(h, fmpz_mod_poly)
+
+   q = similar(g, cached=false)
+
+   @test parent(g) != parent(q)
+end
+
 @testset "fmpz_mod_poly.binary_ops" begin
    R = ResidueRing(ZZ, 123456789012345678949)
    S, x = PolynomialRing(R, "x")

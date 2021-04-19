@@ -84,6 +84,32 @@ end
 
 characteristic(R::ZmodNFmpzPolyRing) = modulus(R)
 
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::PolyElem, R::FmpzModRing, var::Symbol=var(parent(f)); cached::Bool=true)
+   z = fmpz_mod_poly(R)
+   z.parent = FmpzModPolyRing(R, var, cached)
+   return z
+end
+
+###############################################################################
+#
+#   polynomial constructor
+#
+###############################################################################
+
+function polynomial(R::FmpzModRing, arr::Vector{T}, var::String="x"; cached::Bool=true) where T
+   coeffs = map(R, arr)
+   coeffs = length(coeffs) == 0 ? fmpz_mod[] : coeffs
+   z = fmpz_mod_poly(R, coeffs)
+   z.parent = FmpzModPolyRing(R, Symbol(var), cached)
+   return z
+end
+
 ################################################################################
 #
 #  AbstractString I/O

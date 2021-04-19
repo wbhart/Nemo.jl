@@ -80,6 +80,31 @@ end
 
 characteristic(R::FqPolyRing) = characteristic(base_ring(R))
 
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::PolyElem, R::FqFiniteField, var::Symbol=var(parent(f)); cached::Bool=true)
+   z = fq_poly()
+   z.parent = FqPolyRing(R, var, cached)
+   return z
+end
+
+###############################################################################
+#
+#   polynomial constructor
+#
+###############################################################################
+
+function polynomial(R::FqFiniteField, arr::Vector{T}, var::String="x"; cached::Bool=true) where T
+   coeffs = map(R, arr)
+   z = length(coeffs) == 0 ? fq_poly() : fq_poly(coeffs)
+   z.parent = FqPolyRing(R, Symbol(var), cached)
+   return z
+end
+
 ################################################################################
 #
 #   Canonicalisation

@@ -100,6 +100,41 @@ end
    @test deepcopy(h) == h
 end
 
+@testset "fq_poly.polynomial" begin
+   R, _ = FiniteField(ZZ(23), 3, "a")
+
+   f = polynomial(R, [])
+   g = polynomial(R, [1, 2, 3])
+   h = polynomial(R, fmpz[1, 2, 3])
+   k = polynomial(R, [R(1), R(2), R(3)])
+   p = polynomial(R, [1, 2, 3], "y")
+
+   @test isa(f, fq_poly)
+   @test isa(g, fq_poly)
+   @test isa(h, fq_poly)
+   @test isa(k, fq_poly)
+   @test isa(p, fq_poly)
+
+   q = polynomial(R, [1, 2, 3], cached=false)
+
+   @test parent(g) != parent(q)
+end
+
+@testset "fq_poly.similar" begin
+   R, a = FiniteField(ZZ(23), 3, "a")
+
+   f = polynomial(R, [1, 2, 3])
+   g = similar(f)
+   h = similar(f, "y")
+
+   @test isa(g, fq_poly)
+   @test isa(h, fq_poly)
+
+   q = similar(g, cached=false)
+
+   @test parent(g) != parent(q)
+end
+
 @testset "fq_poly.binary_ops" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")

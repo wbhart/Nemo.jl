@@ -127,6 +127,41 @@ end
   @test characteristic(Rx) == 17
 end
 
+@testset "nmod_poly.polynomial" begin
+   R = ResidueRing(ZZ, 23)
+
+   f = polynomial(R, [])
+   g = polynomial(R, [1, 2, 3])
+   h = polynomial(R, fmpz[1, 2, 3])
+   k = polynomial(R, [R(1), R(2), R(3)])
+   p = polynomial(R, [1, 2, 3], "y")
+
+   @test isa(f, nmod_poly)
+   @test isa(g, nmod_poly)
+   @test isa(h, nmod_poly)
+   @test isa(k, nmod_poly)
+   @test isa(p, nmod_poly)
+
+   q = polynomial(R, [1, 2, 3], cached=false)
+
+   @test parent(g) != parent(q)
+end
+
+@testset "nmod_poly.similar" begin
+   R = ResidueRing(ZZ, 23)
+
+   f = polynomial(R, [1, 2, 3])
+   g = similar(f)
+   h = similar(f, "y")
+
+   @test isa(g, nmod_poly)
+   @test isa(h, nmod_poly)
+
+   q = similar(g, cached=false)
+
+   @test parent(g) != parent(q)
+end
+
 @testset "nmod_poly.unary_ops" begin
   R = ResidueRing(ZZ, 23)
   Rx, x = PolynomialRing(R, "x")
