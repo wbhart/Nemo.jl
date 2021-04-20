@@ -3349,6 +3349,119 @@ end
 
 ###############################################################################
 #
+#   GFPFmpzAbsSeriesRing / gfp_fmpz_abs_series
+#
+###############################################################################
+
+mutable struct GFPFmpzAbsSeriesRing <: SeriesRing{gfp_fmpz_elem}
+   base_ring::GaloisFmpzField
+   prec_max::Int
+   S::Symbol
+
+   function GFPFmpzAbsSeriesRing(R::Ring, prec::Int, s::Symbol,
+                                 cached::Bool = true)
+      if cached && haskey(GFPFmpzAbsSeriesID, (R, prec, s))
+         return GFPFmpzAbsSeriesID[R, prec, s]
+      else
+         z = new(R, prec, s)
+         if cached
+            GFPFmpzAbsSeriesID[R, prec, s]  = z
+         end
+         return z
+      end
+   end
+end
+
+const GFPFmpzAbsSeriesID = Dict{Tuple{GaloisFmpzField, Int, Symbol},
+                                GFPFmpzAbsSeriesRing}()
+
+mutable struct gfp_fmpz_abs_series <: AbsSeriesElem{gfp_fmpz_elem}
+   coeffs::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   # end flint struct
+
+   prec::Int
+   parent::GFPFmpzAbsSeriesRing
+
+   function gfp_fmpz_abs_series(p::fmpz_mod_ctx_struct)
+      z = new()
+      ccall((:fmpz_mod_poly_init, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Ref{fmpz_mod_ctx_struct}),
+            z, p)
+      finalizer(_gfp_fmpz_abs_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_abs_series(R::GaloisFmpzField)
+      return gfp_fmpz_abs_series(R.ninv)
+   end
+
+   function gfp_fmpz_abs_series(p::fmpz_mod_ctx_struct, a::Array{fmpz, 1},
+                                len::Int, prec::Int)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+            z, len, p)
+      for i = 1:len
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
+               (Ref{gfp_fmpz_abs_series}, Int, Ref{fmpz},
+                Ref{fmpz_mod_ctx_struct}),
+               z, i - 1, a[i], p)
+      end
+      z.prec = prec
+      finalizer(_gfp_fmpz_abs_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_abs_series(R::GaloisFmpzField, a::Array{fmpz, 1}, len::Int, prec::Int)
+      return gfp_fmpz_abs_series(R.ninv, a, len, prec)
+   end
+
+   function gfp_fmpz_abs_series(p::fmpz_mod_ctx_struct, a::Array{gfp_fmpz_elem, 1},
+                                len::Int, prec::Int)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+            z, len, p)
+      for i = 1:len
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Int, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+             z, i - 1, data(a[i]), p)
+      end
+      z.prec = prec
+      finalizer(_gfp_fmpz_abs_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_abs_series(R::GaloisFmpzField, a::Array{gfp_fmpz_elem, 1},
+                                len::Int, prec::Int)
+      return gfp_fmpz_abs_series(R.ninv, a, len, prec)
+   end
+
+   function gfp_fmpz_abs_series(a::gfp_fmpz_abs_series)
+      z = new()
+      p = a.parent.base_ring.ninv
+      ccall((:fmpz_mod_poly_init, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Ref{fmpz_mod_ctx_struct}),
+            z, p)
+      ccall((:fmpz_mod_poly_set, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Ref{gfp_fmpz_abs_series},
+             Ref{fmpz_mod_ctx_struct}),
+            z, a, p)
+      finalizer(_gfp_fmpz_abs_series_clear_fn, z)
+      return z
+   end
+end
+
+function _gfp_fmpz_abs_series_clear_fn(a::gfp_fmpz_abs_series)
+   ccall((:fmpz_mod_poly_clear, libflint), Nothing,
+         (Ref{gfp_fmpz_abs_series}, Ref{fmpz_mod_ctx_struct}),
+         a, a.parent.base_ring.ninv)
+end
+
+###############################################################################
+#
 #   FmpzModAbsSeriesRing / fmpz_mod_abs_series
 #
 ###############################################################################
@@ -3459,6 +3572,7 @@ function _fmpz_mod_abs_series_clear_fn(a::fmpz_mod_abs_series)
          (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_ctx_struct}),
          a, a.parent.base_ring.ninv)
 end
+
 
 ###############################################################################
 #

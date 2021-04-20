@@ -34,6 +34,10 @@ include("flint/fmpz_rel_series.jl")
 
 include("flint/fmpz_abs_series.jl")
 
+include("flint/fq_abs_series.jl")
+
+# include("flint/fq_nmod_abs_series.jl")
+
 include("flint/fmpz_laurent_series.jl")
 
 include("flint/flint_puiseux_series.jl")
@@ -78,11 +82,7 @@ include("flint/fmpq_abs_series.jl")
 
 include("flint/fq_rel_series.jl")
 
-include("flint/fq_abs_series.jl")
-
 include("flint/fq_nmod_rel_series.jl")
-
-include("flint/fq_nmod_abs_series.jl")
 
 include("flint/fq_poly.jl")
 

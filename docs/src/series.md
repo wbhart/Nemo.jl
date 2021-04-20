@@ -46,6 +46,7 @@ Generic ring $R$                      | AbstractAlgebra.jl | `Generic.AbsSeries{
 $\mathbb{Z}$                          | Flint              | `fmpz_abs_series`     | `FmpzAbsSeriesRing`
 $\mathbb{Z}/n\mathbb{Z}$              | Flint              | `fmpz_mod_abs_series` | `FmpzModAbsSeriesRing`
 $\mathbb{Q}$                          | Flint              | `fmpq_abs_series`     | `FmpqAbsSeriesRing`
+$\mathbb{F}_p$ (large $n$)            | Flint              | `gfp_fmpz_abs_series` | `GFPFmpzAbsSeriesRing`
 $\mathbb{F}_{p^n}$ (small $n$)        | Flint              | `fq_nmod_abs_series`  | `FqNmodAbsSeriesRing`
 $\mathbb{F}_{p^n}$ (large $n$)        | Flint              | `fq_abs_series`       | `FqAbsSeriesRing`
 
