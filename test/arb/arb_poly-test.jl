@@ -6,6 +6,7 @@ RR = ArbField(64)
    @test elem_type(R) == arb_poly
    @test elem_type(ArbPolyRing) == arb_poly
    @test parent_type(arb_poly) == ArbPolyRing
+   @test dense_poly_type(arb) == arb_poly
 
    @test typeof(R) <: ArbPolyRing
 

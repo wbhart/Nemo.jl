@@ -16,6 +16,8 @@ parent_type(::Type{fq_nmod_poly}) = FqNmodPolyRing
 
 elem_type(::Type{FqNmodPolyRing}) = fq_nmod_poly
 
+dense_poly_type(::Type{fq_nmod}) = fq_nmod_poly
+
 base_ring(a::FqNmodPolyRing) = a.base_ring
 
 parent(a::fq_nmod_poly) = a.parent

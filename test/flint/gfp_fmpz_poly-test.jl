@@ -5,6 +5,7 @@
    @test elem_type(S) == gfp_fmpz_poly
    @test elem_type(GFPFmpzPolyRing) == gfp_fmpz_poly
    @test parent_type(gfp_fmpz_poly) == GFPFmpzPolyRing
+   @test dense_poly_type(Generic.ResF{fmpz}) == gfp_fmpz_poly
 
    @test typeof(S) <: GFPFmpzPolyRing
 

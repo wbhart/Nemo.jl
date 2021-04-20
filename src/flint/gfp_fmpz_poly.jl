@@ -24,6 +24,8 @@ elem_type(::Type{GFPFmpzPolyRing}) = gfp_fmpz_poly
 
 parent_type(::Type{gfp_fmpz_poly}) = GFPFmpzPolyRing
 
+dense_poly_type(::Type{Generic.ResF{fmpz}}) = gfp_fmpz_poly
+
 characteristic(R::GFPFmpzPolyRing) = characteristic(base_ring(R))
 
 ###############################################################################

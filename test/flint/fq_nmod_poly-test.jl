@@ -5,6 +5,7 @@
    @test elem_type(S) == fq_nmod_poly
    @test elem_type(FqNmodPolyRing) == fq_nmod_poly
    @test parent_type(fq_nmod_poly) == FqNmodPolyRing
+   @test dense_poly_type(fq_nmod) == fq_nmod_poly
 
    @test typeof(S) <: FqNmodPolyRing
 

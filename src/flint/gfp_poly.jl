@@ -24,6 +24,8 @@ elem_type(::Type{gfp_poly}) = gfp_poly
 
 elem_type(::Type{GFPPolyRing}) = gfp_poly
 
+dense_poly_type(::Type{gfp_elem}) = gfp_poly
+
 ################################################################################
 #
 #   Basic helper

@@ -16,6 +16,8 @@ parent_type(::Type{fmpq_poly}) = FmpqPolyRing
 
 elem_type(::Type{FmpqPolyRing}) = fmpq_poly
 
+dense_poly_type(::Type{fmpq}) = fmpq_poly
+
 base_ring(a::FmpqPolyRing) = a.base_ring
 
 var(a::FmpqPolyRing) = a.S

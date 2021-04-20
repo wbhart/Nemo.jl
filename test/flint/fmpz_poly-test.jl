@@ -4,6 +4,7 @@
    @test elem_type(R) == fmpz_poly
    @test elem_type(FmpzPolyRing) == fmpz_poly
    @test parent_type(fmpz_poly) == FmpzPolyRing
+   @test dense_poly_type(fmpz) == fmpz_poly
 
    @test typeof(R) <: FmpzPolyRing
 

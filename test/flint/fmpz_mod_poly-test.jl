@@ -5,6 +5,7 @@
    @test elem_type(S) == fmpz_mod_poly
    @test elem_type(FmpzModPolyRing) == fmpz_mod_poly
    @test parent_type(fmpz_mod_poly) == FmpzModPolyRing
+   @test dense_poly_type(Generic.Res{fmpz}) == fmpz_mod_poly
 
    @test typeof(S) <: FmpzModPolyRing
 
