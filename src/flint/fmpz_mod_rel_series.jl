@@ -649,7 +649,7 @@ function Base.exp(a::($etype))
       d[k + 1] = divexact(base_ring(a)(s), k).data
    end
    z = parent(a)(d, preca, preca, 0)
-   ccall((:_fmpz_mod_poly_set_length, libflint), Nothing,
+   ccall(($("_"*flint_fn*"_set_length"), libflint), Nothing,
          (Ref{($etype)}, Int, Ref{($ctype)}),
          z, normalise(z, preca), a.parent.base_ring.ninv)
    return z
