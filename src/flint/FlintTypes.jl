@@ -3585,7 +3585,7 @@ end
 const GFPAbsSeriesID = Dict{Tuple{GaloisField, Int, Symbol},
                                  GFPAbsSeriesRing}()
   
-mutable struct gfp_abs_series <: PolyElem{gfp_elem}
+mutable struct gfp_abs_series <: AbsSeriesElem{gfp_elem}
    coeffs::Ptr{Nothing}
    alloc::Int
    length::Int
