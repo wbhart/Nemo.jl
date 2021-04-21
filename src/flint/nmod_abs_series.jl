@@ -26,7 +26,7 @@ function O(a::($etype))
    end
    prec = length(a) - 1
    prec < 0 && throw(DomainError(prec, "Precision must be non-negative"))
-   z = ($etype)(base_ring(a), Vector{$(mtype)}(undef, 0), 0, prec)
+   z = ($etype)(base_ring(a).n, Vector{$(mtype)}(undef, 0), 0, prec)
    z.parent = parent(a)
    return z
 end
@@ -91,7 +91,8 @@ function gen(R::($rtype))
 end
 
 function deepcopy_internal(a::($etype), dict::IdDict)
-   z = ($etype)(a)
+   R = base_ring(a)
+   z = ($etype)(R.n)
    z.prec = a.prec
    z.parent = parent(a)
    return z
@@ -243,7 +244,7 @@ function *(x::fmpz, y::($etype))
    R = base_ring(y)
    xmod = ccall((:fmpz_fdiv_ui, libflint), UInt,
                 (Ref{fmpz}, UInt),
-                x, y.data)
+                x, R.n)
    return R(xmod)*y
 end
 
@@ -378,7 +379,7 @@ function ==(x::($etype), y::$(mtype))
    elseif length(x) == 1
       z = ccall(($(flint_fn*"_get_coeff_ui"), libflint), UInt,
             (Ref{($etype)}, Int), x, 0)
-      return z = y.data
+      return z == y.data
    else
       return precision(x) == 0 || iszero(y)
    end
@@ -488,8 +489,8 @@ function fit!(z::($etype), n::Int)
 end
 
 function setcoeff!(z::($etype), n::Int, x::($mtype))
-   ccall(($(flint_fn*"_set_coeff_nmod"), libflint), Nothing,
-         (Ref{($etype)}, Int, Ref{fmpz}), z, n, x.data)
+   ccall(($(flint_fn*"_set_coeff_ui"), libflint), Nothing,
+         (Ref{($etype)}, Int, UInt), z, n, x.data)
    return z
 end
 
@@ -603,8 +604,8 @@ function (a::($rtype))(b::Array{UInt, 1}, len::Int, prec::Int)
 end
 
 function (a::($rtype))(b::Array{($mtype), 1}, len::Int, prec::Int)
-   if length(arr) > 0
-      (base_ring(a) != parent(arr[1])) && error("Wrong parents")
+   if length(b) > 0
+      (base_ring(a) != parent(b[1])) && error("Wrong parents")
    end
    z = ($etype)(a.n, b, len, prec)
    z.parent = a

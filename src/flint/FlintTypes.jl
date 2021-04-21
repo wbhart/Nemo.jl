@@ -3490,7 +3490,7 @@ end
 const NmodAbsSeriesID = Dict{Tuple{NmodRing, Int, Symbol},
                                  NmodAbsSeriesRing}()
   
-mutable struct nmod_abs_series <: PolyElem{nmod}
+mutable struct nmod_abs_series <: AbsSeriesElem{nmod}
    coeffs::Ptr{Nothing}
    alloc::Int
    length::Int
