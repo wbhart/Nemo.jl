@@ -3462,6 +3462,196 @@ end
 
 ###############################################################################
 #
+#   NmodAbsSeriesRing / nmod_abs_series
+#
+###############################################################################
+
+mutable struct NmodAbsSeriesRing <: SeriesRing{nmod}
+   base_ring::NmodRing
+   prec_max::Int
+   n::UInt
+   S::Symbol
+ 
+   function NmodAbsSeriesRing(R::Ring, prec::Int, s::Symbol,
+                                  cached::Bool = true)
+      m = modulus(R)
+      if cached && haskey(NmodAbsSeriesID, (R, prec, s))
+         return NmodAbsSeriesID[R, prec, s]
+      else
+         z = new(R, prec, m, s)
+         if cached
+            NmodAbsSeriesID[R, prec, s]  = z
+         end
+         return z
+      end
+   end
+end
+ 
+const NmodAbsSeriesID = Dict{Tuple{NmodRing, Int, Symbol},
+                                 NmodAbsSeriesRing}()
+  
+mutable struct nmod_abs_series <: PolyElem{nmod}
+   coeffs::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   mod_n::UInt
+   mod_ninv::UInt
+   mod_norm::UInt
+   # end of flint struct
+
+   prec::Int
+   parent::NmodAbsSeriesRing
+  
+   function nmod_abs_series(n::UInt)
+      z = new()
+      ccall((:nmod_poly_init, libflint), Nothing,
+            (Ref{nmod_abs_series}, UInt), z, n)
+      finalizer(_nmod_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function nmod_abs_series(n::UInt, arr::Array{fmpz, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{nmod_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         tt = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt), arr[i], n)
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{nmod_abs_series}, Int, UInt), z, i - 1, tt)
+      end
+      z.prec = prec
+      finalizer(_nmod_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function nmod_abs_series(n::UInt, arr::Array{UInt, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{nmod_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{nmod_abs_series}, Int, UInt), z, i - 1, arr[i])
+      end
+      z.prec = prec
+      finalizer(_nmod_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function nmod_abs_series(n::UInt, arr::Array{nmod, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{nmod_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{nmod_abs_series}, Int, UInt), z, i-1, arr[i].data)
+      end
+      z.prec = prec
+      finalizer(_nmod_abs_series_clear_fn, z)
+      return z
+   end
+end
+
+function _nmod_abs_series_clear_fn(x::nmod_abs_series)
+   ccall((:nmod_poly_clear, libflint), Nothing, (Ref{nmod_abs_series}, ), x)
+end
+
+###############################################################################
+#
+#   GFPAbsSeriesRing / gfp_abs_series
+#
+###############################################################################
+
+mutable struct GFPAbsSeriesRing <: SeriesRing{gfp_elem}
+   base_ring::GaloisField
+   prec_max::Int
+   n::UInt
+   S::Symbol
+ 
+   function GFPAbsSeriesRing(R::Ring, prec::Int, s::Symbol,
+                                  cached::Bool = true)
+      m = modulus(R)
+      if cached && haskey(GFPAbsSeriesID, (R, prec, s))
+         return GFPAbsSeriesID[R, prec, s]
+      else
+         z = new(R, prec, m, s)
+         if cached
+            GFPAbsSeriesID[R, prec, s]  = z
+         end
+         return z
+      end
+   end
+end
+ 
+const GFPAbsSeriesID = Dict{Tuple{GaloisField, Int, Symbol},
+                                 GFPAbsSeriesRing}()
+  
+mutable struct gfp_abs_series <: PolyElem{gfp_elem}
+   coeffs::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   mod_n::UInt
+   mod_ninv::UInt
+   mod_norm::UInt
+   # end of flint struct
+
+   prec::Int
+   parent::GFPAbsSeriesRing
+  
+   function gfp_abs_series(n::UInt)
+      z = new()
+      ccall((:nmod_poly_init, libflint), Nothing,
+            (Ref{gfp_abs_series}, UInt), z, n)
+      finalizer(_gfp_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function gfp_abs_series(n::UInt, arr::Array{fmpz, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{gfp_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         tt = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt), arr[i], n)
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{gfp_abs_series}, Int, UInt), z, i - 1, tt)
+      end
+      z.prec = prec
+      finalizer(_gfp_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function gfp_abs_series(n::UInt, arr::Array{UInt, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{gfp_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         ccall((:nmod_poly_series_set_coeff_ui, libflint), Nothing,
+               (Ref{gfp_abs_series}, Int, UInt), z, i - 1, arr[i])
+      end
+      z.prec = prec
+      finalizer(_gfp_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function gfp_abs_series(n::UInt, arr::Array{gfp_elem, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{gfp_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{gfp_abs_series}, Int, UInt), z, i-1, arr[i].data)
+      end
+      z.prec = prec
+      finalizer(_gfp_abs_series_clear_fn, z)
+      return z
+   end
+end
+
+function _gfp_abs_series_clear_fn(x::gfp_abs_series)
+   ccall((:nmod_poly_clear, libflint), Nothing, (Ref{gfp_abs_series}, ), x)
+end
+
+###############################################################################
+#
 #   FmpzModAbsSeriesRing / fmpz_mod_abs_series
 #
 ###############################################################################
@@ -3562,6 +3752,7 @@ mutable struct fmpz_mod_abs_series <: AbsSeriesElem{fmpz_mod}
             (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series},
              Ref{fmpz_mod_ctx_struct}),
             z, a, p)
+      z.prec = a.prec
       finalizer(_fmpz_mod_abs_series_clear_fn, z)
       return z
    end

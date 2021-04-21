@@ -856,20 +856,3 @@ function (a::NmodRelSeriesRing)(b::Array{nmod, 1}, len::Int, prec::Int, val::Int
    return z
 end
 
-###############################################################################
-#
-#   PowerSeriesRing constructor
-#
-###############################################################################
-
-function PowerSeriesRing(R::NmodRing, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
-   S = Symbol(s)
-
-   if model == :capped_relative
-      parent_obj = NmodRelSeriesRing(R, prec, S, cached)
-   elseif model == :capped_absolute
-      error("Not implemented yet")
-      # parent_obj = NmodAbsSeriesRing(R, prec, S, cached)
-   end
-   return parent_obj, gen(parent_obj)
-end

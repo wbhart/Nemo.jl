@@ -1,17 +1,17 @@
 ###############################################################################
 #
-#   fmpz_mod_abs_series.jl: Absolute series using fmpz_mod_poly
+#   nmod_abs_series.jl: Absolute series using nmod_poly
 #
-#   fmpz_mod_abs_series, gfp_fmpz_abs_series
+#   nmod_abs_series, gfp_abs_series
 #
 ###############################################################################
 
-export fmpz_mod_abs_series, FmpzModAbsSeriesRing,
-       gfp_fmpz_abs_series, GFPFmpzAbsSeriesRing
+export nmod_abs_series, NmodAbsSeriesRing,
+       gfp_abs_series, GFPAbsSeriesRing
 
-for (etype, rtype, ctype, mtype, flint_fn) in (
-   (fmpz_mod_abs_series, FmpzModAbsSeriesRing, fmpz_mod_ctx_struct, fmpz_mod, "fmpz_mod_poly"),
-   (gfp_fmpz_abs_series, GFPFmpzAbsSeriesRing, fmpz_mod_ctx_struct, gfp_fmpz_elem, "fmpz_mod_poly"))
+for (etype, rtype, mtype, flint_fn) in (
+   (nmod_abs_series, NmodAbsSeriesRing, nmod, "nmod_poly"),
+   (gfp_abs_series, GFPAbsSeriesRing, gfp_elem, "nmod_poly"))
 @eval begin
 
 ###############################################################################
@@ -26,7 +26,7 @@ function O(a::($etype))
    end
    prec = length(a) - 1
    prec < 0 && throw(DomainError(prec, "Precision must be non-negative"))
-   z = ($etype)(base_ring(a), Vector{fmpz}(undef, 0), 0, prec)
+   z = ($etype)(base_ring(a), Vector{$(mtype)}(undef, 0), 0, prec)
    z.parent = parent(a)
    return z
 end
@@ -48,44 +48,35 @@ var(a::($rtype)) = a.S
 max_precision(R::($rtype)) = R.prec_max
 
 function normalise(a::($etype), len::Int)
-   p = a.parent.base_ring.ninv
-   if len > 0
-      c = fmpz()
-      ccall(($(flint_fn*"_get_coeff_fmpz"), libflint), Nothing,
-            (Ref{fmpz}, Ref{($etype)}, Int,
-             Ref{($ctype)}),
-            c, a, len - 1, p)
-   end
-   while len > 0 && iszero(c)
-      len -= 1
-      if len > 0
-         ccall(($(flint_fn*"_get_coeff_fmpz"), libflint), Nothing,
-               (Ref{fmpz}, Ref{($etype)}, Int,
-                Ref{($ctype)}),
-               c, a, len - 1, p)
+   while len > 0
+      c = ccall(($(flint_fn*"_get_coeff_ui"), libflint), UInt,
+            (Ref{($etype)}, Int), a, len - 1)
+      if !iszero(c)
+         break
       end
+      len -= 1
    end
    return len
 end
 
 function length(x::($etype))
    return x.length
-#   return ccall(($(flint_fn*"_length"), libflint), Int,
-#                (Ref{($etype)}, Ref{($ctype)}),
-#                x, x.parent.base_ring.ninv)
 end
 
 precision(x::($etype)) = x.prec
 
-function coeff(x::($etype), n::Int)
+function coeff_raw(x::($etype), n::Int)
    R = base_ring(x)
    if n < 0
-      return R(0)
+      return zero(UInt)
    end
-   z = fmpz()
-   ccall(($(flint_fn*"_get_coeff_fmpz"), libflint), Nothing,
-         (Ref{fmpz}, Ref{($etype)}, Int, Ref{($ctype)}),
-         z, x, n, x.parent.base_ring.ninv)
+   return ccall(($(flint_fn*"_get_coeff_ui"), libflint), UInt,
+         (Ref{($etype)}, Int), x, n)
+end
+
+function coeff(x::($etype), n::Int)
+   R = base_ring(x)
+   z = coeff_raw(x, n)
    return R(z)
 end
 
@@ -94,7 +85,7 @@ zero(R::($rtype)) = R(0)
 one(R::($rtype)) = R(1)
 
 function gen(R::($rtype))
-   z = ($etype)(base_ring(R), [fmpz(0), fmpz(1)], 2, max_precision(R))
+   z = ($etype)(R.n, [fmpz(0), fmpz(1)], 2, max_precision(R))
    z.parent = R
    return z
 end
@@ -108,9 +99,7 @@ end
 
 function isgen(a::($etype))
    return precision(a) == 0 ||
-          Bool(ccall(($(flint_fn*"_is_gen"), libflint), Cint,
-                     (Ref{($etype)}, Ref{($ctype)}),
-                     a, a.parent.base_ring.ninv))
+          (length(a) == 2 && isone(coeff(a, 1)) && iszero(coeff(a, 0)))
 end
 
 iszero(a::($etype)) = length(a) == 0
@@ -120,11 +109,10 @@ isunit(a::($etype)) = valuation(a) == 0 && isunit(coeff(a, 0))
 function isone(a::($etype))
    return precision(a) == 0 ||
           Bool(ccall(($(flint_fn*"_is_one"), libflint), Cint,
-                     (Ref{($etype)}, Ref{($ctype)}),
-                     a, a.parent.base_ring.ninv))
+                     (Ref{($etype)},), a))
 end
 
-# todo: write an fmpz_mod_poly_valuation
+# todo: write an nmod_poly_valuation
 function valuation(a::($etype))
    for i = 1:length(a)
       if !iszero(coeff(a, i - 1))
@@ -156,9 +144,7 @@ end
 function -(x::($etype))
    z = parent(x)()
    ccall(($(flint_fn*"_neg"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)},
-          Ref{($ctype)}),
-         z, x, x.parent.base_ring.ninv)
+         (Ref{($etype)}, Ref{($etype)}), z, x)
    z.prec = x.prec
    return z
 end
@@ -183,9 +169,8 @@ function +(a::($etype), b::($etype))
    z = parent(a)()
    z.prec = prec
    ccall(($(flint_fn*"_add_series"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)},
-          Ref{($etype)}, Int, Ref{($ctype)}),
-         z, a, b, lenz, a.parent.base_ring.ninv)
+         (Ref{($etype)}, Ref{($etype)}, Ref{($etype)}, Int),
+          z, a, b, lenz)
    return z
 end
 
@@ -203,9 +188,8 @@ function -(a::($etype), b::($etype))
    z = parent(a)()
    z.prec = prec
    ccall(($(flint_fn*"_sub_series"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)},
-          Ref{($etype)}, Int, Ref{($ctype)}),
-         z, a, b, lenz, a.parent.base_ring.ninv)
+         (Ref{($etype)}, Ref{($etype)}, Ref{($etype)}, Int),
+         z, a, b, lenz)
    return z
 end
 
@@ -233,9 +217,8 @@ function *(a::($etype), b::($etype))
    lenz = min(lena + lenb - 1, prec)
 
    ccall(($(flint_fn*"_mullow"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)},
-          Ref{($etype)}, Int, Ref{($ctype)}),
-         z, a, b, lenz, a.parent.base_ring.ninv)
+         (Ref{($etype)}, Ref{($etype)}, Ref{($etype)}, Int),
+         z, a, b, lenz)
    return z
 end
 
@@ -248,28 +231,27 @@ end
 function *(x::$(mtype), y::($etype))
    z = parent(y)()
    z.prec = y.prec
-   ccall(($(flint_fn*"_scalar_mul_fmpz"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)}, Ref{fmpz},
-          Ref{($ctype)}),
-         z, y, x.data, y.parent.base_ring.ninv)
+   ccall(($(flint_fn*"_scalar_mul_nmod"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, UInt),
+         z, y, x.data)
    return z
 end
 
-*(x::($etype), y::fmpz) = y * x
+*(x::($etype), y::$(mtype)) = y*x
 
 function *(x::fmpz, y::($etype))
-   z = parent(y)()
-   z.prec = y.prec
-   ccall(($(flint_fn*"_scalar_mul_fmpz"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)}, Ref{fmpz},
-          Ref{($ctype)}),
-         z, y, x, y.parent.base_ring.ninv)
-   return z
+   R = base_ring(y)
+   xmod = ccall((:fmpz_fdiv_ui, libflint), UInt,
+                (Ref{fmpz}, UInt),
+                x, y.data)
+   return R(xmod)*y
 end
+
+*(x::($etype), y::fmpz) = y*x
 
 *(x::Integer, y::($etype)) = fmpz(x)*y
 
-*(x::($etype), y::Integer) = y * x
+*(x::($etype), y::Integer) = y*x
 
 ###############################################################################
 #
@@ -284,15 +266,12 @@ function shift_left(x::($etype), len::Int)
    z.prec = x.prec + len
    z.prec = min(z.prec, max_precision(parent(x)))
    zlen = min(z.prec, xlen + len)
-   p = x.parent.base_ring.ninv
    ccall(($(flint_fn*"_shift_left"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)}, Int,
-          Ref{($ctype)}),
-         z, x, len, p)
+         (Ref{($etype)}, Ref{($etype)}, Int),
+         z, x, len)
    ccall(($(flint_fn*"_set_trunc"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)}, Int,
-          Ref{($ctype)}),
-         z, z, zlen, p)
+         (Ref{($etype)}, Ref{($etype)}, Int),
+         z, z, zlen)
    return z
 end
 
@@ -305,9 +284,8 @@ function shift_right(x::($etype), len::Int)
    else
       z.prec = x.prec - len
       ccall(($(flint_fn*"_shift_right"), libflint), Nothing,
-            (Ref{($etype)}, Ref{($etype)}, Int,
-             Ref{($ctype)}),
-            z, x, len, x.parent.base_ring.ninv)
+            (Ref{($etype)}, Ref{($etype)}, Int),
+            z, x, len)
    end
    return z
 end
@@ -326,9 +304,8 @@ function truncate(x::($etype), prec::Int)
    z = parent(x)()
    z.prec = prec
    ccall(($(flint_fn*"_set_trunc"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)}, Int,
-          Ref{($ctype)}),
-         z, x, prec, x.parent.base_ring.ninv)
+         (Ref{($etype)}, Ref{($etype)}, Int),
+         z, x, prec)
    return z
 end
 
@@ -353,9 +330,8 @@ function ^(a::($etype), b::Int)
       z.prec = a.prec + (b - 1)*valuation(a)
       z.prec = min(z.prec, max_precision(parent(a)))
       ccall(($(flint_fn*"_pow_trunc"), libflint), Nothing,
-            (Ref{($etype)}, Ref{($etype)}, UInt, Int,
-             Ref{($ctype)}),
-            z, a, b, z.prec, a.parent.base_ring.ninv)
+            (Ref{($etype)}, Ref{($etype)}, UInt, Int),
+            z, a, b, z.prec)
    end
    return z
 end
@@ -374,9 +350,8 @@ function ==(x::($etype), y::($etype))
    n = min(n, prec)
 
    return Bool(ccall(($(flint_fn*"_equal_trunc"), libflint), Cint,
-                     (Ref{($etype)}, Ref{($etype)}, Int,
-                      Ref{($ctype)}),
-                     x, y, n, x.parent.base_ring.ninv))
+                     (Ref{($etype)}, Ref{($etype)}, Int),
+                     x, y, n))
 end
 
 function isequal(x::($etype), y::($etype))
@@ -387,9 +362,8 @@ function isequal(x::($etype), y::($etype))
       return false
    end
    return Bool(ccall(($(flint_fn*"_equal"), libflint), Cint,
-                     (Ref{($etype)}, Ref{($etype)}, Int,
-                      Ref{($ctype)}),
-                     x, y, length(x), x.parent.base_ring.ninv))
+                     (Ref{($etype)}, Ref{($etype)}, Int),
+                     x, y, length(x)))
 end
 
 ###############################################################################
@@ -402,13 +376,9 @@ function ==(x::($etype), y::$(mtype))
    if length(x) > 1
       return false
    elseif length(x) == 1
-      z = fmpz()
-      ccall(($(flint_fn*"_get_coeff_fmpz"), libflint), Nothing,
-            (Ref{fmpz}, Ref{($etype)}, Int,
-             Ref{($ctype)}),
-            z, x, 0, x.parent.base_ring.ninv)
-      return ccall((:fmpz_equal, libflint), Bool,
-               (Ref{fmpz}, Ref{fmpz}), z, y)
+      z = ccall(($(flint_fn*"_get_coeff_ui"), libflint), UInt,
+            (Ref{($etype)}, Int), x, 0)
+      return z = y.data
    else
       return precision(x) == 0 || iszero(y)
    end
@@ -417,21 +387,11 @@ end
 ==(x::$(mtype), y::($etype)) = y == x
 
 function ==(x::($etype), y::fmpz)
-   if length(x) > 1
-      return false
-   elseif length(x) == 1
-      z = fmpz()
-      r = mod(y, modulus(x))
-      ccall(($(flint_fn*"_get_coeff_fmpz"), libflint), Nothing,
-            (Ref{fmpz}, Ref{($etype)}, Int, Ref{($ctype)}),
-            z, x, 0, x.parent.base_ring.ninv)
-      return Bool(ccall((:fmpz_equal, libflint), Cint,
-                        (Ref{fmpz}, Ref{fmpz}),
-                        z, r))
-   else
-      r = mod(y, modulus(x))
-      return precision(x) == 0 || iszero(r)
-   end
+   R = base_ring(x)
+   ymod = ccall((:fmpz_fdiv_ui, libflint), UInt,
+                (Ref{fmpz}, UInt),
+                y, modulus(x))
+   return x == R(ymod)
 end
 
 ==(x::fmpz, y::($etype)) = y == x
@@ -462,9 +422,8 @@ function divexact(x::($etype), y::($etype))
    z = parent(x)()
    z.prec = prec
    ccall(($(flint_fn*"_div_series"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)},
-          Ref{($etype)}, Int, Ref{($ctype)}),
-         z, x, y, prec, x.parent.base_ring.ninv)
+         (Ref{($etype)}, Ref{($etype)}, Ref{($etype)}, Int),
+         z, x, y, prec)
    return z
 end
 
@@ -478,23 +437,16 @@ function divexact(x::($etype), y::$(mtype))
    iszero(y) && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
-   ccall(($(flint_fn*"_scalar_div_fmpz"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)}, Ref{fmpz},
-          Ref{($ctype)}),
-         z, x, y, x.parent.base_ring.ninv)
+   yinv = inv(y)
+   ccall(($(flint_fn*"_scalar_mul_nmod"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, UInt),
+         z, x, y.data)
    return z
 end
 
 function divexact(x::($etype), y::fmpz)
-   iszero(y) && throw(DivideError())
-   z = parent(x)()
-   z.prec = x.prec
-   r = mod(y, modulus(x))
-   ccall(($(flint_fn*"_scalar_div_fmpz"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)}, Ref{fmpz},
-          Ref{($ctype)}),
-         z, x, y, x.parent.base_ring.ninv)
-   return z
+   R = base_ring(x)
+   return divexact(x, R(y))
 end
 
 divexact(x::($etype), y::Integer) = divexact(x, fmpz(y))
@@ -511,9 +463,8 @@ function inv(a::($etype))
    ainv = parent(a)()
    ainv.prec = a.prec
    ccall(($(flint_fn*"_inv_series"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($etype)}, Int,
-          Ref{($ctype)}),
-         ainv, a, a.prec, a.parent.base_ring.ninv)
+         (Ref{($etype)}, Ref{($etype)}, Int),
+         ainv, a, a.prec)
    return ainv
 end
 
@@ -525,28 +476,26 @@ end
 
 function zero!(z::($etype))
    ccall(($(flint_fn*"_zero"), libflint), Nothing,
-         (Ref{($etype)}, Ref{($ctype)}),
-         z, z.parent.base_ring.ninv)
+         (Ref{($etype)},), z)
    z.prec = parent(z).prec_max
    return z
 end
 
 function fit!(z::($etype), n::Int)
    ccall(($(flint_fn*"_fit_length"), libflint), Nothing,
-         (Ref{($etype)}, Int, Ref{($ctype)}),
-	 z, n, z.parent.base_ring.ninv)
+         (Ref{($etype)}, Int), z, n)
    return nothing
 end
 
-function setcoeff!(z::($etype), n::Int, x::fmpz)
-   ccall(($(flint_fn*"_set_coeff_fmpz"), libflint), Nothing,
-         (Ref{($etype)}, Int, Ref{fmpz}, Ref{($ctype)}),
-         z, n, x, z.parent.base_ring.ninv)
+function setcoeff!(z::($etype), n::Int, x::($mtype))
+   ccall(($(flint_fn*"_set_coeff_nmod"), libflint), Nothing,
+         (Ref{($etype)}, Int, Ref{fmpz}), z, n, x.data)
    return z
 end
 
-function setcoeff!(z::($etype), n::Int, x::$(mtype))
-   return setcoeff!(z, n, data(x))
+function setcoeff!(z::($etype), n::Int, x::fmpz)
+   R = base_ring(z)
+   return setcoeff!(z, n, R(x))
 end
 
 function mul!(z::($etype), a::($etype), b::($etype))
@@ -570,8 +519,7 @@ function mul!(z::($etype), a::($etype), b::($etype))
    z.prec = prec
    ccall(($(flint_fn*"_mullow"), libflint), Nothing,
          (Ref{($etype)}, Ref{($etype)},
-          Ref{($etype)}, Int, Ref{($ctype)}),
-         z, a, b, lenz, a.parent.base_ring.ninv)
+          Ref{($etype)}, Int), z, a, b, lenz)
    return z
 end
 
@@ -588,8 +536,7 @@ function addeq!(a::($etype), b::($etype))
    a.prec = prec
    ccall(($(flint_fn*"_add_series"), libflint), Nothing,
          (Ref{($etype)}, Ref{($etype)},
-          Ref{($etype)}, Int, Ref{($ctype)}),
-         a, a, b, lenz, a.parent.base_ring.ninv)
+          Ref{($etype)}, Int), a, a, b, lenz)
    return a
 end
 
@@ -612,47 +559,30 @@ promote_rule(::Type{($etype)}, ::Type{$(mtype)}) = ($etype)
 ###############################################################################
 
 function (a::($rtype))()
-   m = base_ring(a)
-   z = ($etype)(m)
+   z = ($etype)(a.n)
    z.prec = a.prec_max
    z.parent = a
    return z
 end
 
-function (a::($rtype))(b::Integer)
-   m = base_ring(a)
-   if b == 0
-      z = ($etype)(m)
+function (a::($rtype))(b::$(mtype))
+   if iszero(b)
+      z = ($etype)(a.n)
       z.prec = a.prec_max
    else
-      z = ($etype)(m, [fmpz(b)], 1, a.prec_max)
+      z = ($etype)(a.n, [b], 1, a.prec_max)
    end
    z.parent = a
    return z
 end
 
 function (a::($rtype))(b::fmpz)
-   m = base_ring(a)
-   if iszero(b)
-      z = ($etype)(m)
-      z.prec = a.prec_max
-   else
-      z = ($etype)(m, [b], 1, a.prec_max)
-   end
-   z.parent = a
-   return z
+   R = base_ring(a)
+   return a(R(b))
 end
 
-function (a::($rtype))(b::$(mtype))
-   m = base_ring(a)
-   if iszero(b)
-      z = ($etype)(m)
-      z.prec = a.prec_max
-   else
-      z = ($etype)(m, [b], 1, a.prec_max)
-   end
-   z.parent = a
-   return z
+function (a::($rtype))(b::Integer)
+   return a(fmpz(b))
 end
 
 function (a::($rtype))(b::($etype))
@@ -661,11 +591,26 @@ function (a::($rtype))(b::($etype))
 end
 
 function (a::($rtype))(b::Array{fmpz, 1}, len::Int, prec::Int)
-   m = base_ring(a)
-   z = ($etype)(m, b, len, prec)
+   z = ($etype)(a.n, b, len, prec)
    z.parent = a
    return z
 end
+
+function (a::($rtype))(b::Array{UInt, 1}, len::Int, prec::Int)
+   z = ($etype)(a.n, b, len, prec)
+   z.parent = a
+   return z
+end
+
+function (a::($rtype))(b::Array{($mtype), 1}, len::Int, prec::Int)
+   if length(arr) > 0
+      (base_ring(a) != parent(arr[1])) && error("Wrong parents")
+   end
+   z = ($etype)(a.n, b, len, prec)
+   z.parent = a
+   return z
+end
+
 
 end # eval
 end # for
@@ -676,26 +621,26 @@ end # for
 #
 ###############################################################################
 
-function PowerSeriesRing(R::FmpzModRing, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
+function PowerSeriesRing(R::NmodRing, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
    S = Symbol(s)
 
    if model == :capped_relative
-      parent_obj = FmpzModRelSeriesRing(R, prec, S, cached)
+      parent_obj = NmodRelSeriesRing(R, prec, S, cached)
    elseif model == :capped_absolute
-      parent_obj = FmpzModAbsSeriesRing(R, prec, S, cached)
+      parent_obj = NmodAbsSeriesRing(R, prec, S, cached)
    else
       error("Unknown model")
    end
    return parent_obj, gen(parent_obj)
 end
 
-function PowerSeriesRing(R::GaloisFmpzField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
+function PowerSeriesRing(R::GaloisField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
    S = Symbol(s)
 
    if model == :capped_relative
-      parent_obj = GFPFmpzRelSeriesRing(R, prec, S, cached)
+      parent_obj = GFPRelSeriesRing(R, prec, S, cached)
    elseif model == :capped_absolute
-      parent_obj = GFPFmpzAbsSeriesRing(R, prec, S, cached)
+      parent_obj = GFPAbsSeriesRing(R, prec, S, cached)
    else
       error("Unknown model")
    end
