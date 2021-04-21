@@ -1,12 +1,14 @@
-@testset "gfp_rel_series.constructors" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.constructors" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
-   @test elem_type(S) == gfp_rel_series
-   @test elem_type(GFPRelSeriesRing) == gfp_rel_series
-   @test parent_type(gfp_rel_series) == GFPRelSeriesRing
+   @test elem_type(S) == gfp_fmpz_rel_series
+   @test elem_type(GFPFmpzRelSeriesRing) == gfp_fmpz_rel_series
+   @test parent_type(gfp_fmpz_rel_series) == GFPFmpzRelSeriesRing
 
-   @test isa(S, GFPRelSeriesRing)
+   @test characteristic(S) == fmpz(123456789012345678949)
+
+   @test isa(S, GFPFmpzRelSeriesRing)
 
    a = x^3 + 2x + 1
    b = x^2 + x + O(x^4)
@@ -15,16 +17,12 @@
    @test isa(b, SeriesElem)
 
    c = S(a)
-   d1 = S([fmpz(0), fmpz(3), fmpz(1)], 3, 5, 0)
-   d2 = S([UInt(0), UInt(3), UInt(1)], 3, 5, 0)
-   d3 = S([R(0), R(3), R(1)], 3, 5, 0)
+   d = S([fmpz(0), fmpz(3), fmpz(1)], 3, 5, 0)
 
    f = S([R(0), R(3), R(1)], 3, 5, 0)
 
    @test isa(c, SeriesElem)
-   @test isa(d1, SeriesElem)
-   @test isa(d2, SeriesElem)
-   @test isa(d3, SeriesElem)
+   @test isa(d, SeriesElem)
    @test isa(f, SeriesElem)
 
    g = S(1)
@@ -38,18 +36,22 @@
    l = S(R(4))
 
    @test isa(l, SeriesElem)
+
+   @test isa(S(0), SeriesElem)
+   @test isa(S(R(0)), SeriesElem)
+   @test isa(S(fmpz(0)), SeriesElem)
 end
 
-@testset "gfp_rel_series.printing" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.printing" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
    b = x^2 + x + O(x^4)
 
    @test sprint(show, "text/plain", b) == "x + x^2 + O(x^4)"
 end
 
-@testset "gfp_rel_series.manipulation" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.manipulation" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    @test max_precision(S) == 30
@@ -81,11 +83,13 @@ end
 
    @test coeff(b, 7) == 0
 
-   @test characteristic(S) == 17
+   @test iszero(polcoeff(a, -1))
+
+   @test characteristic(R) == 123456789012345678949
 end
 
-@testset "gfp_rel_series.unary_ops" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.unary_ops" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = 2x + x^3
@@ -96,8 +100,8 @@ end
    @test isequal(-b, -1 - 2x - x^2 + O(x^3))
 end
 
-@testset "gfp_rel_series.binary_ops" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.binary_ops" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = 2x + x^3
@@ -105,15 +109,17 @@ end
    c = 1 + x + 3x^2 + O(x^5)
    d = x^2 + 3x^3 - x^4
 
-   @test isequal(a + b, 2*x+x^3+O(x^4))
+   @test a*R(2) == R(2)*a
 
-   @test isequal(a - c, 16+x+14*x^2+x^3+O(x^5))
+   @test isequal(a + b, x^3+2*x+O(x^4))
+
+   @test isequal(a - c, x^3-3*x^2+x-1+O(x^5))
 
    @test isequal(b*c, O(x^4))
 
-   @test isequal(a*c, 2*x+2*x^2+7*x^3+x^4+3*x^5+O(x^6))
+   @test isequal(a*c, 3*x^5+x^4+7*x^3+2*x^2+2*x+O(x^6))
 
-   @test isequal(a*d, 2*x^3+6*x^4+16*x^5+3*x^6+16*x^7+O(x^33))
+   @test isequal(a*d, -x^7+3*x^6-x^5+6*x^4+2*x^3+O(x^33))
 
    f1 = 1 + x + x^2 + x^3
    f2 = x + x^2
@@ -137,7 +143,7 @@ end
 
    @test f1 - f3 == 1+O(x^30)
 
-   @test f1 - f4 == 1+x+16*x^4+16*x^5+O(x^30)
+   @test f1 - f4 == 1+x-x^4-x^5+O(x^30)
 
    g1 = x^2*f1
    g2 = x^2*f2
@@ -163,7 +169,7 @@ end
    @test g1 - g3 == x^2+O(x^32)
    @test g3 - g1 == -(g1 - g3)
 
-   @test g1 - g4 == x^2+x^3+16*x^6+16*x^7+O(x^32)
+   @test g1 - g4 == x^2+x^3-x^6-x^7+O(x^32)
    @test g4 - g1 == -(g1 - g4)
 
    h1 = f1
@@ -234,8 +240,8 @@ end
    @test isequal(m1 - m4, 1+x+O(x^4))
 end
 
-@testset "gfp_rel_series.adhoc_binary_ops" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.adhoc_binary_ops" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = 2x + x^3
@@ -252,8 +258,8 @@ end
    @test isequal(d*fmpz(3), 3x^2 + 9x^3 - 3x^4 + O(x^32))
 end
 
-@testset "gfp_rel_series.comparison" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.comparison" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = 2x + x^3
@@ -267,39 +273,58 @@ end
 
    @test c != d
 
+   @test c != 1 + x + 3x^3 + O(x^5)
+
    @test isequal(a, 2x + x^3 + O(x^31))
 
    @test !isequal(b, d)
 end
 
-@testset "gfp_rel_series.adhoc_comparison" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.adhoc_comparison" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = 2x + x^3
    b = O(x^0)
    c = 1 + O(x^5)
    d = S(3)
+   e = 2*x + O(x^5)
+   f = O(x^5)
 
    @test d == 3
+   @test d == R(3)
 
    @test c == fmpz(1)
+   @test c == R(1)
 
    @test fmpz() != a
 
    @test 2 == b
+   @test R(2) == b
 
    @test fmpz(1) == c
+   @test R(1) == c
+
+   @test fmpz(2) != e
+   @test R(2) != e
+
+   @test 0 == f
+   @test R(0) == f
+
+   @test 0 != a + O(x^5)
+   @test R(0) != a + O(x^5)
 end
 
-@testset "gfp_rel_series.powering" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.powering" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = 2x + x^3
    b = O(x^4)
    c = 1 + x + 2x^2 + O(x^5)
    d = 2x + x^3 + O(x^4)
+
+   @test a^0 == one(S)
 
    @test isequal(a^12, x^36+24*x^34+264*x^32+1760*x^30+7920*x^28+25344*x^26+59136*x^24+101376*x^22+126720*x^20+112640*x^18+67584*x^16+24576*x^14+4096*x^12+O(x^42))
 
@@ -309,11 +334,13 @@ end
 
    @test isequal(d^12, 4096*x^12+24576*x^14+O(x^15))
 
+   @test isequal((2*x+O(x^5))^2, 4*x^2+O(x^6))
+
    @test_throws DomainError a^-1
 end
 
-@testset "gfp_rel_series.shift" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.shift" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = 2x + x^3
@@ -329,13 +356,15 @@ end
 
    @test isequal(shift_right(d, 3), 1+O(x^1))
 
+   @test isequal(shift_right(d, 4), O(x^0))
+
    @test_throws DomainError shift_left(a, -1)
 
    @test_throws DomainError shift_right(a, -1)
 end
 
-@testset "gfp_rel_series.truncation" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.truncation" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = 2x + x^3
@@ -354,8 +383,8 @@ end
    @test_throws DomainError truncate(a, -1)
 end
 
-@testset "gfp_rel_series.inversion" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.inversion" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = 1 + x + 2x^2 + O(x^5)
@@ -366,8 +395,8 @@ end
    @test isequal(inv(b), -1+O(x^30))
 end
 
-@testset "gfp_rel_series.exact_division" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.exact_division" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = x + x^3
@@ -384,8 +413,8 @@ end
    @test isequal(divexact(d, c), -2*x^5+2*x^4-x^2+x+O(x^6))
 end
 
-@testset "gfp_rel_series.adhoc_exact_division" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.adhoc_exact_division" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
    a = x + x^3
@@ -393,26 +422,26 @@ end
    c = 1 + x + 2x^2 + O(x^5)
    d = x + x^3 + O(x^6)
 
-   @test isequal(divexact(a, 7), 5*x+5*x^3+O(x^31))
+   @test isequal(divexact(a, 7), 35273368289241622557*x^3+35273368289241622557*x+O(x^31))
 
    @test isequal(divexact(b, fmpz(11)), 0+O(x^4))
 
-   @test isequal(divexact(c, fmpz(2)), 9+9*x+x^2+O(x^5))
+   @test isequal(divexact(c, fmpz(2)), x^2+61728394506172839475*x+61728394506172839475+O(x^5))
 
-   @test isequal(divexact(d, 9), 2*x+2*x^3+O(x^6))
+   @test isequal(divexact(d, 9), 27434842002743484211*x^3+27434842002743484211*x+O(x^6))
 
    @test isequal(divexact(94872394861923874346987123694871329847a, 94872394861923874346987123694871329847), a)
 
    @test isequal(divexact(R(5)*a, R(5)), a)
 end
 
-@testset "gfp_rel_series.special_functions" begin
-   R = GF(17)
+@testset "gfp_fmpz_rel_series.special_functions" begin
+   R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
 
-   @test isequal(exp(x + O(x^5)), 1+x+9*x^2+3*x^3+5*x^4+O(x^5))
-   @test isequal(exp(O(x^5)), 1+O(x^5))
+   @test isequal(exp(x + O(x^5)), 56584361630658436185*x^4+102880657510288065791*x^3+61728394506172839475*x^2+x+1+O(x^5))
    @test isequal(exp(O(x^0)), O(x^0))
+   @test isequal(exp(O(x^5)), 1+O(x^5))
 
-   @test isequal(divexact(x, exp(x + O(x^5)) - 1), 1+8*x+10*x^2+O(x^4))
+   @test isequal(divexact(x, exp(x + O(x^5)) - 1), 113168723261316872370*x^2+61728394506172839474*x+1+O(x^4))
 end

@@ -3338,6 +3338,124 @@ end
 
 ###############################################################################
 #
+#   GFPFmpzRelSeriesRing / gfp_fmpz_rel_series
+#
+###############################################################################
+
+mutable struct GFPFmpzRelSeriesRing <: SeriesRing{gfp_fmpz_elem}
+   base_ring::GaloisFmpzField
+   prec_max::Int
+   S::Symbol
+
+   function GFPFmpzRelSeriesRing(R::Ring, prec::Int, s::Symbol,
+                                 cached::Bool = true)
+      if cached && haskey(GFPFmpzRelSeriesID, (R, prec, s))
+         return GFPFmpzRelSeriesID[R, prec, s]
+      else
+         z = new(R, prec, s)
+         if cached
+            GFPFmpzRelSeriesID[R, prec, s] = z
+         end
+         return z
+      end
+   end
+end
+
+const GFPFmpzRelSeriesID = Dict{Tuple{GaloisFmpzField, Int, Symbol},
+                                GFPFmpzRelSeriesRing}()
+
+mutable struct gfp_fmpz_rel_series <: RelSeriesElem{gfp_fmpz_elem}
+   coeffs::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   # end flint struct
+
+   prec::Int
+   val::Int
+   parent::GFPFmpzRelSeriesRing
+
+   function gfp_fmpz_rel_series(p::fmpz_mod_ctx_struct)
+      z = new()
+      ccall((:fmpz_mod_poly_init, libflint), Nothing,
+            (Ref{gfp_fmpz_rel_series}, Ref{fmpz_mod_ctx_struct}),
+            z, p)
+      finalizer(_gfp_fmpz_rel_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_rel_series(R::GaloisFmpzField)
+      return gfp_fmpz_rel_series(R.ninv)
+   end
+
+   function gfp_fmpz_rel_series(p::fmpz_mod_ctx_struct, a::Array{fmpz, 1},
+                                len::Int, prec::Int, val::Int)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, libflint), Nothing,
+            (Ref{gfp_fmpz_rel_series}, Int, Ref{fmpz_mod_ctx_struct}),
+            z, len, p)
+      for i = 1:len
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
+               (Ref{gfp_fmpz_rel_series}, Int, Ref{fmpz},
+                Ref{fmpz_mod_ctx_struct}),
+               z, i - 1, a[i], p)
+      end
+      z.prec = prec
+      z.val = val
+      finalizer(_gfp_fmpz_rel_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_rel_series(R::GaloisFmpzField, a::Array{fmpz, 1},
+                                len::Int, prec::Int, val::Int)
+      return gfp_fmpz_rel_series(R.ninv, a, len, prec, val)
+   end
+
+   function gfp_fmpz_rel_series(p::fmpz_mod_ctx_struct, a::Array{gfp_fmpz_elem, 1},
+                                len::Int, prec::Int, val::Int)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, libflint), Nothing,
+            (Ref{gfp_fmpz_rel_series}, Int, Ref{fmpz_mod_ctx_struct}),
+            z, len, p)
+      for i = 1:len
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
+               (Ref{gfp_fmpz_rel_series}, Int, Ref{fmpz},
+                Ref{fmpz_mod_ctx_struct}),
+               z, i - 1, data(a[i]), p)
+      end
+      z.prec = prec
+      z.val = val
+      finalizer(_gfp_fmpz_rel_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_rel_series(R::GaloisFmpzField, a::Array{gfp_fmpz_elem, 1},
+                                len::Int, prec::Int, val::Int)
+      return gfp_fmpz_rel_series(R.ninv, a, len, prec, val)
+   end
+
+   function gfp_fmpz_rel_series(a::gfp_fmpz_rel_series)
+      z = new()
+      p = a.parent.base_ring.ninv
+      ccall((:fmpz_mod_poly_init, libflint), Nothing,
+            (Ref{gfp_fmpz_rel_series}, Ref{fmpz_mod_ctx_struct}),
+            z, p)
+      ccall((:fmpz_mod_poly_set, libflint), Nothing,
+            (Ref{gfp_fmpz_rel_series}, Ref{gfp_fmpz_rel_series},
+             Ref{fmpz_mod_ctx_struct}),
+            z, a, p)
+      finalizer(_gfp_fmpz_rel_series_clear_fn, z)
+      return z
+   end
+end
+
+function _gfp_fmpz_rel_series_clear_fn(a::gfp_fmpz_rel_series)
+   ccall((:fmpz_mod_poly_clear, libflint), Nothing,
+         (Ref{gfp_fmpz_rel_series}, Ref{fmpz_mod_ctx_struct}),
+         a, a.parent.base_ring.ninv)
+end
+
+###############################################################################
+#
 #   FmpzModRelSeriesRing / fmpz_mod_rel_series
 #
 ###############################################################################

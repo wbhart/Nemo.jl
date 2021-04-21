@@ -1,8 +1,8 @@
 ###############################################################################
 #
-#   nmod_abs_series.jl: Absolute series using nmod_poly
+#   nmod_rel_series.jl: Relative series using nmod_poly
 #
-#   nmod_abs_series, gfp_abs_series
+#   nmod_rel_series, gfp_rel_series
 #
 ###############################################################################
 
