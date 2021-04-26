@@ -175,18 +175,39 @@ Most parent object constructors take a `cached` keyword which specifies whether
 the parent object should be cached or not, but again it is better overall to
 simply eschew the use of parent object constructors in library code.
 
-Instead, it is recommended to use functions such as `similar`, `zero_matrix`,
-`identity_matrix`, `change_base_ring`, `map`, etc.
+Instead, it is recommended to use functions such as `similar`, `zero`,
+`zero_matrix`, `identity_matrix`, `change_base_ring`, `map`, etc. for
+constructing polynomials and matrices directly.
 
 There are also functions that provide alternative ways of constructing objects,
 e.g. `matrix` provides a means of creating a matrix over a given ring with
-given dimensions. These should be used in preference to parent object
-constructors where possible. Additional functions of this type should be added
-in future.
+given dimensions. The constructor `polynomial` allows creation of a polynomial
+over a given base ring with given coefficients. These should be used in
+preference to parent object constructors where possible. Additional functions
+of this type should be added in future.
 
-Naturally many such functions are missing at present and it is hoped that
-developers will fill in such infrastructure rather than simply push the can
-down the road for someone else to fix. Forcing the creating of parent objects
-into as few bottlenecks as possible will make it much easier for developers to
-remove problems associated with such calls when they arise in future.
+However even when using these functions in library code, it is important to
+remember to pass `cached=false` so that the cache is not filled up by calls
+to the library code. But this creates an additional problem, namely that if one
+uses `polynomial` say, to construct two polynomials over the same base ring,
+they will not be compatible in the sense that they will have different parents.
+Instead, the following pattern is encouraged:
+
+```julia
+p = polynomial(ZZ, [1, 2, 3], cached=false)
+R = parent(p)
+q = R([2, 3, 4])
+s = p + q
+```
+
+Note that the second polynomial `q` is created from the parent `R` of the first
+without explicitly creating the parent object using the `PolynomialRing`
+constructor.
+
+Naturally functions like `polynomial` and `matrix` are missing for other
+modules in Nemo at present and it is hoped that developers will fill in such
+infrastructure rather than simply push the can down the road for someone else
+to fix. Forcing the creating of parent objects into as few bottlenecks as
+possible will make it much easier for developers to remove problems associated
+with such calls when they arise in future.
 
