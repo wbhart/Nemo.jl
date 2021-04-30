@@ -741,8 +741,10 @@ end
 @doc Markdown.doc"""
     angle(x::acb)
 
-Return the angle in radians that the complex vector $x$ makes with the
-positive real axis in a counterclockwise direction.
+Return complex argument of $x$, the angle in radians that the complex vector $x$
+makes with the positive real axis in a counterclockwise direction. It has a
+discontinuity on the non-positive real axis, with the special values
+$\arg(0) = 0$ and $\arg(a + 0 i) = \pi$ for $a < 0$.
 """
 function angle(x::acb)
   z = arb()
