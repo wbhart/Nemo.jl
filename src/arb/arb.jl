@@ -861,6 +861,10 @@ end
 /(x::arb, y::UInt) = x // y
 /(x::fmpq, y::arb) = x // y
 /(x::arb, y::fmpq) = x // y
+/(x::Float64, y::arb) = x // y
+/(x::arb, y::Float64) = x // y
+/(x::BigFloat, y::arb) = x // y
+/(x::arb, y::BigFloat) = x // y
 /(x::Rational{T}, y::arb) where {T <: Integer} = x // y
 /(x::arb, y::Rational{T}) where {T <: Integer} = x // y
 
@@ -873,6 +877,10 @@ divexact(x::UInt, y::arb) = x // y
 divexact(x::arb, y::UInt) = x // y
 divexact(x::fmpq, y::arb) = x // y
 divexact(x::arb, y::fmpq) = x // y
+divexact(x::Float64, y::arb) = x // y
+divexact(x::arb, y::Float64) = x // y
+divexact(x::BigFloat, y::arb) = x // y
+divexact(x::arb, y::BigFloat) = x // y
 divexact(x::Rational{T}, y::arb) where {T <: Integer} = x // y
 divexact(x::arb, y::Rational{T}) where {T <: Integer} = x // y
 
