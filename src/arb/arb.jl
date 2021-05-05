@@ -349,7 +349,7 @@ function >=(x::arb, y::arb)
     return Bool(ccall((:arb_ge, libarb), Cint, (Ref{arb}, Ref{arb}), x, y))
 end
 
-function <(x::arb, y::arb)
+function isless(x::arb, y::arb)
     return Bool(ccall((:arb_lt, libarb), Cint, (Ref{arb}, Ref{arb}), x, y))
 end
 
