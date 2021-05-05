@@ -86,6 +86,32 @@ end
 
 ###############################################################################
 #
+#   Similar
+#
+###############################################################################
+
+function similar(f::PolyElem, R::ArbField, var::Symbol=var(parent(f)); cached::Bool=true)
+   z = arb_poly()
+   z.parent = ArbPolyRing(R, var, cached)
+   return z
+end
+
+###############################################################################
+#
+#   polynomial constructor
+#
+###############################################################################
+
+function polynomial(R::ArbField, arr::Vector{T}, var::String="x"; cached::Bool=true) where T
+   coeffs = map(R, arr)
+   coeffs = length(coeffs) == 0 ? arb[] : coeffs
+   z = arb_poly(coeffs, R.prec)
+   z.parent = ArbPolyRing(R, Symbol(var), cached)
+   return z
+end
+
+###############################################################################
+#
 #   Comparisons
 #
 ###############################################################################

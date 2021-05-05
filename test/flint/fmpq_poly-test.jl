@@ -121,6 +121,37 @@ end
    @test characteristic(S) == 0
 end
 
+@testset "fmpq_poly.polynomial" begin
+   f = polynomial(QQ, [])
+   g = polynomial(QQ, [1, 2, 3])
+   h = polynomial(QQ, fmpz[1, 2, 3])
+   k = polynomial(QQ, fmpq[1, 2, 3])
+   p = polynomial(QQ, [1, 2, 3], "y")
+
+   @test isa(f, fmpq_poly)
+   @test isa(g, fmpq_poly)
+   @test isa(h, fmpq_poly)
+   @test isa(k, fmpq_poly)
+   @test isa(p, fmpq_poly)
+
+   q = polynomial(QQ, [1, 2, 3], cached=false)
+
+   @test parent(g) != parent(q)
+end
+
+@testset "fmpq_poly.similar" begin
+   f = polynomial(QQ, [1, 2, 3])
+   g = similar(f)
+   h = similar(f, "y")
+
+   @test isa(g, fmpq_poly)
+   @test isa(h, fmpq_poly)
+
+   q = similar(g, cached=false)
+
+   @test parent(g) != parent(q)
+end
+
 @testset "fmpq_poly.binary_ops" begin
    S, y = PolynomialRing(QQ, "y")
 

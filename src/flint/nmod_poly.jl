@@ -108,6 +108,32 @@ end
 
 characteristic(R::NmodPolyRing) = modulus(R)
 
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::PolyElem, R::NmodRing, var::Symbol=var(parent(f)); cached::Bool=true)
+   z = nmod_poly(R.n)
+   z.parent = NmodPolyRing(R, var, cached)
+   return z
+end
+
+###############################################################################
+#
+#   polynomial constructor
+#
+###############################################################################
+
+function polynomial(R::NmodRing, arr::Vector{T}, var::String="x"; cached::Bool=true) where T
+   coeffs = map(R, arr)
+   coeffs = length(coeffs) == 0 ? nmod[] : coeffs
+   z = nmod_poly(R.n, coeffs)
+   z.parent = NmodPolyRing(R, Symbol(var), cached)
+   return z
+end
+
 ################################################################################
 #
 #  AbstractString I/O

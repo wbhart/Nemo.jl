@@ -105,6 +105,41 @@ end
    @test characteristic(S) == 123456789012345678949
 end
 
+@testset "gfp_fmpz_poly.polynomial" begin
+   R = GF(ZZ(23))
+
+   f = polynomial(R, [])
+   g = polynomial(R, [1, 2, 3])
+   h = polynomial(R, fmpz[1, 2, 3])
+   k = polynomial(R, [R(1), R(2), R(3)])
+   p = polynomial(R, [1, 2, 3], "y")
+
+   @test isa(f, gfp_fmpz_poly)
+   @test isa(g, gfp_fmpz_poly)
+   @test isa(h, gfp_fmpz_poly)
+   @test isa(k, gfp_fmpz_poly)
+   @test isa(p, gfp_fmpz_poly)
+
+   q = polynomial(R, [1, 2, 3], cached=false)
+
+   @test parent(g) != parent(q)
+end
+
+@testset "gfp_fmpz_poly.similar" begin
+   R = GF(ZZ(23))
+
+   f = polynomial(R, [1, 2, 3])
+   g = similar(f)
+   h = similar(f, "y")
+
+   @test isa(g, gfp_fmpz_poly)
+   @test isa(h, gfp_fmpz_poly)
+
+   q = similar(g, cached=false)
+
+   @test parent(g) != parent(q)
+end
+
 @testset "gfp_fmpz_poly.binary_ops" begin
    R = GF(fmpz(123456789012345678949))
    S, x = PolynomialRing(R, "x")

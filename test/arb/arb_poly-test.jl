@@ -71,6 +71,41 @@ end
    @test characteristic(R) == 0
 end
 
+@testset "arb_poly.polynomial" begin
+   R = RealField(53)
+
+   f = polynomial(R, [])
+   g = polynomial(R, [1, 2, 3])
+   h = polynomial(R, fmpz[1, 2, 3])
+   k = polynomial(R, [R(1), R(2), R(3)])
+   p = polynomial(R, [1, 2, 3], "y")
+
+   @test isa(f, arb_poly)
+   @test isa(g, arb_poly)
+   @test isa(h, arb_poly)
+   @test isa(k, arb_poly)
+   @test isa(p, arb_poly)
+
+   q = polynomial(R, [1, 2, 3], cached=false)
+
+   @test parent(g) != parent(q)
+end
+
+@testset "arb_poly.similar" begin
+   R = RealField(53)
+
+   f = polynomial(R, [1, 2, 3])
+   g = similar(f)
+   h = similar(f, "y")
+
+   @test isa(g, arb_poly)
+   @test isa(h, arb_poly)
+
+   q = similar(g, cached=false)
+
+   @test parent(g) != parent(q)
+end
+
 @testset "arb_poly.binary_ops" begin
    R, x = PolynomialRing(RR, "x")
 

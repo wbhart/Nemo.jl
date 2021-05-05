@@ -80,6 +80,31 @@ end
 
 characteristic(R::FqNmodPolyRing) = characteristic(base_ring(R))
 
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::PolyElem, R::FqNmodFiniteField, var::Symbol=var(parent(f)); cached::Bool=true)
+   z = fq_nmod_poly()
+   z.parent = FqNmodPolyRing(R, var, cached)
+   return z
+end
+
+###############################################################################
+#
+#   polynomial constructor
+#
+###############################################################################
+
+function polynomial(R::FqNmodFiniteField, arr::Vector{T}, var::String="x"; cached::Bool=true) where T
+   coeffs = map(R, arr)
+   z = length(coeffs) == 0 ? fq_nmod_poly() : fq_nmod_poly(coeffs)
+   z.parent = FqNmodPolyRing(R, Symbol(var), cached)
+   return z
+end
+
 ################################################################################
 #
 #   Canonicalisation

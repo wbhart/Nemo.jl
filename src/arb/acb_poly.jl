@@ -90,6 +90,32 @@ end
 
 ###############################################################################
 #
+#   Similar
+#
+###############################################################################
+
+function similar(f::PolyElem, R::AcbField, var::Symbol=var(parent(f)); cached::Bool=true)
+   z = acb_poly()
+   z.parent = AcbPolyRing(R, var, cached)
+   return z
+end
+
+###############################################################################
+#
+#   polynomial constructor
+#
+###############################################################################
+
+function polynomial(R::AcbField, arr::Vector{T}, var::String="x"; cached::Bool=true) where T
+   coeffs = map(R, arr)
+   coeffs = length(coeffs) == 0 ? acb[] : coeffs
+   z = acb_poly(coeffs, R.prec)
+   z.parent = AcbPolyRing(R, Symbol(var), cached)
+   return z
+end
+
+###############################################################################
+#
 #   Comparisons
 #
 ###############################################################################

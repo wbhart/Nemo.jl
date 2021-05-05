@@ -74,6 +74,35 @@ end
    @test height(2*x^2 - 7*x + 1) == 7
 end
 
+@testset "fmpz_poly.polynomial" begin
+   f = polynomial(ZZ, [])
+   g = polynomial(ZZ, [1, 2, 3])
+   h = polynomial(ZZ, fmpz[1, 2, 3])
+   p = polynomial(ZZ, [1, 2, 3], "y")
+
+   @test isa(f, fmpz_poly)
+   @test isa(g, fmpz_poly)
+   @test isa(h, fmpz_poly)
+   @test isa(p, fmpz_poly)
+
+   q = polynomial(ZZ, [1, 2, 3], cached=false)
+
+   @test parent(g) != parent(q)
+end
+
+@testset "fmpz_poly.similar" begin
+   f = polynomial(ZZ, [1, 2, 3])
+   g = similar(f)
+   h = similar(f, "y")
+
+   @test isa(g, fmpz_poly)
+   @test isa(h, fmpz_poly)
+
+   q = similar(g, cached=false)
+
+   @test parent(g) != parent(q)
+end
+
 @testset "fmpz_poly.binary_ops" begin
    R, x = PolynomialRing(ZZ, "x")
 

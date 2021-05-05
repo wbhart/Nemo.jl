@@ -73,6 +73,32 @@ end
 
 ###############################################################################
 #
+#   Similar
+#
+###############################################################################
+
+function similar(f::PolyElem, R::FlintRationalField, var::Symbol=var(parent(f)); cached::Bool=true)
+   z = fmpq_poly()
+   z.parent = FmpqPolyRing(R, var, cached)
+   return z
+end
+
+###############################################################################
+#
+#   polynomial constructor
+#
+###############################################################################
+
+function polynomial(R::FlintRationalField, arr::Vector{T}, var::String="x"; cached::Bool=true) where T
+   coeffs = T == fmpq ? arr : map(R, arr)
+   coeffs = length(coeffs) == 0 ? fmpq[] : coeffs
+   z = fmpq_poly(coeffs)
+   z.parent = FmpqPolyRing(R, Symbol(var), cached)
+   return z
+end
+
+###############################################################################
+#
 #   Canonicalisation
 #
 ###############################################################################

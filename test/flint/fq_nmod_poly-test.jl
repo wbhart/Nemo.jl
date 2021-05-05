@@ -101,6 +101,41 @@ end
    @test characteristic(S) == 23
 end
 
+@testset "fq_nmod_poly.polynomial" begin
+   R, _ = FiniteField(23, 3, "a")
+
+   f = polynomial(R, [])
+   g = polynomial(R, [1, 2, 3])
+   h = polynomial(R, fmpz[1, 2, 3])
+   k = polynomial(R, [R(1), R(2), R(3)])
+   p = polynomial(R, [1, 2, 3], "y")
+
+   @test isa(f, fq_nmod_poly)
+   @test isa(g, fq_nmod_poly)
+   @test isa(h, fq_nmod_poly)
+   @test isa(k, fq_nmod_poly)
+   @test isa(p, fq_nmod_poly)
+
+   q = polynomial(R, [1, 2, 3], cached=false)
+
+   @test parent(g) != parent(q)
+end
+
+@testset "fq_nmod_poly.similar" begin
+   R, a = FiniteField(23, 3, "a")
+
+   f = polynomial(R, [1, 2, 3])
+   g = similar(f)
+   h = similar(f, "y")
+
+   @test isa(g, fq_nmod_poly)
+   @test isa(h, fq_nmod_poly)
+
+   q = similar(g, cached=false)
+
+   @test parent(g) != parent(q)
+end
+
 @testset "fq_nmod_poly.binary_ops" begin
    R, x = FiniteField(23, 5, "x")
    S, y = PolynomialRing(R, "y")

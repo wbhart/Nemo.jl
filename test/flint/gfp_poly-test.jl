@@ -85,6 +85,41 @@
   @test isa(m, PolyElem)
 end
 
+@testset "gfp_poly.polynomial" begin
+   R = GF(23)
+
+   f = polynomial(R, [])
+   g = polynomial(R, [1, 2, 3])
+   h = polynomial(R, fmpz[1, 2, 3])
+   k = polynomial(R, [R(1), R(2), R(3)])
+   p = polynomial(R, [1, 2, 3], "y")
+
+   @test isa(f, gfp_poly)
+   @test isa(g, gfp_poly)
+   @test isa(h, gfp_poly)
+   @test isa(k, gfp_poly)
+   @test isa(p, gfp_poly)
+
+   q = polynomial(R, [1, 2, 3], cached=false)
+
+   @test parent(g) != parent(q)
+end
+
+@testset "nmod_poly.similar" begin
+   R = GF(23)
+
+   f = polynomial(R, [1, 2, 3])
+   g = similar(f)
+   h = similar(f, "y")
+
+   @test isa(g, gfp_poly)
+   @test isa(h, gfp_poly)
+
+   q = similar(g, cached=false)
+
+   @test parent(g) != parent(q)
+end
+
 @testset "gfp_poly.printing" begin
   R = GF(17)
   Rx, x = PolynomialRing(R, "x")
