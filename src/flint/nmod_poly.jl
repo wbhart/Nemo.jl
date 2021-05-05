@@ -31,6 +31,8 @@ elem_type(::Type{nmod_poly}) = nmod_poly
 
 elem_type(::Type{NmodPolyRing}) = nmod_poly
 
+dense_poly_type(::Type{nmod}) = nmod_poly
+
 function check_parent(x::T, y::T) where T <: Zmodn_poly
   parent(x) != parent(y) && error("Parents must coincide")
   nothing

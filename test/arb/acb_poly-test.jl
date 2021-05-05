@@ -7,6 +7,7 @@ CC = AcbField(64)
    @test elem_type(R) == acb_poly
    @test elem_type(AcbPolyRing) == acb_poly
    @test parent_type(acb_poly) == AcbPolyRing
+   @test dense_poly_type(acb) == acb_poly
 
    @test typeof(R) <: AcbPolyRing
 

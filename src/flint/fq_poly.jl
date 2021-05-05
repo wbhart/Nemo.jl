@@ -16,6 +16,8 @@ parent_type(::Type{fq_poly}) = FqPolyRing
 
 elem_type(::Type{FqPolyRing}) = fq_poly
 
+dense_poly_type(::Type{fq}) = fq_poly
+
 base_ring(a::FqPolyRing) = a.base_ring
 
 parent(a::fq_poly) = a.parent

@@ -4,6 +4,7 @@
    @test elem_type(S) == fmpq_poly
    @test elem_type(FmpqPolyRing) == fmpq_poly
    @test parent_type(fmpq_poly) == FmpqPolyRing
+   @test dense_poly_type(fmpq) == fmpq_poly
 
    @test isa(S, FmpqPolyRing)
 

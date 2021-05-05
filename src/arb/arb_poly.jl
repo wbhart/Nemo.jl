@@ -19,6 +19,8 @@ parent_type(::Type{arb_poly}) = ArbPolyRing
 
 elem_type(::Type{ArbPolyRing}) = arb_poly
 
+dense_poly_type(::Type{arb}) = arb_poly
+
 length(x::arb_poly) = ccall((:arb_poly_length, libarb), Int,
                                    (Ref{arb_poly},), x)
 

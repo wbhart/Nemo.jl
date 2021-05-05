@@ -5,6 +5,7 @@
    @test elem_type(S) == fq_poly
    @test elem_type(FqPolyRing) == fq_poly
    @test parent_type(fq_poly) == FqPolyRing
+   @test dense_poly_type(fq) == fq_poly
 
    @test typeof(S) <: FqPolyRing
 

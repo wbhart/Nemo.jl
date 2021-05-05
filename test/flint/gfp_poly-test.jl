@@ -5,6 +5,7 @@
   @test elem_type(Rx) == gfp_poly
   @test elem_type(GFPPolyRing) == gfp_poly
   @test parent_type(gfp_poly) == GFPPolyRing
+  @test dense_poly_type(gfp_elem) == gfp_poly
 
   S = GF(19)
   Sy, y = PolynomialRing(R, "y")

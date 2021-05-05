@@ -17,6 +17,8 @@ parent_type(::Type{fmpz_poly}) = FmpzPolyRing
 
 elem_type(::Type{FmpzPolyRing}) = fmpz_poly
 
+dense_poly_type(::Type{fmpz}) = fmpz_poly
+
 base_ring(a::FmpzPolyRing) = a.base_ring
 
 parent(a::fmpz_poly) = a.parent
