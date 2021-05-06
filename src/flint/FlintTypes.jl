@@ -3125,6 +3125,113 @@ end
 
 ###############################################################################
 #
+#   GFPRelSeriesRing / gfp_rel_series
+#
+###############################################################################
+
+mutable struct GFPRelSeriesRing <: SeriesRing{nmod}
+   base_ring::GaloisField
+   prec_max::Int
+   S::Symbol
+
+   function GFPRelSeriesRing(R::GaloisField, prec::Int, s::Symbol,
+                                 cached::Bool = true)
+      if cached && haskey(GFPRelSeriesID, (R, prec, s))
+         return GFPRelSeriesID[R, prec, s]
+      else
+         z = new(R, prec, s)
+         if cached
+            GFPRelSeriesID[R, prec, s] = z
+         end
+         return z
+      end
+   end
+end
+
+const GFPRelSeriesID = Dict{Tuple{GaloisField, Int, Symbol},
+                                GFPRelSeriesRing}()
+
+mutable struct gfp_rel_series <: RelSeriesElem{gfp_elem}
+   coeffs::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   mod_n::UInt
+   mod_ninv::UInt
+   mod_norm::UInt
+   prec::Int
+   val::Int
+   parent::GFPRelSeriesRing
+
+   function gfp_rel_series(p::UInt)
+      z = new()
+      ccall((:nmod_poly_init, libflint), Nothing,
+            (Ref{gfp_rel_series}, UInt), z, p)
+      finalizer(_gfp_rel_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_rel_series(p::UInt, a::Array{fmpz, 1}, len::Int, prec::Int, val::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{gfp_rel_series}, UInt, Int), z, p, len)
+      for i = 1:len
+         tt = ccall((:fmpz_fdiv_ui, libflint), UInt,
+                    (Ref{fmpz}, UInt), a[i], p)
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+                     (Ref{gfp_rel_series}, Int, UInt), z, i - 1, tt)
+      end
+      z.prec = prec
+      z.val = val
+      finalizer(_gfp_rel_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_rel_series(p::UInt, a::Array{UInt, 1}, len::Int, prec::Int, val::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{gfp_rel_series}, UInt, Int), z, p, len)
+      for i = 1:len
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+                     (Ref{gfp_rel_series}, Int, UInt), z, i - 1, a[i])
+      end
+      z.prec = prec
+      z.val = val
+      finalizer(_gfp_rel_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_rel_series(p::UInt, a::Array{gfp_elem, 1}, len::Int, prec::Int, val::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{gfp_rel_series}, UInt, Int), z, p, len)
+      for i = 1:len
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{gfp_rel_series}, Int, UInt), z, i - 1, data(a[i]))
+      end
+      z.prec = prec
+      z.val = val
+      finalizer(_gfp_rel_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_rel_series(a::gfp_rel_series)
+      z = new()
+      p = modulus(base_ring(parent(a)))
+      ccall((:nmod_poly_init, libflint), Nothing,
+            (Ref{gfp_rel_series}, UInt), z, p)
+      ccall((:nmod_poly_set, libflint), Nothing,
+            (Ref{gfp_rel_series}, Ref{gfp_rel_series}), z, a)
+      finalizer(_gfp_rel_series_clear_fn, z)
+      return z
+   end
+end
+
+function _gfp_rel_series_clear_fn(a::gfp_rel_series)
+   ccall((:nmod_poly_clear, libflint), Nothing, (Ref{gfp_rel_series},), a)
+end
+
+###############################################################################
+#
 #   NmodRelSeriesRing / nmod_rel_series
 #
 ###############################################################################
@@ -3227,6 +3334,124 @@ end
 
 function _nmod_rel_series_clear_fn(a::nmod_rel_series)
    ccall((:nmod_poly_clear, libflint), Nothing, (Ref{nmod_rel_series},), a)
+end
+
+###############################################################################
+#
+#   GFPFmpzRelSeriesRing / gfp_fmpz_rel_series
+#
+###############################################################################
+
+mutable struct GFPFmpzRelSeriesRing <: SeriesRing{gfp_fmpz_elem}
+   base_ring::GaloisFmpzField
+   prec_max::Int
+   S::Symbol
+
+   function GFPFmpzRelSeriesRing(R::Ring, prec::Int, s::Symbol,
+                                 cached::Bool = true)
+      if cached && haskey(GFPFmpzRelSeriesID, (R, prec, s))
+         return GFPFmpzRelSeriesID[R, prec, s]
+      else
+         z = new(R, prec, s)
+         if cached
+            GFPFmpzRelSeriesID[R, prec, s] = z
+         end
+         return z
+      end
+   end
+end
+
+const GFPFmpzRelSeriesID = Dict{Tuple{GaloisFmpzField, Int, Symbol},
+                                GFPFmpzRelSeriesRing}()
+
+mutable struct gfp_fmpz_rel_series <: RelSeriesElem{gfp_fmpz_elem}
+   coeffs::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   # end flint struct
+
+   prec::Int
+   val::Int
+   parent::GFPFmpzRelSeriesRing
+
+   function gfp_fmpz_rel_series(p::fmpz_mod_ctx_struct)
+      z = new()
+      ccall((:fmpz_mod_poly_init, libflint), Nothing,
+            (Ref{gfp_fmpz_rel_series}, Ref{fmpz_mod_ctx_struct}),
+            z, p)
+      finalizer(_gfp_fmpz_rel_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_rel_series(R::GaloisFmpzField)
+      return gfp_fmpz_rel_series(R.ninv)
+   end
+
+   function gfp_fmpz_rel_series(p::fmpz_mod_ctx_struct, a::Array{fmpz, 1},
+                                len::Int, prec::Int, val::Int)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, libflint), Nothing,
+            (Ref{gfp_fmpz_rel_series}, Int, Ref{fmpz_mod_ctx_struct}),
+            z, len, p)
+      for i = 1:len
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
+               (Ref{gfp_fmpz_rel_series}, Int, Ref{fmpz},
+                Ref{fmpz_mod_ctx_struct}),
+               z, i - 1, a[i], p)
+      end
+      z.prec = prec
+      z.val = val
+      finalizer(_gfp_fmpz_rel_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_rel_series(R::GaloisFmpzField, a::Array{fmpz, 1},
+                                len::Int, prec::Int, val::Int)
+      return gfp_fmpz_rel_series(R.ninv, a, len, prec, val)
+   end
+
+   function gfp_fmpz_rel_series(p::fmpz_mod_ctx_struct, a::Array{gfp_fmpz_elem, 1},
+                                len::Int, prec::Int, val::Int)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, libflint), Nothing,
+            (Ref{gfp_fmpz_rel_series}, Int, Ref{fmpz_mod_ctx_struct}),
+            z, len, p)
+      for i = 1:len
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
+               (Ref{gfp_fmpz_rel_series}, Int, Ref{fmpz},
+                Ref{fmpz_mod_ctx_struct}),
+               z, i - 1, data(a[i]), p)
+      end
+      z.prec = prec
+      z.val = val
+      finalizer(_gfp_fmpz_rel_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_rel_series(R::GaloisFmpzField, a::Array{gfp_fmpz_elem, 1},
+                                len::Int, prec::Int, val::Int)
+      return gfp_fmpz_rel_series(R.ninv, a, len, prec, val)
+   end
+
+   function gfp_fmpz_rel_series(a::gfp_fmpz_rel_series)
+      z = new()
+      p = a.parent.base_ring.ninv
+      ccall((:fmpz_mod_poly_init, libflint), Nothing,
+            (Ref{gfp_fmpz_rel_series}, Ref{fmpz_mod_ctx_struct}),
+            z, p)
+      ccall((:fmpz_mod_poly_set, libflint), Nothing,
+            (Ref{gfp_fmpz_rel_series}, Ref{gfp_fmpz_rel_series},
+             Ref{fmpz_mod_ctx_struct}),
+            z, a, p)
+      finalizer(_gfp_fmpz_rel_series_clear_fn, z)
+      return z
+   end
+end
+
+function _gfp_fmpz_rel_series_clear_fn(a::gfp_fmpz_rel_series)
+   ccall((:fmpz_mod_poly_clear, libflint), Nothing,
+         (Ref{gfp_fmpz_rel_series}, Ref{fmpz_mod_ctx_struct}),
+         a, a.parent.base_ring.ninv)
 end
 
 ###############################################################################
@@ -3349,6 +3574,309 @@ end
 
 ###############################################################################
 #
+#   GFPFmpzAbsSeriesRing / gfp_fmpz_abs_series
+#
+###############################################################################
+
+mutable struct GFPFmpzAbsSeriesRing <: SeriesRing{gfp_fmpz_elem}
+   base_ring::GaloisFmpzField
+   prec_max::Int
+   S::Symbol
+
+   function GFPFmpzAbsSeriesRing(R::Ring, prec::Int, s::Symbol,
+                                 cached::Bool = true)
+      if cached && haskey(GFPFmpzAbsSeriesID, (R, prec, s))
+         return GFPFmpzAbsSeriesID[R, prec, s]
+      else
+         z = new(R, prec, s)
+         if cached
+            GFPFmpzAbsSeriesID[R, prec, s]  = z
+         end
+         return z
+      end
+   end
+end
+
+const GFPFmpzAbsSeriesID = Dict{Tuple{GaloisFmpzField, Int, Symbol},
+                                GFPFmpzAbsSeriesRing}()
+
+mutable struct gfp_fmpz_abs_series <: AbsSeriesElem{gfp_fmpz_elem}
+   coeffs::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   # end flint struct
+
+   prec::Int
+   parent::GFPFmpzAbsSeriesRing
+
+   function gfp_fmpz_abs_series(p::fmpz_mod_ctx_struct)
+      z = new()
+      ccall((:fmpz_mod_poly_init, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Ref{fmpz_mod_ctx_struct}),
+            z, p)
+      finalizer(_gfp_fmpz_abs_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_abs_series(R::GaloisFmpzField)
+      return gfp_fmpz_abs_series(R.ninv)
+   end
+
+   function gfp_fmpz_abs_series(p::fmpz_mod_ctx_struct, a::Array{fmpz, 1},
+                                len::Int, prec::Int)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+            z, len, p)
+      for i = 1:len
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
+               (Ref{gfp_fmpz_abs_series}, Int, Ref{fmpz},
+                Ref{fmpz_mod_ctx_struct}),
+               z, i - 1, a[i], p)
+      end
+      z.prec = prec
+      finalizer(_gfp_fmpz_abs_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_abs_series(R::GaloisFmpzField, a::Array{fmpz, 1}, len::Int, prec::Int)
+      return gfp_fmpz_abs_series(R.ninv, a, len, prec)
+   end
+
+   function gfp_fmpz_abs_series(p::fmpz_mod_ctx_struct, a::Array{gfp_fmpz_elem, 1},
+                                len::Int, prec::Int)
+      z = new()
+      ccall((:fmpz_mod_poly_init2, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+            z, len, p)
+      for i = 1:len
+         ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Int, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+             z, i - 1, data(a[i]), p)
+      end
+      z.prec = prec
+      finalizer(_gfp_fmpz_abs_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_fmpz_abs_series(R::GaloisFmpzField, a::Array{gfp_fmpz_elem, 1},
+                                len::Int, prec::Int)
+      return gfp_fmpz_abs_series(R.ninv, a, len, prec)
+   end
+
+   function gfp_fmpz_abs_series(a::gfp_fmpz_abs_series)
+      z = new()
+      p = a.parent.base_ring.ninv
+      ccall((:fmpz_mod_poly_init, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Ref{fmpz_mod_ctx_struct}),
+            z, p)
+      ccall((:fmpz_mod_poly_set, libflint), Nothing,
+            (Ref{gfp_fmpz_abs_series}, Ref{gfp_fmpz_abs_series},
+             Ref{fmpz_mod_ctx_struct}),
+            z, a, p)
+      finalizer(_gfp_fmpz_abs_series_clear_fn, z)
+      return z
+   end
+end
+
+function _gfp_fmpz_abs_series_clear_fn(a::gfp_fmpz_abs_series)
+   ccall((:fmpz_mod_poly_clear, libflint), Nothing,
+         (Ref{gfp_fmpz_abs_series}, Ref{fmpz_mod_ctx_struct}),
+         a, a.parent.base_ring.ninv)
+end
+
+###############################################################################
+#
+#   NmodAbsSeriesRing / nmod_abs_series
+#
+###############################################################################
+
+mutable struct NmodAbsSeriesRing <: SeriesRing{nmod}
+   base_ring::NmodRing
+   prec_max::Int
+   n::UInt
+   S::Symbol
+ 
+   function NmodAbsSeriesRing(R::Ring, prec::Int, s::Symbol,
+                                  cached::Bool = true)
+      m = modulus(R)
+      if cached && haskey(NmodAbsSeriesID, (R, prec, s))
+         return NmodAbsSeriesID[R, prec, s]
+      else
+         z = new(R, prec, m, s)
+         if cached
+            NmodAbsSeriesID[R, prec, s]  = z
+         end
+         return z
+      end
+   end
+end
+ 
+const NmodAbsSeriesID = Dict{Tuple{NmodRing, Int, Symbol},
+                                 NmodAbsSeriesRing}()
+  
+mutable struct nmod_abs_series <: AbsSeriesElem{nmod}
+   coeffs::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   mod_n::UInt
+   mod_ninv::UInt
+   mod_norm::UInt
+   # end of flint struct
+
+   prec::Int
+   parent::NmodAbsSeriesRing
+  
+   function nmod_abs_series(n::UInt)
+      z = new()
+      ccall((:nmod_poly_init, libflint), Nothing,
+            (Ref{nmod_abs_series}, UInt), z, n)
+      finalizer(_nmod_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function nmod_abs_series(n::UInt, arr::Array{fmpz, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{nmod_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         tt = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt), arr[i], n)
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{nmod_abs_series}, Int, UInt), z, i - 1, tt)
+      end
+      z.prec = prec
+      finalizer(_nmod_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function nmod_abs_series(n::UInt, arr::Array{UInt, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{nmod_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{nmod_abs_series}, Int, UInt), z, i - 1, arr[i])
+      end
+      z.prec = prec
+      finalizer(_nmod_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function nmod_abs_series(n::UInt, arr::Array{nmod, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{nmod_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{nmod_abs_series}, Int, UInt), z, i-1, arr[i].data)
+      end
+      z.prec = prec
+      finalizer(_nmod_abs_series_clear_fn, z)
+      return z
+   end
+end
+
+function _nmod_abs_series_clear_fn(x::nmod_abs_series)
+   ccall((:nmod_poly_clear, libflint), Nothing, (Ref{nmod_abs_series}, ), x)
+end
+
+###############################################################################
+#
+#   GFPAbsSeriesRing / gfp_abs_series
+#
+###############################################################################
+
+mutable struct GFPAbsSeriesRing <: SeriesRing{gfp_elem}
+   base_ring::GaloisField
+   prec_max::Int
+   n::UInt
+   S::Symbol
+ 
+   function GFPAbsSeriesRing(R::Ring, prec::Int, s::Symbol,
+                                  cached::Bool = true)
+      m = modulus(R)
+      if cached && haskey(GFPAbsSeriesID, (R, prec, s))
+         return GFPAbsSeriesID[R, prec, s]
+      else
+         z = new(R, prec, m, s)
+         if cached
+            GFPAbsSeriesID[R, prec, s]  = z
+         end
+         return z
+      end
+   end
+end
+ 
+const GFPAbsSeriesID = Dict{Tuple{GaloisField, Int, Symbol},
+                                 GFPAbsSeriesRing}()
+  
+mutable struct gfp_abs_series <: AbsSeriesElem{gfp_elem}
+   coeffs::Ptr{Nothing}
+   alloc::Int
+   length::Int
+   mod_n::UInt
+   mod_ninv::UInt
+   mod_norm::UInt
+   # end of flint struct
+
+   prec::Int
+   parent::GFPAbsSeriesRing
+  
+   function gfp_abs_series(n::UInt)
+      z = new()
+      ccall((:nmod_poly_init, libflint), Nothing,
+            (Ref{gfp_abs_series}, UInt), z, n)
+      finalizer(_gfp_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function gfp_abs_series(n::UInt, arr::Array{fmpz, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{gfp_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         tt = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt), arr[i], n)
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{gfp_abs_series}, Int, UInt), z, i - 1, tt)
+      end
+      z.prec = prec
+      finalizer(_gfp_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function gfp_abs_series(n::UInt, arr::Array{UInt, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{gfp_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         ccall((:nmod_poly_series_set_coeff_ui, libflint), Nothing,
+               (Ref{gfp_abs_series}, Int, UInt), z, i - 1, arr[i])
+      end
+      z.prec = prec
+      finalizer(_gfp_abs_series_clear_fn, z)
+      return z
+   end
+  
+   function gfp_abs_series(n::UInt, arr::Array{gfp_elem, 1}, len::Int, prec::Int)
+      z = new()
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{gfp_abs_series}, UInt, Int), z, n, length(arr))
+      for i in 1:len
+         ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+               (Ref{gfp_abs_series}, Int, UInt), z, i-1, arr[i].data)
+      end
+      z.prec = prec
+      finalizer(_gfp_abs_series_clear_fn, z)
+      return z
+   end
+end
+
+function _gfp_abs_series_clear_fn(x::gfp_abs_series)
+   ccall((:nmod_poly_clear, libflint), Nothing, (Ref{gfp_abs_series}, ), x)
+end
+
+###############################################################################
+#
 #   FmpzModAbsSeriesRing / fmpz_mod_abs_series
 #
 ###############################################################################
@@ -3449,6 +3977,7 @@ mutable struct fmpz_mod_abs_series <: AbsSeriesElem{fmpz_mod}
             (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series},
              Ref{fmpz_mod_ctx_struct}),
             z, a, p)
+      z.prec = a.prec
       finalizer(_fmpz_mod_abs_series_clear_fn, z)
       return z
    end
@@ -3459,6 +3988,7 @@ function _fmpz_mod_abs_series_clear_fn(a::fmpz_mod_abs_series)
          (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_ctx_struct}),
          a, a.parent.base_ring.ninv)
 end
+
 
 ###############################################################################
 #

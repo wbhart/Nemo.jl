@@ -39,6 +39,8 @@ function Base.hash(a::gfp_elem, h::UInt)
    return xor(xor(hash(a.data), h), b)
 end
 
+data(a::gfp_elem) = a.data
+
 function zero(R::GaloisField)
    return gfp_elem(UInt(0), R)
 end

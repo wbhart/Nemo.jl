@@ -27,8 +27,10 @@ Base ring                             | Library            | Element type       
 Generic ring $R$                      | AbstractAlgebra.jl | `Generic.RelSeries{T} | `Generic.RelSeriesRing{T}`
 $\mathbb{Z}$                          | Flint              | `fmpz_rel_series`     | `FmpzRelSeriesRing`
 $\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint              | `nmod_rel_series`     |  NmodRelSeriesRing
-$\mathbb{Z}/n\mathbb{Z}$              | Flint              | `fmpz_mod_rel_series` | `FmpzModRelSeriesRing`
+$\mathbb{Z}/n\mathbb{Z}$ (large $n$)  | Flint              | `fmpz_mod_rel_series` | `FmpzModRelSeriesRing`
 $\mathbb{Q}$                          | Flint              | `fmpq_rel_series`     | `FmpqRelSeriesRing`
+$\mathbb{F}_p$ (small $n$)            | Flint              | `gfp_rel_series`      | `GFPRelSeriesRing`
+$\mathbb{F}_p$ (large $n$)            | Flint              | `gfp_fmpz_rel_series` | `GFPFmpzRelSeriesRing`
 $\mathbb{F}_{p^n}$ (small $p$)        | Flint              | `fq_nmod_rel_series`  | `FqNmodRelSeriesRing`
 $\mathbb{F}_{p^n}$ (large $p$)        | Flint              | `fq_rel_series`       | `FqRelSeriesRing`
 
@@ -44,8 +46,11 @@ Base ring                             | Library            | Element type       
 --------------------------------------|--------------------|-----------------------|----------------------
 Generic ring $R$                      | AbstractAlgebra.jl | `Generic.AbsSeries{T}`| `Generic.AbsSeriesRing{T}`
 $\mathbb{Z}$                          | Flint              | `fmpz_abs_series`     | `FmpzAbsSeriesRing`
-$\mathbb{Z}/n\mathbb{Z}$              | Flint              | `fmpz_mod_abs_series` | `FmpzModAbsSeriesRing`
+$\mathbb{Z}/n\mathbb{Z}$ (small $n$)  | Flint              | `nmod_abs_series`     | `NmodAbsSeriesRing`
+$\mathbb{Z}/n\mathbb{Z}$ (large $n$)  | Flint              | `fmpz_mod_abs_series` | `FmpzModAbsSeriesRing`
 $\mathbb{Q}$                          | Flint              | `fmpq_abs_series`     | `FmpqAbsSeriesRing`
+$\mathbb{F}_p$ (small $n$)            | Flint              | `gfp_abs_series`      | `GFPAbsSeriesRing`
+$\mathbb{F}_p$ (large $n$)            | Flint              | `gfp_fmpz_abs_series` | `GFPFmpzAbsSeriesRing`
 $\mathbb{F}_{p^n}$ (small $n$)        | Flint              | `fq_nmod_abs_series`  | `FqNmodAbsSeriesRing`
 $\mathbb{F}_{p^n}$ (large $n$)        | Flint              | `fq_abs_series`       | `FqAbsSeriesRing`
 

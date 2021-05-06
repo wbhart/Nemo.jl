@@ -1,10 +1,18 @@
 ###############################################################################
 #
-#   fmpz_mod_abs_series.jl : Power series over flint fmpz integers
+#   fmpz_mod_abs_series.jl: Absolute series using fmpz_mod_poly
+#
+#   fmpz_mod_abs_series, gfp_fmpz_abs_series
 #
 ###############################################################################
 
-export fmpz_mod_abs_series, FmpzModAbsSeriesRing
+export fmpz_mod_abs_series, FmpzModAbsSeriesRing,
+       gfp_fmpz_abs_series, GFPFmpzAbsSeriesRing
+
+for (etype, rtype, ctype, mtype, flint_fn) in (
+   (fmpz_mod_abs_series, FmpzModAbsSeriesRing, fmpz_mod_ctx_struct, fmpz_mod, "fmpz_mod_poly"),
+   (gfp_fmpz_abs_series, GFPFmpzAbsSeriesRing, fmpz_mod_ctx_struct, gfp_fmpz_elem, "fmpz_mod_poly"))
+@eval begin
 
 ###############################################################################
 #
@@ -12,24 +20,24 @@ export fmpz_mod_abs_series, FmpzModAbsSeriesRing
 #
 ###############################################################################
 
-function O(a::fmpz_mod_abs_series)
+function O(a::($etype))
    if iszero(a)
       return deepcopy(a)    # 0 + O(x^n)
    end
    prec = length(a) - 1
    prec < 0 && throw(DomainError(prec, "Precision must be non-negative"))
-   z = fmpz_mod_abs_series(base_ring(a), Vector{fmpz}(undef, 0), 0, prec)
+   z = ($etype)(base_ring(a), Vector{fmpz}(undef, 0), 0, prec)
    z.parent = parent(a)
    return z
 end
 
-elem_type(::Type{FmpzModAbsSeriesRing}) = fmpz_mod_abs_series
+elem_type(::Type{($rtype)}) = ($etype)
 
-parent_type(::Type{fmpz_mod_abs_series}) = FmpzModAbsSeriesRing
+parent_type(::Type{($etype)}) = ($rtype)
 
-base_ring(R::FmpzModAbsSeriesRing) = R.base_ring
+base_ring(R::($rtype)) = R.base_ring
 
-var(a::FmpzModAbsSeriesRing) = a.S
+var(a::($rtype)) = a.S
 
 ###############################################################################
 #
@@ -37,87 +45,87 @@ var(a::FmpzModAbsSeriesRing) = a.S
 #
 ###############################################################################
 
-max_precision(R::FmpzModAbsSeriesRing) = R.prec_max
+max_precision(R::($rtype)) = R.prec_max
 
-function normalise(a::fmpz_mod_abs_series, len::Int)
+function normalise(a::($etype), len::Int)
    p = a.parent.base_ring.ninv
    if len > 0
       c = fmpz()
-      ccall((:fmpz_mod_poly_get_coeff_fmpz, libflint), Nothing,
-            (Ref{fmpz}, Ref{fmpz_mod_abs_series}, Int,
-             Ref{fmpz_mod_ctx_struct}),
+      ccall(($(flint_fn*"_get_coeff_fmpz"), libflint), Nothing,
+            (Ref{fmpz}, Ref{($etype)}, Int,
+             Ref{($ctype)}),
             c, a, len - 1, p)
    end
    while len > 0 && iszero(c)
       len -= 1
       if len > 0
-         ccall((:fmpz_mod_poly_get_coeff_fmpz, libflint), Nothing,
-               (Ref{fmpz}, Ref{fmpz_mod_abs_series}, Int,
-                Ref{fmpz_mod_ctx_struct}),
+         ccall(($(flint_fn*"_get_coeff_fmpz"), libflint), Nothing,
+               (Ref{fmpz}, Ref{($etype)}, Int,
+                Ref{($ctype)}),
                c, a, len - 1, p)
       end
    end
    return len
 end
 
-function length(x::fmpz_mod_abs_series)
+function length(x::($etype))
    return x.length
-#   return ccall((:fmpz_mod_poly_length, libflint), Int,
-#                (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_ctx_struct}),
+#   return ccall(($(flint_fn*"_length"), libflint), Int,
+#                (Ref{($etype)}, Ref{($ctype)}),
 #                x, x.parent.base_ring.ninv)
 end
 
-precision(x::fmpz_mod_abs_series) = x.prec
+precision(x::($etype)) = x.prec
 
-function coeff(x::fmpz_mod_abs_series, n::Int)
+function coeff(x::($etype), n::Int)
    R = base_ring(x)
    if n < 0
       return R(0)
    end
    z = fmpz()
-   ccall((:fmpz_mod_poly_get_coeff_fmpz, libflint), Nothing,
-         (Ref{fmpz}, Ref{fmpz_mod_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_get_coeff_fmpz"), libflint), Nothing,
+         (Ref{fmpz}, Ref{($etype)}, Int, Ref{($ctype)}),
          z, x, n, x.parent.base_ring.ninv)
    return R(z)
 end
 
-zero(R::FmpzModAbsSeriesRing) = R(0)
+zero(R::($rtype)) = R(0)
 
-one(R::FmpzModAbsSeriesRing) = R(1)
+one(R::($rtype)) = R(1)
 
-function gen(R::FmpzModAbsSeriesRing)
-   z = fmpz_mod_abs_series(base_ring(R), [fmpz(0), fmpz(1)], 2, max_precision(R))
+function gen(R::($rtype))
+   z = ($etype)(base_ring(R), [fmpz(0), fmpz(1)], 2, max_precision(R))
    z.parent = R
    return z
 end
 
-function deepcopy_internal(a::fmpz_mod_abs_series, dict::IdDict)
-   z = fmpz_mod_abs_series(a)
+function deepcopy_internal(a::($etype), dict::IdDict)
+   z = ($etype)(a)
    z.prec = a.prec
    z.parent = parent(a)
    return z
 end
 
-function isgen(a::fmpz_mod_abs_series)
+function isgen(a::($etype))
    return precision(a) == 0 ||
-          Bool(ccall((:fmpz_mod_poly_is_gen, libflint), Cint,
-                     (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_ctx_struct}),
+          Bool(ccall(($(flint_fn*"_is_gen"), libflint), Cint,
+                     (Ref{($etype)}, Ref{($ctype)}),
                      a, a.parent.base_ring.ninv))
 end
 
-iszero(a::fmpz_mod_abs_series) = length(a) == 0
+iszero(a::($etype)) = length(a) == 0
 
-isunit(a::fmpz_mod_abs_series) = valuation(a) == 0 && isunit(coeff(a, 0))
+isunit(a::($etype)) = valuation(a) == 0 && isunit(coeff(a, 0))
 
-function isone(a::fmpz_mod_abs_series)
+function isone(a::($etype))
    return precision(a) == 0 ||
-          Bool(ccall((:fmpz_mod_poly_is_one, libflint), Cint,
-                     (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_ctx_struct}),
+          Bool(ccall(($(flint_fn*"_is_one"), libflint), Cint,
+                     (Ref{($etype)}, Ref{($ctype)}),
                      a, a.parent.base_ring.ninv))
 end
 
 # todo: write an fmpz_mod_poly_valuation
-function valuation(a::fmpz_mod_abs_series)
+function valuation(a::($etype))
    for i = 1:length(a)
       if !iszero(coeff(a, i - 1))
          return i - 1
@@ -126,7 +134,7 @@ function valuation(a::fmpz_mod_abs_series)
    return precision(a)
 end
 
-characteristic(R::FmpzModAbsSeriesRing) = characteristic(base_ring(R))
+characteristic(R::($rtype)) = characteristic(base_ring(R))
 
 ###############################################################################
 #
@@ -134,7 +142,7 @@ characteristic(R::FmpzModAbsSeriesRing) = characteristic(base_ring(R))
 #
 ###############################################################################
 
-function show(io::IO, a::FmpzModAbsSeriesRing)
+function show(io::IO, a::($rtype))
    print(io, "Univariate power series ring in ", var(a), " over ")
    show(io, base_ring(a))
 end
@@ -145,11 +153,11 @@ end
 #
 ###############################################################################
 
-function -(x::fmpz_mod_abs_series)
+function -(x::($etype))
    z = parent(x)()
-   ccall((:fmpz_mod_poly_neg, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series},
-          Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_neg"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)},
+          Ref{($ctype)}),
          z, x, x.parent.base_ring.ninv)
    z.prec = x.prec
    return z
@@ -161,7 +169,7 @@ end
 #
 ###############################################################################
 
-function +(a::fmpz_mod_abs_series, b::fmpz_mod_abs_series)
+function +(a::($etype), b::($etype))
    check_parent(a, b)
    lena = length(a)
    lenb = length(b)
@@ -174,14 +182,14 @@ function +(a::fmpz_mod_abs_series, b::fmpz_mod_abs_series)
    lenz = max(lena, lenb)
    z = parent(a)()
    z.prec = prec
-   ccall((:fmpz_mod_poly_add_series, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series},
-          Ref{fmpz_mod_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_add_series"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)},
+          Ref{($etype)}, Int, Ref{($ctype)}),
          z, a, b, lenz, a.parent.base_ring.ninv)
    return z
 end
 
-function -(a::fmpz_mod_abs_series, b::fmpz_mod_abs_series)
+function -(a::($etype), b::($etype))
    check_parent(a, b)
    lena = length(a)
    lenb = length(b)
@@ -194,14 +202,14 @@ function -(a::fmpz_mod_abs_series, b::fmpz_mod_abs_series)
    lenz = max(lena, lenb)
    z = parent(a)()
    z.prec = prec
-   ccall((:fmpz_mod_poly_sub_series, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series},
-          Ref{fmpz_mod_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_sub_series"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)},
+          Ref{($etype)}, Int, Ref{($ctype)}),
          z, a, b, lenz, a.parent.base_ring.ninv)
    return z
 end
 
-function *(a::fmpz_mod_abs_series, b::fmpz_mod_abs_series)
+function *(a::($etype), b::($etype))
    check_parent(a, b)
    lena = length(a)
    lenb = length(b)
@@ -224,9 +232,9 @@ function *(a::fmpz_mod_abs_series, b::fmpz_mod_abs_series)
 
    lenz = min(lena + lenb - 1, prec)
 
-   ccall((:fmpz_mod_poly_mullow, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series},
-          Ref{fmpz_mod_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_mullow"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)},
+          Ref{($etype)}, Int, Ref{($ctype)}),
          z, a, b, lenz, a.parent.base_ring.ninv)
    return z
 end
@@ -237,31 +245,31 @@ end
 #
 ###############################################################################
 
-function *(x::fmpz_mod, y::fmpz_mod_abs_series)
+function *(x::$(mtype), y::($etype))
    z = parent(y)()
    z.prec = y.prec
-   ccall((:fmpz_mod_poly_scalar_mul_fmpz, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Ref{fmpz},
-          Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_scalar_mul_fmpz"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Ref{fmpz},
+          Ref{($ctype)}),
          z, y, x.data, y.parent.base_ring.ninv)
    return z
 end
 
-*(x::fmpz_mod_abs_series, y::fmpz) = y * x
+*(x::($etype), y::fmpz) = y * x
 
-function *(x::fmpz, y::fmpz_mod_abs_series)
+function *(x::fmpz, y::($etype))
    z = parent(y)()
    z.prec = y.prec
-   ccall((:fmpz_mod_poly_scalar_mul_fmpz, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Ref{fmpz},
-          Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_scalar_mul_fmpz"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Ref{fmpz},
+          Ref{($ctype)}),
          z, y, x, y.parent.base_ring.ninv)
    return z
 end
 
-*(x::Integer, y::fmpz_mod_abs_series) = fmpz(x)*y
+*(x::Integer, y::($etype)) = fmpz(x)*y
 
-*(x::fmpz_mod_abs_series, y::Integer) = y * x
+*(x::($etype), y::Integer) = y * x
 
 ###############################################################################
 #
@@ -269,7 +277,7 @@ end
 #
 ###############################################################################
 
-function shift_left(x::fmpz_mod_abs_series, len::Int)
+function shift_left(x::($etype), len::Int)
    len < 0 && throw(DomainError(len, "Shift must be non-negative"))
    xlen = length(x)
    z = parent(x)()
@@ -277,18 +285,18 @@ function shift_left(x::fmpz_mod_abs_series, len::Int)
    z.prec = min(z.prec, max_precision(parent(x)))
    zlen = min(z.prec, xlen + len)
    p = x.parent.base_ring.ninv
-   ccall((:fmpz_mod_poly_shift_left, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Int,
-          Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_shift_left"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Int,
+          Ref{($ctype)}),
          z, x, len, p)
-   ccall((:fmpz_mod_poly_set_trunc, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Int,
-          Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_set_trunc"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Int,
+          Ref{($ctype)}),
          z, z, zlen, p)
    return z
 end
 
-function shift_right(x::fmpz_mod_abs_series, len::Int)
+function shift_right(x::($etype), len::Int)
    len < 0 && throw(DomainError(len, "Shift must be non-negative"))
    xlen = length(x)
    z = parent(x)()
@@ -296,9 +304,9 @@ function shift_right(x::fmpz_mod_abs_series, len::Int)
       z.prec = max(0, x.prec - len)
    else
       z.prec = x.prec - len
-      ccall((:fmpz_mod_poly_shift_right, libflint), Nothing,
-            (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Int,
-             Ref{fmpz_mod_ctx_struct}),
+      ccall(($(flint_fn*"_shift_right"), libflint), Nothing,
+            (Ref{($etype)}, Ref{($etype)}, Int,
+             Ref{($ctype)}),
             z, x, len, x.parent.base_ring.ninv)
    end
    return z
@@ -310,16 +318,16 @@ end
 #
 ###############################################################################
 
-function truncate(x::fmpz_mod_abs_series, prec::Int)
+function truncate(x::($etype), prec::Int)
    prec < 0 && throw(DomainError(prec, "Index must be non-negative"))
    if x.prec <= prec
       return x
    end
    z = parent(x)()
    z.prec = prec
-   ccall((:fmpz_mod_poly_set_trunc, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Int,
-          Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_set_trunc"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Int,
+          Ref{($ctype)}),
          z, x, prec, x.parent.base_ring.ninv)
    return z
 end
@@ -330,7 +338,7 @@ end
 #
 ###############################################################################
 
-function ^(a::fmpz_mod_abs_series, b::Int)
+function ^(a::($etype), b::Int)
    b < 0 && throw(DomainError(b, "Exponent must be non-negative"))
    if precision(a) > 0 && isgen(a) && b > 0
       return shift_left(a, b - 1)
@@ -344,9 +352,9 @@ function ^(a::fmpz_mod_abs_series, b::Int)
       z = parent(a)()
       z.prec = a.prec + (b - 1)*valuation(a)
       z.prec = min(z.prec, max_precision(parent(a)))
-      ccall((:fmpz_mod_poly_pow_trunc, libflint), Nothing,
-            (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, UInt, Int,
-             Ref{fmpz_mod_ctx_struct}),
+      ccall(($(flint_fn*"_pow_trunc"), libflint), Nothing,
+            (Ref{($etype)}, Ref{($etype)}, UInt, Int,
+             Ref{($ctype)}),
             z, a, b, z.prec, a.parent.base_ring.ninv)
    end
    return z
@@ -358,29 +366,29 @@ end
 #
 ###############################################################################
 
-function ==(x::fmpz_mod_abs_series, y::fmpz_mod_abs_series)
+function ==(x::($etype), y::($etype))
    check_parent(x, y)
    prec = min(x.prec, y.prec)
 
    n = max(length(x), length(y))
    n = min(n, prec)
 
-   return Bool(ccall((:fmpz_mod_poly_equal_trunc, libflint), Cint,
-                     (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Int,
-                      Ref{fmpz_mod_ctx_struct}),
+   return Bool(ccall(($(flint_fn*"_equal_trunc"), libflint), Cint,
+                     (Ref{($etype)}, Ref{($etype)}, Int,
+                      Ref{($ctype)}),
                      x, y, n, x.parent.base_ring.ninv))
 end
 
-function isequal(x::fmpz_mod_abs_series, y::fmpz_mod_abs_series)
+function isequal(x::($etype), y::($etype))
    if parent(x) != parent(y)
       return false
    end
    if x.prec != y.prec || length(x) != length(y)
       return false
    end
-   return Bool(ccall((:fmpz_mod_poly_equal, libflint), Cint,
-                     (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Int,
-                      Ref{fmpz_mod_ctx_struct}),
+   return Bool(ccall(($(flint_fn*"_equal"), libflint), Cint,
+                     (Ref{($etype)}, Ref{($etype)}, Int,
+                      Ref{($ctype)}),
                      x, y, length(x), x.parent.base_ring.ninv))
 end
 
@@ -390,14 +398,14 @@ end
 #
 ###############################################################################
 
-function ==(x::fmpz_mod_abs_series, y::fmpz_mod)
+function ==(x::($etype), y::$(mtype))
    if length(x) > 1
       return false
    elseif length(x) == 1
       z = fmpz()
-      ccall((:fmpz_mod_poly_get_coeff_fmpz, libflint), Nothing,
-            (Ref{fmpz}, Ref{fmpz_mod_abs_series}, Int,
-             Ref{fmpz_mod_ctx_struct}),
+      ccall(($(flint_fn*"_get_coeff_fmpz"), libflint), Nothing,
+            (Ref{fmpz}, Ref{($etype)}, Int,
+             Ref{($ctype)}),
             z, x, 0, x.parent.base_ring.ninv)
       return ccall((:fmpz_equal, libflint), Bool,
                (Ref{fmpz}, Ref{fmpz}), z, y)
@@ -406,16 +414,16 @@ function ==(x::fmpz_mod_abs_series, y::fmpz_mod)
    end
 end
 
-==(x::fmpz_mod, y::fmpz_mod_abs_series) = y == x
+==(x::$(mtype), y::($etype)) = y == x
 
-function ==(x::fmpz_mod_abs_series, y::fmpz)
+function ==(x::($etype), y::fmpz)
    if length(x) > 1
       return false
    elseif length(x) == 1
       z = fmpz()
       r = mod(y, modulus(x))
-      ccall((:fmpz_mod_poly_get_coeff_fmpz, libflint), Nothing,
-            (Ref{fmpz}, Ref{fmpz_mod_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+      ccall(($(flint_fn*"_get_coeff_fmpz"), libflint), Nothing,
+            (Ref{fmpz}, Ref{($etype)}, Int, Ref{($ctype)}),
             z, x, 0, x.parent.base_ring.ninv)
       return Bool(ccall((:fmpz_equal, libflint), Cint,
                         (Ref{fmpz}, Ref{fmpz}),
@@ -426,11 +434,11 @@ function ==(x::fmpz_mod_abs_series, y::fmpz)
    end
 end
 
-==(x::fmpz, y::fmpz_mod_abs_series) = y == x
+==(x::fmpz, y::($etype)) = y == x
 
-==(x::fmpz_mod_abs_series, y::Integer) = x == fmpz(y)
+==(x::($etype), y::Integer) = x == fmpz(y)
 
-==(x::Integer, y::fmpz_mod_abs_series) = y == x
+==(x::Integer, y::($etype)) = y == x
 
 ###############################################################################
 #
@@ -438,7 +446,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpz_mod_abs_series, y::fmpz_mod_abs_series)
+function divexact(x::($etype), y::($etype))
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    v2 = valuation(y)
@@ -453,9 +461,9 @@ function divexact(x::fmpz_mod_abs_series, y::fmpz_mod_abs_series)
    prec = min(x.prec, y.prec - v2 + v1)
    z = parent(x)()
    z.prec = prec
-   ccall((:fmpz_mod_poly_div_series, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series},
-          Ref{fmpz_mod_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_div_series"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)},
+          Ref{($etype)}, Int, Ref{($ctype)}),
          z, x, y, prec, x.parent.base_ring.ninv)
    return z
 end
@@ -466,30 +474,30 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpz_mod_abs_series, y::fmpz_mod)
+function divexact(x::($etype), y::$(mtype))
    iszero(y) && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
-   ccall((:fmpz_mod_poly_scalar_div_fmpz, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Ref{fmpz},
-          Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_scalar_div_fmpz"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Ref{fmpz},
+          Ref{($ctype)}),
          z, x, y, x.parent.base_ring.ninv)
    return z
 end
 
-function divexact(x::fmpz_mod_abs_series, y::fmpz)
+function divexact(x::($etype), y::fmpz)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
    r = mod(y, modulus(x))
-   ccall((:fmpz_mod_poly_scalar_div_fmpz, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Ref{fmpz},
-          Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_scalar_div_fmpz"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Ref{fmpz},
+          Ref{($ctype)}),
          z, x, y, x.parent.base_ring.ninv)
    return z
 end
 
-divexact(x::fmpz_mod_abs_series, y::Integer) = divexact(x, fmpz(y))
+divexact(x::($etype), y::Integer) = divexact(x, fmpz(y))
 
 ###############################################################################
 #
@@ -497,14 +505,14 @@ divexact(x::fmpz_mod_abs_series, y::Integer) = divexact(x, fmpz(y))
 #
 ###############################################################################
 
-function inv(a::fmpz_mod_abs_series)
+function inv(a::($etype))
    iszero(a) && throw(DivideError())
    !isunit(a) && error("Unable to invert power series")
    ainv = parent(a)()
    ainv.prec = a.prec
-   ccall((:fmpz_mod_poly_inv_series, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series}, Int,
-          Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_inv_series"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Int,
+          Ref{($ctype)}),
          ainv, a, a.prec, a.parent.base_ring.ninv)
    return ainv
 end
@@ -515,33 +523,33 @@ end
 #
 ###############################################################################
 
-function zero!(z::fmpz_mod_abs_series)
-   ccall((:fmpz_mod_poly_zero, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_ctx_struct}),
+function zero!(z::($etype))
+   ccall(($(flint_fn*"_zero"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($ctype)}),
          z, z.parent.base_ring.ninv)
    z.prec = parent(z).prec_max
    return z
 end
 
-function fit!(z::fmpz_mod_abs_series, n::Int)
-   ccall((:fmpz_mod_poly_fit_length, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+function fit!(z::($etype), n::Int)
+   ccall(($(flint_fn*"_fit_length"), libflint), Nothing,
+         (Ref{($etype)}, Int, Ref{($ctype)}),
 	 z, n, z.parent.base_ring.ninv)
    return nothing
 end
 
-function setcoeff!(z::fmpz_mod_abs_series, n::Int, x::fmpz)
-   ccall((:fmpz_mod_poly_set_coeff_fmpz, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Int, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+function setcoeff!(z::($etype), n::Int, x::fmpz)
+   ccall(($(flint_fn*"_set_coeff_fmpz"), libflint), Nothing,
+         (Ref{($etype)}, Int, Ref{fmpz}, Ref{($ctype)}),
          z, n, x, z.parent.base_ring.ninv)
    return z
 end
 
-function setcoeff!(z::fmpz_mod_abs_series, n::Int, x::fmpz_mod)
+function setcoeff!(z::($etype), n::Int, x::$(mtype))
    return setcoeff!(z, n, data(x))
 end
 
-function mul!(z::fmpz_mod_abs_series, a::fmpz_mod_abs_series, b::fmpz_mod_abs_series)
+function mul!(z::($etype), a::($etype), b::($etype))
    lena = length(a)
    lenb = length(b)
 
@@ -560,14 +568,14 @@ function mul!(z::fmpz_mod_abs_series, a::fmpz_mod_abs_series, b::fmpz_mod_abs_se
    end
 
    z.prec = prec
-   ccall((:fmpz_mod_poly_mullow, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series},
-          Ref{fmpz_mod_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_mullow"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)},
+          Ref{($etype)}, Int, Ref{($ctype)}),
          z, a, b, lenz, a.parent.base_ring.ninv)
    return z
 end
 
-function addeq!(a::fmpz_mod_abs_series, b::fmpz_mod_abs_series)
+function addeq!(a::($etype), b::($etype))
    lena = length(a)
    lenb = length(b)
 
@@ -578,9 +586,9 @@ function addeq!(a::fmpz_mod_abs_series, b::fmpz_mod_abs_series)
 
    lenz = max(lena, lenb)
    a.prec = prec
-   ccall((:fmpz_mod_poly_add_series, libflint), Nothing,
-         (Ref{fmpz_mod_abs_series}, Ref{fmpz_mod_abs_series},
-          Ref{fmpz_mod_abs_series}, Int, Ref{fmpz_mod_ctx_struct}),
+   ccall(($(flint_fn*"_add_series"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)},
+          Ref{($etype)}, Int, Ref{($ctype)}),
          a, a, b, lenz, a.parent.base_ring.ninv)
    return a
 end
@@ -591,11 +599,11 @@ end
 #
 ###############################################################################
 
-promote_rule(::Type{fmpz_mod_abs_series}, ::Type{T}) where {T <: Integer} = fmpz_mod_abs_series
+promote_rule(::Type{($etype)}, ::Type{T}) where {T <: Integer} = ($etype)
 
-promote_rule(::Type{fmpz_mod_abs_series}, ::Type{fmpz}) = fmpz_mod_abs_series
+promote_rule(::Type{($etype)}, ::Type{fmpz}) = ($etype)
 
-promote_rule(::Type{fmpz_mod_abs_series}, ::Type{fmpz_mod}) = fmpz_mod_abs_series
+promote_rule(::Type{($etype)}, ::Type{$(mtype)}) = ($etype)
 
 ###############################################################################
 #
@@ -603,61 +611,64 @@ promote_rule(::Type{fmpz_mod_abs_series}, ::Type{fmpz_mod}) = fmpz_mod_abs_serie
 #
 ###############################################################################
 
-function (a::FmpzModAbsSeriesRing)()
+function (a::($rtype))()
    m = base_ring(a)
-   z = fmpz_mod_abs_series(m)
+   z = ($etype)(m)
    z.prec = a.prec_max
    z.parent = a
    return z
 end
 
-function (a::FmpzModAbsSeriesRing)(b::Integer)
+function (a::($rtype))(b::Integer)
    m = base_ring(a)
    if b == 0
-      z = fmpz_mod_abs_series(m)
+      z = ($etype)(m)
       z.prec = a.prec_max
    else
-      z = fmpz_mod_abs_series(m, [fmpz(b)], 1, a.prec_max)
+      z = ($etype)(m, [fmpz(b)], 1, a.prec_max)
    end
    z.parent = a
    return z
 end
 
-function (a::FmpzModAbsSeriesRing)(b::fmpz)
+function (a::($rtype))(b::fmpz)
    m = base_ring(a)
    if iszero(b)
-      z = fmpz_mod_abs_series(m)
+      z = ($etype)(m)
       z.prec = a.prec_max
    else
-      z = fmpz_mod_abs_series(m, [b], 1, a.prec_max)
+      z = ($etype)(m, [b], 1, a.prec_max)
    end
    z.parent = a
    return z
 end
 
-function (a::FmpzModAbsSeriesRing)(b::fmpz_mod)
+function (a::($rtype))(b::$(mtype))
    m = base_ring(a)
    if iszero(b)
-      z = fmpz_mod_abs_series(m)
+      z = ($etype)(m)
       z.prec = a.prec_max
    else
-      z = fmpz_mod_abs_series(m, [b], 1, a.prec_max)
+      z = ($etype)(m, [b], 1, a.prec_max)
    end
    z.parent = a
    return z
 end
 
-function (a::FmpzModAbsSeriesRing)(b::fmpz_mod_abs_series)
+function (a::($rtype))(b::($etype))
    parent(b) != a && error("Unable to coerce power series")
    return b
 end
 
-function (a::FmpzModAbsSeriesRing)(b::Array{fmpz, 1}, len::Int, prec::Int)
+function (a::($rtype))(b::Array{fmpz, 1}, len::Int, prec::Int)
    m = base_ring(a)
-   z = fmpz_mod_abs_series(m, b, len, prec)
+   z = ($etype)(m, b, len, prec)
    z.parent = a
    return z
 end
+
+end # eval
+end # for
 
 ###############################################################################
 #
@@ -672,6 +683,19 @@ function PowerSeriesRing(R::FmpzModRing, prec::Int, s::AbstractString; model=:ca
       parent_obj = FmpzModRelSeriesRing(R, prec, S, cached)
    elseif model == :capped_absolute
       parent_obj = FmpzModAbsSeriesRing(R, prec, S, cached)
+   else
+      error("Unknown model")
+   end
+   return parent_obj, gen(parent_obj)
+end
+
+function PowerSeriesRing(R::GaloisFmpzField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
+   S = Symbol(s)
+
+   if model == :capped_relative
+      parent_obj = GFPFmpzRelSeriesRing(R, prec, S, cached)
+   elseif model == :capped_absolute
+      parent_obj = GFPFmpzAbsSeriesRing(R, prec, S, cached)
    else
       error("Unknown model")
    end

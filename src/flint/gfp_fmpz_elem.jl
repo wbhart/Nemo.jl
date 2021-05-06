@@ -37,6 +37,8 @@ function Base.hash(a::gfp_fmpz_elem, h::UInt)
    return xor(xor(hash(a.data), h), b)
 end
 
+data(a::gfp_fmpz_elem) = a.data
+
 iszero(a::gfp_fmpz_elem) = a.data == 0
 
 isone(a::gfp_fmpz_elem) = a.data == 1
