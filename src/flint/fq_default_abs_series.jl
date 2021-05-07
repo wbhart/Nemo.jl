@@ -511,6 +511,26 @@ function addeq!(a::fq_default_abs_series, b::fq_default_abs_series)
    return a
 end
 
+function add!(c::fq_default_abs_series, a::fq_default_abs_series, b::fq_default_abs_series)
+   if c === a
+      return addeq!(c, b)
+   elseif c === b
+      return addeq!(c, a)
+   end
+   lena = length(a)
+   lenb = length(b)
+   prec = min(a.prec, b.prec)
+   lena = min(lena, prec)
+   lenb = min(lenb, prec)
+   lenc = max(lena, lenb)
+   c.prec = prec
+   ccall((:fq_default_poly_add_series, libflint), Nothing,
+         (Ref{fq_default_abs_series}, Ref{fq_default_abs_series},
+          Ref{fq_default_abs_series}, Int, Ref{FqDefaultFiniteField}),
+               c, a, b, lenc, base_ring(a))
+   return c
+end
+
 function set_length!(a::fq_default_abs_series, n::Int64)
    ccall((:_fq_default_poly_set_length, libflint), Nothing,
          (Ref{fq_default_abs_series}, Int, Ref{FqDefaultFiniteField}),

@@ -510,6 +510,7 @@ function zero!(x::fq_default_rel_series)
   ccall((:fq_default_poly_zero, libflint), Nothing,
                    (Ref{fq_default_rel_series}, Ref{FqDefaultFiniteField}), x, base_ring(x))
   x.prec = parent(x).prec_max
+  x.val = parent(x).prec_max
   return x
 end
 
@@ -603,20 +604,52 @@ function addeq!(a::fq_default_rel_series, b::fq_default_rel_series)
 end
 
 function add!(c::fq_default_rel_series, a::fq_default_rel_series, b::fq_default_rel_series)
-   ctx = base_ring(a)
+   if c === a
+      return addeq!(c, b)
+   elseif c === b
+      return addeq!(c, a)
+   end
    lena = pol_length(a)
    lenb = pol_length(b)
-
    prec = min(a.prec, b.prec)
-
-   lena = min(lena, prec)
-   lenb = min(lenb, prec)
-
-   lenc = max(lena, lenb)
-   c.prec = prec
-   ccall((:fq_default_poly_add_series, libflint), Nothing,
-     (Ref{fq_default_rel_series}, Ref{fq_default_rel_series}, Ref{fq_default_rel_series}, Int, Ref{FqDefaultFiniteField}),
+   val = min(a.val, b.val)
+   lena = min(lena, prec - a.val)
+   lenb = min(lenb, prec - b.val)
+   ctx = base_ring(a)
+   if a.val < b.val
+      lenc = max(lena, lenb + b.val - a.val)
+      ccall((:fq_default_poly_set_trunc, libflint), Nothing,
+            (Ref{fq_default_rel_series}, Ref{fq_default_rel_series}, Int, Ref{FqDefaultFiniteField}),
+            c, b, max(0, lenc - b.val + a.val), ctx)
+      ccall((:fq_default_poly_shift_left, libflint), Nothing,
+            (Ref{fq_default_rel_series}, Ref{fq_default_rel_series}, Int, Ref{FqDefaultFiniteField}),
+            c, c, b.val - a.val, ctx)
+      ccall((:fq_default_poly_add_series, libflint), Nothing,
+                (Ref{fq_default_rel_series}, Ref{fq_default_rel_series},
+                 Ref{fq_default_rel_series}, Int, Ref{FqDefaultFiniteField}),
+               c, c, a, lenc, ctx)
+   elseif b.val < a.val
+      lenc = max(lena + a.val - b.val, lenb)
+      ccall((:fq_default_poly_set_trunc, libflint), Nothing,
+            (Ref{fq_default_rel_series}, Ref{fq_default_rel_series}, Int, Ref{FqDefaultFiniteField}),
+            c, a, max(0, lenc - a.val + b.val), ctx)
+      ccall((:fq_default_poly_shift_left, libflint), Nothing,
+            (Ref{fq_default_rel_series}, Ref{fq_default_rel_series}, Int, Ref{FqDefaultFiniteField}),
+            c, c, a.val - b.val, ctx)
+      ccall((:fq_default_poly_add_series, libflint), Nothing,
+                (Ref{fq_default_rel_series}, Ref{fq_default_rel_series},
+                 Ref{fq_default_rel_series}, Int, Ref{FqDefaultFiniteField}),
+               c, c, b, lenc, ctx)
+   else
+      lenc = max(lena, lenb)
+      ccall((:fq_default_poly_add_series, libflint), Nothing,
+                (Ref{fq_default_rel_series}, Ref{fq_default_rel_series},
+                 Ref{fq_default_rel_series}, Int, Ref{FqDefaultFiniteField}),
                c, a, b, lenc, ctx)
+   end
+   c.prec = prec
+   c.val = val
+   renormalize!(c)
    return c
 end
 
