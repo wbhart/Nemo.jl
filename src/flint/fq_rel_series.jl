@@ -703,7 +703,7 @@ function add!(c::($etype), a::($etype), b::($etype))
 end
 
 function set_length!(a::($etype), n::Int)
-   ccall(($(flint_fn*"_set_length"), libflint), Nothing,
+   ccall(($("_"*flint_fn*"_set_length"), libflint), Nothing,
          (Ref{($etype)}, Int, Ref{($ctype)}),
           a, n, base_ring(a))
    return a
