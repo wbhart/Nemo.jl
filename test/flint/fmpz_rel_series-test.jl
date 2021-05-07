@@ -376,3 +376,56 @@ end
 
    @test isequal(sqrt(b)^2, b)
 end
+
+@testset "fmpz_rel_series.unsafe_operators" begin
+   R, x = PowerSeriesRing(ZZ, 30, "x")
+
+   for iter = 1:300
+      f = rand(R, 0:9, -10:10)
+      g = rand(R, 0:9, -10:10)
+      f0 = deepcopy(f)
+      g0 = deepcopy(g)
+
+      h = rand(R, 0:9, -10:10)
+
+      k = f + g
+      h = add!(h, f, g)
+      @test isequal(h, k)
+      @test isequal(f, f0)
+      @test isequal(g, g0)
+
+      f1 = deepcopy(f)
+      f1 = add!(f1, f1, g)
+      @test isequal(f1, k)
+      @test isequal(g, g0)
+
+      g1 = deepcopy(g)
+      g1 = add!(g1, f, g1)
+      @test isequal(g1, k)
+      @test isequal(f, f0)
+
+      f1 = deepcopy(f)
+      f1 = addeq!(f1, g)
+      @test isequal(h, k)
+      @test isequal(g, g0)
+
+      k = f*g
+      h = mul!(h, f, g)
+      @test isequal(h, k)
+      @test isequal(f, f0)
+      @test isequal(g, g0)
+
+      f1 = deepcopy(f)
+      f1 = mul!(f1, f1, g)
+      @test isequal(f1, k)
+      @test isequal(g, g0)
+
+      g1 = deepcopy(g)
+      g1 = mul!(g1, f, g1)
+      @test isequal(g1, k)
+      @test isequal(f, f0)
+
+      h = zero!(h)
+      @test isequal(h, R())
+   end
+end

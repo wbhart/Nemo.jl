@@ -499,7 +499,8 @@ mutable struct GaloisFmpzField <: FinField
          return GaloisFmpzFieldID[n]
       else
          ninv = fmpz_mod_ctx_struct()
-         ccall((:fmpz_mod_ctx_init, libflint), Nothing, (Ref{fmpz_mod_ctx_struct}, Ref{fmpz}), ninv, n)
+         ccall((:fmpz_mod_ctx_init, libflint), Nothing,
+               (Ref{fmpz_mod_ctx_struct}, Ref{fmpz}), ninv, n)
          z = new(n, ninv)
          if cached
             GaloisFmpzFieldID[n] = z
