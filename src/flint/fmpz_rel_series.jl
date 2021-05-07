@@ -607,6 +607,7 @@ function addeq!(a::fmpz_rel_series, b::fmpz_rel_series)
    lenb = min(lenb, prec - b.val)
    if a.val < b.val
       z = fmpz_rel_series()
+      z.parent = parent(a)
       lenz = max(lena, lenb + b.val - a.val)
       ccall((:fmpz_poly_set_trunc, libflint), Nothing,
             (Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Int),

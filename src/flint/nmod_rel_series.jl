@@ -730,6 +730,7 @@ function addeq!(a::($etype), b::($etype))
    n = modulus(parent(a))
    if a.val < b.val
       z = ($etype)(n)
+      z.parent = parent(a)
       lenz = max(lena, lenb + b.val - a.val)
       ccall(($(flint_fn*"_set_trunc"), libflint), Nothing,
             (Ref{($etype)}, Ref{($etype)}, Int),

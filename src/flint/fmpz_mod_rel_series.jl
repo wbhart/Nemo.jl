@@ -723,6 +723,7 @@ function addeq!(a::($etype), b::($etype))
    p = a.parent.base_ring.ninv
    if a.val < b.val
       z = ($etype)(p)
+      z.parent = parent(a)
       lenz = max(lena, lenb + b.val - a.val)
       ccall(($(flint_fn*"_set_trunc"), libflint), Nothing,
             (Ref{($etype)}, Ref{($etype)}, Int,
