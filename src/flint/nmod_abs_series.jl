@@ -91,9 +91,7 @@ function gen(R::($rtype))
 end
 
 function deepcopy_internal(a::($etype), dict::IdDict)
-   R = base_ring(a)
-   z = ($etype)(R.n)
-   z.prec = a.prec
+   z = ($etype)(a)
    z.parent = parent(a)
    return z
 end
@@ -539,6 +537,23 @@ function addeq!(a::($etype), b::($etype))
          (Ref{($etype)}, Ref{($etype)},
           Ref{($etype)}, Int), a, a, b, lenz)
    return a
+end
+
+function add!(c::($etype), a::($etype), b::($etype))
+   lena = length(a)
+   lenb = length(b)
+
+   prec = min(a.prec, b.prec)
+
+   lena = min(lena, prec)
+   lenb = min(lenb, prec)
+
+   lenc = max(lena, lenb)
+   c.prec = prec
+   ccall(($(flint_fn*"_add_series"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Ref{($etype)}, Int),
+          c, a, b, lenc)
+   return c
 end
 
 ###############################################################################

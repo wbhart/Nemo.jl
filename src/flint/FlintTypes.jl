@@ -3774,6 +3774,18 @@ mutable struct nmod_abs_series <: AbsSeriesElem{nmod}
       finalizer(_nmod_abs_series_clear_fn, z)
       return z
    end
+
+   function nmod_abs_series(a::nmod_abs_series)
+      z = new()
+      R = base_ring(a)
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{nmod_abs_series}, UInt, Int), z, R.n, length(a))
+      ccall((:nmod_poly_set, libflint), Nothing,
+            (Ref{nmod_abs_series}, Ref{nmod_abs_series}), z, a)
+      z.prec = a.prec
+      finalizer(_nmod_abs_series_clear_fn, z)
+      return z
+   end      
 end
 
 function _nmod_abs_series_clear_fn(x::nmod_abs_series)
@@ -3866,6 +3878,18 @@ mutable struct gfp_abs_series <: AbsSeriesElem{gfp_elem}
                (Ref{gfp_abs_series}, Int, UInt), z, i-1, arr[i].data)
       end
       z.prec = prec
+      finalizer(_gfp_abs_series_clear_fn, z)
+      return z
+   end
+
+   function gfp_abs_series(a::gfp_abs_series)
+      z = new()
+      R = base_ring(a)
+      ccall((:nmod_poly_init2, libflint), Nothing,
+            (Ref{gfp_abs_series}, UInt, Int), z, R.n, length(a))
+      ccall((:nmod_poly_set, libflint), Nothing,
+            (Ref{gfp_abs_series}, Ref{gfp_abs_series}), z, a)
+      z.prec = a.prec
       finalizer(_gfp_abs_series_clear_fn, z)
       return z
    end

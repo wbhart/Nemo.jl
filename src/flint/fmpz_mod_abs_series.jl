@@ -593,6 +593,24 @@ function addeq!(a::($etype), b::($etype))
    return a
 end
 
+function add!(c::($etype), a::($etype), b::($etype))
+   lena = length(a)
+   lenb = length(b)
+
+   prec = min(a.prec, b.prec)
+
+   lena = min(lena, prec)
+   lenb = min(lenb, prec)
+
+   lenc = max(lena, lenb)
+   c.prec = prec
+   ccall(($(flint_fn*"_add_series"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)},
+          Ref{($etype)}, Int, Ref{($ctype)}),
+         c, a, b, lenc, a.parent.base_ring.ninv)
+   return c
+end
+
 ###############################################################################
 #
 #   Promotion rules
