@@ -31,6 +31,8 @@ parent_type(::Type{fmpq_abs_series}) = FmpqAbsSeriesRing
 
 base_ring(R::FmpqAbsSeriesRing) = R.base_ring
 
+abs_series_type(::Type{fmpq}) = fmpq_abs_series
+
 var(a::FmpqAbsSeriesRing) = a.S
 
 ###############################################################################
@@ -116,6 +118,37 @@ function valuation(a::fmpq_abs_series)
 end
 
 characteristic(::FmpqAbsSeriesRing) = 0
+
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::AbsSeriesElem, R::FlintRationalField, max_prec::Int,
+                                 var::Symbol=var(parent(f)); cached::Bool=true)
+   z = fmpq_abs_series()
+   z.parent = FmpqAbsSeriesRing(max_prec, var, cached)
+   z.prec = max_prec
+   return z
+end
+
+###############################################################################
+#
+#   abs_series constructor
+#
+###############################################################################
+
+function abs_series(R::FlintRationalField, arr::Vector{T},
+                           len::Int, prec::Int, var::String="x";
+                            max_precision::Int=prec, cached::Bool=true) where T
+   prec < len && error("Precision too small for given data")
+   coeffs = T == fmpq ? arr : map(R, arr)
+   coeffs = length(coeffs) == 0 ? fmpq[] : coeffs
+   z = fmpq_abs_series(coeffs, len, prec)
+   z.parent = FmpqAbsSeriesRing(max_precision, Symbol(var), cached)
+   return z
+end
 
 ###############################################################################
 #

@@ -9,9 +9,9 @@
 export fmpz_mod_rel_series, FmpzModRelSeriesRing,
        gfp_fmpz_rel_series, GFPFmpzRelSeriesRing
 
-for (etype, rtype, ctype, mtype, flint_fn) in (
-   (fmpz_mod_rel_series, FmpzModRelSeriesRing, fmpz_mod_ctx_struct, fmpz_mod, "fmpz_mod_poly"),
-   (gfp_fmpz_rel_series, GFPFmpzRelSeriesRing, fmpz_mod_ctx_struct, gfp_fmpz_elem, "fmpz_mod_poly"))
+for (etype, rtype, ctype, mtype, brtype, flint_fn) in (
+   (fmpz_mod_rel_series, FmpzModRelSeriesRing, fmpz_mod_ctx_struct, fmpz_mod, FmpzModRing, "fmpz_mod_poly"),
+   (gfp_fmpz_rel_series, GFPFmpzRelSeriesRing, fmpz_mod_ctx_struct, gfp_fmpz_elem, GaloisFmpzField, "fmpz_mod_poly"))
 @eval begin
 
 ###############################################################################
@@ -33,6 +33,8 @@ elem_type(::Type{($rtype)}) = ($etype)
 parent_type(::Type{($etype)}) = ($rtype)
 
 base_ring(R::($rtype)) = R.base_ring
+
+rel_series_type(::Type{($mtype)}) = ($etype)
 
 var(a::($rtype)) = a.S
 
@@ -124,6 +126,40 @@ function renormalize!(z::($etype))
 end
 
 characteristic(R::($rtype)) = modulus(R)
+
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::RelSeriesElem, R::($brtype), max_prec::Int,
+                                 var::Symbol=var(parent(f)); cached::Bool=true)
+   par = ($rtype)(R, max_prec, var, cached)
+   z = ($etype)(R)
+   z.parent = par
+   z.prec = max_prec
+   z.val = max_prec
+   return z
+end
+
+###############################################################################
+#
+#   rel_series constructor
+#
+###############################################################################
+
+function rel_series(R::($brtype), arr::Vector{T},
+                   len::Int, prec::Int, val::Int, var::String="x";
+                            max_precision::Int=prec, cached::Bool=true) where T
+   prec < len + val && error("Precision too small for given data")
+   coeffs = T == ($mtype) ? arr : map(R, arr)
+   coeffs = length(coeffs) == 0 ? ($mtype)[] : coeffs
+   par = ($rtype)(R, max_precision, Symbol(var), cached)
+   z = ($etype)(R, coeffs, len, prec, val)
+   z.parent = par
+   return z
+end
 
 ###############################################################################
 #

@@ -26,6 +26,8 @@ parent_type(::Type{fmpz_rel_series}) = FmpzRelSeriesRing
 
 base_ring(R::FmpzRelSeriesRing) = R.base_ring
 
+rel_series_type(::Type{fmpz}) = fmpz_rel_series
+
 var(a::FmpzRelSeriesRing) = a.S
 
 ###############################################################################
@@ -106,6 +108,38 @@ function renormalize!(z::fmpz_rel_series)
 end
 
 characteristic(::FmpzRelSeriesRing) = 0
+
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::RelSeriesElem, R::FlintIntegerRing, max_prec::Int,
+                                 var::Symbol=var(parent(f)); cached::Bool=true)
+   z = fmpz_rel_series()
+   z.parent = FmpzRelSeriesRing(max_prec, var, cached)
+   z.prec = max_prec
+   z.val = max_prec
+   return z
+end
+
+###############################################################################
+#
+#   rel_series constructor
+#
+###############################################################################
+
+function rel_series(R::FlintIntegerRing, arr::Vector{T},
+                   len::Int, prec::Int, val::Int, var::String="x";
+                            max_precision::Int=prec, cached::Bool=true) where T
+   prec < len + val && error("Precision too small for given data")
+   coeffs = T == fmpz ? arr : map(R, arr)
+   coeffs = length(coeffs) == 0 ? fmpz[] : coeffs
+   z = fmpz_rel_series(coeffs, len, prec, val)
+   z.parent = FmpzRelSeriesRing(max_precision, Symbol(var), cached)
+   return z
+end
 
 ###############################################################################
 #

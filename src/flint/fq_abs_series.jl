@@ -38,6 +38,8 @@ parent_type(::Type{($etype)}) = ($rtype)
 
 base_ring(R::($rtype)) = R.base_ring
 
+abs_series_type(::Type{($btype)}) = ($etype)
+
 var(a::($rtype)) = a.S
 
 ###############################################################################
@@ -129,6 +131,39 @@ function valuation(a::($etype))
 end
 
 characteristic(R::($rtype)) = characteristic(base_ring(R))
+
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::AbsSeriesElem, R::($ctype), max_prec::Int,
+                                 var::Symbol=var(parent(f)); cached::Bool=true)
+   par = ($rtype)(R, max_prec, var, cached)
+   z = ($etype)(R)
+   z.parent = par
+   z.prec = max_prec
+   return z
+end
+
+###############################################################################
+#
+#   abs_series constructor
+#
+###############################################################################
+
+function abs_series(R::($ctype), arr::Vector{T},
+                           len::Int, prec::Int, var::String="x";
+                            max_precision::Int=prec, cached::Bool=true) where T
+   prec < len && error("Precision too small for given data")
+   coeffs = T == ($btype) ? arr : map(R, arr)
+   coeffs = length(coeffs) == 0 ? ($btype)[] : coeffs
+   par = ($rtype)(R, max_precision, Symbol(var), cached)
+   z = ($etype)(R, coeffs, len, prec)
+   z.parent = par
+   return z
+end
 
 ###############################################################################
 #
