@@ -1,3 +1,7 @@
+@testset "fmpq_rel_series.types" begin
+   @test rel_series_type(fmpq) == fmpq_rel_series
+end
+
 @testset "fmpq_rel_series.constructors" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
@@ -64,6 +68,53 @@ end
    @test valuation(b) == 4
 
    @test characteristic(R) == 0
+end
+
+@testset "fmpq_rel_series.similar" begin
+   R, x = PowerSeriesRing(QQ, 10, "x")
+   S, y = PowerSeriesRing(ZZ, 10, "y")
+
+   for iters = 1:10
+      f = rand(R, 0:10, -10:10)
+      fz = rand(S, 0:10, -10:10)
+
+      g = similar(fz, QQ, "y")
+      h = similar(f, "y")
+      k = similar(f)
+      m = similar(fz, QQ, 5)
+      n = similar(f, 5)
+
+      @test isa(g, fmpq_rel_series)
+      @test isa(h, fmpq_rel_series)
+      @test isa(k, fmpq_rel_series)
+      @test isa(m, fmpq_rel_series)
+      @test isa(n, fmpq_rel_series)
+
+      @test parent(g).S == :y
+      @test parent(h).S == :y
+
+      @test iszero(g)
+      @test iszero(h)
+      @test iszero(k)
+      @test iszero(m)
+      @test iszero(n)
+
+      @test parent(g) != parent(f)
+      @test parent(h) != parent(f)
+      @test parent(k) == parent(f)
+      @test parent(m) != parent(f)
+      @test parent(n) != parent(f)
+
+      p = similar(f, cached=false)
+      q = similar(f, "z", cached=false)
+      r = similar(f, "z", cached=false)
+      s = similar(f)
+      t = similar(f)
+
+      @test parent(p) != parent(f)
+      @test parent(q) != parent(r)
+      @test parent(s) == parent(t)
+   end
 end
 
 @testset "fmpq_rel_series.unary_ops" begin

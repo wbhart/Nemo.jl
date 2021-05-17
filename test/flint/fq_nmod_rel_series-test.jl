@@ -1,3 +1,7 @@
+@testset "fq_nmod_rel_series.types" begin
+   @test rel_series_type(fq_nmod) == fq_nmod_rel_series
+end
+
 @testset "fq_nmod_rel_series.constructors" begin
    R, t = FiniteField(23, 5, "t")
    S, x = PowerSeriesRing(R, 30, "x")
@@ -76,6 +80,54 @@ end
    @test coeff(b, 7) == 0
 
    @test characteristic(S) == 23
+end
+
+@testset "fq_nmod_rel_series.similar" begin
+   R0, a = FiniteField(23, 2, "a")
+   R, x = PowerSeriesRing(R0, 10, "x")
+   S, y = PowerSeriesRing(ZZ, 10, "y")
+
+   for iters = 1:10
+      f = rand(R, 0:10)
+      fz = rand(S, 0:10, -10:10)
+
+      g = similar(fz, R0, "y")
+      h = similar(f, "y")
+      k = similar(f)
+      m = similar(fz, R0, 5)
+      n = similar(f, 5)
+
+      @test isa(g, fq_nmod_rel_series)
+      @test isa(h, fq_nmod_rel_series)
+      @test isa(k, fq_nmod_rel_series)
+      @test isa(m, fq_nmod_rel_series)
+      @test isa(n, fq_nmod_rel_series)
+
+      @test parent(g).S == :y
+      @test parent(h).S == :y
+
+      @test iszero(g)
+      @test iszero(h)
+      @test iszero(k)
+      @test iszero(m)
+      @test iszero(n)
+
+      @test parent(g) != parent(f)
+      @test parent(h) != parent(f)
+      @test parent(k) == parent(f)
+      @test parent(m) != parent(f)
+      @test parent(n) != parent(f)
+
+      p = similar(f, cached=false)
+      q = similar(f, "z", cached=false)
+      r = similar(f, "z", cached=false)
+      s = similar(f)
+      t = similar(f)
+
+      @test parent(p) != parent(f)
+      @test parent(q) != parent(r)
+      @test parent(s) == parent(t)
+   end
 end
 
 @testset "fq_nmod_rel_series.unary_ops" begin

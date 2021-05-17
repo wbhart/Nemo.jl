@@ -1,3 +1,7 @@
+@testset "gfp_fmpz_rel_series.types" begin
+   @test rel_series_type(gfp_fmpz_elem) == gfp_fmpz_rel_series
+end
+
 @testset "gfp_fmpz_rel_series.constructors" begin
    R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")
@@ -86,6 +90,54 @@ end
    @test iszero(polcoeff(a, -1))
 
    @test characteristic(R) == 123456789012345678949
+end
+
+@testset "gfp_fmpz_rel_series.similar" begin
+   R0 = GF(ZZ(23))
+   R, x = PowerSeriesRing(R0, 10, "x")
+   S, y = PowerSeriesRing(ZZ, 10, "y")
+
+   for iters = 1:10
+      f = rand(R, 0:10)
+      fz = rand(S, 0:10, -10:10)
+
+      g = similar(fz, R0, "y")
+      h = similar(f, "y")
+      k = similar(f)
+      m = similar(fz, R0, 5)
+      n = similar(f, 5)
+
+      @test isa(g, gfp_fmpz_rel_series)
+      @test isa(h, gfp_fmpz_rel_series)
+      @test isa(k, gfp_fmpz_rel_series)
+      @test isa(m, gfp_fmpz_rel_series)
+      @test isa(n, gfp_fmpz_rel_series)
+
+      @test parent(g).S == :y
+      @test parent(h).S == :y
+
+      @test iszero(g)
+      @test iszero(h)
+      @test iszero(k)
+      @test iszero(m)
+      @test iszero(n)
+
+      @test parent(g) != parent(f)
+      @test parent(h) != parent(f)
+      @test parent(k) == parent(f)
+      @test parent(m) != parent(f)
+      @test parent(n) != parent(f)
+
+      p = similar(f, cached=false)
+      q = similar(f, "z", cached=false)
+      r = similar(f, "z", cached=false)
+      s = similar(f)
+      t = similar(f)
+
+      @test parent(p) != parent(f)
+      @test parent(q) != parent(r)
+      @test parent(s) == parent(t)
+   end
 end
 
 @testset "gfp_fmpz_rel_series.unary_ops" begin
