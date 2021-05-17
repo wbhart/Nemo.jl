@@ -140,6 +140,49 @@ end
    end
 end
 
+@testset "gfp_fmpz_rel_series.rel_series" begin
+   R = GF(ZZ(23))
+   f = rel_series(R, [1, 2, 3], 3, 5, 2, "y")
+
+   @test isa(f, gfp_fmpz_rel_series)
+   @test base_ring(f) == R
+   @test coeff(f, 2) == 1
+   @test coeff(f, 4) == 3
+   @test parent(f).S == :y
+
+   g = rel_series(R, [1, 2, 3], 3, 7, 4)
+
+   @test isa(g, gfp_fmpz_rel_series)
+   @test base_ring(g) == R
+   @test coeff(g, 4) == 1
+   @test coeff(g, 6) == 3
+   @test parent(g).S == :x
+
+   h = rel_series(R, [1, 2, 3], 2, 7, 1)
+   k = rel_series(R, [1, 2, 3], 1, 6, 0, cached=false)
+   m = rel_series(R, [1, 2, 3], 3, 9, 5, cached=false)
+
+   @test parent(h) == parent(g)
+   @test parent(k) != parent(m)
+
+   p = rel_series(R, gfp_fmpz_elem[], 0, 3, 1)
+   q = rel_series(R, [], 0, 3, 2)
+
+   @test isa(p, gfp_fmpz_rel_series)
+   @test isa(q, gfp_fmpz_rel_series)
+
+   @test pol_length(p) == 0
+   @test pol_length(q) == 0
+
+   r = rel_series(R, fmpz[1, 2, 3], 3, 11, 8)
+
+   @test isa(r, gfp_fmpz_rel_series)
+
+   s = rel_series(R, [1, 2, 3], 3, 5, 0; max_precision=10)
+   
+   @test max_precision(parent(s)) == 10
+end
+
 @testset "gfp_fmpz_rel_series.unary_ops" begin
    R = GF(ZZ(123456789012345678949))
    S, x = PowerSeriesRing(R, 30, "x")

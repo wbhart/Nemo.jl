@@ -100,6 +100,44 @@ end
    end
 end
 
+@testset "fmpz_rel_series.rel_series" begin
+   f = rel_series(ZZ, [1, 2, 3], 3, 5, 2, "y")
+
+   @test isa(f, fmpz_rel_series)
+   @test base_ring(f) == ZZ
+   @test coeff(f, 2) == 1
+   @test coeff(f, 4) == 3
+   @test parent(f).S == :y
+
+   g = rel_series(ZZ, [1, 2, 3], 3, 7, 4)
+
+   @test isa(g, fmpz_rel_series)
+   @test base_ring(g) == ZZ
+   @test coeff(g, 4) == 1
+   @test coeff(g, 6) == 3
+   @test parent(g).S == :x
+
+   h = rel_series(ZZ, [1, 2, 3], 2, 7, 1)
+   k = rel_series(ZZ, [1, 2, 3], 1, 6, 0, cached=false)
+   m = rel_series(ZZ, [1, 2, 3], 3, 9, 5, cached=false)
+
+   @test parent(h) == parent(g)
+   @test parent(k) != parent(m)
+
+   p = rel_series(ZZ, fmpz[], 0, 3, 1)
+   q = rel_series(ZZ, [], 0, 3, 2)
+
+   @test isa(p, fmpz_rel_series)
+   @test isa(q, fmpz_rel_series)
+
+   @test pol_length(p) == 0
+   @test pol_length(q) == 0
+
+   s = rel_series(ZZ, [1, 2, 3], 3, 5, 0; max_precision=10)
+   
+   @test max_precision(parent(s)) == 10
+end
+
 @testset "fmpz_rel_series.unary_ops" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 

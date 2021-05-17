@@ -117,6 +117,48 @@ end
    end
 end
 
+@testset "fmpq_rel_series.rel_series" begin
+   f = rel_series(QQ, [1, 2, 3], 3, 5, 2, "y")
+
+   @test isa(f, fmpq_rel_series)
+   @test base_ring(f) == QQ
+   @test coeff(f, 2) == 1
+   @test coeff(f, 4) == 3
+   @test parent(f).S == :y
+
+   g = rel_series(QQ, [1, 2, 3], 3, 7, 4)
+
+   @test isa(g, fmpq_rel_series)
+   @test base_ring(g) == QQ
+   @test coeff(g, 4) == 1
+   @test coeff(g, 6) == 3
+   @test parent(g).S == :x
+
+   h = rel_series(QQ, [1, 2, 3], 2, 7, 1)
+   k = rel_series(QQ, [1, 2, 3], 1, 6, 0, cached=false)
+   m = rel_series(QQ, [1, 2, 3], 3, 9, 5, cached=false)
+
+   @test parent(h) == parent(g)
+   @test parent(k) != parent(m)
+
+   p = rel_series(QQ, fmpq[], 0, 3, 1)
+   q = rel_series(QQ, [], 0, 3, 2)
+
+   @test isa(p, fmpq_rel_series)
+   @test isa(q, fmpq_rel_series)
+
+   @test pol_length(p) == 0
+   @test pol_length(q) == 0
+
+   r = rel_series(QQ, fmpz[1, 2, 3], 3, 11, 8)
+
+   @test isa(r, fmpq_rel_series)
+
+   s = rel_series(QQ, [1, 2, 3], 3, 5, 0; max_precision=10)
+   
+   @test max_precision(parent(s)) == 10
+end
+
 @testset "fmpq_rel_series.unary_ops" begin
    R, x = PowerSeriesRing(QQ, 30, "x")
 
