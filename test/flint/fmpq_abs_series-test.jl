@@ -111,6 +111,48 @@ end
    end
 end
 
+@testset "fmpq_abs_series.abs_series" begin
+   f = abs_series(QQ, [1, 2, 3], 3, 5, "y")
+
+   @test isa(f, fmpq_abs_series)
+   @test base_ring(f) == QQ
+   @test coeff(f, 0) == 1
+   @test coeff(f, 2) == 3
+   @test parent(f).S == :y
+
+   g = abs_series(QQ, [1, 2, 3], 3, 5)
+
+   @test isa(g, fmpq_abs_series)
+   @test base_ring(g) == QQ
+   @test coeff(g, 0) == 1
+   @test coeff(g, 2) == 3
+   @test parent(g).S == :x
+
+   h = abs_series(QQ, [1, 2, 3], 2, 5)
+   k = abs_series(QQ, [1, 2, 3], 1, 6, cached=false)
+   m = abs_series(QQ, [1, 2, 3], 3, 9, cached=false)
+
+   @test parent(h) == parent(g)
+   @test parent(k) != parent(m)
+
+   p = abs_series(QQ, fmpq[], 0, 4)
+   q = abs_series(QQ, [], 0, 6)
+
+   @test isa(p, fmpq_abs_series)
+   @test isa(q, fmpq_abs_series)
+
+   @test length(p) == 0
+   @test length(q) == 0
+
+   r = abs_series(QQ, fmpz[1, 2, 3], 3, 5)
+
+   @test isa(r, fmpq_abs_series)
+
+   s = abs_series(QQ, [1, 2, 3], 3, 5; max_precision=10)
+   
+   @test max_precision(parent(s)) == 10
+end
+
 @testset "fmpq_abs_series.unary_ops" begin
    R, x = PowerSeriesRing(QQ, 30, "x", model=:capped_absolute)
 

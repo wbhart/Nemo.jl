@@ -107,6 +107,49 @@ end
    end
 end
 
+@testset "fq_abs_series.abs_series" begin
+   R, a = FiniteField(ZZ(23), 2, "a")
+   f = abs_series(R, [1, 2, 3], 3, 5, "y")
+
+   @test isa(f, fq_abs_series)
+   @test base_ring(f) == R
+   @test coeff(f, 0) == 1
+   @test coeff(f, 2) == 3
+   @test parent(f).S == :y
+
+   g = abs_series(R, [1, 2, 3], 3, 5)
+
+   @test isa(g, fq_abs_series)
+   @test base_ring(g) == R
+   @test coeff(g, 0) == 1
+   @test coeff(g, 2) == 3
+   @test parent(g).S == :x
+
+   h = abs_series(R, [1, 2, 3], 2, 5)
+   k = abs_series(R, [1, 2, 3], 1, 6, cached=false)
+   m = abs_series(R, [1, 2, 3], 3, 9, cached=false)
+
+   @test parent(h) == parent(g)
+   @test parent(k) != parent(m)
+
+   p = abs_series(R, fq[], 0, 4)
+   q = abs_series(R, [], 0, 6)
+
+   @test isa(p, fq_abs_series)
+   @test isa(q, fq_abs_series)
+
+   @test length(p) == 0
+   @test length(q) == 0
+
+   r = abs_series(R, fmpz[1, 2, 3], 3, 5)
+
+   @test isa(r, fq_abs_series)
+
+   s = abs_series(R, [1, 2, 3], 3, 5; max_precision=10)
+   
+   @test max_precision(parent(s)) == 10
+end
+
 @testset "fq_abs_series.unary_ops" begin
    S, t = FiniteField(fmpz(23), 5, "t")
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
