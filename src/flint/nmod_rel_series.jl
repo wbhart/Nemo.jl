@@ -666,6 +666,7 @@ function zero!(x::($etype))
   ccall(($(flint_fn*"_zero"), libflint), Nothing,
                    (Ref{($etype)},), x)
   x.prec = parent(x).prec_max
+  x.val = parent(x).prec_max
   return x
 end
 
@@ -729,6 +730,7 @@ function addeq!(a::($etype), b::($etype))
    n = modulus(parent(a))
    if a.val < b.val
       z = ($etype)(n)
+      z.parent = parent(a)
       lenz = max(lena, lenb + b.val - a.val)
       ccall(($(flint_fn*"_set_trunc"), libflint), Nothing,
             (Ref{($etype)}, Ref{($etype)}, Int),
@@ -763,19 +765,48 @@ function addeq!(a::($etype), b::($etype))
 end
 
 function add!(c::($etype), a::($etype), b::($etype))
+   if c === a
+      return addeq!(c, b)
+   elseif c === b
+      return addeq!(c, a)
+   end
    lena = pol_length(a)
    lenb = pol_length(b)
-
    prec = min(a.prec, b.prec)
-
-   lena = min(lena, prec)
-   lenb = min(lenb, prec)
-
-   lenc = max(lena, lenb)
-   c.prec = prec
-   ccall(($(flint_fn*"_add_series"), libflint), Nothing,
+   val = min(a.val, b.val)
+   lena = min(lena, prec - a.val)
+   lenb = min(lenb, prec - b.val)
+   if a.val < b.val
+      lenc = max(lena, lenb + b.val - a.val)
+      ccall(($(flint_fn*"_set_trunc"), libflint), Nothing,
+            (Ref{($etype)}, Ref{($etype)}, Int),
+            c, b, max(0, lenc - b.val + a.val))
+      ccall(($(flint_fn*"_shift_left"), libflint), Nothing,
+            (Ref{($etype)}, Ref{($etype)}, Int),
+            c, c, b.val - a.val)
+      ccall(($(flint_fn*"_add_series"), libflint), Nothing,
+                (Ref{($etype)}, Ref{($etype)}, Ref{($etype)}, Int),
+               c, c, a, lenc)
+   elseif b.val < a.val
+      lenc = max(lena + a.val - b.val, lenb)
+      ccall(($(flint_fn*"_set_trunc"), libflint), Nothing,
+            (Ref{($etype)}, Ref{($etype)}, Int),
+            c, a, max(0, lenc - a.val + b.val))
+      ccall(($(flint_fn*"_shift_left"), libflint), Nothing,
+            (Ref{($etype)}, Ref{($etype)}, Int),
+            c, c, a.val - b.val)
+      ccall(($(flint_fn*"_add_series"), libflint), Nothing,
+                (Ref{($etype)}, Ref{($etype)}, Ref{($etype)}, Int),
+               c, c, b, lenc)
+   else
+      lenc = max(lena, lenb)
+      ccall(($(flint_fn*"_add_series"), libflint), Nothing,
                 (Ref{($etype)}, Ref{($etype)}, Ref{($etype)}, Int),
                c, a, b, lenc)
+   end
+   c.prec = prec
+   c.val = val
+   renormalize!(c)
    return c
 end
 

@@ -408,3 +408,57 @@ end
 
    @test isequal(divexact(x, exp(x + O(x^10)) - 1), 13*x^8+9*x^6+13*x^4+2*x^2+11*x+1+O(x^9))
 end
+
+@testset "fq_nmod_rel_series.unsafe_operators" begin
+   S, t = FiniteField(23, 5, "t")
+   R, x = PowerSeriesRing(S, 30, "x")
+
+   for iter = 1:300
+      f = rand(R, 0:9)
+      g = rand(R, 0:9)
+      f0 = deepcopy(f)
+      g0 = deepcopy(g)
+
+      h = rand(R, 0:9)
+
+      k = f + g
+      h = add!(h, f, g)
+      @test isequal(h, k)
+      @test isequal(f, f0)
+      @test isequal(g, g0)
+
+      f1 = deepcopy(f)
+      f1 = add!(f1, f1, g)
+      @test isequal(f1, k)
+      @test isequal(g, g0)
+
+      g1 = deepcopy(g)
+      g1 = add!(g1, f, g1)
+      @test isequal(g1, k)
+      @test isequal(f, f0)
+
+      f1 = deepcopy(f)
+      f1 = addeq!(f1, g)
+      @test isequal(h, k)
+      @test isequal(g, g0)
+
+      k = f*g
+      h = mul!(h, f, g)
+      @test isequal(h, k)
+      @test isequal(f, f0)
+      @test isequal(g, g0)
+
+      f1 = deepcopy(f)
+      f1 = mul!(f1, f1, g)
+      @test isequal(f1, k)
+      @test isequal(g, g0)
+
+      g1 = deepcopy(g)
+      g1 = mul!(g1, f, g1)
+      @test isequal(g1, k)
+      @test isequal(f, f0)
+
+      h = zero!(h)
+      @test isequal(h, R())
+   end
+end

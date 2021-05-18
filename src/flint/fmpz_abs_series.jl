@@ -543,6 +543,23 @@ function addeq!(a::fmpz_abs_series, b::fmpz_abs_series)
    return a
 end
 
+function add!(c::fmpz_abs_series, a::fmpz_abs_series, b::fmpz_abs_series)
+   lena = length(a)
+   lenb = length(b)
+
+   prec = min(a.prec, b.prec)
+
+   lena = min(lena, prec)
+   lenb = min(lenb, prec)
+
+   lenc = max(lena, lenb)
+   c.prec = prec
+   ccall((:fmpz_poly_add_series, libflint), Nothing,
+                (Ref{fmpz_abs_series}, Ref{fmpz_abs_series}, Ref{fmpz_abs_series}, Int),
+               c, a, b, lenc)
+   return c
+end
+
 ###############################################################################
 #
 #   Promotion rules

@@ -789,9 +789,28 @@ function addeq!(a::fmpq_abs_series, b::fmpq_abs_series)
    lenz = max(lena, lenb)
    a.prec = prec
    ccall((:fmpq_poly_add_series, libflint), Nothing,
-                (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
+                (Ref{fmpq_abs_series}, Ref{fmpq_abs_series},
+                 Ref{fmpq_abs_series}, Int),
                a, a, b, lenz)
    return a
+end
+
+function add!(c::fmpq_abs_series, a::fmpq_abs_series, b::fmpq_abs_series)
+   lena = length(a)
+   lenb = length(b)
+
+   prec = min(a.prec, b.prec)
+
+   lena = min(lena, prec)
+   lenb = min(lenb, prec)
+
+   lenc = max(lena, lenb)
+   c.prec = prec
+   ccall((:fmpq_poly_add_series, libflint), Nothing,
+                (Ref{fmpq_abs_series}, Ref{fmpq_abs_series},
+                 Ref{fmpq_abs_series}, Int),
+               c, a, b, lenc)
+   return c
 end
 
 ###############################################################################

@@ -561,6 +561,7 @@ function zero!(x::fmpz_rel_series)
   ccall((:fmpz_poly_zero, libflint), Nothing,
                    (Ref{fmpz_rel_series},), x)
   x.prec = parent(x).prec_max
+  x.val = parent(x).prec_max
   return x
 end
 
@@ -606,6 +607,7 @@ function addeq!(a::fmpz_rel_series, b::fmpz_rel_series)
    lenb = min(lenb, prec - b.val)
    if a.val < b.val
       z = fmpz_rel_series()
+      z.parent = parent(a)
       lenz = max(lena, lenb + b.val - a.val)
       ccall((:fmpz_poly_set_trunc, libflint), Nothing,
             (Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Int),
@@ -640,19 +642,48 @@ function addeq!(a::fmpz_rel_series, b::fmpz_rel_series)
 end
 
 function add!(c::fmpz_rel_series, a::fmpz_rel_series, b::fmpz_rel_series)
+   if c === a
+      return addeq!(c, b)
+   elseif c === b
+      return addeq!(c, a)
+   end
    lena = pol_length(a)
    lenb = pol_length(b)
-
    prec = min(a.prec, b.prec)
-
-   lena = min(lena, prec)
-   lenb = min(lenb, prec)
-
-   lenc = max(lena, lenb)
-   c.prec = prec
-   ccall((:fmpz_poly_add_series, libflint), Nothing,
+   val = min(a.val, b.val)
+   lena = min(lena, prec - a.val)
+   lenb = min(lenb, prec - b.val)
+   if a.val < b.val
+      lenc = max(lena, lenb + b.val - a.val)
+      ccall((:fmpz_poly_set_trunc, libflint), Nothing,
+            (Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Int),
+            c, b, max(0, lenc - b.val + a.val))
+      ccall((:fmpz_poly_shift_left, libflint), Nothing,
+            (Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Int),
+            c, c, b.val - a.val)
+      ccall((:fmpz_poly_add_series, libflint), Nothing,
+                (Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Int),
+               c, c, a, lenc)
+   elseif b.val < a.val
+      lenc = max(lena + a.val - b.val, lenb)
+      ccall((:fmpz_poly_set_trunc, libflint), Nothing,
+            (Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Int),
+            c, a, max(0, lenc - a.val + b.val))
+      ccall((:fmpz_poly_shift_left, libflint), Nothing,
+            (Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Int),
+            c, c, a.val - b.val)
+      ccall((:fmpz_poly_add_series, libflint), Nothing,
+                (Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Int),
+               c, c, b, lenc)
+   else
+      lenc = max(lena, lenb)
+      ccall((:fmpz_poly_add_series, libflint), Nothing,
                 (Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Ref{fmpz_rel_series}, Int),
                c, a, b, lenc)
+   end
+   c.prec = prec
+   c.val = val
+   renormalize!(c)
    return c
 end
 
