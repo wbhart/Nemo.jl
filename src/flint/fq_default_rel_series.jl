@@ -26,6 +26,8 @@ parent_type(::Type{fq_default_rel_series}) = FqDefaultRelSeriesRing
 
 base_ring(R::FqDefaultRelSeriesRing) = R.base_ring
 
+rel_series_type(::Type{fq_default}) = fq_default_rel_series
+
 var(a::FqDefaultRelSeriesRing) = a.S
 
 ###############################################################################
@@ -112,6 +114,38 @@ function renormalize!(z::fq_default_rel_series)
 end
 
 characteristic(R::FqDefaultRelSeriesRing) = characteristic(base_ring(R))
+
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::RelSeriesElem, R::FqDefaultFiniteField, max_prec::Int,
+                                 var::Symbol=var(parent(f)); cached::Bool=true)
+   z = fq_default_rel_series(R)
+   z.parent = FqDefaultRelSeriesRing(R, max_prec, var, cached)
+   z.prec = max_prec
+   z.val = max_prec
+   return z
+end
+
+###############################################################################
+#
+#   rel_series constructor
+#
+###############################################################################
+
+function rel_series(R::FqDefaultFiniteField, arr::Vector{T},
+                   len::Int, prec::Int, val::Int, var::String="x";
+                            max_precision::Int=prec, cached::Bool=true) where T
+   prec < len + val && error("Precision too small for given data")
+   coeffs = T == fq_default ? arr : map(R, arr)
+   coeffs = length(coeffs) == 0 ? fq_default[] : coeffs
+   z = fq_default_rel_series(R, coeffs, len, prec, val)
+   z.parent = FqDefaultRelSeriesRing(R, max_precision, Symbol(var), cached)
+   return z
+end
 
 ###############################################################################
 #

@@ -29,6 +29,8 @@ parent_type(::Type{fq_default_abs_series}) = FqDefaultAbsSeriesRing
 
 base_ring(R::FqDefaultAbsSeriesRing) = R.base_ring
 
+abs_series_type(::Type{fq_default}) = fq_default_abs_series
+
 var(a::FqDefaultAbsSeriesRing) = a.S
 
 ###############################################################################
@@ -120,6 +122,37 @@ function valuation(a::fq_default_abs_series)
 end
 
 characteristic(R::FqDefaultAbsSeriesRing) = characteristic(base_ring(R))
+
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::AbsSeriesElem, R::FqDefaultFiniteField, max_prec::Int,
+                                 var::Symbol=var(parent(f)); cached::Bool=true)
+   z = fq_default_abs_series(R)
+   z.parent = FqDefaultAbsSeriesRing(R, max_prec, var, cached)
+   z.prec = max_prec
+   return z
+end
+
+###############################################################################
+#
+#   abs_series constructor
+#
+###############################################################################
+
+function abs_series(R::FqDefaultFiniteField, arr::Vector{T},
+                           len::Int, prec::Int, var::String="x";
+                            max_precision::Int=prec, cached::Bool=true) where T
+   prec < len && error("Precision too small for given data")
+   coeffs = T == fq_default ? arr : map(R, arr)
+   coeffs = length(coeffs) == 0 ? fq_default[] : coeffs
+   z = fq_default_abs_series(R, coeffs, len, prec)
+   z.parent = FqDefaultAbsSeriesRing(R, max_precision, Symbol(var), cached)
+   return z
+end
 
 ###############################################################################
 #
