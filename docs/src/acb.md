@@ -558,31 +558,35 @@ chi(::acb)
 ```
 
 ```@docs
-modeta(::acb)
+modular_eta(::acb)
 ```
 
 ```@docs
-modweber_f(::acb)
+modular_weber_f(::acb)
 ```
 
 ```@docs
-modweber_f1(::acb)
+modular_weber_f1(::acb)
 ```
 
 ```@docs
-modweber_f2(::acb)
+modular_weber_f2(::acb)
 ```
 
 ```@docs
-modj(::acb)
+modular_j(::acb)
 ```
 
 ```@docs
-modlambda(::acb)
+modular_lambda(::acb)
 ```
 
 ```@docs
-moddelta(::acb)
+modular_delta(::acb)
+```
+
+```@docs
+modular_eisenstein_g(::Int, ::acb)
 ```
 
 ```@docs

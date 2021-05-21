@@ -441,7 +441,7 @@ end
    CC = ComplexField(64)
 
    tau = (1 + sqrt(CC(-23)))/2
-   a = abs(modweber_f2(tau))^2
+   a = abs(modular_weber_f2(tau))^2
    C = lindep([RR(1), a, a^2, a^3, a^4, a^5], 20)
 
    @test C == fmpz[-1, 1, 1, 0, 1, 0]

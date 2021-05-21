@@ -20,8 +20,11 @@ export rsqrt, log, log1p, exppii, sin, cos, tan, cot,
        risingfac2, polylog, barnesg, logbarnesg, agm,
        ei, si, ci, shi, chi, li, lioffset, expint, gamma,
        hyp1f1, hyp1f1r, hyperu, hyp2f1,
-       jtheta, modeta, modj, modlambda, moddelta, ellipwp, ellipk, ellipe,
-       modweber_f, modweber_f1, modweber_f2, canonical_unit, root_of_unity
+       jtheta,
+       modular_delta, modular_eta, modular_eisenstein_g, modular_j,
+       modular_lambda, modular_weber_f, modular_weber_f1, modular_weber_f2,
+       ellipwp, ellipk, ellipe,
+       canonical_unit, root_of_unity
 
 ###############################################################################
 #
@@ -1201,84 +1204,107 @@ function chi(x::acb)
 end
 
 @doc Markdown.doc"""
-    modeta(x::acb)
+    modular_eta(x::acb)
 
 Return the Dedekind eta function $\eta(\tau)$ at $\tau = x$.
 """
-function modeta(x::acb)
+function modular_eta(x::acb)
    z = parent(x)()
    ccall((:acb_modular_eta, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
 @doc Markdown.doc"""
-    modweber_f(x::acb)
+    modular_weber_f(x::acb)
 
 Return the modular Weber function
 $\mathfrak{f}(\tau) = \frac{\eta^2(\tau)}{\eta(\tau/2)\eta(2\tau)},$
 at $x$ in the complex upper half plane.
 """
-function modweber_f(x::acb)
+function modular_weber_f(x::acb)
    x_on_2 = divexact(x, 2)
    x_times_2 = 2*x
-   return divexact(modeta(x)^2, modeta(x_on_2)*modeta(x_times_2))
+   return divexact(modular_eta(x)^2, modular_eta(x_on_2)*modular_eta(x_times_2))
 end
 
 @doc Markdown.doc"""
-    modweber_f1(x::acb)
+    modular_weber_f1(x::acb)
 
 Return the modular Weber function
 $\mathfrak{f}_1(\tau) = \frac{\eta(\tau/2)}{\eta(\tau)},$
 at $x$ in the complex upper half plane.
 """
-function modweber_f1(x::acb)
+function modular_weber_f1(x::acb)
    x_on_2 = divexact(x, 2)
-   return divexact(modeta(x_on_2), modeta(x))
+   return divexact(modular_eta(x_on_2), modular_eta(x))
 end
 
 @doc Markdown.doc"""
-    modweber_f2(x::acb)
+    modular_weber_f2(x::acb)
 
 Return the modular Weber function
 $\mathfrak{f}_2(\tau) = \frac{\sqrt{2}\eta(2\tau)}{\eta(\tau)}$
 at $x$ in the complex upper half plane.
 """
-function modweber_f2(x::acb)
+function modular_weber_f2(x::acb)
    x_times_2 = x*2
-   return divexact(modeta(x_times_2), modeta(x))*sqrt(parent(x)(2))
+   return divexact(modular_eta(x_times_2), modular_eta(x))*sqrt(parent(x)(2))
 end
 
 @doc Markdown.doc"""
-    modj(x::acb)
+    modular_j(x::acb)
 
 Return the $j$-invariant $j(\tau)$ at $\tau = x$.
 """
-function modj(x::acb)
+function modular_j(x::acb)
    z = parent(x)()
    ccall((:acb_modular_j, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
 @doc Markdown.doc"""
-    modlambda(x::acb)
+    modular_lambda(x::acb)
 
 Return the modular lambda function $\lambda(\tau)$ at $\tau = x$.
 """
-function modlambda(x::acb)
+function modular_lambda(x::acb)
    z = parent(x)()
    ccall((:acb_modular_lambda, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
 @doc Markdown.doc"""
-    moddelta(x::acb)
+    modular_delta(x::acb)
 
 Return the modular delta function $\Delta(\tau)$ at $\tau = x$.
 """
-function moddelta(x::acb)
+function modular_delta(x::acb)
    z = parent(x)()
    ccall((:acb_modular_delta, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
+end
+
+@doc Markdown.doc"""
+    modular_eisenstein_g(k::Int, x::acb)
+
+Return the non-normalized Eisenstein series $G_k(\tau)$ of
+$\mathrm{SL}_2(\mathbb{Z})$. Also defined for $\tau = i \infty$.
+"""
+function modular_eisenstein_g(k::Int, x::acb)
+  CC = parent(x)
+
+  k <= 2 && error("Eisenstein series are not absolute convergent for k = $k")
+  imag(x) < 0 && error("x is not in upper half plane.")
+  isodd(k) && return zero(CC)
+  imag(x) == Inf && return 2 * zeta(CC(k))
+
+  len = div(k, 2) - 1
+  vec = acb_vec(len)
+  ccall((:acb_modular_eisenstein, libarb), Nothing,
+        (Ptr{acb_struct}, Ref{acb}, Int, Int), vec, x, len, CC.prec)
+  z = array(CC, vec, len)
+  acb_vec_clear(vec, len)
+  return z[end]
 end
 
 @doc Markdown.doc"""
