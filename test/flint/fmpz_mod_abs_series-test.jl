@@ -1,3 +1,7 @@
+@testset "fmpz_mod_abs_series.types" begin
+   @test abs_series_type(fmpz_mod) == fmpz_mod_abs_series
+end
+
 @testset "fmpz_mod_abs_series.constructors" begin
    S = ResidueRing(ZZ, 123456789012345678949)
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
@@ -53,6 +57,97 @@ end
    @test valuation(b) == 4
 
    @test characteristic(R) == 123456789012345678949
+end
+
+@testset "fmpz_mod_abs_series.similar" begin
+   R0 = ResidueRing(ZZ, ZZ(23))
+   R, x = PowerSeriesRing(R0, 10, "x"; model=:capped_absolute)
+   S, y = PowerSeriesRing(ZZ, 10, "y"; model=:capped_absolute)
+
+   for iters = 1:10
+      f = rand(R, 0:10)
+      fz = rand(S, 0:10, -10:10)
+
+      g = similar(fz, R0, "y")
+      h = similar(f, "y")
+      k = similar(f)
+      m = similar(fz, R0, 5)
+      n = similar(f, 5)
+
+      @test isa(g, fmpz_mod_abs_series)
+      @test isa(h, fmpz_mod_abs_series)
+      @test isa(k, fmpz_mod_abs_series)
+      @test isa(m, fmpz_mod_abs_series)
+      @test isa(n, fmpz_mod_abs_series)
+
+      @test parent(g).S == :y
+      @test parent(h).S == :y
+
+      @test iszero(g)
+      @test iszero(h)
+      @test iszero(k)
+      @test iszero(m)
+      @test iszero(n)
+
+      @test parent(g) != parent(f)
+      @test parent(h) != parent(f)
+      @test parent(k) == parent(f)
+      @test parent(m) != parent(f)
+      @test parent(n) != parent(f)
+
+      p = similar(f, cached=false)
+      q = similar(f, "z", cached=false)
+      r = similar(f, "z", cached=false)
+      s = similar(f)
+      t = similar(f)
+
+      @test parent(p) != parent(f)
+      @test parent(q) != parent(r)
+      @test parent(s) == parent(t)
+   end
+end
+
+@testset "fmpz_mod_abs_series.abs_series" begin
+   R = ResidueRing(ZZ, ZZ(23))
+   f = abs_series(R, [1, 2, 3], 3, 5, "y")
+
+   @test isa(f, fmpz_mod_abs_series)
+   @test base_ring(f) == R
+   @test coeff(f, 0) == 1
+   @test coeff(f, 2) == 3
+   @test parent(f).S == :y
+
+   g = abs_series(R, [1, 2, 3], 3, 5)
+
+   @test isa(g, fmpz_mod_abs_series)
+   @test base_ring(g) == R
+   @test coeff(g, 0) == 1
+   @test coeff(g, 2) == 3
+   @test parent(g).S == :x
+
+   h = abs_series(R, [1, 2, 3], 2, 5)
+   k = abs_series(R, [1, 2, 3], 1, 6, cached=false)
+   m = abs_series(R, [1, 2, 3], 3, 9, cached=false)
+
+   @test parent(h) == parent(g)
+   @test parent(k) != parent(m)
+
+   p = abs_series(R, fmpz_mod[], 0, 4)
+   q = abs_series(R, [], 0, 6)
+
+   @test isa(p, fmpz_mod_abs_series)
+   @test isa(q, fmpz_mod_abs_series)
+
+   @test length(p) == 0
+   @test length(q) == 0
+
+   r = abs_series(R, fmpz[1, 2, 3], 3, 5)
+
+   @test isa(r, fmpz_mod_abs_series)
+
+   s = abs_series(R, [1, 2, 3], 3, 5; max_precision=10)
+   
+   @test max_precision(parent(s)) == 10
 end
 
 @testset "fmpz_mod_abs_series.unary_ops" begin

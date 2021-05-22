@@ -1,3 +1,7 @@
+@testset "fmpz_rel_series.types" begin
+   @test rel_series_type(fmpz) == fmpz_rel_series
+end
+
 @testset "fmpz_rel_series.constructors" begin
    R, x = PowerSeriesRing(ZZ, 30, "x")
 
@@ -49,6 +53,89 @@ end
    @test valuation(b) == 4
 
    @test characteristic(R) == 0
+end
+
+@testset "fmpz_rel_series.similar" begin
+   R, x = PowerSeriesRing(ZZ, 10, "x")
+
+   for iters = 1:10
+      f = rand(R, 0:10, -10:10)
+
+      g = similar(f, ZZ, "y")
+      h = similar(f, "y")
+      k = similar(f)
+      m = similar(f, ZZ, 5)
+      n = similar(f, 5)
+
+      @test isa(g, fmpz_rel_series)
+      @test isa(h, fmpz_rel_series)
+      @test isa(k, fmpz_rel_series)
+      @test isa(m, fmpz_rel_series)
+      @test isa(n, fmpz_rel_series)
+
+      @test parent(g).S == :y
+      @test parent(h).S == :y
+
+      @test iszero(g)
+      @test iszero(h)
+      @test iszero(k)
+      @test iszero(m)
+      @test iszero(n)
+
+      @test parent(g) != parent(f)
+      @test parent(h) != parent(f)
+      @test parent(k) == parent(f)
+      @test parent(m) != parent(f)
+      @test parent(n) != parent(f)
+
+      p = similar(f, cached=false)
+      q = similar(f, "z", cached=false)
+      r = similar(f, "z", cached=false)
+      s = similar(f)
+      t = similar(f)
+
+      @test parent(p) != parent(f)
+      @test parent(q) != parent(r)
+      @test parent(s) == parent(t)
+   end
+end
+
+@testset "fmpz_rel_series.rel_series" begin
+   f = rel_series(ZZ, [1, 2, 3], 3, 5, 2, "y")
+
+   @test isa(f, fmpz_rel_series)
+   @test base_ring(f) == ZZ
+   @test coeff(f, 2) == 1
+   @test coeff(f, 4) == 3
+   @test parent(f).S == :y
+
+   g = rel_series(ZZ, [1, 2, 3], 3, 7, 4)
+
+   @test isa(g, fmpz_rel_series)
+   @test base_ring(g) == ZZ
+   @test coeff(g, 4) == 1
+   @test coeff(g, 6) == 3
+   @test parent(g).S == :x
+
+   h = rel_series(ZZ, [1, 2, 3], 2, 7, 1)
+   k = rel_series(ZZ, [1, 2, 3], 1, 6, 0, cached=false)
+   m = rel_series(ZZ, [1, 2, 3], 3, 9, 5, cached=false)
+
+   @test parent(h) == parent(g)
+   @test parent(k) != parent(m)
+
+   p = rel_series(ZZ, fmpz[], 0, 3, 1)
+   q = rel_series(ZZ, [], 0, 3, 2)
+
+   @test isa(p, fmpz_rel_series)
+   @test isa(q, fmpz_rel_series)
+
+   @test pol_length(p) == 0
+   @test pol_length(q) == 0
+
+   s = rel_series(ZZ, [1, 2, 3], 3, 5, 0; max_precision=10)
+   
+   @test max_precision(parent(s)) == 10
 end
 
 @testset "fmpz_rel_series.unary_ops" begin

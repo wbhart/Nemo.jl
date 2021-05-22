@@ -1,3 +1,7 @@
+@testset "fmpz_abs_series.types" begin
+   @test abs_series_type(fmpz) == fmpz_abs_series
+end
+
 @testset "fmpz_abs_series.constructors" begin
    R, x = PowerSeriesRing(ZZ, 30, "x", model=:capped_absolute)
 
@@ -50,6 +54,89 @@ end
    @test valuation(b) == 4
 
    @test characteristic(R) == 0
+end
+
+@testset "fmpz_abs_series.similar" begin
+   R, x = PowerSeriesRing(ZZ, 10, "x"; model=:capped_absolute)
+
+   for iters = 1:10
+      f = rand(R, 0:10, -10:10)
+
+      g = similar(f, ZZ, "y")
+      h = similar(f, "y")
+      k = similar(f)
+      m = similar(f, ZZ, 5)
+      n = similar(f, 5)
+
+      @test isa(g, fmpz_abs_series)
+      @test isa(h, fmpz_abs_series)
+      @test isa(k, fmpz_abs_series)
+      @test isa(m, fmpz_abs_series)
+      @test isa(n, fmpz_abs_series)
+
+      @test parent(g).S == :y
+      @test parent(h).S == :y
+
+      @test iszero(g)
+      @test iszero(h)
+      @test iszero(k)
+      @test iszero(m)
+      @test iszero(n)
+
+      @test parent(g) != parent(f)
+      @test parent(h) != parent(f)
+      @test parent(k) == parent(f)
+      @test parent(m) != parent(f)
+      @test parent(n) != parent(f)
+
+      p = similar(f, cached=false)
+      q = similar(f, "z", cached=false)
+      r = similar(f, "z", cached=false)
+      s = similar(f)
+      t = similar(f)
+
+      @test parent(p) != parent(f)
+      @test parent(q) != parent(r)
+      @test parent(s) == parent(t)
+   end
+end
+
+@testset "fmpz_abs_series.abs_series" begin
+   f = abs_series(ZZ, [1, 2, 3], 3, 5, "y")
+
+   @test isa(f, fmpz_abs_series)
+   @test base_ring(f) == ZZ
+   @test coeff(f, 0) == 1
+   @test coeff(f, 2) == 3
+   @test parent(f).S == :y
+
+   g = abs_series(ZZ, [1, 2, 3], 3, 5)
+
+   @test isa(g, fmpz_abs_series)
+   @test base_ring(g) == ZZ
+   @test coeff(g, 0) == 1
+   @test coeff(g, 2) == 3
+   @test parent(g).S == :x
+
+   h = abs_series(ZZ, [1, 2, 3], 2, 5)
+   k = abs_series(ZZ, [1, 2, 3], 1, 6, cached=false)
+   m = abs_series(ZZ, [1, 2, 3], 3, 9, cached=false)
+
+   @test parent(h) == parent(g)
+   @test parent(k) != parent(m)
+
+   p = abs_series(ZZ, fmpz[], 0, 4)
+   q = abs_series(ZZ, [], 0, 6)
+
+   @test isa(p, fmpz_abs_series)
+   @test isa(q, fmpz_abs_series)
+
+   @test length(p) == 0
+   @test length(q) == 0
+
+   s = abs_series(ZZ, [1, 2, 3], 3, 5; max_precision=10)
+   
+   @test max_precision(parent(s)) == 10
 end
 
 @testset "fmpz_abs_series.unary_ops" begin
