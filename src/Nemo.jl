@@ -29,7 +29,7 @@ import SHA
 import AbstractAlgebra: div, divrem
 
 # N.B: do not import div, divrem from Base
-import Base: Array, abs, acos, acosh, asin, asinh, atan, atanh, bin, binomial,
+import Base: Array, abs, abs2, acos, acosh, asin, asinh, atan, atanh, bin, binomial,
              ceil, checkbounds, conj, convert, cmp, cos, cosh, cospi, cot,
              coth, dec, deepcopy, deepcopy_internal, denominator,
              expm1, exp, factorial, floor, gcd, gcdx, getindex, hash, hcat,
@@ -83,6 +83,8 @@ export error_dim_negative, ErrorConstrDimMismatch
 export iswindows64
 
 export ComplexField, PadicField, QadicField
+
+export QQBar
 
 # Things/constants which are also defined in AbstractAlgebra:
 export ZZ, QQ, RealField, FiniteField, NumberField
@@ -393,6 +395,8 @@ include("antic/AnticTypes.jl")
 
 include("arb/ArbTypes.jl")
 
+include("calcium/CalciumTypes.jl")
+
 #include("ambiguities.jl") # remove ambiguity warnings
 
 include("flint/adhoc.jl")
@@ -503,6 +507,15 @@ const FiniteField = FlintFiniteField
 
 const RealField = ArbField
 const ComplexField = AcbField
+
+###############################################################################
+#
+#   Set domain for QQBar to Calcium
+#
+###############################################################################
+
+const QQBar = CalciumQQBar
+
 
 ###############################################################################
 #

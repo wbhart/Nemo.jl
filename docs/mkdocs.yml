@@ -17,6 +17,7 @@ pages:
 - Matrices:                     matrix.md
 - Integers:                     integer.md
 - Rationals:                    rational.md
+- Algebraic numbers:            algebraic.md
 - Finite fields:                finitefield.md
 - Finite field embeddings:      ff_embedding.md
 - P-adic fields:                padic.md

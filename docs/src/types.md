@@ -53,3 +53,7 @@ parent objects of the given rings and structures.
      - `arb_mat` (`ArbMatSpace`)
      - `acb_mat` (`AcbMatSpace`)
 
+  - Calcium
+
+     - `qqbar` (`CalciumQQBarField`)
+
