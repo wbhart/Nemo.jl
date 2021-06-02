@@ -330,6 +330,10 @@ end
    @test overlaps(lgamma(x), RR("0.760991283500573821902224 +/- 5.01e-25"))
    @test overlaps(rgamma(x), RR("0.467203066695702292350541 +/- 3.65e-25"))
    @test overlaps(digamma(x), RR("-2.46112318864250355875288 +/- 2.51e-24"))
+   @test overlaps(gamma(x,y), RR("0.390850361255613677231063 +/- 4.29e-25"))
+   @test overlaps(gamma_regularized(x,y), gamma(x,y) / gamma(x))
+   @test overlaps(gamma_lower(x,y), gamma(x) - gamma(x,y))
+   @test overlaps(gamma_lower_regularized(x,y), gamma_lower(x,y) / gamma(x))
    @test overlaps(zeta(x), RR("-1.17412759881491813598600 +/- 5.46e-24"))
 
    a, b = sincos(x)

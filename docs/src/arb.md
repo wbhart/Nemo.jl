@@ -554,6 +554,22 @@ digamma(::arb)
 ```
 
 ```@docs
+gamma(::arb, ::arb)
+```
+
+```@docs
+gamma_regularized(::arb, ::arb)
+```
+
+```@docs
+gamma_lower(::arb, ::arb)
+```
+
+```@docs
+gamma_lower_regularized(::arb, ::arb)
+```
+
+```@docs
 zeta(::arb)
 ```
 

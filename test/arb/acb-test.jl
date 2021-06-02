@@ -354,6 +354,9 @@ end
                               "-1.34436596014834977342501 +/- 2.02e-24"))
    @test overlaps(gamma(a,z), CC("0.52015862665033430896480 +/- 6.25e-24",
                               "-0.45171359572912367448392 +/- 5.94e-24"))
+   @test overlaps(gamma_regularized(a,z), gamma(a,z) / gamma(a))
+   @test overlaps(gamma_lower(a,z), gamma(a) - gamma(a,z))
+   @test overlaps(gamma_lower_regularized(a,z), gamma_lower(a,z) / gamma(a))
    @test overlaps(besselj(a,z), CC("0.46117305056699182297843 +/- 5.61e-24",
                               "-0.172953644007776862353437 +/- 6.92e-25"))
    @test overlaps(bessely(a,z), CC("-1.18656154996325105251999 +/- 4.72e-24",
