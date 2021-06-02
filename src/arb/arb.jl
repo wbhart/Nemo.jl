@@ -23,7 +23,10 @@ export ball, radius, midpoint, contains, contains_zero,
        sincos, sincospi, sinhcosh, atan2,
        agm, fac, binomial, fib, bernoulli, risingfac, risingfac2, polylog,
        chebyshev_t, chebyshev_t2, chebyshev_u, chebyshev_u2, bell, numpart,
-       lindep, canonical_unit, simplest_rational_inside
+       lindep, canonical_unit, simplest_rational_inside,
+       gamma_regularized, gamma_lower, gamma_lower_regularized
+       # These last three should be moved up to `gamma`.
+       # Temporarily here to ease the conflict later with the renaming merge.
 
 ###############################################################################
 #
@@ -1512,6 +1515,57 @@ function digamma(x::arb)
    ccall((:arb_digamma, libarb), Nothing, (Ref{arb}, Ref{arb}, Int), z, x, parent(x).prec)
    return z
 end
+
+@doc Markdown.doc"""
+    gamma(s::arb, x::arb)
+
+Return the upper incomplete gamma function $\Gamma(s,x)$.
+"""
+function gamma(s::arb, x::arb)
+  z = parent(s)()
+  ccall((:arb_hypgeom_gamma_upper, libarb), Nothing,
+        (Ref{arb}, Ref{arb}, Ref{arb}, Int, Int), z, s, x, 0, parent(s).prec)
+  return z
+end
+
+@doc Markdown.doc"""
+    gamma_regularized(s::arb, x::arb)
+
+Return the regularized upper incomplete gamma function
+$\Gamma(s,x) / \Gamma(s)$.
+"""
+function gamma_regularized(s::arb, x::arb)
+  z = parent(s)()
+  ccall((:arb_hypgeom_gamma_upper, libarb), Nothing,
+        (Ref{arb}, Ref{arb}, Ref{arb}, Int, Int), z, s, x, 1, parent(s).prec)
+  return z
+end
+
+@doc Markdown.doc"""
+    gamma_lower(s::arb, x::arb)
+
+Return the lower incomplete gamma function $\gamma(s,x) / \Gamma(s)$.
+"""
+function gamma_lower(s::arb, x::arb)
+  z = parent(s)()
+  ccall((:arb_hypgeom_gamma_lower, libarb), Nothing,
+        (Ref{arb}, Ref{arb}, Ref{arb}, Int, Int), z, s, x, 0, parent(s).prec)
+  return z
+end
+
+@doc Markdown.doc"""
+    gamma_lower_regularized(s::arb, x::arb)
+
+Return the regularized lower incomplete gamma function
+$\gamma(s,x) / \Gamma(s)$.
+"""
+function gamma_lower_regularized(s::arb, x::arb)
+  z = parent(s)()
+  ccall((:arb_hypgeom_gamma_lower, libarb), Nothing,
+        (Ref{arb}, Ref{arb}, Ref{arb}, Int, Int), z, s, x, 1, parent(s).prec)
+  return z
+end
+
 
 @doc Markdown.doc"""
     zeta(x::arb)
