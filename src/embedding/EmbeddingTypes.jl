@@ -4,16 +4,16 @@
 #
 ################################################################################
 
-struct FinFieldMorphism{T} <: AbstractAlgebra.Map{T, T, AbstractAlgebra.SetMap,
+struct FinFieldMorphism{S, T} <: AbstractAlgebra.Map{S, T, AbstractAlgebra.SetMap,
                                                   FinFieldMorphism} 
     map::AbstractAlgebra.Map
     preimage::AbstractAlgebra.Map
 
-    function FinFieldMorphism(domain::T, codomain::T, image_fn::Function,
-                              inverse_fn::Function) where T
+    function FinFieldMorphism(domain::S, codomain::T, image_fn::Function,
+                              inverse_fn::Function) where {S, T}
         map = AbstractAlgebra.map_from_func(image_fn, domain, codomain)
         preimage = AbstractAlgebra.map_from_func(inverse_fn, codomain, domain)
-        return new{T}(map, preimage)
+        return new{S, T}(map, preimage)
     end
 end
 
@@ -23,7 +23,7 @@ codomain(f::FinFieldMorphism) = codomain(f.map)
 image_fn(f::FinFieldMorphism) = image_fn(f.map)
 inverse_fn(f::FinFieldMorphism) = image_fn(f.preimage)
 
-function (f::FinFieldMorphism)(x)
+function (f::FinFieldMorphism)(x) 
     return image_fn(f)(x)::elem_type(codomain(f))
 end
 
@@ -31,16 +31,16 @@ function Base.show(io::IO, f::FinFieldMorphism)
     print(io, "Morphism from $(domain(f)) to $(codomain(f))")
 end
 
-struct FinFieldPreimage{T} <: AbstractAlgebra.Map{T, T, AbstractAlgebra.SetMap,
+struct FinFieldPreimage{S, T} <: AbstractAlgebra.Map{S, T, AbstractAlgebra.SetMap,
                                                   FinFieldPreimage}
     map::AbstractAlgebra.Map
     preimage::AbstractAlgebra.Map
 
-    function FinFieldPreimage(domain::T, codomain::T, image_fn::Function,
-                              inverse_fn::Function) where T
+    function FinFieldPreimage(domain::S, codomain::T, image_fn::Function,
+                              inverse_fn::Function) where {S, T}
         map = AbstractAlgebra.map_from_func(image_fn, domain, codomain)
         preimage = AbstractAlgebra.map_from_func(inverse_fn, codomain, domain)
-        return new{T}(map, preimage)
+        return new{S, T}(map, preimage)
     end
 end
 
