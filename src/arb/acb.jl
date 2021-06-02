@@ -24,7 +24,10 @@ export rsqrt, log, log1p, exppii, sin, cos, tan, cot,
        modular_delta, modular_eta, modular_eisenstein_g, modular_j,
        modular_lambda, modular_weber_f, modular_weber_f1, modular_weber_f2,
        ellipwp, ellipk, ellipe,
-       canonical_unit, root_of_unity
+       canonical_unit, root_of_unity,
+       gamma_regularized, gamma_lower, gamma_lower_regularized
+       # These last three should be moved up to `gamma`.
+       # Temporarily here to ease the conflict later with the renaming merge.
 
 ###############################################################################
 #
@@ -1492,7 +1495,45 @@ Return the upper incomplete gamma function $\Gamma(s,x)$.
 function gamma(s::acb, x::acb)
   z = parent(s)()
   ccall((:acb_hypgeom_gamma_upper, libarb), Nothing,
-              (Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, s, x, 0, parent(s).prec)
+        (Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, s, x, 0, parent(s).prec)
+  return z
+end
+
+@doc Markdown.doc"""
+    gamma_regularized(s::acb, x::acb)
+
+Return the regularized upper incomplete gamma function
+$\Gamma(s,x) / \Gamma(s)$.
+"""
+function gamma_regularized(s::acb, x::acb)
+  z = parent(s)()
+  ccall((:acb_hypgeom_gamma_upper, libarb), Nothing,
+        (Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, s, x, 1, parent(s).prec)
+  return z
+end
+
+@doc Markdown.doc"""
+    gamma_lower(s::acb, x::acb)
+
+Return the lower incomplete gamma function $\gamma(s,x) / \Gamma(s)$.
+"""
+function gamma_lower(s::acb, x::acb)
+  z = parent(s)()
+  ccall((:acb_hypgeom_gamma_lower, libarb), Nothing,
+        (Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, s, x, 0, parent(s).prec)
+  return z
+end
+
+@doc Markdown.doc"""
+    gamma_lower_regularized(s::acb, x::acb)
+
+Return the regularized lower incomplete gamma function
+$\gamma(s,x) / \Gamma(s)$.
+"""
+function gamma_lower_regularized(s::acb, x::acb)
+  z = parent(s)()
+  ccall((:acb_hypgeom_gamma_lower, libarb), Nothing,
+        (Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, s, x, 1, parent(s).prec)
   return z
 end
 
