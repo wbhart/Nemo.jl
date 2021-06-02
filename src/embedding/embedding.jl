@@ -16,7 +16,7 @@ overfields(k::FinField) = k.overfields
 subfields(k::FinField) = k.subfields
 
 @doc Markdown.doc"""
-    AddOverfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
+    AddOverfield!(F::T, f::FinFieldMorphism{T, T}) where T <: FinField
 
 Add an overfield to $F$, represented by a morphism $f: F\to G$ where
 $G$ is the codomain of $f$.
@@ -29,13 +29,13 @@ function AddOverfield!(F::T, f::FinFieldMorphism{T, T}) where T <: FinField
     if haskey(over, d)
         push!(over[d], f)
     else
-        a = FinFieldMorphism{T}[f]
+        a = FinFieldMorphism{T, T}[f]
         over[d] = a
     end
 end
 
 @doc Markdown.doc"""
-    AddSubfield!(F::T, f::FinFieldMorphism{T}) where T <: FinField
+    AddSubfield!(F::T, f::FinFieldMorphism{T, T}) where T <: FinField
 
 Add a subfield to $F$, represented by a morphism $f: G\to F$ where
 $G$ is the domain of $f$.
