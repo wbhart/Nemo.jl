@@ -15,6 +15,7 @@ The features of Nemo so far include:
   - Finite fields (prime and non-prime order)
   - Number field arithmetic
   - Algebraic numbers
+  - Exact real and complex numbers
   - Arbitrary precision real and complex balls
   - Univariate and multivariate polynomials and matrices over the above
 

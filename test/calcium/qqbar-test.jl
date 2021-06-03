@@ -25,6 +25,9 @@
    @test isa(qqbar(fmpz(2)), qqbar)
    @test isa(qqbar(fmpq(2)), qqbar)
 
+   x = R(1)
+   @test deepcopy(x) !== x
+
 end
 
 @testset "qqbar.printing" begin
@@ -74,6 +77,8 @@ end
    @test numerator(qqbar(3+4im) // 5) == qqbar(3+4im)
    @test height(qqbar(1+10im)) == 101
    @test height_bits(qqbar(1+10im)) == 7
+
+   @test inv(u) == u // 2
 
    @test abs(-u) == u
    @test abs2(u) == 2
@@ -169,9 +174,12 @@ end
 
    @test guess(CalciumQQBar, CC(2+i), 2, 10) == 2+i
 
+   Rx, x = PolynomialRing(QQBar, "x")
+   @test gcd(x^4 - 4*x^2 + 4, x^2 + sqrt(QQBar(18))*x + 4) == x + sqrt(QQBar(2))
+
 end
 
-@testset "qqbar.adhoc-operations" begin
+@testset "qqbar.adhoc_operations" begin
    R = CalciumQQBar
 
    @test qqbar(2) + qqbar(3) == 5

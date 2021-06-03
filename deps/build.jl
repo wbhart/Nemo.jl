@@ -28,7 +28,7 @@
   append!(dependencies, [
   "build_Arb.v200.1900.0.jl",
   "build_Antic.v0.200.400.jl",
-  "build_Calcium.v0.300.0.jl",
+  "build_Calcium.v0.400.0.jl",
   ])
 
   for file in dependencies

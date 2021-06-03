@@ -31,6 +31,8 @@ base_ring(a::qqbar) = CalciumQQBar
 
 isdomain_type(::Type{qqbar}) = true
 
+check_parent(a::qqbar, b::qqbar, throw::Bool = true) = true
+
 ###############################################################################
 #
 #   Hashing
@@ -78,6 +80,11 @@ function qqbar(a::fmpq)
    return z
 end
 
+function deepcopy_internal(a::qqbar, dict::IdDict)
+   z = qqbar()
+   ccall((:qqbar_set, libcalcium), Nothing, (Ref{qqbar}, Ref{qqbar}), z, a)
+   return z
+end
 
 ###############################################################################
 #
@@ -171,7 +178,7 @@ one(a::CalciumQQBarField) = a(1)
 @doc Markdown.doc"""
     degree(x::qqbar)
 
-Return the degree of the minimal polynomial of *x*.
+Return the degree of the minimal polynomial of `x`.
 """
 function degree(x::qqbar)
    return ccall((:qqbar_degree, libcalcium), Int, (Ref{qqbar}, ), x)
@@ -180,7 +187,7 @@ end
 @doc Markdown.doc"""
     iszero(x::qqbar)
 
-Return whether *x* is the number 0.
+Return whether `x` is the number 0.
 """
 function iszero(x::qqbar)
    return Bool(ccall((:qqbar_is_zero, libcalcium), Cint, (Ref{qqbar},), x))
@@ -189,7 +196,7 @@ end
 @doc Markdown.doc"""
     isone(x::qqbar)
 
-Return whether *x* is the number 1.
+Return whether `x` is the number 1.
 """
 function isone(x::qqbar)
    return Bool(ccall((:qqbar_is_one, libcalcium), Cint, (Ref{qqbar},), x))
@@ -198,7 +205,7 @@ end
 @doc Markdown.doc"""
     isinteger(x::qqbar)
 
-Return whether *x* is an integer.
+Return whether `x` is an integer.
 """
 function isinteger(x::qqbar)
    return Bool(ccall((:qqbar_is_integer, libcalcium), Cint, (Ref{qqbar},), x))
@@ -207,7 +214,7 @@ end
 @doc Markdown.doc"""
     isrational(x::qqbar)
 
-Return whether *x* is a rational number.
+Return whether `x` is a rational number.
 """
 function isrational(x::qqbar)
    return Bool(ccall((:qqbar_is_rational, libcalcium), Cint, (Ref{qqbar},), x))
@@ -216,7 +223,7 @@ end
 @doc Markdown.doc"""
     isreal(x::qqbar)
 
-Return whether *x* is a real number.
+Return whether `x` is a real number.
 """
 function isreal(x::qqbar)
    return Bool(ccall((:qqbar_is_real, libcalcium), Cint, (Ref{qqbar},), x))
@@ -225,7 +232,7 @@ end
 @doc Markdown.doc"""
     is_algebraic_integer(x::qqbar)
 
-Return whether *x* is an algebraic integer.
+Return whether `x` is an algebraic integer.
 """
 function is_algebraic_integer(x::qqbar)
    return Bool(ccall((:qqbar_is_algebraic_integer, libcalcium),
@@ -235,7 +242,7 @@ end
 @doc Markdown.doc"""
     minpoly(R::FmpzPolyRing, x::qqbar)
 
-Return the minimal polynomial of $x$ as an element of the polynomial ring $R$.
+Return the minimal polynomial of `x` as an element of the polynomial ring `R`.
 """
 function minpoly(R::FmpzPolyRing, x::qqbar)
    z = R()
@@ -247,7 +254,7 @@ end
 @doc Markdown.doc"""
     minpoly(R::FmpzPolyRing, x::qqbar)
 
-Return the minimal polynomial of $x$ as an element of the polynomial ring $R$.
+Return the minimal polynomial of `x` as an element of the polynomial ring `R`.
 """
 function minpoly(R::FmpqPolyRing, x::qqbar)
    z = R()
@@ -259,8 +266,8 @@ end
 @doc Markdown.doc"""
     denominator(x::qqbar)
 
-Return the denominator of *x*, defined as the leading coefficient of the
-minimal polynomial of *x*. The result is returned as an *fmpz*.
+Return the denominator of `x`, defined as the leading coefficient of the
+minimal polynomial of `x`. The result is returned as an `fmpz`.
 """
 function denominator(x::qqbar)
    d = degree(x)
@@ -273,7 +280,7 @@ end
 @doc Markdown.doc"""
     numerator(x::qqbar)
 
-Return the numerator of *x*, defined as *x* multiplied by its denominator.
+Return the numerator of `x`, defined as `x` multiplied by its denominator.
 The result is an algebraic integer.
 """
 function numerator(x::qqbar)
@@ -283,7 +290,7 @@ end
 @doc Markdown.doc"""
     height(x::qqbar)
 
-Return the height of the algebraic number *x*. The result is an *fmpz* integer.
+Return the height of the algebraic number `x`. The result is an `fmpz` integer.
 """
 function height(x::qqbar)
    z = fmpz()
@@ -294,7 +301,7 @@ end
 @doc Markdown.doc"""
     height_bits(x::qqbar)
 
-Return the height of the algebraic number *x* measured in bits.
+Return the height of the algebraic number `x` measured in bits.
 The result is a Julia integer.
 """
 function height_bits(x::qqbar)
@@ -311,11 +318,11 @@ end
 @doc Markdown.doc"""
     rand(R::CalciumQQBarField; degree::Int, bits::Int, randtype::Symbol=:null)
 
-Return a random algebraic number with degree up to *degree*
-and coefficients up to *bits* in size. By default, both real and
+Return a random algebraic number with degree up to `degree`
+and coefficients up to `bits` in size. By default, both real and
 complex numbers are generated. Set the optional `randtype` to `:real` or
 `:nonreal` to generate a specific type of number. Note that
-nonreal numbers require *degree* at least 2.
+nonreal numbers require `degree` at least 2.
 """
 function rand(R::CalciumQQBarField; degree::Int, bits::Int,
                                             randtype::Symbol=:null)
@@ -495,6 +502,13 @@ end
 #
 ###############################################################################
 
+function inv(a::qqbar)
+   iszero(a) && throw(DivideError())
+   z = qqbar()
+   ccall((:qqbar_inv, libcalcium), Nothing, (Ref{qqbar}, Ref{qqbar}), z, a)
+   return z
+end
+
 function divexact(a::qqbar, b::qqbar)
    iszero(b) && throw(DivideError())
    z = qqbar()
@@ -613,35 +627,35 @@ cmp_root_order(a::qqbar, b::qqbar) = ccall((:qqbar_cmp_root_order, libcalcium),
 @doc Markdown.doc"""
     isequal_real(a::qqbar, b::qqbar)
 
-Compares the real parts of *a* and *b*.
+Compares the real parts of `a` and `b`.
 """
 isequal_real(a::qqbar, b::qqbar) = cmp_real(a, b) == 0
 
 @doc Markdown.doc"""
     isequal_imag(a::qqbar, b::qqbar)
 
-Compares the imaginary parts of *a* and *b*.
+Compares the imaginary parts of `a` and `b`.
 """
 isequal_imag(a::qqbar, b::qqbar) = cmp_imag(a, b) == 0
 
 @doc Markdown.doc"""
     isequal_abs(a::qqbar, b::qqbar)
 
-Compares the absolute values of *a* and *b*.
+Compares the absolute values of `a` and `b`.
 """
 isequal_abs(a::qqbar, b::qqbar) = cmpabs(a, b) == 0
 
 @doc Markdown.doc"""
     isequal_abs_real(a::qqbar, b::qqbar)
 
-Compares the absolute values of the real parts of *a* and *b*.
+Compares the absolute values of the real parts of `a` and `b`.
 """
 isequal_abs_real(a::qqbar, b::qqbar) = cmpabs_real(a, b) == 0
 
 @doc Markdown.doc"""
     isequal_abs_imag(a::qqbar, b::qqbar)
 
-Compares the absolute values of the imaginary parts of *a* and *b*.
+Compares the absolute values of the imaginary parts of `a` and `b`.
 """
 isequal_abs_imag(a::qqbar, b::qqbar) = cmpabs_imag(a, b) == 0
 
@@ -649,21 +663,21 @@ isequal_abs_imag(a::qqbar, b::qqbar) = cmpabs_imag(a, b) == 0
 @doc Markdown.doc"""
     isless_real(a::qqbar, b::qqbar)
 
-Compares the real parts of *a* and *b*.
+Compares the real parts of `a` and `b`.
 """
 isless_real(a::qqbar, b::qqbar) = cmp_real(a, b) < 0
 
 @doc Markdown.doc"""
     isless_imag(a::qqbar, b::qqbar)
 
-Compares the imaginary parts of *a* and *b*.
+Compares the imaginary parts of `a` and `b`.
 """
 isless_imag(a::qqbar, b::qqbar) = cmp_imag(a, b) < 0
 
 @doc Markdown.doc"""
     isless_abs(a::qqbar, b::qqbar)
 
-Compares the absolute values of *a* and *b*.
+Compares the absolute values of `a` and `b`.
 """
 isless_abs(a::qqbar, b::qqbar) = cmpabs(a, b) < 0
 
@@ -671,21 +685,21 @@ isless_abs(a::qqbar, b::qqbar) = cmpabs(a, b) < 0
 @doc Markdown.doc"""
     isless_abs_real(a::qqbar, b::qqbar)
 
-Compares the absolute values of the real parts of *a* and *b*.
+Compares the absolute values of the real parts of `a` and `b`.
 """
 isless_abs_real(a::qqbar, b::qqbar) = cmpabs_real(a, b) < 0
 
 @doc Markdown.doc"""
     isless_abs_imag(a::qqbar, b::qqbar)
 
-Compares the absolute values of the imaginary parts of *a* and *b*.
+Compares the absolute values of the imaginary parts of `a` and `b`.
 """
 isless_abs_imag(a::qqbar, b::qqbar) = cmpabs_imag(a, b) < 0
 
 @doc Markdown.doc"""
     isless_root_order(a::qqbar, b::qqbar)
 
-Compares the *a* and *b* in root sort order.
+Compares the `a` and `b` in root sort order.
 """
 isless_root_order(a::qqbar, b::qqbar) = cmp_root_order(a, b) < 0
 
@@ -700,7 +714,7 @@ isless_root_order(a::qqbar, b::qqbar) = cmp_root_order(a, b) < 0
 @doc Markdown.doc"""
     real(a::qqbar)
 
-Return the real part of *a*.
+Return the real part of `a`.
 """
 function real(a::qqbar)
    z = qqbar()
@@ -711,7 +725,7 @@ end
 @doc Markdown.doc"""
     imag(a::qqbar)
 
-Return the imaginary part of *a*.
+Return the imaginary part of `a`.
 """
 function imag(a::qqbar)
    z = qqbar()
@@ -722,7 +736,7 @@ end
 @doc Markdown.doc"""
     abs(a::qqbar)
 
-Return the absolute value of *a*.
+Return the absolute value of `a`.
 """
 function abs(a::qqbar)
    z = qqbar()
@@ -733,7 +747,7 @@ end
 @doc Markdown.doc"""
     conj(a::qqbar)
 
-Return the complex conjugate of *a*.
+Return the complex conjugate of `a`.
 """
 function conj(a::qqbar)
    z = qqbar()
@@ -744,7 +758,7 @@ end
 @doc Markdown.doc"""
     abs2(a::qqbar)
 
-Return the squared absolute value of *a*.
+Return the squared absolute value of `a`.
 """
 function abs2(a::qqbar)
    z = qqbar()
@@ -755,7 +769,7 @@ end
 @doc Markdown.doc"""
     sign(a::qqbar)
 
-Return the complex sign of *a*, defined as zero if *a* is zero
+Return the complex sign of `a`, defined as zero if `a` is zero
 and as $a / |a|$ otherwise.
 """
 function sign(a::qqbar)
@@ -770,7 +784,7 @@ end
 Return the extension of the real sign function taking the value 1
 strictly in the right half plane, -1 strictly in the left half plane,
 and the sign of the imaginary part when on the imaginary axis.
-Equivalently, $\csgn(x) = x / \sqrt{x^2}$ except that the value is 0
+Equivalently, $\operatorname{csgn}(x) = x / \sqrt{x^2}$ except that the value is 0
 at zero. The value is returned as a Julia integer.
 """
 function csgn(a::qqbar)
@@ -780,7 +794,7 @@ end
 @doc Markdown.doc"""
     sign_real(a::qqbar)
 
-Return the sign of the real part of *a* as a Julia integer.
+Return the sign of the real part of `a` as a Julia integer.
 """
 function sign_real(a::qqbar)
    return qqbar(Int(ccall((:qqbar_sgn_re, libcalcium),
@@ -790,7 +804,7 @@ end
 @doc Markdown.doc"""
     sign_imag(a::qqbar)
 
-Return the sign of the imaginary part of *a* as a Julia integer.
+Return the sign of the imaginary part of `a` as a Julia integer.
 """
 function sign_imag(a::qqbar)
    return qqbar(Int(ccall((:qqbar_sgn_im, libcalcium),
@@ -800,7 +814,7 @@ end
 @doc Markdown.doc"""
     floor(a::qqbar)
 
-Return the floor function of *a* as an algebraic number. Use `fmpz(floor(a))`
+Return the floor function of `a` as an algebraic number. Use `fmpz(floor(a))`
 to construct a Nemo integer instead.
 """
 function floor(a::qqbar)
@@ -812,7 +826,7 @@ end
 @doc Markdown.doc"""
     ceil(a::qqbar)
 
-Return the ceiling function of *b* as an algebraic number. Use `fmpz(ceil(a))`
+Return the ceiling function of `b` as an algebraic number. Use `fmpz(ceil(a))`
 to construct a Nemo integer instead.
 """
 function ceil(a::qqbar)
@@ -831,7 +845,7 @@ end
 @doc Markdown.doc"""
     sqrt(a::qqbar)
 
-Return the principal square root of *a*.
+Return the principal square root of `a`.
 """
 function sqrt(a::qqbar)
    z = qqbar()
@@ -843,7 +857,7 @@ end
 @doc Markdown.doc"""
     root(a::qqbar, n::Int)
 
-Return the principal *n*-th root of *a*. Requires positive *n*.
+Return the principal `n`-th root of `a`. Requires positive `n`.
 """
 function root(a::qqbar, n::Int)
    n <= 0 && throw(DomainError(n))
@@ -875,8 +889,8 @@ end
 @doc Markdown.doc"""
     roots(f::fmpz_poly, R::CalciumQQBarField)
 
-Return all the roots of the polynomial *f* in the field of algebraic
-numbers *R*. The output array is sorted in the default sort order for
+Return all the roots of the polynomial `f` in the field of algebraic
+numbers `R`. The output array is sorted in the default sort order for
 algebraic numbers. Roots of multiplicity higher than one are repeated
 according to their multiplicity.
 """
@@ -896,8 +910,8 @@ end
 @doc Markdown.doc"""
     roots(f::fmpq_poly, R::CalciumQQBarField)
 
-Return all the roots of the polynomial *f* in the field of algebraic
-numbers *R*. The output array is sorted in the default sort order for
+Return all the roots of the polynomial `f` in the field of algebraic
+numbers `R`. The output array is sorted in the default sort order for
 algebraic numbers. Roots of multiplicity higher than one are repeated
 according to their multiplicity.
 """
@@ -917,8 +931,8 @@ end
 @doc Markdown.doc"""
     conjugates(a::qqbar)
 
-Return all the roots of the polynomial *f* in the field of algebraic
-numbers *R*. The output array is sorted in the default sort order for
+Return all the roots of the polynomial `f` in the field of algebraic
+numbers `R`. The output array is sorted in the default sort order for
 algebraic numbers.
 """
 function conjugates(a::qqbar)
@@ -937,8 +951,8 @@ end
 @doc Markdown.doc"""
     eigenvalues(A::fmpz_mat, R::CalciumQQBarField)
 
-Return all the eigenvalues of the matrix *A* in the field of algebraic
-numbers *R*. The output array is sorted in the default sort order for
+Return all the eigenvalues of the matrix `A` in the field of algebraic
+numbers `R`. The output array is sorted in the default sort order for
 algebraic numbers. Eigenvalues of multiplicity higher than one are repeated
 according to their multiplicity.
 """
@@ -959,8 +973,8 @@ end
 @doc Markdown.doc"""
     eigenvalues(A::fmpq_mat, R::CalciumQQBarField)
 
-Return all the eigenvalues of the matrix *A* in the field of algebraic
-numbers *R*. The output array is sorted in the default sort order for
+Return all the eigenvalues of the matrix `A` in the field of algebraic
+numbers `R`. The output array is sorted in the default sort order for
 algebraic numbers. Eigenvalues of multiplicity higher than one are repeated
 according to their multiplicity.
 """
@@ -988,7 +1002,7 @@ end
     root_of_unity(C::CalciumQQBarField, n::Int)
 
 Return the root of unity $e^{2 \pi i / n}$ as an element of the field
-of algebraic numbers *C*.
+of algebraic numbers `C`.
 """
 function root_of_unity(C::CalciumQQBarField, n::Int)
    n <= 0 && throw(DomainError(n))
@@ -1002,7 +1016,7 @@ end
     root_of_unity(C::CalciumQQBarField, n::Int, k::Int)
 
 Return the root of unity $e^{2 \pi i k / n}$ as an element of the field
-of algebraic numbers *C*.
+of algebraic numbers `C`.
 """
 function root_of_unity(C::CalciumQQBarField, n::Int, k::Int)
    n <= 0 && throw(DomainError(n))
@@ -1025,9 +1039,9 @@ end
 @doc Markdown.doc"""
     root_of_unity_as_args(a::qqbar)
 
-Return a pair of integers (*q*, *p*) such that the given *a* equals
-$e^{2 \pi i p / q}$. The denominator $q$ will be minimal, with
-$0 \le p < q$. Throws if *a* is not a root of unity.
+Return a pair of integers `(q, p)` such that the given `a` equals
+$e^{2 \pi i p / q}$. The denominator `q` will be minimal, with
+$0 \le p < q$. Throws if `a` is not a root of unity.
 """
 function root_of_unity_as_args(a::qqbar)
    p = Vector{Int}(undef, 1)
@@ -1178,16 +1192,16 @@ end
 @doc Markdown.doc"""
     guess(R::CalciumQQBarField, x::acb, maxdeg::Int, maxbits::Int=0)
 
-Try to reconstruct an algebraic number from a given numerical enclosure *x*.
-The algorithm looks for candidates up to degree *maxdeg* and with
-coefficients up to size *maxbits* (which defaults to the precision of *x*
+Try to reconstruct an algebraic number from a given numerical enclosure `x`.
+The algorithm looks for candidates up to degree `maxdeg` and with
+coefficients up to size `maxbits` (which defaults to the precision of `x`
 if not given). Throws if no suitable algebraic number can be found.
 
 Guessing typically requires high precision to succeed, and it does not make
 much sense to call this function with input precision smaller than
 $O(maxdeg \cdot maxbits)$.
 If this function succeeds, then the output is guaranteed to be contained in
-the enclosure *x*, but failure does not prove that such an algebric
+the enclosure `x`, but failure does not prove that such an algebric
 number with the specified parameters does not exist.
 
 This function does a single iteration with the target parameters. For best
@@ -1213,16 +1227,16 @@ end
 @doc Markdown.doc"""
     guess(R::CalciumQQBarField, x::acb, maxdeg::Int, maxbits::Int=0)
 
-Try to reconstruct an algebraic number from a given numerical enclosure *x*.
-The algorithm looks for candidates up to degree *maxdeg* and with
-coefficients up to size *maxbits* (which defaults to the precision of *x*
+Try to reconstruct an algebraic number from a given numerical enclosure `x`.
+The algorithm looks for candidates up to degree `maxdeg` and with
+coefficients up to size `maxbits` (which defaults to the precision of `x`
 if not given). Throws if no suitable algebraic number can be found.
 
 Guessing typically requires high precision to succeed, and it does not make
 much sense to call this function with input precision smaller than
 $O(maxdeg \cdot maxbits)$.
 If this function succeeds, then the output is guaranteed to be contained in
-the enclosure *x*, but failure does not prove that such an algebric
+the enclosure `x`, but failure does not prove that such an algebric
 number with the specified parameters does not exist.
 
 This function does a single iteration with the target parameters. For best
@@ -1244,8 +1258,8 @@ end
 @doc Markdown.doc"""
     (R::ArbField)(a::qqbar)
 
-Convert *a* to a real ball with the precision of the parent field *R*.
-Throws if *a* is not a real number.
+Convert `a` to a real ball with the precision of the parent field `R`.
+Throws if `a` is not a real number.
 """
 function (R::ArbField)(a::qqbar)
    prec = precision(R)
@@ -1259,8 +1273,8 @@ end
 @doc Markdown.doc"""
     (R::ArbField)(a::qqbar)
 
-Convert *a* to a complex ball with the precision of the parent field *R*.
-Throws if *a* is not a real number.
+Convert `a` to a complex ball with the precision of the parent field `R`.
+Throws if `a` is not a real number.
 """
 function (R::AcbField)(a::qqbar)
    prec = precision(R)
@@ -1274,11 +1288,11 @@ end
 @doc Markdown.doc"""
     fmpq(a::qqbar)
 
-Convert *a* to a rational number of type *fmpq*.
-Throws if *a* is not a rational number.
+Convert `a` to a rational number of type `fmpq`.
+Throws if `a` is not a rational number.
 """
 function fmpq(a::qqbar)
-   !isrational(a) && throw(DomainError(a), "nonrational algebraic number")
+   !isrational(a) && throw(DomainError(a, "nonrational algebraic number"))
    p = fmpz()
    q = fmpz()
    ccall((:fmpz_poly_get_coeff_fmpz, libflint),
@@ -1292,11 +1306,11 @@ end
 @doc Markdown.doc"""
     fmpz(a::qqbar)
 
-Convert *a* to an integer of type *fmpz*.
-Throws if *a* is not an integer.
+Convert `a` to an integer of type `fmpz`.
+Throws if `a` is not an integer.
 """
 function fmpz(a::qqbar)
-   !isinteger(a) && throw(DomainError(a), "noninteger algebraic number")
+   !isinteger(a) && throw(DomainError(a, "noninteger algebraic number"))
    z = fmpz()
    ccall((:fmpz_poly_get_coeff_fmpz, libflint),
         Nothing, (Ref{fmpz}, Ref{qqbar}, Int), z, a, 0)

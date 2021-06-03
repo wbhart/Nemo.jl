@@ -22,6 +22,7 @@ makedocs(
              "Fields" => [ "fraction.md",
                            "rational.md",
                            "algebraic.md",
+                           "complex.md",
                            "arb.md",
                            "acb.md",
                            "gfp.md",
