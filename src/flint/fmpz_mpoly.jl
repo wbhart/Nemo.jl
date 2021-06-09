@@ -1064,8 +1064,12 @@ end
 #
 ###############################################################################
 
-function PolynomialRing(R::FlintIntegerRing, s::Array{String, 1}; cached::Bool = true, ordering::Symbol = :lex)
-   U = [Symbol(x) for x in s]
-   parent_obj = FmpzMPolyRing(U, ordering, cached)
+function PolynomialRing(R::FlintIntegerRing, s::Array{Symbol, 1}; cached::Bool = true, ordering::Symbol = :lex)
+   parent_obj = FmpzMPolyRing(s, ordering, cached)
    return tuple(parent_obj, gens(parent_obj))
 end
+
+function PolynomialRing(R::FlintIntegerRing, s::Array{String, 1}; cached::Bool = true, ordering::Symbol = :lex)
+   return PolynomialRing(R, [Symbol(x) for x in s]; cached=cached, ordering=ordering)
+end
+

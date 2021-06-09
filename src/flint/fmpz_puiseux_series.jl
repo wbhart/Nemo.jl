@@ -88,11 +88,15 @@ object `S` will be cached so that supplying the same base ring, string and
 precision in future will return the same parent object and generator. If
 caching of the parent object is not required, `cached` can be set to `false`.
 """
-function PuiseuxSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; cached=true)
+function PuiseuxSeriesRing(R::FlintIntegerRing, prec::Int, s::Symbol; cached=true)
    S, x = LaurentSeriesRing(R, prec, s; cached=cached)
 
    parent_obj = FlintPuiseuxSeriesRing{fmpz_laurent_series}(S, cached)
 
    return parent_obj, gen(parent_obj)
+end
+
+function PuiseuxSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; cached=true)
+   return PuiseuxSeriesRing(R, prec, Symbol(s); cached=cached)
 end
 

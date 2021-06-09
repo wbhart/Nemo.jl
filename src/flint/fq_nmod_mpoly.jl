@@ -1048,8 +1048,12 @@ end
 #
 ###############################################################################
 
-function PolynomialRing(R::FqNmodFiniteField, s::Array{String, 1}; cached::Bool = true, ordering::Symbol = :lex)
-   U = [Symbol(x) for x in s]
-   parent_obj = FqNmodMPolyRing(R, U, ordering, cached)
+function PolynomialRing(R::FqNmodFiniteField, s::Array{Symbol, 1}; cached::Bool = true, ordering::Symbol = :lex)
+   parent_obj = FqNmodMPolyRing(R, s, ordering, cached)
    return tuple(parent_obj, gens(parent_obj))
 end
+
+function PolynomialRing(R::FqNmodFiniteField, s::Array{String, 1}; cached::Bool = true, ordering::Symbol = :lex)
+   return PolynomialRing(R, [Symbol(x) for x in s]; cached=cached, ordering=ordering)
+end
+

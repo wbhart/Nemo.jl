@@ -655,16 +655,19 @@ end
 #
 ###############################################################################
 
-function PowerSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString;  model=:capped_relative, cached = true)
-   S = Symbol(s)
-
+function PowerSeriesRing(R::FlintIntegerRing, prec::Int, s::Symbol;  model=:capped_relative, cached = true)
    if model == :capped_relative
-      parent_obj = FmpzRelSeriesRing(prec, S, cached)
+      parent_obj = FmpzRelSeriesRing(prec, s, cached)
    elseif model == :capped_absolute
-      parent_obj = FmpzAbsSeriesRing(prec, S, cached)
+      parent_obj = FmpzAbsSeriesRing(prec, s, cached)
    else
       error("Unknown model")
    end
 
    return parent_obj, gen(parent_obj)
 end
+
+function PowerSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
+   return PowerSeriesRing(R, prec, Symbol(s); model=model, cached=cached)
+end
+

@@ -1086,8 +1086,12 @@ end
 #
 ################################################################################
 
-function PolynomialRing(R::NmodRing, s::AbstractString; cached=true)
-   parent_obj = NmodPolyRing(R, Symbol(s), cached)
+function PolynomialRing(R::NmodRing, s::Symbol; cached=true)
+   parent_obj = NmodPolyRing(R, s, cached)
 
    return parent_obj, parent_obj([R(0), R(1)])
+end
+
+function PolynomialRing(R::NmodRing, s::AbstractString; cached = true)
+   return PolynomialRing(R, Symbol(s); cached=cached)
 end
