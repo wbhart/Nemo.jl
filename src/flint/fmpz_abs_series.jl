@@ -669,3 +669,10 @@ function PowerSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString;  mod
    return parent_obj, gen(parent_obj)
 end
 
+function AbsSeriesRing(R::FlintIntegerRing, prec::Int)
+   return FmpzAbsSeriesRing(prec, :x, false)
+end
+
+function RelSeriesRing(R::FlintIntegerRing, prec::Int)
+   return FmpzRelSeriesRing(prec, :x, false)
+end

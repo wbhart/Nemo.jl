@@ -685,6 +685,14 @@ function PowerSeriesRing(R::NmodRing, prec::Int, s::AbstractString; model=:cappe
    return parent_obj, gen(parent_obj)
 end
 
+function AbsSeriesRing(R::NmodRing, prec::Int)
+   return NmodAbsSeriesRing(R, prec, :x, false)
+end
+
+function RelSeriesRing(R::NmodRing, prec::Int)
+   return NmodRelSeriesRing(R, prec, :x, false)
+end
+
 function PowerSeriesRing(R::GaloisField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
    S = Symbol(s)
 
@@ -697,3 +705,12 @@ function PowerSeriesRing(R::GaloisField, prec::Int, s::AbstractString; model=:ca
    end
    return parent_obj, gen(parent_obj)
 end
+
+function AbsSeriesRing(R::GaloisField, prec::Int)
+   return GFPAbsSeriesRing(R, prec, :x, false)
+end
+
+function RelSeriesRing(R::GaloisField, prec::Int)
+   return GFPRelSeriesRing(R, prec, :x, false)
+end
+

@@ -742,6 +742,14 @@ function PowerSeriesRing(R::FmpzModRing, prec::Int, s::AbstractString; model=:ca
    return parent_obj, gen(parent_obj)
 end
 
+function AbsSeriesRing(R::FmpzModRing, prec::Int)
+   return FmpzModAbsSeriesRing(R, prec, :x, false)
+end
+
+function RelSeriesRing(R::FmpzModRing, prec::Int)
+   return FmpzModRelSeriesRing(R, prec, :x, false)
+end
+
 function PowerSeriesRing(R::GaloisFmpzField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
    S = Symbol(s)
 
@@ -753,4 +761,12 @@ function PowerSeriesRing(R::GaloisFmpzField, prec::Int, s::AbstractString; model
       error("Unknown model")
    end
    return parent_obj, gen(parent_obj)
+end
+
+function AbsSeriesRing(R::GaloisFmpzField, prec::Int)
+   return GFPFmpzAbsSeriesRing(R, prec, :x, false)
+end
+
+function RelSeriesRing(R::GaloisFmpzField, prec::Int)
+   return GFPFmpzRelSeriesRing(R, prec, :x, false)
 end

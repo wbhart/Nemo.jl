@@ -938,3 +938,11 @@ function PowerSeriesRing(R::FlintRationalField, prec::Int, s::AbstractString; mo
 
    return parent_obj, gen(parent_obj)
 end
+
+function AbsSeriesRing(R::FlintRationalField, prec::Int)
+   return FmpqAbsSeriesRing(prec, :x, false)
+end
+
+function RelSeriesRing(R::FlintRationalField, prec::Int)
+   return FmpqRelSeriesRing(prec, :x, false)
+end
