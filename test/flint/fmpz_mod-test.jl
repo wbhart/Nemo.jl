@@ -78,6 +78,10 @@ end
    @test isunit(S())
 
    @test characteristic(R) == 13
+
+   @test data(R(3)) == 3
+   @test lift(R(3)) == 3
+   @test isa(lift(R(3)), fmpz)
 end
 
 @testset "fmpz_mod.unary_ops" begin

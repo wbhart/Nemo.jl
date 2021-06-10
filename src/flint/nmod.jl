@@ -37,6 +37,8 @@ function Base.hash(a::nmod, h::UInt)
    return xor(xor(hash(a.data), h), b)
 end
 
+lift(a::nmod) = fmpz(data(a))
+
 function zero(R::NmodRing)
    return nmod(UInt(0), R)
 end
