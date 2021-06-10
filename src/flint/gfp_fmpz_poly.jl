@@ -466,3 +466,7 @@ function PolynomialRing(R::GaloisFmpzField, s::AbstractString; cached=true)
 
    return parent_obj, parent_obj([R(0), R(1)])
 end
+
+function PolyRing(R::GaloisFmpzField)
+   return GFPFmpzPolyRing(R, :x, false)
+end

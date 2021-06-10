@@ -847,3 +847,7 @@ function PolynomialRing(R::FqFiniteField, s::AbstractString; cached = true)
    parent_obj = FqPolyRing(R, S, cached)
    return parent_obj, parent_obj([R(0), R(1)])
 end
+
+function PolyRing(R::FqFiniteField)
+   return FqPolyRing(R, :x, false)
+end

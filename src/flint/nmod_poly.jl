@@ -1091,3 +1091,7 @@ function PolynomialRing(R::NmodRing, s::AbstractString; cached=true)
 
    return parent_obj, parent_obj([R(0), R(1)])
 end
+
+function PolyRing(R::NmodRing)
+   return NmodPolyRing(R, :x, false)
+end

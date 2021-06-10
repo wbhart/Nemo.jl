@@ -856,3 +856,8 @@ function PolynomialRing(R::FlintRationalField, s::AbstractString; cached = true)
 
    return parent_obj, parent_obj([fmpq(0), fmpq(1)])
 end
+
+function PolyRing(R::FlintRationalField)
+   return FmpqPolyRing(R, :x, false)
+end
+

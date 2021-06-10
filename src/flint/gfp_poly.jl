@@ -582,3 +582,7 @@ function PolynomialRing(R::GaloisField, s::AbstractString; cached=true)
 
    return parent_obj, parent_obj([R(0), R(1)])
 end
+
+function PolyRing(R::GaloisField)
+   return GFPPolyRing(R, :x, false)
+end

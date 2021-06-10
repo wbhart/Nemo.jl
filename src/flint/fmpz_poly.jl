@@ -933,3 +933,7 @@ function PolynomialRing(R::FlintIntegerRing, s::AbstractString; cached = true)
 
    return parent_obj, parent_obj([fmpz(0), fmpz(1)])
 end
+
+function PolyRing(R::FlintIntegerRing)
+   return FmpzPolyRing(R, :x, false)
+end
