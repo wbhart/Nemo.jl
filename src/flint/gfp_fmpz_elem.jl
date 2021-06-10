@@ -41,6 +41,8 @@ end
 
 data(a::gfp_fmpz_elem) = a.data
 
+lift(a::gfp_fmpz_elem) = data(a)
+
 iszero(a::gfp_fmpz_elem) = a.data == 0
 
 isone(a::gfp_fmpz_elem) = a.data == 1

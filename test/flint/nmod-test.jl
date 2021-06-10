@@ -78,6 +78,10 @@ end
    @test isunit(S())
 
    @test characteristic(S) == 1
+
+   @test data(R(3)) == 3
+   @test lift(R(3)) == 3
+   @test isa(lift(R(3)), fmpz)
 end
 
 @testset "nmod.unary_ops" begin

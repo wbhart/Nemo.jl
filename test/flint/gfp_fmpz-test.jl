@@ -91,6 +91,10 @@ end
    @test characteristic(R) == 13
 
    @test degree(R) == 1
+
+   @test data(R(3)) == 3
+   @test lift(R(3)) == 3
+   @test isa(lift(R(3)), fmpz)
 end
 
 @testset "gfp_fmpz.unary_ops" begin

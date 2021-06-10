@@ -41,6 +41,8 @@ end
 
 data(a::gfp_elem) = a.data
 
+lift(a::gfp_elem) = fmpz(data(a))
+
 function zero(R::GaloisField)
    return gfp_elem(UInt(0), R)
 end
