@@ -668,3 +668,4 @@ function PowerSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString;  mod
 
    return parent_obj, gen(parent_obj)
 end
+
