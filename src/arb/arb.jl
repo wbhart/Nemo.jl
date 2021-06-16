@@ -7,26 +7,23 @@
 #
 ###############################################################################
 
-export ball, radius, midpoint, contains, contains_zero,
-       contains_negative, contains_positive, contains_nonnegative,
-       contains_nonpositive, convert, iszero,
-       isnonzero, isexact, isint, ispositive, isfinite,
-       isnonnegative, isnegative, isnonpositive, add!, mul!,
-       sub!, div!, overlaps, unique_integer,
-       accuracy_bits, trim, ldexp, setunion, setintersection,
-       const_pi, const_e, const_log2, const_log10, const_euler,
-       const_catalan, const_khinchin, const_glaisher,
-       floor, ceil, hypot, rsqrt, sqrt1pm1, sqrtpos, root,
-       log, log1p, expm1, sin, cos, sinpi, cospi, tan, cot,
-       tanpi, cotpi, sinh, cosh, tanh, coth, atan, asin, acos,
-       atanh, asinh, acosh, gamma, lgamma, rgamma, digamma, zeta,
-       sincos, sincospi, sinhcosh, atan2,
-       agm, fac, binomial, fib, bernoulli, risingfac, risingfac2, polylog,
-       chebyshev_t, chebyshev_t2, chebyshev_u, chebyshev_u2, bell, numpart,
-       lindep, canonical_unit, simplest_rational_inside,
-       gamma_regularized, gamma_lower, gamma_lower_regularized
-       # These last three should be moved up to `gamma`.
-       # Temporarily here to ease the conflict later with the renaming merge.
+import Base: ceil
+
+export ball, radius, midpoint, contains, contains_zero, contains_negative,
+       contains_positive, contains_nonnegative, contains_nonpositive, convert,
+       iszero, isnonzero, isexact, isint, ispositive, isfinite, isnonnegative,
+       isnegative, isnonpositive, add!, mul!, sub!, div!, overlaps,
+       unique_integer, accuracy_bits, trim, ldexp, setunion, setintersection,
+       const_pi, const_e, const_log2, const_log10, const_euler, const_catalan,
+       const_khinchin, const_glaisher, floor, ceil, hypot, rsqrt, sqrt1pm1,
+       sqrtpos, root, log, log1p, expm1, sin, cos, sinpi, cospi, tan, cot,
+       tanpi, cotpi, sinh, cosh, tanh, coth, atan, asin, acos, atanh, asinh,
+       acosh, gamma, lgamma, rgamma, digamma, gamma_regularized, gamma_lower,
+       gamma_lower_regularized, zeta, sincos, sincospi, sinhcosh, atan2, agm,
+       factorial, binomial, fibonacci, bernoulli, rising_factorial,
+       rising_factorial2, polylog, chebyshev_t, chebyshev_t2, chebyshev_u,
+       chebyshev_u2, bell, numpart, lindep, canonical_unit,
+       simplest_rational_inside
 
 ###############################################################################
 #
@@ -1721,24 +1718,24 @@ function root(x::arb, n::Int)
 end
 
 @doc Markdown.doc"""
-    fac(x::arb)
+    factorial(x::arb)
 
 Return the factorial of $x$.
 """
-fac(x::arb) = gamma(x+1)
+factorial(x::arb) = gamma(x+1)
 
-function fac(n::UInt, r::ArbField)
+function factorial(n::UInt, r::ArbField)
   z = r()
   ccall((:arb_fac_ui, libarb), Nothing, (Ref{arb}, UInt, Int), z, n, r.prec)
   return z
 end
 
 @doc Markdown.doc"""
-    fac(n::Int, r::ArbField)
+    factorial(n::Int, r::ArbField)
 
 Return the factorial of $n$ in the given Arb field.
 """
-fac(n::Int, r::ArbField) = n < 0 ? fac(r(n)) : fac(UInt(n), r)
+factorial(n::Int, r::ArbField) = n < 0 ? factorial(r(n)) : factorial(UInt(n), r)
 
 @doc Markdown.doc"""
     binomial(x::arb, n::UInt)
@@ -1765,18 +1762,18 @@ function binomial(n::UInt, k::UInt, r::ArbField)
 end
 
 @doc Markdown.doc"""
-    fib(n::fmpz, r::ArbField)
+    fibonacci(n::fmpz, r::ArbField)
 
 Return the $n$-th Fibonacci number in the given Arb field.
 """
-function fib(n::fmpz, r::ArbField)
+function fibonacci(n::fmpz, r::ArbField)
   z = r()
   ccall((:arb_fib_fmpz, libarb), Nothing,
               (Ref{arb}, Ref{fmpz}, Int), z, n, r.prec)
   return z
 end
 
-function fib(n::UInt, r::ArbField)
+function fibonacci(n::UInt, r::ArbField)
   z = r()
   ccall((:arb_fib_ui, libarb), Nothing,
               (Ref{arb}, UInt, Int), z, n, r.prec)
@@ -1784,11 +1781,11 @@ function fib(n::UInt, r::ArbField)
 end
 
 @doc Markdown.doc"""
-    fib(n::Int, r::ArbField)
+    fibonacci(n::Int, r::ArbField)
 
 Return the $n$-th Fibonacci number in the given Arb field.
 """
-fib(n::Int, r::ArbField) = n >= 0 ? fib(UInt(n), r) : fib(fmpz(n), r)
+fibonacci(n::Int, r::ArbField) = n >= 0 ? fibonacci(UInt(n), r) : fibonacci(fmpz(n), r)
 
 @doc Markdown.doc"""
     gamma(x::fmpz, r::ArbField)
@@ -1844,7 +1841,7 @@ Return the $n$-th Bernoulli number as an element of the given Arb field.
 """
 bernoulli(n::Int, r::ArbField) = n >= 0 ? bernoulli(UInt(n), r) : throw(DomainError(n, "Index must be non-negative"))
 
-function risingfac(x::arb, n::UInt)
+function rising_factorial(x::arb, n::UInt)
   z = parent(x)()
   ccall((:arb_rising_ui, libarb), Nothing,
               (Ref{arb}, Ref{arb}, UInt, Int), z, x, n, parent(x).prec)
@@ -1852,13 +1849,13 @@ function risingfac(x::arb, n::UInt)
 end
 
 @doc Markdown.doc"""
-    risingfac(x::arb, n::Int)
+    rising_factorial(x::arb, n::Int)
 
 Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an Arb.
 """
-risingfac(x::arb, n::Int) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : risingfac(x, UInt(n))
+rising_factorial(x::arb, n::Int) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : rising_factorial(x, UInt(n))
 
-function risingfac(x::fmpq, n::UInt, r::ArbField)
+function rising_factorial(x::fmpq, n::UInt, r::ArbField)
   z = r()
   ccall((:arb_rising_fmpq_ui, libarb), Nothing,
               (Ref{arb}, Ref{fmpq}, UInt, Int), z, x, n, r.prec)
@@ -1866,14 +1863,14 @@ function risingfac(x::fmpq, n::UInt, r::ArbField)
 end
 
 @doc Markdown.doc"""
-    risingfac(x::fmpq, n::Int, r::ArbField)
+    rising_factorial(x::fmpq, n::Int, r::ArbField)
 
 Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an element of the
 given Arb field.
 """
-risingfac(x::fmpq, n::Int, r::ArbField) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : risingfac(x, UInt(n), r)
+rising_factorial(x::fmpq, n::Int, r::ArbField) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : rising_factorial(x, UInt(n), r)
 
-function risingfac2(x::arb, n::UInt)
+function rising_factorial2(x::arb, n::UInt)
   z = parent(x)()
   w = parent(x)()
   ccall((:arb_rising2_ui, libarb), Nothing,
@@ -1882,12 +1879,12 @@ function risingfac2(x::arb, n::UInt)
 end
 
 @doc Markdown.doc"""
-    risingfac2(x::arb, n::Int)
+    rising_factorial2(x::arb, n::Int)
 
 Return a tuple containing the rising factorial $x(x + 1)\ldots (x + n - 1)$
 and its derivative.
 """
-risingfac2(x::arb, n::Int) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : risingfac2(x, UInt(n))
+rising_factorial2(x::arb, n::Int) = n < 0 ? throw(DomainError(n, "Index must be non-negative")) : rising_factorial2(x, UInt(n))
 
 function polylog(s::arb, a::arb)
   z = parent(s)()

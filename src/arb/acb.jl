@@ -12,22 +12,19 @@ import Base: real, imag, abs, conj, angle, log, log1p, sin, cos,
 
 
 export one, onei, real, imag, conj, abs, inv, angle, isreal, polygamma, erf,
-       erfi, erfc, besselj, besselk, besseli, bessely
+       erfi, erfc, bessel_j, bessel_k, bessel_i, bessel_y
 
-export rsqrt, log, log1p, exppii, sin, cos, tan, cot,
-       sinpi, cospi, tanpi, cotpi, sincos, sincospi, sinh, cosh, tanh, coth,
-       sinhcosh, atan, logsinpi, gamma, rgamma, lgamma, risingfac,
-       risingfac2, polylog, barnesg, logbarnesg, agm,
-       ei, si, ci, shi, chi, li, lioffset, expint, gamma,
-       hyp1f1, hyp1f1r, hyperu, hyp2f1,
-       jtheta,
-       modular_delta, modular_eta, modular_eisenstein_g, modular_j,
+export rsqrt, log, log1p, exppii, sin, cos, tan, cot, sinpi, cospi, tanpi,
+       cotpi, sincos, sincospi, sinh, cosh, tanh, coth, sinhcosh, atan,
+       log_sinpi, gamma, rgamma, lgamma, gamma_regularized, gamma_lower,
+       gamma_lower_regularized, rising_factorial, rising_factorial2, polylog,
+       barnes_g, log_barnes_g, agm, exp_integral_ei, sin_integral,
+       cos_integral, sinh_integral, cosh_integral, log_integral,
+       log_integral_offset, exp_integral_e, gamma, hypergeometric_1f1,
+       hypergeometric_1f1_regularized, hypergeometric_u, hypergeometric_2f1,
+       jacobi_theta, modular_delta, dedekind_eta, eisenstein_g, j_invariant,
        modular_lambda, modular_weber_f, modular_weber_f1, modular_weber_f2,
-       ellipwp, ellipk, ellipe,
-       canonical_unit, root_of_unity,
-       gamma_regularized, gamma_lower, gamma_lower_regularized
-       # These last three should be moved up to `gamma`.
-       # Temporarily here to ease the conflict later with the renaming merge.
+       weierstrass_p, elliptic_k, elliptic_e, canonical_unit, root_of_unity
 
 ###############################################################################
 #
@@ -1019,11 +1016,11 @@ function atan(x::acb)
 end
 
 @doc Markdown.doc"""
-    logsinpi(x::acb)
+    log_sinpi(x::acb)
 
 Return $\log\sin(\pi x)$, constructed without branch cuts off the real line.
 """
-function logsinpi(x::acb)
+function log_sinpi(x::acb)
    z = parent(x)()
    ccall((:acb_log_sin_pi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
@@ -1086,22 +1083,22 @@ function zeta(x::acb)
 end
 
 @doc Markdown.doc"""
-    barnesg(x::acb)
+    barnes_g(x::acb)
 
 Return the Barnes $G$-function, evaluated at $x$.
 """
-function barnesg(x::acb)
+function barnes_g(x::acb)
    z = parent(x)()
    ccall((:acb_barnes_g, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
 @doc Markdown.doc"""
-    logbarnesg(x::acb)
+    log_barnes_g(x::acb)
 
 Return the logarithm of the Barnes $G$-function, evaluated at $x$.
 """
-function logbarnesg(x::acb)
+function log_barnes_g(x::acb)
    z = parent(x)()
    ccall((:acb_log_barnes_g, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
@@ -1143,7 +1140,7 @@ end
 @doc Markdown.doc"""
     erfc(x::acb)
 
-Return the complex error function evaluated at $x$.
+Return the complementary error function evaluated at $x$.
 """
 function erfc(x::acb)
    z = parent(x)()
@@ -1152,66 +1149,66 @@ function erfc(x::acb)
 end
 
 @doc Markdown.doc"""
-    ei(x::acb)
+    exp_integral_ei(x::acb)
 
 Return the exponential integral evaluated at $x$.
 """
-function ei(x::acb)
+function exp_integral_ei(x::acb)
    z = parent(x)()
    ccall((:acb_hypgeom_ei, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
 @doc Markdown.doc"""
-    si(x::acb)
+    sin_integral(x::acb)
 
 Return the sine integral evaluated at $x$.
 """
-function si(x::acb)
+function sin_integral(x::acb)
    z = parent(x)()
    ccall((:acb_hypgeom_si, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
 @doc Markdown.doc"""
-    ci(x::acb)
+    cos_integral(x::acb)
 
 Return the exponential cosine integral evaluated at $x$.
 """
-function ci(x::acb)
+function cos_integral(x::acb)
    z = parent(x)()
    ccall((:acb_hypgeom_ci, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
 @doc Markdown.doc"""
-    shi(x::acb)
+    sinh_integral(x::acb)
 
 Return the hyperbolic sine integral evaluated at $x$.
 """
-function shi(x::acb)
+function sinh_integral(x::acb)
    z = parent(x)()
    ccall((:acb_hypgeom_shi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
 @doc Markdown.doc"""
-    chi(x::acb)
+    cosh_integral(x::acb)
 
 Return the hyperbolic cosine integral evaluated at $x$.
 """
-function chi(x::acb)
+function cosh_integral(x::acb)
    z = parent(x)()
    ccall((:acb_hypgeom_chi, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
 @doc Markdown.doc"""
-    modular_eta(x::acb)
+    dedekind_eta(x::acb)
 
 Return the Dedekind eta function $\eta(\tau)$ at $\tau = x$.
 """
-function modular_eta(x::acb)
+function dedekind_eta(x::acb)
    z = parent(x)()
    ccall((:acb_modular_eta, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
@@ -1227,7 +1224,7 @@ at $x$ in the complex upper half plane.
 function modular_weber_f(x::acb)
    x_on_2 = divexact(x, 2)
    x_times_2 = 2*x
-   return divexact(modular_eta(x)^2, modular_eta(x_on_2)*modular_eta(x_times_2))
+   return divexact(dedekind_eta(x)^2, dedekind_eta(x_on_2)*dedekind_eta(x_times_2))
 end
 
 @doc Markdown.doc"""
@@ -1239,7 +1236,7 @@ at $x$ in the complex upper half plane.
 """
 function modular_weber_f1(x::acb)
    x_on_2 = divexact(x, 2)
-   return divexact(modular_eta(x_on_2), modular_eta(x))
+   return divexact(dedekind_eta(x_on_2), dedekind_eta(x))
 end
 
 @doc Markdown.doc"""
@@ -1251,15 +1248,15 @@ at $x$ in the complex upper half plane.
 """
 function modular_weber_f2(x::acb)
    x_times_2 = x*2
-   return divexact(modular_eta(x_times_2), modular_eta(x))*sqrt(parent(x)(2))
+   return divexact(dedekind_eta(x_times_2), dedekind_eta(x))*sqrt(parent(x)(2))
 end
 
 @doc Markdown.doc"""
-    modular_j(x::acb)
+    j_invariant(x::acb)
 
 Return the $j$-invariant $j(\tau)$ at $\tau = x$.
 """
-function modular_j(x::acb)
+function j_invariant(x::acb)
    z = parent(x)()
    ccall((:acb_modular_j, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
@@ -1288,12 +1285,12 @@ function modular_delta(x::acb)
 end
 
 @doc Markdown.doc"""
-    modular_eisenstein_g(k::Int, x::acb)
+    eisenstein_g(k::Int, x::acb)
 
 Return the non-normalized Eisenstein series $G_k(\tau)$ of
 $\mathrm{SL}_2(\mathbb{Z})$. Also defined for $\tau = i \infty$.
 """
-function modular_eisenstein_g(k::Int, x::acb)
+function eisenstein_g(k::Int, x::acb)
   CC = parent(x)
 
   k <= 2 && error("Eisenstein series are not absolute convergent for k = $k")
@@ -1311,22 +1308,22 @@ function modular_eisenstein_g(k::Int, x::acb)
 end
 
 @doc Markdown.doc"""
-    ellipk(x::acb)
+    elliptic_k(x::acb)
 
 Return the complete elliptic integral $K(x)$.
 """
-function ellipk(x::acb)
+function elliptic_k(x::acb)
    z = parent(x)()
    ccall((:acb_modular_elliptic_k, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
 end
 
 @doc Markdown.doc"""
-    ellipe(x::acb)
+    elliptic_e(x::acb)
 
 Return the complete elliptic integral $E(x)$.
 """
-function ellipe(x::acb)
+function elliptic_e(x::acb)
    z = parent(x)()
    ccall((:acb_modular_elliptic_e, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
@@ -1395,7 +1392,7 @@ function polygamma(s::acb, a::acb)
   return z
 end
 
-function risingfac(x::acb, n::UInt)
+function rising_factorial(x::acb, n::UInt)
   z = parent(x)()
   ccall((:acb_rising_ui, libarb), Nothing,
               (Ref{acb}, Ref{acb}, UInt, Int), z, x, n, parent(x).prec)
@@ -1403,16 +1400,16 @@ function risingfac(x::acb, n::UInt)
 end
 
 @doc Markdown.doc"""
-    risingfac(x::acb, n::Int)
+    rising_factorial(x::acb, n::Int)
 
 Return the rising factorial $x(x + 1)\ldots (x + n - 1)$ as an Acb.
 """
-function risingfac(x::acb, n::Int)
+function rising_factorial(x::acb, n::Int)
   n < 0 && throw(DomainError(n, "Argument must be non-negative"))
-  return risingfac(x, UInt(n))
+  return rising_factorial(x, UInt(n))
 end
 
-function risingfac2(x::acb, n::UInt)
+function rising_factorial2(x::acb, n::UInt)
   z = parent(x)()
   w = parent(x)()
   ccall((:acb_rising2_ui, libarb), Nothing,
@@ -1421,14 +1418,14 @@ function risingfac2(x::acb, n::UInt)
 end
 
 @doc Markdown.doc"""
-    risingfac2(x::acb, n::Int)
+    rising_factorial2(x::acb, n::Int)
 
 Return a tuple containing the rising factorial $x(x + 1)\ldots (x + n - 1)$
 and its derivative.
 """
-function risingfac2(x::acb, n::Int)
+function rising_factorial2(x::acb, n::Int)
   n < 0 && throw(DomainError(n, "Argument must be non-negative"))
-  return risingfac2(x, UInt(n))
+  return rising_factorial2(x, UInt(n))
 end
 
 function polylog(s::acb, a::acb)
@@ -1452,11 +1449,11 @@ Return the polylogarithm Li$_s(a)$.
 """ polylog(s::Union{acb,Int}, ::acb)
 
 @doc Markdown.doc"""
-    li(x::acb)
+    log_integral(x::acb)
 
 Return the logarithmic integral, evaluated at $x$.
 """
-function li(x::acb)
+function log_integral(x::acb)
   z = parent(x)()
   ccall((:acb_hypgeom_li, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Int, Int), z, x, 0, parent(x).prec)
@@ -1464,11 +1461,11 @@ function li(x::acb)
 end
 
 @doc Markdown.doc"""
-    lioffset(x::acb)
+    log_integral_offset(x::acb)
 
 Return the offset logarithmic integral, evaluated at $x$.
 """
-function lioffset(x::acb)
+function log_integral_offset(x::acb)
   z = parent(x)()
   ccall((:acb_hypgeom_li, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Int, Int), z, x, 1, parent(x).prec)
@@ -1476,11 +1473,11 @@ function lioffset(x::acb)
 end
 
 @doc Markdown.doc"""
-    expint(s::acb, x::acb)
+    exp_integral_e(s::acb, x::acb)
 
 Return the generalised exponential integral $E_s(x)$.
 """
-function expint(s::acb, x::acb)
+function exp_integral_e(s::acb, x::acb)
   z = parent(s)()
   ccall((:acb_hypgeom_expint, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, s, x, parent(s).prec)
@@ -1538,11 +1535,11 @@ function gamma_lower_regularized(s::acb, x::acb)
 end
 
 @doc Markdown.doc"""
-    besselj(nu::acb, x::acb)
+    bessel_j(nu::acb, x::acb)
 
 Return the Bessel function $J_{\nu}(x)$.
 """
-function besselj(nu::acb, x::acb)
+function bessel_j(nu::acb, x::acb)
   z = parent(x)()
   ccall((:acb_hypgeom_bessel_j, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, nu, x, parent(x).prec)
@@ -1550,11 +1547,11 @@ function besselj(nu::acb, x::acb)
 end
 
 @doc Markdown.doc"""
-    bessely(nu::acb, x::acb)
+    bessel_y(nu::acb, x::acb)
 
 Return the Bessel function $Y_{\nu}(x)$.
 """
-function bessely(nu::acb, x::acb)
+function bessel_y(nu::acb, x::acb)
   z = parent(x)()
   ccall((:acb_hypgeom_bessel_y, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, nu, x, parent(x).prec)
@@ -1562,11 +1559,11 @@ function bessely(nu::acb, x::acb)
 end
 
 @doc Markdown.doc"""
-    besseli(nu::acb, x::acb)
+    bessel_i(nu::acb, x::acb)
 
 Return the Bessel function $I_{\nu}(x)$.
 """
-function besseli(nu::acb, x::acb)
+function bessel_i(nu::acb, x::acb)
   z = parent(x)()
   ccall((:acb_hypgeom_bessel_i, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, nu, x, parent(x).prec)
@@ -1574,11 +1571,11 @@ function besseli(nu::acb, x::acb)
 end
 
 @doc Markdown.doc"""
-    besselk(nu::acb, x::acb)
+    bessel_k(nu::acb, x::acb)
 
 Return the Bessel function $K_{\nu}(x)$.
 """
-function besselk(nu::acb, x::acb)
+function bessel_k(nu::acb, x::acb)
   z = parent(x)()
   ccall((:acb_hypgeom_bessel_k, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), z, nu, x, parent(x).prec)
@@ -1586,11 +1583,11 @@ function besselk(nu::acb, x::acb)
 end
 
 @doc Markdown.doc"""
-    hyp1f1(a::acb, b::acb, x::acb)
+    hypergeometric_1f1(a::acb, b::acb, x::acb)
 
 Return the confluent hypergeometric function ${}_1F1(a,b,x)$.
 """
-function hyp1f1(a::acb, b::acb, x::acb)
+function hypergeometric_1f1(a::acb, b::acb, x::acb)
   z = parent(x)()
   ccall((:acb_hypgeom_m, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, a, b, x, 0, parent(x).prec)
@@ -1598,12 +1595,12 @@ function hyp1f1(a::acb, b::acb, x::acb)
 end
 
 @doc Markdown.doc"""
-    hyp1f1r(a::acb, b::acb, x::acb)
+    hypergeometric_1f1_regularized(a::acb, b::acb, x::acb)
 
 Return the regularized confluent hypergeometric function
 ${}_1F1(a,b,x) / \Gamma(b)$.
 """
-function hyp1f1r(a::acb, b::acb, x::acb)
+function hypergeometric_1f1_regularized(a::acb, b::acb, x::acb)
   z = parent(x)()
   ccall((:acb_hypgeom_m, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, a, b, x, 1, parent(x).prec)
@@ -1611,11 +1608,11 @@ function hyp1f1r(a::acb, b::acb, x::acb)
 end
 
 @doc Markdown.doc"""
-    hyperu(a::acb, b::acb, x::acb)
+    hypergeometric_u(a::acb, b::acb, x::acb)
 
 Return the confluent hypergeometric function $U(a,b,x)$.
 """
-function hyperu(a::acb, b::acb, x::acb)
+function hypergeometric_u(a::acb, b::acb, x::acb)
   z = parent(x)()
   ccall((:acb_hypgeom_u, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Int), z, a, b, x, parent(x).prec)
@@ -1623,11 +1620,11 @@ function hyperu(a::acb, b::acb, x::acb)
 end
 
 @doc Markdown.doc"""
-    hyp2f1(a::acb, b::acb, c::acb, x::acb; flags=0)
+    hypergeometric_2f1(a::acb, b::acb, c::acb, x::acb; flags=0)
 
 Return the Gauss hypergeometric function ${}_2F_1(a,b,c,x)$.
 """
-function hyp2f1(a::acb, b::acb, c::acb, x::acb; flags=0)
+function hypergeometric_2f1(a::acb, b::acb, c::acb, x::acb; flags=0)
   z = parent(x)()
   ccall((:acb_hypgeom_2f1, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Ref{acb}, Int, Int), z, a, b, c, x, flags, parent(x).prec)
@@ -1635,12 +1632,12 @@ function hyp2f1(a::acb, b::acb, c::acb, x::acb; flags=0)
 end
 
 @doc Markdown.doc"""
-    jtheta(z::acb, tau::acb)
+    jacobi_theta(z::acb, tau::acb)
 
 Return a tuple of four elements containing the Jacobi theta function values
 $\theta_1, \theta_2, \theta_3, \theta_4$ evaluated at $z, \tau$.
 """
-function jtheta(z::acb, tau::acb)
+function jacobi_theta(z::acb, tau::acb)
   t1 = parent(z)()
   t2 = parent(z)()
   t3 = parent(z)()
@@ -1652,11 +1649,11 @@ function jtheta(z::acb, tau::acb)
 end
 
 @doc Markdown.doc"""
-    ellipwp(z::acb, tau::acb)
+    weierstrass_p(z::acb, tau::acb)
 
 Return the Weierstrass elliptic function $\wp(z,\tau)$.
 """
-function ellipwp(z::acb, tau::acb)
+function weierstrass_p(z::acb, tau::acb)
   r = parent(z)()
   ccall((:acb_modular_elliptic_p, libarb), Nothing,
               (Ref{acb}, Ref{acb}, Ref{acb}, Int), r, z, tau, parent(z).prec)

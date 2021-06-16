@@ -618,11 +618,11 @@ root(::arb, ::Int)
 ```
 
 ```@docs
-fac(::arb)
+factorial(::arb)
 ```
 
 ```@docs
-fac(::Int, ::ArbField)
+factorial(::Int, ::ArbField)
 ```
 
 ```@docs
@@ -634,11 +634,11 @@ binomial(::UInt, ::UInt, ::ArbField)
 ```
 
 ```@docs
-fib(::fmpz, ::ArbField)
+fibonacci(::fmpz, ::ArbField)
 ```
 
 ```@docs
-fib(::Int, ::ArbField)
+fibonacci(::Int, ::ArbField)
 ```
 
 ```@docs
@@ -658,15 +658,15 @@ bernoulli(::Int, ::ArbField)
 ```
 
 ```@docs
-risingfac(::arb, ::Int)
+rising_factorial(::arb, ::Int)
 ```
 
 ```@docs
-risingfac(::fmpq, ::Int, ::ArbField)
+rising_factorial(::fmpq, ::Int, ::ArbField)
 ```
 
 ```@docs
-risingfac2(::arb, ::Int)
+rising_factorial2(::arb, ::Int)
 ```
 
 ```@docs

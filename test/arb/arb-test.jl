@@ -366,17 +366,17 @@ end
 
    @test_throws DomainError root(-x, 3)
 
-   @test overlaps(fac(x), RR("0.886581428719259125080918 +/- 6.66e-25"))
-   @test fac(UInt(10), RR) == 3628800
-   @test fac(Int(10), RR) == 3628800
+   @test overlaps(factorial(x), RR("0.886581428719259125080918 +/- 6.66e-25"))
+   @test factorial(UInt(10), RR) == 3628800
+   @test factorial(Int(10), RR) == 3628800
 
    @test overlaps(binomial(x, UInt(3)), RR("0.0641293851417059390703256 +/- 4.37e-26"))
    @test overlaps(binomial(UInt(10), UInt(3), RR), RR("120.0000000000000000000000"))
 
-   @test fib(ZZ(10), RR) == 55
-   @test fib(10, RR) == 55
-   @test fib(-10, RR) == -55
-   @test fib(UInt(10), RR) == 55
+   @test fibonacci(ZZ(10), RR) == 55
+   @test fibonacci(10, RR) == 55
+   @test fibonacci(-10, RR) == -55
+   @test fibonacci(UInt(10), RR) == 55
 
    @test gamma(ZZ(10), RR) == 362880
    @test overlaps(gamma(QQ(1,4), RR), RR("3.625609908221908311930685 +/- 1.75e-25"))
@@ -390,21 +390,21 @@ end
 
    @test_throws DomainError bernoulli(-1, RR)
 
-   @test overlaps(risingfac(x, 4), RR("4.828427124746190097603377 +/- 7.35e-25"))
-   @test overlaps(risingfac(QQ(2,3), 4, RR), RR("10.86419753086419753086420 +/- 2.74e-24"))
+   @test overlaps(rising_factorial(x, 4), RR("4.828427124746190097603377 +/- 7.35e-25"))
+   @test overlaps(rising_factorial(QQ(2,3), 4, RR), RR("10.86419753086419753086420 +/- 2.74e-24"))
 
-   @test_throws DomainError risingfac(x, -1)
-   @test_throws DomainError risingfac(QQ(2, 3), -1, RR)
+   @test_throws DomainError rising_factorial(x, -1)
+   @test_throws DomainError rising_factorial(QQ(2, 3), -1, RR)
 
-   a, b = risingfac2(x, 4)
+   a, b = rising_factorial2(x, 4)
    @test overlaps(a, RR("4.828427124746190097603377 +/- 7.35e-25"))
    @test overlaps(b, RR("18.48528137423857029281013 +/- 3.08e-24"))
 
-   a, b = risingfac2(x, UInt(4))
+   a, b = rising_factorial2(x, UInt(4))
    @test overlaps(a, RR("4.828427124746190097603377 +/- 7.35e-25"))
    @test overlaps(b, RR("18.48528137423857029281013 +/- 3.08e-24"))
 
-   @test_throws DomainError risingfac(x, -1)
+   @test_throws DomainError rising_factorial(x, -1)
 
    @test overlaps(polylog(x,y), RR("1.89384268220168253175143 +/- 8.27e-24"))
    @test overlaps(polylog(3,y), RR("0.82112384129183065741 +/- 4.76e-21"))

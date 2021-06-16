@@ -498,7 +498,7 @@ atan(::acb)
 ```
 
 ```@docs
-logsinpi(::acb)
+log_sinpi(::acb)
 ```
 
 ```@docs
@@ -522,11 +522,11 @@ zeta(::acb)
 ```
 
 ```@docs
-barnesg(::acb)
+barnes_g(::acb)
 ```
 
 ```@docs
-logbarnesg(::acb)
+log_barnes_g(::acb)
 ```
 
 ```@docs
@@ -538,27 +538,27 @@ erfi(::acb)
 ```
 
 ```@docs
-ei(::acb)
+exp_integral_ei(::acb)
 ```
 
 ```@docs
-si(::acb)
+sin_integral(::acb)
 ```
 
 ```@docs
-ci(::acb)
+cos_integral(::acb)
 ```
 
 ```@docs
-shi(::acb)
+sinh_integral(::acb)
 ```
 
 ```@docs
-chi(::acb)
+cosh_integral(::acb)
 ```
 
 ```@docs
-modular_eta(::acb)
+dedekind_eta(::acb)
 ```
 
 ```@docs
@@ -574,7 +574,7 @@ modular_weber_f2(::acb)
 ```
 
 ```@docs
-modular_j(::acb)
+j_invariant(::acb)
 ```
 
 ```@docs
@@ -586,15 +586,15 @@ modular_delta(::acb)
 ```
 
 ```@docs
-modular_eisenstein_g(::Int, ::acb)
+eisenstein_g(::Int, ::acb)
 ```
 
 ```@docs
-ellipk(::acb)
+elliptic_k(::acb)
 ```
 
 ```@docs
-ellipe(::acb)
+elliptic_e(::acb)
 ```
 
 ```@docs
@@ -623,11 +623,11 @@ zeta(::acb, ::acb)
 ```
 
 ```@docs
-risingfac(::acb, ::Int)
+rising_factorial(::acb, ::Int)
 ```
 
 ```@docs
-risingfac2(::acb, ::Int)
+rising_factorial2(::acb, ::Int)
 ```
 
 ```@docs
@@ -635,15 +635,15 @@ polylog(::Union{acb,Int}, ::acb)
 ```
 
 ```@docs
-li(::acb)
+log_integral(::acb)
 ```
 
 ```@docs
-lioffset(::acb)
+log_integral_offset(::acb)
 ```
 
 ```@docs
-expint(::acb, ::acb)
+exp_integral_e(::acb, ::acb)
 ```
 
 ```@docs
@@ -663,43 +663,43 @@ gamma_lower_regularized(::acb, ::acb)
 ```
 
 ```@docs
-besselj(::acb, ::acb)
+bessel_j(::acb, ::acb)
 ```
 
 ```@docs
-bessely(::acb, ::acb)
+bessel_y(::acb, ::acb)
 ```
 
 ```@docs
-besseli(::acb, ::acb)
+bessel_i(::acb, ::acb)
 ```
 
 ```@docs
-besselk(::acb, ::acb)
+bessel_k(::acb, ::acb)
 ```
 
 ```@docs
-hyp1f1(::acb, ::acb, ::acb)
+hypergeometric_1f1(::acb, ::acb, ::acb)
 ```
 
 ```@docs
-hyp1f1r(::acb, ::acb, ::acb)
+hypergeometric_1f1_regularized(::acb, ::acb, ::acb)
 ```
 
 ```@docs
-hyperu(::acb, ::acb, ::acb)
+hypergeometric_u(::acb, ::acb, ::acb)
 ```
 
 ```@docs
-hyp2f1(::acb, ::acb, ::acb, ::acb)
+hypergeometric_2f1(::acb, ::acb, ::acb, ::acb)
 ```
 
 ```@docs
-jtheta(::acb, ::acb)
+jacobi_theta(::acb, ::acb)
 ```
 
 ```@docs
-ellipwp(::acb, ::acb)
+weierstrass_p(::acb, ::acb)
 ```
 
 **Examples**
@@ -712,8 +712,8 @@ z = CC("1.23", "3.45")
 
 a = sin(z)^2 + cos(z)^2
 b = zeta(z)
-c = besselj(s, z)
-d = hyp1f1(s, s+1, z)
+c = bessel_j(s, z)
+d = hypergeometric_1f1(s, s+1, z)
 ```
 
 ### Linear dependence
