@@ -652,13 +652,27 @@ end # for
 #
 ###############################################################################
 
-function PowerSeriesRing(R::FqFiniteField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
-   S = Symbol(s)
-
+function PowerSeriesRing(R::FqFiniteField, prec::Int, s::Symbol; model=:capped_relative, cached = true)
    if model == :capped_relative
-      parent_obj = FqRelSeriesRing(R, prec, S, cached)
+      parent_obj = FqRelSeriesRing(R, prec, s, cached)
    elseif model == :capped_absolute
-      parent_obj = FqAbsSeriesRing(R, prec, S, cached)
+      parent_obj = FqAbsSeriesRing(R, prec, s, cached)
+   else
+      error("Unknown model")
+   end
+
+   return parent_obj, gen(parent_obj)
+end
+
+function PowerSeriesRing(R::FqFiniteField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
+   return PowerSeriesRing(R, prec, Symbol(s); model=model, cached=cached)
+end
+
+function PowerSeriesRing(R::FqNmodFiniteField, prec::Int, s::Symbol; model=:capped_relative, cached = true)
+   if model == :capped_relative
+      parent_obj = FqNmodRelSeriesRing(R, prec, s, cached)
+   elseif model == :capped_absolute
+      parent_obj = FqNmodAbsSeriesRing(R, prec, s, cached)
    else
       error("Unknown model")
    end
@@ -667,15 +681,5 @@ function PowerSeriesRing(R::FqFiniteField, prec::Int, s::AbstractString; model=:
 end
 
 function PowerSeriesRing(R::FqNmodFiniteField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
-   S = Symbol(s)
-
-   if model == :capped_relative
-      parent_obj = FqNmodRelSeriesRing(R, prec, S, cached)
-   elseif model == :capped_absolute
-      parent_obj = FqNmodAbsSeriesRing(R, prec, S, cached)
-   else
-      error("Unknown model")
-   end
-
-   return parent_obj, gen(parent_obj)
+   return PowerSeriesRing(R, prec, Symbol(s); model=model, cached=cached)
 end

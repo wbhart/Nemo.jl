@@ -844,8 +844,11 @@ end
 #
 ################################################################################
 
-function PolynomialRing(R::FqNmodFiniteField, s::AbstractString; cached = true)
-   S = Symbol(s)
-   parent_obj = FqNmodPolyRing(R, S, cached)
+function PolynomialRing(R::FqNmodFiniteField, s::Symbol; cached = true)
+   parent_obj = FqNmodPolyRing(R, s, cached)
    return parent_obj, parent_obj([R(0), R(1)])
+end
+
+function PolynomialRing(R::FqNmodFiniteField, s::AbstractString; cached = true)
+   return PolynomialRing(R, Symbol(s); cached=cached)
 end

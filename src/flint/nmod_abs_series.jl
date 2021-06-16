@@ -672,13 +672,26 @@ end # for
 #
 ###############################################################################
 
-function PowerSeriesRing(R::NmodRing, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
-   S = Symbol(s)
-
+function PowerSeriesRing(R::NmodRing, prec::Int, s::Symbol; model=:capped_relative, cached = true)
    if model == :capped_relative
-      parent_obj = NmodRelSeriesRing(R, prec, S, cached)
+      parent_obj = NmodRelSeriesRing(R, prec, s, cached)
    elseif model == :capped_absolute
-      parent_obj = NmodAbsSeriesRing(R, prec, S, cached)
+      parent_obj = NmodAbsSeriesRing(R, prec, s, cached)
+   else
+      error("Unknown model")
+   end
+   return parent_obj, gen(parent_obj)
+end
+
+function PowerSeriesRing(R::NmodRing, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
+   return PowerSeriesRing(R, prec, Symbol(s); model=model, cached=cached)
+end
+
+function PowerSeriesRing(R::GaloisField, prec::Int, s::Symbol; model=:capped_relative, cached = true)
+   if model == :capped_relative
+      parent_obj = GFPRelSeriesRing(R, prec, s, cached)
+   elseif model == :capped_absolute
+      parent_obj = GFPAbsSeriesRing(R, prec, s, cached)
    else
       error("Unknown model")
    end
@@ -686,14 +699,5 @@ function PowerSeriesRing(R::NmodRing, prec::Int, s::AbstractString; model=:cappe
 end
 
 function PowerSeriesRing(R::GaloisField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
-   S = Symbol(s)
-
-   if model == :capped_relative
-      parent_obj = GFPRelSeriesRing(R, prec, S, cached)
-   elseif model == :capped_absolute
-      parent_obj = GFPAbsSeriesRing(R, prec, S, cached)
-   else
-      error("Unknown model")
-   end
-   return parent_obj, gen(parent_obj)
+   return PowerSeriesRing(R, prec, Symbol(s); model=model, cached=cached)
 end

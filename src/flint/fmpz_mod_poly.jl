@@ -1020,8 +1020,12 @@ end
 #
 ################################################################################
 
-function PolynomialRing(R::FmpzModRing, s::AbstractString; cached=true)
-   parent_obj = FmpzModPolyRing(R, Symbol(s), cached)
+function PolynomialRing(R::FmpzModRing, s::Symbol; cached=true)
+   parent_obj = FmpzModPolyRing(R, s, cached)
 
    return parent_obj, parent_obj([R(0), R(1)])
+end
+
+function PolynomialRing(R::FmpzModRing, s::AbstractString; cached = true)
+   return PolynomialRing(R, Symbol(s); cached=cached)
 end

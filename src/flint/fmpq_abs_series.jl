@@ -925,16 +925,18 @@ end
 #
 ###############################################################################
 
-function PowerSeriesRing(R::FlintRationalField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
-   S = Symbol(s)
-
+function PowerSeriesRing(R::FlintRationalField, prec::Int, s::Symbol; model=:capped_relative, cached = true)
    if model == :capped_relative
-      parent_obj = FmpqRelSeriesRing(prec, S, cached)
+      parent_obj = FmpqRelSeriesRing(prec, s, cached)
    elseif model == :capped_absolute
-      parent_obj = FmpqAbsSeriesRing(prec, S, cached)
+      parent_obj = FmpqAbsSeriesRing(prec, s, cached)
    else
       error("Unknown model")
    end
 
    return parent_obj, gen(parent_obj)
+end
+
+function PowerSeriesRing(R::FlintRationalField, prec::Int, s::AbstractString; model=:capped_relative, cached = true)
+   return PowerSeriesRing(R, prec, Symbol(s); model=model, cached=cached)
 end

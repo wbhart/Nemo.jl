@@ -1454,10 +1454,13 @@ object `S` will be cached so that supplying the same base ring, string and
 precision in future will return the same parent object and generator. If
 caching of the parent object is not required, `cached` can be set to `false`.
 """
-function LaurentSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; cached=true)
-   S = Symbol(s)
-
-   parent_obj = FmpzLaurentSeriesRing(prec, S, cached)
+function LaurentSeriesRing(R::FlintIntegerRing, prec::Int, s::Symbol; cached=true)
+   parent_obj = FmpzLaurentSeriesRing(prec, s, cached)
 
    return parent_obj, gen(parent_obj)
 end
+
+function LaurentSeriesRing(R::FlintIntegerRing, prec::Int, s::AbstractString; cached=true)
+   return LaurentSeriesRing(R, prec, Symbol(s); cached=cached)
+end
+

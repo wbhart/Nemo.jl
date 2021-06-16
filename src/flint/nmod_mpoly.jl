@@ -1133,12 +1133,20 @@ end
 #
 ###############################################################################
 
-function PolynomialRing(R::NmodRing, s::Array{String, 1}; cached::Bool = true, ordering::Symbol = :lex)
-   parent_obj = NmodMPolyRing(R, [Symbol(x) for x in s], ordering, cached)
+function PolynomialRing(R::NmodRing, s::Array{Symbol, 1}; cached::Bool = true, ordering::Symbol = :lex)
+   parent_obj = NmodMPolyRing(R, s, ordering, cached)
    return tuple(parent_obj, gens(parent_obj))
 end
 
-function PolynomialRing(R::GaloisField, s::Array{String, 1}; cached::Bool = true, ordering::Symbol = :lex)
-   parent_obj = GFPMPolyRing(R, [Symbol(x) for x in s], ordering, cached)
+function PolynomialRing(R::NmodRing, s::Array{String, 1}; cached::Bool = true, ordering::Symbol = :lex)
+   return PolynomialRing(R, [Symbol(x) for x in s]; cached=cached, ordering=ordering)
+end
+
+function PolynomialRing(R::GaloisField, s::Array{Symbol, 1}; cached::Bool = true, ordering::Symbol = :lex)
+   parent_obj = GFPMPolyRing(R, s, ordering, cached)
    return tuple(parent_obj, gens(parent_obj))   
+end
+
+function PolynomialRing(R::GaloisField, s::Array{String, 1}; cached::Bool = true, ordering::Symbol = :lex)
+   return PolynomialRing(R, [Symbol(x) for x in s]; cached=cached, ordering=ordering)
 end

@@ -849,10 +849,13 @@ end
 #
 ###############################################################################
 
-function PolynomialRing(R::FlintRationalField, s::AbstractString; cached = true)
-   S = Symbol(s)
-
-   parent_obj = FmpqPolyRing(R, S, cached)
+function PolynomialRing(R::FlintRationalField, s::Symbol; cached = true)
+   parent_obj = FmpqPolyRing(R, s, cached)
 
    return parent_obj, parent_obj([fmpq(0), fmpq(1)])
 end
+
+function PolynomialRing(R::FlintRationalField, s::AbstractString; cached = true)
+   return PolynomialRing(R, Symbol(s); cached=cached)
+end
+

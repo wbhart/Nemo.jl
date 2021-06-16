@@ -926,10 +926,12 @@ end
 #
 ###############################################################################
 
-function PolynomialRing(R::FlintIntegerRing, s::AbstractString; cached = true)
-   S = Symbol(s)
-
-   parent_obj = FmpzPolyRing(R, S, cached)
+function PolynomialRing(R::FlintIntegerRing, s::Symbol; cached = true)
+   parent_obj = FmpzPolyRing(R, s, cached)
 
    return parent_obj, parent_obj([fmpz(0), fmpz(1)])
+end
+
+function PolynomialRing(R::FlintIntegerRing, s::AbstractString; cached = true)
+   return PolynomialRing(R, Symbol(s); cached=cached)
 end
