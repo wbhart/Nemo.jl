@@ -145,7 +145,7 @@ end
 
    q = similar(g, cached=false)
 
-   @test parent(g) != parent(q)
+   @test parent(g) == parent(q)
 end
 
 @testset "gfp_fmpz_poly.binary_ops" begin

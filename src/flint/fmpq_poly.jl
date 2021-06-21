@@ -79,9 +79,14 @@ end
 #
 ###############################################################################
 
-function similar(f::PolyElem, R::FlintRationalField, var::Symbol=var(parent(f)); cached::Bool=true)
+function similar(f::PolyElem, R::FlintRationalField, s::Symbol=var(parent(f)); cached::Bool=true)
    z = fmpq_poly()
-   z.parent = FmpqPolyRing(R, var, cached)
+   if base_ring(f) == R && s == var(parent(f)) && typeof(f) == fmpq_poly
+      # steal parent in case it is not cached
+      z.parent = parent(f)
+   else
+      z.parent = FmpqPolyRing(R, s, cached)
+   end
    return z
 end
 

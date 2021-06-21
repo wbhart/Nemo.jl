@@ -167,7 +167,7 @@ end
 
    q = similar(g, cached=false)
 
-   @test parent(g) != parent(q)
+   @test parent(g) == parent(q)
 end
 
 @testset "nmod_poly.unary_ops" begin

@@ -34,9 +34,14 @@ characteristic(R::GFPFmpzPolyRing) = characteristic(base_ring(R))
 #
 ###############################################################################
 
-function similar(f::PolyElem, R::GaloisFmpzField, var::Symbol=var(parent(f)); cached::Bool=true)
+function similar(f::PolyElem, R::GaloisFmpzField, s::Symbol=var(parent(f)); cached::Bool=true)
    z = gfp_fmpz_poly(R)
-   z.parent = GFPFmpzPolyRing(R, var, cached)
+   if base_ring(f) == R && s == var(parent(f)) && typeof(f) == gfp_fmpz_poly
+      # steal parent in case it is not cached
+      z.parent = parent(f)
+   else
+      z.parent = GFPFmpzPolyRing(R, s, cached)
+   end
    return z
 end
 
