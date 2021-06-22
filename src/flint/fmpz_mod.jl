@@ -51,11 +51,11 @@ function one(R::FmpzModRing)
    end
 end
 
-iszero(a::fmpz_mod) = a.data == 0
+iszero(a::fmpz_mod) = iszero(a.data)
 
-isone(a::fmpz_mod) = a.parent.n == 1 ? a.data == 0 : a.data == 1
+isone(a::fmpz_mod) = a.parent.n == 1 ? iszero(a.data) : isone(a.data)
 
-isunit(a::fmpz_mod) = a.parent.n == 1 ? a.data == 0 : gcd(a.data, a.parent.n) == 1
+isunit(a::fmpz_mod) = a.parent.n == 1 ? iszero(a.data) : isone(gcd(a.data, a.parent.n))
 
 modulus(R::FmpzModRing) = R.n
 
@@ -119,7 +119,7 @@ needs_parentheses(x::fmpz_mod) = false
 ###############################################################################
 
 function -(x::fmpz_mod)
-   if x.data == 0
+   if iszero(x.data)
       return deepcopy(x)
    else
       R = parent(x)

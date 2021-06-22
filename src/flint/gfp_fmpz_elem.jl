@@ -43,12 +43,12 @@ data(a::gfp_fmpz_elem) = a.data
 
 lift(a::gfp_fmpz_elem) = data(a)
 
-iszero(a::gfp_fmpz_elem) = a.data == 0
+iszero(a::gfp_fmpz_elem) = iszero(a.data)
 
-isone(a::gfp_fmpz_elem) = a.data == 1
+isone(a::gfp_fmpz_elem) = isone(a.data)
 
 function zero(R::GaloisFmpzField)
-   return gfp_fmpz_elem(fmpz(0), R)
+   return gfp_fmpz_elem(zero(fmpz), R)
 end
 
 function one(R::GaloisFmpzField)
@@ -119,7 +119,7 @@ needs_parentheses(x::gfp_fmpz_elem) = false
 ###############################################################################
 
 function -(x::gfp_fmpz_elem)
-   if x.data == 0
+   if iszero(x.data)
       return deepcopy(x)
    else
       R = parent(x)

@@ -556,7 +556,7 @@ divexact(x::fmpz_rel_series, y::Integer) = divexact(x, fmpz(y))
 ###############################################################################
 
 function inv(a::fmpz_rel_series)
-   a == 0 && throw(DivideError())
+   iszero(a) && throw(DivideError())
    !isunit(a) && error("Unable to invert power series")
    ainv = parent(a)()
    ainv.prec = a.prec
