@@ -109,9 +109,9 @@ parent_type(::Type{qadic}) = FlintQadicField
 
 function Base.deepcopy_internal(a::qadic, dict::IdDict{Any, Any})
    z = parent(a)()
+   z.N = a.N
    ccall((:qadic_set, libflint), Nothing,
          (Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}), z, a, parent(a))
-   z.N = a.N
    return z
 end
 
