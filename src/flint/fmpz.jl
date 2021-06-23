@@ -1756,17 +1756,37 @@ function base(n::fmpz, b::Integer)
 end
 
 @doc Markdown.doc"""
-    ndigits(x::fmpz, b::Integer = 10)
+    ndigits(x::fmpz, b::Integer)
 
 Return the number of digits of $x$ in the base $b$ (default is $b = 10$).
 """
-function ndigits(x::fmpz, b::Integer = 10)::Int
-   if _fmpz_is_small(x)
-      ndigits(x.d, base=b)
-   else
-      # GMP/Flint's sizeinbase is not reliable for b > 62, so use Julia's implementation
-      GC.@preserve x ndigits(unsafe_load(Ptr{BigInt}(x.d << 2)), base=b)
+function ndigits(x::fmpz, b::Integer)::Int
+   ndigits(x.d, base=b)
+end
+
+function Base.ndigits(a::fmpz; base::Integer = 10, pad::Integer = 1)
+   return max(pad, clog(abs(a), fmpz(abs(base))))
+end
+
+Base.digits(n::fmpz; base::Integer = 10, pad::Integer = 1) =
+   digits(typeof(base), n, base = base, pad = pad)
+
+function Base.digits(T::Type{<:Integer}, n::fmpz; base::Integer = 10, pad::Integer = 1)
+   digits!(zeros(T, ndigits(n, base=base, pad=pad)), n, base=base)
+end
+
+function Base.digits!(a::AbstractVector{T}, n::fmpz; base::Integer = 10, minimal::Bool = false) where T<:Integer
+   2 <= base || throw(DomainError(base, "base must be ≥ 2"))
+   Base.hastypemax(T) && abs(base) - 1 > typemax(T) &&
+       throw(ArgumentError("type $T too small for base $base"))
+   isempty(a) && return a
+
+   for i in eachindex(a)
+      n, d = divrem(n, base)
+      #sign d = sign n
+      a[i] = d
    end
+   return a
 end
 
 @doc Markdown.doc"""
