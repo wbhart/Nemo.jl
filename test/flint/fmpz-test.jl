@@ -610,6 +610,11 @@ end
    a = fmpz(4611686837384281896) # must not be an "immediate" integer (but a GMP int)
 
    @test ndigits(a, 257) == 8
+   @test ndigits(a, base = 257) == 8
+
+   @etst digits(a) == digits(BigInt(a))
+   @etst digits(a, base = 17) == digits(BigInt(a), base = 17)
+   @etst digits(a, base = 5, pad = 50) == digits(BigInt(a), base = 5, pad = 50)
 end
 
 @testset "fmpz.string_io" begin
