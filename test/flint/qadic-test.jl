@@ -46,6 +46,10 @@
    R, _ = QadicField(13, 1, 10)
    a = gen(R)
    @test a isa qadic
+   b = R(prime(R))
+
+   @test !iszero(b^20)
+   @test !iszero(deepcopy(b^20))
 end
 
 @testset "qadic.printing" begin
