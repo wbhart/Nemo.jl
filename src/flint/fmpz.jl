@@ -1765,7 +1765,7 @@ function ndigits(x::fmpz, b::Integer)::Int
 end
 
 function Base.ndigits(a::fmpz; base::Integer = 10, pad::Integer = 1)
-   return max(pad, clog(abs(a), fmpz(abs(base))))
+   return max(pad, 1+flog(abs(a), fmpz(abs(base))))
 end
 
 Base.digits(n::fmpz; base::Integer = 10, pad::Integer = 1) =
