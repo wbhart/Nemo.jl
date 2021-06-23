@@ -612,9 +612,9 @@ end
    @test ndigits(a, 257) == 8
    @test ndigits(a, base = 257) == 8
 
-   @etst digits(a) == digits(BigInt(a))
-   @etst digits(a, base = 17) == digits(BigInt(a), base = 17)
-   @etst digits(a, base = 5, pad = 50) == digits(BigInt(a), base = 5, pad = 50)
+   @test digits(a) == digits(BigInt(a))
+   @test digits(a, base = 17) == digits(BigInt(a), base = 17)
+   @test digits(a, base = 5, pad = 50) == digits(BigInt(a), base = 5, pad = 50)
 end
 
 @testset "fmpz.string_io" begin
