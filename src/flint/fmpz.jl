@@ -1761,7 +1761,7 @@ end
 Return the number of digits of $x$ in the base $b$ (default is $b = 10$).
 """
 function ndigits(x::fmpz, b::Integer)::Int
-   ndigits(x.d, base=b)
+   ndigits(x, base=b)
 end
 
 function Base.ndigits(a::fmpz; base::Integer = 10, pad::Integer = 1)
