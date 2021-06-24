@@ -4721,8 +4721,8 @@ mutable struct nmod_mat <: MatElem{nmod}
     for i = 1:r
       for j = 1:c
         ccall((:fmpz_mod_ui, libflint), Nothing,
-	      (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), t, arr[i, j], n)
-	setindex_raw!(z, t, i, j)
+	      (Ref{fmpz}, Ref{fmpz}, UInt), t, arr[i, j], n)
+	      setindex_raw!(z, t, i, j)
       end
     end
     return z
@@ -4734,11 +4734,10 @@ mutable struct nmod_mat <: MatElem{nmod}
             (Ref{nmod_mat}, Int, Int, UInt), z, r, c, n)
     finalizer(_nmod_mat_clear_fn, z)
     t = fmpz()
-    n = fmpz(n)
     for i = 1:r
       for j = 1:c
         ccall((:fmpz_mod_ui, libflint), Nothing,
-              (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), t, arr[(i - 1) * c + j], n)
+              (Ref{fmpz}, Ref{fmpz}, UInt), t, arr[(i - 1) * c + j], n)
         setindex!(z, t, i, j)
       end
     end
@@ -4811,7 +4810,8 @@ function _nmod_mat_clear_fn(mat::nmod_mat)
   ccall((:nmod_mat_clear, libflint), Nothing, (Ref{nmod_mat}, ), mat)
 end
 
-###############################################################################          #
+###############################################################################          
+#
 #   FmpzModMatSpace / fmpz_mod_mat
 #
 ###############################################################################
