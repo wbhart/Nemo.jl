@@ -593,12 +593,12 @@ end
 ###############################################################################
 
 function inv(x::fmpz)
-   if x == 1
+   if isone(x)
       return fmpz(1)
    elseif x == -1
       return fmpz(-1)
    end
-   x == 0 && throw(DivideError())
+   iszero(x) && throw(DivideError())
    throw(ArgumentError("not a unit"))
 end
 
@@ -609,13 +609,13 @@ end
 ###############################################################################
 
 function ^(x::fmpz, y::Union{Int, UInt, fmpz})
-   if isone(x) || y == 0
+   if isone(x) || iszero(y)
       one(x)
    elseif x == -1
       isodd(y) ? deepcopy(x) : one(x)
    elseif y < 0
       throw(DomainError(y, "Exponent must be non-negative"))
-   elseif y == 1
+   elseif isone(y)
       deepcopy(x)
    else
       z = fmpz()
@@ -758,7 +758,7 @@ Return the remainder after division of $x$ by $y$. The remainder will be
 closer to zero than $y$ and have the same sign, or it will be zero.
 """
 function mod(x::fmpz, y::fmpz)
-   y == 0 && throw(DivideError())
+   iszero(y) && throw(DivideError())
    r = fmpz()
    ccall((:fmpz_fdiv_r, libflint), Nothing,
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), r, x, y)

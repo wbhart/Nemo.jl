@@ -471,7 +471,7 @@ function inv(x::fmpz_mat)
    d = fmpz()
    ccall((:fmpz_mat_inv, libflint), Nothing,
          (Ref{fmpz_mat}, Ref{fmpz}, Ref{fmpz_mat}), z, d, x)
-   if d == 1
+   if isone(d)
       return z
    end
    if d == -1
