@@ -1784,7 +1784,7 @@ function Base.digits!(a::AbstractVector{T}, n::fmpz; base::Integer = 10) where T
 
    if nbits(n)/ndigits(base, base = 2) > 100
      c = div(div(nbits(n), ndigits(base, base = 2)), 2)
-     nn = base^c
+     nn = fmpz(base)^c
      q, r = divrem(n, nn)
 
      digits!(view(a, 1:c), r, base = base)
