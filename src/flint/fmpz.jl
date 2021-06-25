@@ -1776,16 +1776,25 @@ function Base.digits(T::Type{<:Integer}, n::fmpz; base::Integer = 10, pad::Integ
    digits!(zeros(T, ndigits(n, base=base, pad=pad)), n, base=base)
 end
 
-function Base.digits!(a::AbstractVector{T}, n::fmpz; base::Integer = 10, minimal::Bool = false) where T<:Integer
+function Base.digits!(a::AbstractVector{T}, n::fmpz; base::Integer = 10) where T<:Integer
    2 <= base || throw(DomainError(base, "base must be ≥ 2"))
    Base.hastypemax(T) && abs(base) - 1 > typemax(T) &&
        throw(ArgumentError("type $T too small for base $base"))
    isempty(a) && return a
 
+   if nbits(n)/nbits(base) > 100
+     c = div(div(nbits(n), nbits(base)), 2)
+     nn = base^c
+     q, r = divrem(n, nn)
+
+     digits!(view(a, 1:c), r, base = base)
+     digits!(view(a, c+1:length(a)), q, base = base)
+     return a
+   end
+
    for i in eachindex(a)
-      n, d = divrem(n, base)
-      #sign d = sign n
-      a[i] = d
+      n, r = divrem(n, base)
+      a[i] = r
    end
    return a
 end
