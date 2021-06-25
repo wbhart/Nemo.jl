@@ -610,6 +610,21 @@ end
    a = fmpz(4611686837384281896) # must not be an "immediate" integer (but a GMP int)
 
    @test ndigits(a, 257) == 8
+   @test ndigits(a, base = 257) == 8
+
+   @test digits(a) == digits(BigInt(a))
+   @test digits(a, base = 17) == digits(BigInt(a), base = 17)
+   @test digits(a, base = 5, pad = 50) == digits(BigInt(a), base = 5, pad = 50)
+
+   a = a^20
+
+   @test ndigits(a, 257) == 155
+   @test ndigits(a, base = 257) == 155
+
+   @test digits(a) == digits(BigInt(a))
+   @test digits(a, base = 17) == digits(BigInt(a), base = 17)
+   @test digits(a, base = 5, pad = 50) == digits(BigInt(a), base = 5, pad = 50)
+
 end
 
 @testset "fmpz.string_io" begin
