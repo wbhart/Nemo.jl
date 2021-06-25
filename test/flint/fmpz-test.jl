@@ -618,8 +618,8 @@ end
 
    a = a^20
 
-   @test ndigits(a, 257) == 8
-   @test ndigits(a, base = 257) == 8
+   @test ndigits(a, 257) == 155
+   @test ndigits(a, base = 257) == 155
 
    @test digits(a) == digits(BigInt(a))
    @test digits(a, base = 17) == digits(BigInt(a), base = 17)
