@@ -1782,7 +1782,7 @@ function Base.digits!(a::AbstractVector{T}, n::fmpz; base::Integer = 10) where T
        throw(ArgumentError("type $T too small for base $base"))
    isempty(a) && return a
 
-   if nbits(n)/nbits(base) > 100
+   if nbits(n)/ndigits(base, 2) > 100
      c = div(div(nbits(n), ndigits(base, 2)), 2)
      nn = base^c
      q, r = divrem(n, nn)
