@@ -94,7 +94,7 @@ characteristic(R::ZmodNFmpzPolyRing) = modulus(R)
 
 function similar(f::PolyElem, R::FmpzModRing, s::Symbol=var(parent(f)); cached::Bool=true)
    z = fmpz_mod_poly(R)
-   if base_ring(f) == R && s == var(parent(f)) && typeof(f) == fmpz_mod_poly
+   if base_ring(f) === R && s == var(parent(f)) && typeof(f) == fmpz_mod_poly
       # steal parent in case it is not cached
       z.parent = parent(f)
    else

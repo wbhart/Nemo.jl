@@ -79,7 +79,7 @@ end
 
 function similar(f::PolyElem, R::FlintIntegerRing, s::Symbol=var(parent(f)); cached::Bool=true)
    z = fmpz_poly()
-   if base_ring(f) == R && s == var(parent(f)) && typeof(f) == fmpz_poly
+   if base_ring(f) === R && s == var(parent(f)) && typeof(f) == fmpz_poly
       # steal parent in case it is not cached
       z.parent = parent(f)
    else

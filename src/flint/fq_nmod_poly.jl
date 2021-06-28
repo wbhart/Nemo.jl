@@ -90,7 +90,7 @@ characteristic(R::FqNmodPolyRing) = characteristic(base_ring(R))
 
 function similar(f::PolyElem, R::FqNmodFiniteField, s::Symbol=var(parent(f)); cached::Bool=true)
    z = fq_nmod_poly()
-   if base_ring(f) == R && s == var(parent(f)) && typeof(f) == fq_nmod_poly
+   if base_ring(f) === R && s == var(parent(f)) && typeof(f) == fq_nmod_poly
       # steal parent in case it is not cached
       z.parent = parent(f)
    else

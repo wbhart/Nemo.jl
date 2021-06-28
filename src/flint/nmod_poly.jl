@@ -118,7 +118,7 @@ characteristic(R::NmodPolyRing) = modulus(R)
 
 function similar(f::PolyElem, R::NmodRing, s::Symbol=var(parent(f)); cached::Bool=true)
    z = nmod_poly(R.n)
-   if base_ring(f) == R && s == var(parent(f)) && typeof(f) == nmod_poly
+   if base_ring(f) === R && s == var(parent(f)) && typeof(f) == nmod_poly
       # steal parent in case it is not cached
       z.parent = parent(f)
    else
