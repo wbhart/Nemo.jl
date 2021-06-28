@@ -94,7 +94,7 @@ end
 
    q = polynomial(ZZ, [1, 2, 3], cached=false)
 
-   @test parent(g) != parent(q)
+   @test parent(g) !== parent(q)
 end
 
 @testset "fmpz_poly.similar" begin
@@ -107,7 +107,7 @@ end
 
    q = similar(g, cached=false)
 
-   @test parent(g) == parent(q)
+   @test parent(g) === parent(q)
 end
 
 @testset "fmpz_poly.binary_ops" begin

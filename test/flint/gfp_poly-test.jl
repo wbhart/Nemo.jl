@@ -110,7 +110,7 @@ end
 
    q = polynomial(R, [1, 2, 3], cached=false)
 
-   @test parent(g) != parent(q)
+   @test parent(g) !== parent(q)
 end
 
 @testset "nmod_poly.similar" begin
@@ -125,7 +125,7 @@ end
 
    q = similar(g, cached=false)
 
-   @test parent(g) == parent(q)
+   @test parent(g) === parent(q)
 end
 
 @testset "gfp_poly.printing" begin
