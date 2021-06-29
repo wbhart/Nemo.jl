@@ -1037,8 +1037,40 @@ function mul_classical(a::Generic.Poly{nf_elem}, b::Generic.Poly{nf_elem})
    return z
 end
 
+function use_karamul(a::Generic.Poly{nf_elem}, b::Generic.Poly{nf_elem})
+   deg = degree(base_ring(a))
+   if deg > 25
+      return true
+   end
+   bits = 0
+   for i = 1:length(a)
+      cbits = 0
+      for j = 0:deg
+         c = coeff(coeff(a, i - 1), j)
+         cbits += nbits(numerator(c))
+	 cbits += nbits(denominator(c))
+      end
+      bits += div(cbits, deg + 1)
+   end
+   for i = 1:length(b)
+      cbits = 0
+      for j = 0:deg
+         c = coeff(coeff(b, i - 1), j)
+         cbits += nbits(numerator(c))
+         cbits += nbits(denominator(c))
+      end
+      bits += div(cbits, deg + 1)
+   end
+   minlen = min(length(a), length(b))
+   return minlen*div(bits, 2*(length(a) + length(b))) > 100
+end
+
 function *(a::Generic.Poly{nf_elem}, b::Generic.Poly{nf_elem})
    check_parent(a, b)
+   # karatsuba recurses on this, so check lengths are > 1
+   if use_karamul(a, b) && length(a) > 1 && length(b) > 1
+      return mul_karatsuba(a, b)
+   end
    lena = length(a)
    lenb = length(b)
    if min(lena, lenb) < 20
