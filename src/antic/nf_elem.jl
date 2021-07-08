@@ -1068,7 +1068,7 @@ end
 function *(a::Generic.Poly{nf_elem}, b::Generic.Poly{nf_elem})
    check_parent(a, b)
    # karatsuba recurses on this, so check lengths are > 1
-   if use_karamul(a, b) && length(a) > 1 && length(b) > 1
+   if length(a) > 1 && length(b) > 1 && use_karamul(a, b)
       return mul_karatsuba(a, b)
    end
    lena = length(a)
