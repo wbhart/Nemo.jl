@@ -42,7 +42,7 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        remove, root, size, isqrtrem, sqrtmod, trailing_zeros, divisor_sigma,
        euler_phi, fibonacci, moebius_mu, primorial, rising_factorial,
        number_of_partitions, canonical_unit, isunit, isequal, addeq!, mul!,
-       issquare, square_root, issquare_with_square_root,
+       issquare, square_root, issquare_with_square_root, next_prime,
        iszero, rand, rand_bits, binomial, factorial, rand_bits_prime
 
 ###############################################################################
@@ -1357,6 +1357,30 @@ that infinitely many exist.
 """
 isprobable_prime(x::fmpz) = Bool(ccall((:fmpz_is_probabprime, libflint), Cint,
                                       (Ref{fmpz},), x))
+
+@doc Markdown.doc"""
+    next_prime(x::fmpz, proved = true)
+
+Return the smallest prime strictly greater than $x$.
+If a second argument of `false` is specified, the return is only probably prime.
+"""
+function next_prime(x::fmpz, proved::Bool = true)
+   z = fmpz()
+   ccall((:fmpz_nextprime, libflint), Nothing,
+         (Ref{fmpz}, Ref{fmpz}, Cint),
+         z, x, proved)
+   return z
+end
+
+function next_prime(x::UInt, proved::Bool = true)
+   return ccall((:n_nextprime, libflint), UInt,
+                (UInt, Cint),
+                x, proved)
+end
+
+function next_prime(x::Int, proved::Bool = true)
+   return x < 2 ? 2 : Int(next_prime(x % UInt, proved))
+end
 
 @doc Markdown.doc"""
     remove(x::fmpz, y::fmpz)
