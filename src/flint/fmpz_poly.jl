@@ -73,13 +73,18 @@ end
 
 ###############################################################################
 #
-#   Similar
+#   Similar and zero
 #
 ###############################################################################
 
-function similar(f::PolyElem, R::FlintIntegerRing, var::Symbol=var(parent(f)); cached::Bool=true)
+function similar(f::PolyElem, R::FlintIntegerRing, s::Symbol=var(parent(f)); cached::Bool=true)
    z = fmpz_poly()
-   z.parent = FmpzPolyRing(R, var, cached)
+   if base_ring(f) === R && s == var(parent(f)) && typeof(f) == fmpz_poly
+      # steal parent in case it is not cached
+      z.parent = parent(f)
+   else
+      z.parent = FmpzPolyRing(R, s, cached)
+   end
    return z
 end
 
