@@ -843,7 +843,7 @@ end
 @doc Markdown.doc"""
     expm1(x::acb)
 
-Return $\exp(x)-1$, evaluated accurately for small $x$.
+Return $\exp(x)-1$, using a more accurate method when $x \approx 0$.
 """
 function Base.expm1(x::acb)
    z = parent(x)()
