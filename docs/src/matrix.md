@@ -36,20 +36,17 @@ one to write generic functions that can accept any Nemo matrix type.
 
 Note that the preferred way to create matrices is not to use the type
 constructors but to use the `matrix` function, see also the
-[Constructors](https://nemocas.github.io/AbstractAlgebra.jl/latest/matrix_spaces/#Constructors)
+[Matrix element constructors](https://nemocas.github.io/AbstractAlgebra.jl/latest/matrix_spaces/#Matrix-element-constructors)
 section of the AbstractAlgebra manual.
 
 ## Matrix functionality
 
-All matrix spaces in Nemo follow the AbstractAlgebra.jl matrix interface:
-
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/matrix_spaces>
-
-In addition, AbstractAlgebra.jl provides a great deal of generic functionality for
-matrices. Some of this functionality is also provided by C libraries, such as Flint,
-for various specific rings.
+All matrix spaces in Nemo provide the matrix functionality of AbstractAlgebra:
 
 <https://nemocas.github.io/AbstractAlgebra.jl/latest/matrix>
+
+Some of this functionality is provided in Nemo by C libraries, such as Flint,
+for various specific rings.
 
 In the following, we list the functionality which is provided in addition to the generic
 matrix functionality, for specific rings in Nemo.

@@ -33,15 +33,14 @@ This enables one to write generic functions that accept any Nemo residue type.
 
 ## Residue functionality
 
-All the residue rings in Nemo implement the residue ring interface of AbstractAlgebra.jl:
-
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/residue_rings>
-
-In addition, functionality for generic residue rings is available:
+All the residue rings in Nemo provide the functionality described in AbstractAlgebra
+for residue rings:
 
 <https://nemocas.github.io/AbstractAlgebra.jl/latest/residue>
 
-The other residue types in Nemo also implement this functionality.
+In addition, generic residue rings are available.
+
+We describe Nemo specific residue ring functionality below.
 
 ### GCD
 

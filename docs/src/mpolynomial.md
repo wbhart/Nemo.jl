@@ -39,15 +39,12 @@ one to write generic functions that can accept any Nemo multivariate polynomial 
 
 ## Polynomial functionality
 
-All multivariate polynomial types in Nemo follow the AbstractAlgebra.jl multivariate
-polynomial interface:
+All multivariate polynomial types in Nemo provide the multivariate polynomial
+functionality described by AbstractAlgebra:
 
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/mpolynomial_rings>
+<https://nemocas.github.io/AbstractAlgebra.jl/latest/mpolynomial>
 
-Generic multivariate polynomials are also available, and Nemo multivariate polynomial
-types also implement all of the same functionality.
-
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/mpolynomial>.
+Generic multivariate polynomials are also available.
 
 We describe here only functions that are in addition to that guaranteed by
 AbstractAlgebra.jl, for specific coefficient rings.

@@ -41,15 +41,15 @@ belong to the abstract type `FinField`.
 
 ## Galois field functionality
 
-Galois fields in Nemo implement the residue ring interface of AbstractAlgebra.jl:
-
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/residue_rings>
-
-In addition, all the functionality for generic residue rings is available:
+Galois fields in Nemo provide all the residue ring functionality of AbstractAlgebra.jl:
 
 <https://nemocas.github.io/AbstractAlgebra.jl/latest/residue>
 
-Below we describe the functionality that is provided in addition to this interface.
+In addition, all the functionality for rings is available:
+
+<https://nemocas.github.io/AbstractAlgebra.jl/latest/ring>
+
+Below we describe the functionality that is provided in addition to these.
 
 ## Basic manipulation
 
