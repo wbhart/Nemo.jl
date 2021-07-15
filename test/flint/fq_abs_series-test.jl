@@ -96,11 +96,11 @@ end
       @test iszero(m)
       @test iszero(n)
 
-      @test parent(g) != parent(f)
-      @test parent(h) != parent(f)
-      @test parent(k) == parent(f)
-      @test parent(m) != parent(f)
-      @test parent(n) != parent(f)
+      @test parent(g) !== parent(f)
+      @test parent(h) !== parent(f)
+      @test parent(k) === parent(f)
+      @test parent(m) !== parent(f)
+      @test parent(n) !== parent(f)
 
       p = similar(f, cached=false)
       q = similar(f, "z", cached=false)
@@ -108,9 +108,9 @@ end
       s = similar(f)
       t = similar(f)
 
-      @test parent(p) != parent(f)
-      @test parent(q) != parent(r)
-      @test parent(s) == parent(t)
+      @test parent(p) === parent(f)
+      @test parent(q) !== parent(r)
+      @test parent(s) === parent(t)
    end
 end
 
@@ -119,7 +119,7 @@ end
    f = abs_series(R, [1, 2, 3], 3, 5, "y")
 
    @test isa(f, fq_abs_series)
-   @test base_ring(f) == R
+   @test base_ring(f) === R
    @test coeff(f, 0) == 1
    @test coeff(f, 2) == 3
    @test parent(f).S == :y
@@ -127,7 +127,7 @@ end
    g = abs_series(R, [1, 2, 3], 3, 5)
 
    @test isa(g, fq_abs_series)
-   @test base_ring(g) == R
+   @test base_ring(g) === R
    @test coeff(g, 0) == 1
    @test coeff(g, 2) == 3
    @test parent(g).S == :x
@@ -136,8 +136,8 @@ end
    k = abs_series(R, [1, 2, 3], 1, 6, cached=false)
    m = abs_series(R, [1, 2, 3], 3, 9, cached=false)
 
-   @test parent(h) == parent(g)
-   @test parent(k) != parent(m)
+   @test parent(h) === parent(g)
+   @test parent(k) !== parent(m)
 
    p = abs_series(R, fq[], 0, 4)
    q = abs_series(R, [], 0, 6)

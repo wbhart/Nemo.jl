@@ -134,10 +134,16 @@ characteristic(R::($rtype)) = modulus(R)
 ###############################################################################
 
 function similar(f::RelSeriesElem, R::($brtype), max_prec::Int,
-                                 var::Symbol=var(parent(f)); cached::Bool=true)
-   par = ($rtype)(R, max_prec, var, cached)
+                                   s::Symbol=var(parent(f)); cached::Bool=true)
+   par = ($rtype)(R, max_prec, s, cached)
    z = ($etype)(R)
-   z.parent = par
+   if base_ring(f) === R && s == var(parent(f)) &&
+      typeof(f) == ($etype) && max_precision(parent(f)) == max_prec
+      # steal parent in case it is not cached
+      z.parent = parent(f)
+   else
+      z.parent = par
+   end
    z.prec = max_prec
    z.val = max_prec
    return z

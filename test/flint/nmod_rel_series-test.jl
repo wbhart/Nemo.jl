@@ -125,11 +125,11 @@ end
       @test iszero(m)
       @test iszero(n)
 
-      @test parent(g) != parent(f)
-      @test parent(h) != parent(f)
-      @test parent(k) == parent(f)
-      @test parent(m) != parent(f)
-      @test parent(n) != parent(f)
+      @test parent(g) !== parent(f)
+      @test parent(h) !== parent(f)
+      @test parent(k) === parent(f)
+      @test parent(m) !== parent(f)
+      @test parent(n) !== parent(f)
 
       p = similar(f, cached=false)
       q = similar(f, "z", cached=false)
@@ -137,9 +137,9 @@ end
       s = similar(f)
       t = similar(f)
 
-      @test parent(p) != parent(f)
-      @test parent(q) != parent(r)
-      @test parent(s) == parent(t)
+      @test parent(p) === parent(f)
+      @test parent(q) !== parent(r)
+      @test parent(s) === parent(t)
    end
 end
 
@@ -148,7 +148,7 @@ end
    f = rel_series(R, [1, 2, 3], 3, 5, 2, "y")
 
    @test isa(f, nmod_rel_series)
-   @test base_ring(f) == R
+   @test base_ring(f) === R
    @test coeff(f, 2) == 1
    @test coeff(f, 4) == 3
    @test parent(f).S == :y
@@ -156,7 +156,7 @@ end
    g = rel_series(R, [1, 2, 3], 3, 7, 4)
 
    @test isa(g, nmod_rel_series)
-   @test base_ring(g) == R
+   @test base_ring(g) === R
    @test coeff(g, 4) == 1
    @test coeff(g, 6) == 3
    @test parent(g).S == :x
@@ -165,8 +165,8 @@ end
    k = rel_series(R, [1, 2, 3], 1, 6, 0, cached=false)
    m = rel_series(R, [1, 2, 3], 3, 9, 5, cached=false)
 
-   @test parent(h) == parent(g)
-   @test parent(k) != parent(m)
+   @test parent(h) === parent(g)
+   @test parent(k) !== parent(m)
 
    p = rel_series(R, nmod[], 0, 3, 1)
    q = rel_series(R, [], 0, 3, 2)
