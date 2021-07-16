@@ -285,14 +285,20 @@ isqrtrem(::fmpz)
 root(::fmpz, ::Int)
 ```
 
+```@docs
+iroot(::fmpz, ::Int)
+```
+
 **Examples**
 
 ```julia
 a = ZZ(13)
+b = ZZ(27)
 
-b = isqrt(a)
+c = isqrt(a)
 s, r = isqrtrem(a)
-c = root(a, 3)
+d = iroot(a, 3)
+k = root(b, 3; check=true)
 ```
 
 ### Number theoretic functionality

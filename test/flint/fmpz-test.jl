@@ -510,10 +510,21 @@ end
    @test_throws DomainError isqrtrem(-fmpz(12))
 
    @test root(fmpz(1000), 3) == 10
+   @test root(-fmpz(27), 3) == -3
+   @test root(fmpz(27), 3; check=true) == 3
 
    @test_throws DomainError root(-fmpz(1000), 4)
-
    @test_throws DomainError root(fmpz(1000), -3)
+
+   @test_throws ErrorException root(fmpz(1100), 3; check=true)
+   @test_throws ErrorException root(-fmpz(40), 3; check=true)
+
+   @test iroot(fmpz(1000), 3) == 10
+   @test iroot(fmpz(1100), 3) == 10
+   @test iroot(-fmpz(40), 3) == -3
+
+   @test_throws DomainError iroot(-fmpz(1000), 4)
+   @test_throws DomainError iroot(fmpz(1000), -3)
 end
 
 @testset "fmpz.extended_gcd" begin
