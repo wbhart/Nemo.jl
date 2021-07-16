@@ -1144,7 +1144,7 @@ function root(x::fmpz, n::Int; check::Bool=false)
    z = fmpz()
    res = ccall((:fmpz_root, libflint), Bool,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, n)
-   check && !res && error("Not a perfect n-th root (n = $n)")
+   check && !res && error("Not a perfect n-th power (n = $n)")
    return z
 end
 
