@@ -1135,10 +1135,11 @@ end
     root(x::fmpz, n::Int)
 
 Return the $n$-the root of $x$. We require $n > 0$ and that
-$x \geq 0$ if $n$ is even. If `check=true` we test if the input was a perfect
-$n$-th power. If not, an exception is raised.
+$x \geq 0$ if $n$ is even. By default the function tests whether the input was
+a perfect $n$-th power and if not raises an exception. If `check=false` this
+check is omitted.
 """
-function root(x::fmpz, n::Int; check::Bool=false)
+function root(x::fmpz, n::Int; check::Bool=true)
    x < 0 && iseven(n) && throw(DomainError((x, n), "Argument `x` must be positive if exponent `n` is even"))
    n <= 0 && throw(DomainError(n, "Exponent must be positive"))
    z = fmpz()
