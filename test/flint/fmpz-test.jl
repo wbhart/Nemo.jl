@@ -207,6 +207,7 @@ end
 
 @testset "fmpz.exact_division" begin
    @test divexact(fmpz(24), fmpz(12)) == 2
+   @test divexact(fmpz(24), fmpz(12); check=false) == 2
    @test_throws ArgumentError divexact(fmpz(24), fmpz(11))
 end
 

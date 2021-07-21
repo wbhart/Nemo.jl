@@ -357,13 +357,18 @@ function Base.div(x::fmpz, y::fmpz)
     return z
 end
 
-function divexact(x::fmpz, y::fmpz)
+function divexact(x::fmpz, y::fmpz; check::Bool=true)
     iszero(y) && throw(DivideError())
     z = fmpz()
-    r = fmpz()
-    ccall((:fmpz_tdiv_qr, libflint), Nothing,
-          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, r, x, y)
-    r != 0 && throw(ArgumentError("Not an exact division"))
+    if check
+       r = fmpz()
+       ccall((:fmpz_tdiv_qr, libflint), Nothing,
+             (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, r, x, y)
+       r != 0 && throw(ArgumentError("Not an exact division"))
+    else
+       ccall((:fmpz_divexact, libflint), Nothing,
+                           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
+    end
     return z
 end
 
