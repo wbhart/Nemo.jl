@@ -503,9 +503,9 @@ function factor_squarefree(a::fmpz_mpoly)
 end
 
 
-function square_root(a::fmpz_mpoly)
-   (flag, q) = issquare_with_square_root(a)
-   !flag && error("Not a square in square_root")
+function sqrt(a::fmpz_mpoly)
+   (flag, q) = issquare_with_sqrt(a)
+   !flag && error("Not a square")
    return q
 end
 
@@ -515,7 +515,7 @@ function issquare(a::fmpz_mpoly)
                      a, a.parent))
 end
 
-function issquare_with_square_root(a::fmpz_mpoly)
+function issquare_with_sqrt(a::fmpz_mpoly)
    q = parent(a)()
    flag = ccall((:fmpz_mpoly_sqrt, libflint), Cint,
                 (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}),

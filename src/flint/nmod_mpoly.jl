@@ -513,9 +513,9 @@ function factor_squarefree(a::($etype))
 end
 
 
-function square_root(a::($etype))
-   (flag, q) = issquare_with_square_root(a)
-   !flag && error("Not a square in square_root")
+function sqrt(a::($etype))
+   (flag, q) = issquare_with_sqrt(a)
+   !flag && error("Not a square")
    return q
 end
 
@@ -525,7 +525,7 @@ function issquare(a::($etype))
                      a, a.parent))
 end
 
-function issquare_with_square_root(a::($etype))
+function issquare_with_sqrt(a::($etype))
    q = parent(a)()
    flag = ccall((:nmod_mpoly_sqrt, libflint), Cint,
                 (Ref{($etype)}, Ref{($etype)}, Ref{($rtype)}),

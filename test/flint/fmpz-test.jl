@@ -532,6 +532,17 @@ end
 end
 
 @testset "fmpz.roots" begin
+   @test sqrt(fmpz(16)) == 4
+   @test sqrt(fmpz()) == 0
+
+   @test_throws DomainError sqrt(-fmpz(1))
+   @test_throws ErrorException sqrt(fmpz(12))
+
+   @test issquare_with_sqrt(fmpz(5)) == (false, 0)
+   @test issquare_with_sqrt(fmpz(4)) == (true, 2)
+
+   @test_throws DomainError issquare_with_sqrt(-fmpz(1))
+   
    @test isqrt(fmpz(12)) == 3
 
    @test_throws DomainError isqrt(-fmpz(12))
@@ -821,8 +832,6 @@ end
    @test next_prime(UInt(11), false) == 13
    @test_throws Exception next_prime(typemax(UInt))
 
-   @test issquare(fmpz(36))
-
    @test factorial(ZZ(100)) == fmpz("93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000")
 
    @test divisor_sigma(fmpz(128), 10) == fmpz("1181745669222511412225")
@@ -907,10 +916,3 @@ end
    end
 end
 
-@testset "fmpz.square_root" begin
-   @test sqrt(fmpz(4)) == 2
-
-   @test_throws DomainError sqrt(-fmpz(4))
-
-   @test sqrt(fmpz(0)) == 0
-end

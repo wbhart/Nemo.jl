@@ -356,7 +356,7 @@ end
    @test gcd(a, b) == fmpz(1)//6
 end
 
-@testset "fmpq.square_root" begin
+@testset "fmpq.sqrt" begin
    a = fmpz(4)//9
    b = fmpz(0)//1
 
