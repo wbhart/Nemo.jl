@@ -421,7 +421,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::arb_mat, y::arb_mat)
+function divexact(x::arb_mat, y::arb_mat; check::Bool=true)
    ncols(x) != ncols(y) && error("Incompatible matrix dimensions")
    x*inv(y)
 end
@@ -432,7 +432,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::arb_mat, y::Int)
+function divexact(x::arb_mat, y::Int; check::Bool=true)
   y == 0 && throw(DivideError())
   z = similar(x)
   ccall((:arb_mat_scalar_div_si, libarb), Nothing,
@@ -441,7 +441,7 @@ function divexact(x::arb_mat, y::Int)
   return z
 end
 
-function divexact(x::arb_mat, y::fmpz)
+function divexact(x::arb_mat, y::fmpz; check::Bool=true)
   z = similar(x)
   ccall((:arb_mat_scalar_div_fmpz, libarb), Nothing,
               (Ref{arb_mat}, Ref{arb_mat}, Ref{fmpz}, Int),
@@ -449,7 +449,7 @@ function divexact(x::arb_mat, y::fmpz)
   return z
 end
 
-function divexact(x::arb_mat, y::arb)
+function divexact(x::arb_mat, y::arb; check::Bool=true)
   z = similar(x)
   ccall((:arb_mat_scalar_div_arb, libarb), Nothing,
               (Ref{arb_mat}, Ref{arb_mat}, Ref{arb}, Int),

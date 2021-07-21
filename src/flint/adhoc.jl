@@ -44,11 +44,11 @@ Return `true` if $x == y$ arithmetically, otherwise return `false`.
 ==(x::fmpz, y::AbsSeriesElem) = y == x
 
 @doc Markdown.doc"""
-    divexact(x::AbsSeriesElem, y::fmpz)
+    divexact(x::AbsSeriesElem, y::fmpz; check::Bool=true)
 
-Return $x/y$ where the quotient is expected to be exact.
+Return $x/y$.
 """
-function divexact(x::AbsSeriesElem, y::fmpz)
+function divexact(x::AbsSeriesElem, y::fmpz; check::Bool=true)
    iszero(y) && throw(DivideError())
    lenx = length(x)
    z = parent(x)()
@@ -119,11 +119,11 @@ Return `true` if $x == y$ arithmetically, otherwise return `false`.
 ==(x::fmpz, y::RelSeriesElem) = y == x
 
 @doc Markdown.doc"""
-    divexact(x::RelSeriesElem, y::fmpz)
+    divexact(x::RelSeriesElem, y::fmpz; check::Bool=true)
 
-Return $x/y$ where the quotient is expected to be exact.
+Return $x/y$.
 """
-function divexact(x::RelSeriesElem, y::fmpz)
+function divexact(x::RelSeriesElem, y::fmpz; check::Bool=true)
    iszero(y) && throw(DivideError())
    lenx = pol_length(x)
    z = parent(x)()
@@ -131,7 +131,7 @@ function divexact(x::RelSeriesElem, y::fmpz)
    z = set_precision!(z, precision(x))
    z = set_valuation!(z, valuation(x))
    for i = 1:lenx
-      z = setcoeff!(z, i - 1, divexact(polcoeff(x, i - 1), y))
+      z = setcoeff!(z, i - 1, divexact(polcoeff(x, i - 1), y; check=check))
    end
    return z
 end
@@ -191,16 +191,16 @@ Return `true` if $x == y$ arithmetically, otherwise return `false`.
 ==(x::fmpz, y::PolyElem) = y == x
 
 @doc Markdown.doc"""
-    divexact(a::PolyElem, b::fmpz)
+    divexact(a::PolyElem, b::fmpz; check::Bool=true)
 
-Return $a/b$ where the quotient is expected to be exact.
+Return $a/b$.
 """
-function divexact(a::PolyElem, b::fmpz)
+function divexact(a::PolyElem, b::fmpz; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = parent(a)()
    fit!(z, length(a))
    for i = 1:length(a)
-      z = setcoeff!(z, i - 1, divexact(coeff(a, i - 1), b))
+      z = setcoeff!(z, i - 1, divexact(coeff(a, i - 1), b; check=check))
    end
    z = set_length!(z, length(a))
    return z
@@ -226,12 +226,12 @@ end
 
 ==(x::fmpz, y::PolyElem{fmpz}) = y == x
 
-function divexact(a::PolyElem{fmpz}, b::fmpz)
+function divexact(a::PolyElem{fmpz}, b::fmpz; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = parent(a)()
    fit!(z, length(a))
    for i = 1:length(a)
-      z = setcoeff!(z, i - 1, divexact(coeff(a, i - 1), b))
+      z = setcoeff!(z, i - 1, divexact(coeff(a, i - 1), b; check=check))
    end
    z = set_length!(z, length(a))
    return z
@@ -424,10 +424,10 @@ end
 
 ==(a::fmpz, b::Generic.SparsePoly{T}) where T <: RingElem = b == a
 
-function divexact(a::Generic.SparsePoly{T}, b::fmpz) where T <: RingElem
+function divexact(a::Generic.SparsePoly{T}, b::fmpz; check::Bool=true) where T <: RingElem
    len = length(a)
    exps = deepcopy(a.exps)
-   coeffs = [divexact(a.coeffs[i], b) for i in 1:len]
+   coeffs = [divexact(a.coeffs[i], b; check=check) for i in 1:len]
    return parent(a)(coeffs, exps)
 end
 
@@ -557,16 +557,16 @@ otherwise return `false`.
 ==(x::fmpz, y::MatElem) = y == x
 
 @doc Markdown.doc"""
-    divexact(x::MatElem, y::fmpz)
+    divexact(x::MatElem, y::fmpz; check::Bool=true)
 
 Return $x/y$, i.e. the matrix where each of the entries has been divided by
-$y$. Each division is expected to be exact.
+$y$.
 """
-function divexact(x::MatElem, y::fmpz)
+function divexact(x::MatElem, y::fmpz; check::Bool=true)
    z = similar(x)
    for i = 1:nrows(x)
       for j = 1:ncols(x)
-         z[i, j] = divexact(x[i, j], y)
+         z[i, j] = divexact(x[i, j], y; check)
       end
    end
    return z
@@ -688,11 +688,11 @@ Return `true` if $x == y$ arithmetically, otherwise return `false`.
 ==(x::fmpz, y::FracElem) = y == x
 
 @doc Markdown.doc"""
-    divexact(a::FracElem, b::fmpz)
+    divexact(a::FracElem, b::fmpz; check::Bool=true)
 
 Return $a/b$.
 """
-function divexact(a::FracElem, b::fmpz)
+function divexact(a::FracElem, b::fmpz; check::Bool=true)
    iszero(b) && throw(DivideError())
    c = base_ring(a)(b)
    g = gcd(numerator(a), c)
@@ -702,11 +702,11 @@ function divexact(a::FracElem, b::fmpz)
 end
 
 @doc Markdown.doc"""
-    divexact(a::fmpz, b::FracElem)
+    divexact(a::fmpz, b::FracElem; check::Bool=true)
 
 Return $a/b$.
 """
-function divexact(a::fmpz, b::FracElem)
+function divexact(a::fmpz, b::FracElem; check::Bool=true)
    iszero(b) && throw(DivideError())
    c = base_ring(b)(a)
    g = gcd(numerator(b), c)

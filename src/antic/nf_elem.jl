@@ -647,7 +647,7 @@ end
 #
 ###############################################################################
 
-function divexact(a::nf_elem, b::nf_elem)
+function divexact(a::nf_elem, b::nf_elem; check::Bool=true)
    iszero(b) && throw(DivideError())
    parent(a) == parent(b) || return force_op(divexact, a, b)::nf_elem
    check_parent(a, b)
@@ -664,7 +664,7 @@ end
 #
 ###############################################################################
 
-function divexact(a::nf_elem, b::Int)
+function divexact(a::nf_elem, b::Int; check::Bool=true)
    b == 0 && throw(DivideError())
    r = a.parent()
    ccall((:nf_elem_scalar_div_si, libantic), Nothing,
@@ -673,7 +673,7 @@ function divexact(a::nf_elem, b::Int)
    return r
 end
 
-function divexact(a::nf_elem, b::fmpz)
+function divexact(a::nf_elem, b::fmpz; check::Bool=true)
    iszero(b) && throw(DivideError())
    r = a.parent()
    ccall((:nf_elem_scalar_div_fmpz, libantic), Nothing,
@@ -682,9 +682,9 @@ function divexact(a::nf_elem, b::fmpz)
    return r
 end
 
-divexact(a::nf_elem, b::Integer) = divexact(a, fmpz(b))
+divexact(a::nf_elem, b::Integer; check::Bool=true) = divexact(a, fmpz(b); check=check)
 
-function divexact(a::nf_elem, b::fmpq)
+function divexact(a::nf_elem, b::fmpq; check::Bool=true)
    iszero(b) && throw(DivideError())
    r = a.parent()
    ccall((:nf_elem_scalar_div_fmpq, libantic), Nothing,
@@ -693,11 +693,11 @@ function divexact(a::nf_elem, b::fmpq)
    return r
 end
 
-divexact(a::Integer, b::nf_elem) = inv(b)*a
+divexact(a::Integer, b::nf_elem; check::Bool=true) = inv(b)*a
 
-divexact(a::fmpz, b::nf_elem) = inv(b)*a
+divexact(a::fmpz, b::nf_elem; check::Bool=true) = inv(b)*a
 
-divexact(a::fmpq, b::nf_elem) = inv(b)*a
+divexact(a::fmpq, b::nf_elem; check::Bool=true) = inv(b)*a
 
 ###############################################################################
 #

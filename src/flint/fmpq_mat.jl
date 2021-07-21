@@ -454,7 +454,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpq_mat, y::fmpq_mat)
+function divexact(x::fmpq_mat, y::fmpq_mat; check::Bool=true)
    ncols(x) != ncols(y) && error("Incompatible matrix dimensions")
    x*inv(y)
 end
@@ -465,7 +465,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpq_mat, y::fmpq)
+function divexact(x::fmpq_mat, y::fmpq; check::Bool=true)
    z = similar(x)
    ccall((:fmpq_mat_scalar_div_fmpz, libflint), Nothing,
                 (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpz}), z, x, numerator(y))
@@ -474,16 +474,16 @@ function divexact(x::fmpq_mat, y::fmpq)
    return z
 end
 
-function divexact(x::fmpq_mat, y::fmpz)
+function divexact(x::fmpq_mat, y::fmpz; check::Bool=true)
    z = similar(x)
    ccall((:fmpq_mat_scalar_div_fmpz, libflint), Nothing,
                 (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpz}), z, x, y)
    return z
 end
 
-divexact(x::fmpq_mat, y::Integer) = divexact(x, fmpz(y))
+divexact(x::fmpq_mat, y::Integer; check::Bool=true) = divexact(x, fmpz(y); check=check)
 
-divexact(x::fmpq_mat, y::Rational{T}) where T <: Union{Int, BigInt} = divexact(x, fmpq(y))
+divexact(x::fmpq_mat, y::Rational{T}; check::Bool=true) where T <: Union{Int, BigInt} = divexact(x, fmpq(y); check=check)
 
 ###############################################################################
 #

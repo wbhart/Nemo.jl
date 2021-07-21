@@ -459,7 +459,7 @@ function Base.div(x::fmpq_poly, y::fmpq_poly)
    return z
 end
 
-divexact(x::fmpq_poly, y::fmpq_poly) = div(x,y)
+divexact(x::fmpq_poly, y::fmpq_poly; check::Bool=true) = div(x,y)
 
 ###############################################################################
 #
@@ -467,7 +467,7 @@ divexact(x::fmpq_poly, y::fmpq_poly) = div(x,y)
 #
 ###############################################################################
 
-function divexact(x::fmpq_poly, y::fmpz)
+function divexact(x::fmpq_poly, y::fmpz; check::Bool=true)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    ccall((:fmpq_poly_scalar_div_fmpz, libflint), Nothing,
@@ -475,7 +475,7 @@ function divexact(x::fmpq_poly, y::fmpz)
    return z
 end
 
-function divexact(x::fmpq_poly, y::fmpq)
+function divexact(x::fmpq_poly, y::fmpq; check::Bool=true)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    ccall((:fmpq_poly_scalar_div_fmpq, libflint), Nothing,
@@ -483,7 +483,7 @@ function divexact(x::fmpq_poly, y::fmpq)
    return z
 end
 
-function divexact(x::fmpq_poly, y::Int)
+function divexact(x::fmpq_poly, y::Int; check::Bool=true)
    y == 0 && throw(DivideError())
    z = parent(x)()
    ccall((:fmpq_poly_scalar_div_si, libflint), Nothing,
@@ -491,9 +491,9 @@ function divexact(x::fmpq_poly, y::Int)
    return z
 end
 
-divexact(x::fmpq_poly, y::Integer) = divexact(x, fmpz(y))
+divexact(x::fmpq_poly, y::Integer; check::Bool=true) = divexact(x, fmpz(y); check=check)
 
-divexact(x::fmpq_poly, y::Rational{T}) where T <: Union{Int, BigInt} = divexact(x, fmpq(y))
+divexact(x::fmpq_poly, y::Rational{T}; check::Bool=true) where T <: Union{Int, BigInt} = divexact(x, fmpq(y); check=check)
 
 ###############################################################################
 #

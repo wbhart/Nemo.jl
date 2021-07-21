@@ -454,7 +454,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpq_abs_series, y::fmpq_abs_series)
+function divexact(x::fmpq_abs_series, y::fmpq_abs_series; check::Bool=true)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    v2 = valuation(y)
@@ -465,7 +465,7 @@ function divexact(x::fmpq_abs_series, y::fmpq_abs_series)
          y = shift_right(y, v2)
       end
    end
-   !isunit(y) && error("Unable to invert power series")
+   check && !isunit(y) && error("Unable to invert power series")
    prec = min(x.prec, y.prec - v2 + v1)
    z = parent(x)()
    z.prec = prec
@@ -481,7 +481,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpq_abs_series, y::Int)
+function divexact(x::fmpq_abs_series, y::Int; check::Bool=true)
    y == 0 && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
@@ -491,7 +491,7 @@ function divexact(x::fmpq_abs_series, y::Int)
    return z
 end
 
-function divexact(x::fmpq_abs_series, y::fmpz)
+function divexact(x::fmpq_abs_series, y::fmpz; check::Bool=true)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
@@ -501,7 +501,7 @@ function divexact(x::fmpq_abs_series, y::fmpz)
    return z
 end
 
-function divexact(x::fmpq_abs_series, y::fmpq)
+function divexact(x::fmpq_abs_series, y::fmpq; check::Bool=true)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
@@ -511,9 +511,9 @@ function divexact(x::fmpq_abs_series, y::fmpq)
    return z
 end
 
-divexact(x::fmpq_abs_series, y::Integer) = divexact(x, fmpz(y))
+divexact(x::fmpq_abs_series, y::Integer; check::Bool=true) = divexact(x, fmpz(y); check=check)
 
-divexact(x::fmpq_abs_series, y::Rational{T}) where T <: Union{Int, BigInt} = divexact(x, fmpq(y))
+divexact(x::fmpq_abs_series, y::Rational{T}; check::Bool=true) where T <: Union{Int, BigInt} = divexact(x, fmpq(y); check=check)
 
 ###############################################################################
 #
