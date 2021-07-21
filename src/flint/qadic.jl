@@ -553,22 +553,22 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    sqrt(a::qadic)
+    sqrt(a::qadic; check::Bool=true)
 
 Return the $q$-adic square root of $a$. We define this only when the
 valuation of $a$ is even. The precision of the output will be
 precision$(a) -$ valuation$(a)/2$. If the square root does not exist, an
 exception is thrown.
 """
-function Base.sqrt(a::qadic)
+function Base.sqrt(a::qadic; check::Bool=true)
    av = valuation(a)
-   (av % 2) != 0 && error("Unable to take qadic square root")
+   check && (av % 2) != 0 && error("Unable to take qadic square root")
    ctx = parent(a)
    z = qadic(a.N - div(av, 2))
    z.parent = ctx
    res = Bool(ccall((:qadic_sqrt, libflint), Cint,
                     (Ref{qadic}, Ref{qadic}, Ref{FlintQadicField}), z, a, ctx))
-   !res && error("Square root of p-adic does not exist")
+   check && !res && error("Square root of p-adic does not exist")
    return z
 end
 

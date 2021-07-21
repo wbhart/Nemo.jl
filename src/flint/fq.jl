@@ -432,12 +432,12 @@ end
 Return a square root of $x$ in the finite field. If $x$ is not a square
 an exception is raised.
 """
-function sqrt(x::fq)
+function sqrt(x::fq; check::Bool=true)
    z = parent(x)()
    res = Bool(ccall((:fq_sqrt, libflint), Cint,
                     (Ref{fq}, Ref{fq}, Ref{FqFiniteField}),
                     z, x, x.parent))
-   res || error("Not a square")
+   check && !res && error("Not a square")
    return z
 end
 

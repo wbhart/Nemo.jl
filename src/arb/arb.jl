@@ -1181,11 +1181,11 @@ ceil(::Type{fmpz}, x::arb) = fmpz(ceil(x))
 ceil(::Type{T}, x::arb) where {T <: Integer} = T(ceil(x))
 
 @doc Markdown.doc"""
-    sqrt(x::arb)
+    sqrt(x::arb; check::Bool=true)
 
 Return the square root of $x$.
 """
-function Base.sqrt(x::arb)
+function Base.sqrt(x::arb; check::Bool=true)
    z = parent(x)()
    ccall((:arb_sqrt, libarb), Nothing, (Ref{arb}, Ref{arb}, Int), z, x, parent(x).prec)
    return z

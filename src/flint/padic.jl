@@ -576,21 +576,21 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    sqrt(a::padic)
+    sqrt(a::padic; check::Bool=true)
 
 Return the $p$-adic square root of $a$. We define this only when the
 valuation of $a$ is even. The precision of the output will be
-precision$(a) -$ valuation$(a)/2$. If the square root does not exist, an
-exception is thrown.
+precision$(a) -$ valuation$(a)/2$. By default if the square root does not
+exist, an exception is thrown. If `check=false` this test is not performed.
 """
-function Base.sqrt(a::padic)
-   (a.v % 2) != 0 && error("Unable to take padic square root")
+function Base.sqrt(a::padic; check::Bool=true)
+   check && (a.v % 2) != 0 && error("Unable to take padic square root")
    ctx = parent(a)
    z = padic(a.N - div(a.v, 2))
    z.parent = ctx
    res = Bool(ccall((:padic_sqrt, libflint), Cint,
                     (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, ctx))
-   !res && error("Square root of p-adic does not exist")
+   check && !res && error("Square root of p-adic does not exist")
    return z
 end
 

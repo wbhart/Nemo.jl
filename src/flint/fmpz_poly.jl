@@ -500,11 +500,11 @@ end
 #
 ###############################################################################
 
-function Base.sqrt(x::fmpz_poly)
+function Base.sqrt(x::fmpz_poly; check::Bool=true)
     z = parent(x)()
     flag = Bool(ccall((:fmpz_poly_sqrt, libflint), Cint,
           (Ref{fmpz_poly}, Ref{fmpz_poly}), z, x))
-    flag == false && error("Not a square in sqrt")
+    check && flag == false && error("Not a square in sqrt")
     return z
  end
 

@@ -471,9 +471,9 @@ function factor_squarefree(a::fq_nmod_mpoly)
 end
 
 
-function sqrt(a::fq_nmod_mpoly)
+function sqrt(a::fq_nmod_mpoly; check::Bool=true)
    (flag, q) = issquare_with_sqrt(a)
-   !flag && error("Not a square")
+   check && !flag && error("Not a square")
    return q
 end
 

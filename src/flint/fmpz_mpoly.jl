@@ -503,9 +503,12 @@ function factor_squarefree(a::fmpz_mpoly)
 end
 
 
-function sqrt(a::fmpz_mpoly)
-   (flag, q) = issquare_with_sqrt(a)
-   !flag && error("Not a square")
+function sqrt(a::fmpz_mpoly; check::Bool=true)
+   q = parent(a)()
+   flag = Bool(ccall((:fmpz_mpoly_sqrt_heap, libflint), Cint,
+         (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, Ref{FmpzMPolyRing}, Cint),
+                     q, a, a.parent, Cint(check)))
+   check && !flag && error("Not a square")
    return q
 end
 

@@ -354,12 +354,12 @@ divexact(x::fmpz, y::fq_nmod; check::Bool=true) = divexact(parent(y)(x), y; chec
 #
 ###############################################################################
 
-function sqrt(x::fq_nmod)
+function sqrt(x::fq_nmod; check::Bool=true)
    z = parent(x)()
    res = Bool(ccall((:fq_nmod_sqrt, libflint), Cint,
                     (Ref{fq_nmod}, Ref{fq_nmod}, Ref{FqNmodFiniteField}),
                     z, x, x.parent))
-   res || error("Not a square in sqrt")
+   check && !res && error("Not a square")
    return z
 end
 

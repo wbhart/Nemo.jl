@@ -785,11 +785,11 @@ end
 # complex - complex functions
 
 @doc Markdown.doc"""
-    Base.sqrt(x::acb)
+    Base.sqrt(x::acb; check::Bool=true)
 
 Return the square root of $x$.
 """
-function Base.sqrt(x::acb)
+function Base.sqrt(x::acb; check::Bool=true)
    z = parent(x)()
    ccall((:acb_sqrt, libarb), Nothing, (Ref{acb}, Ref{acb}, Int), z, x, parent(x).prec)
    return z
