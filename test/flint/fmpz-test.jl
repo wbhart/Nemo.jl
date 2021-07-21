@@ -223,6 +223,32 @@ end
    @test flag == false
    @test divides(fmpz(12), fmpz(6)) == (true, fmpz(2))
    @test divides(fmpz(0), fmpz(0)) == (true, fmpz(0))
+
+   for iters = 1:1000
+      a = rand(ZZ, -1000:1000)
+      b = rand(ZZ, -1000:1000)
+
+      flag, q = divides(a*b, b)
+      
+      @test flag && b == 0 || q == a
+      @test isdivisible_by(a*b, b)
+   end
+
+   for iters = 1:1000
+       b = rand(ZZ, -1000:1000)
+       if b == 0 || b == 1
+          b = ZZ(2)
+       elseif b == -1
+          b = -ZZ(2)
+       end
+       a = rand(-1000:1000)
+       r = rand(1:Int(abs(b)) - 1)
+
+       flag, q = divides(a*b + r, b)
+
+       @test !flag && q == 0
+       @test !isdivisible_by(a*b + r, b)
+   end
 end
 
 @testset "fmpz.gcd_lcm" begin
