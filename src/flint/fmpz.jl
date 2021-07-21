@@ -372,6 +372,13 @@ function divexact(x::fmpz, y::fmpz; check::Bool=true)
     return z
 end
 
+function divides(x::fmpz, y::fmpz)
+   z = fmpz()
+   res = ccall((:fmpz_divides, libflint), Bool,
+                           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
+   return res, z
+end
+
 function rem(x::fmpz, c::fmpz)
     iszero(c) && throw(DivideError())
     q = fmpz()
