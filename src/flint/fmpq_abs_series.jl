@@ -126,9 +126,15 @@ characteristic(::FmpqAbsSeriesRing) = 0
 ###############################################################################
 
 function similar(f::AbsSeriesElem, R::FlintRationalField, max_prec::Int,
-                                 var::Symbol=var(parent(f)); cached::Bool=true)
+                                   s::Symbol=var(parent(f)); cached::Bool=true)
    z = fmpq_abs_series()
-   z.parent = FmpqAbsSeriesRing(max_prec, var, cached)
+   if base_ring(f) === R && s == var(parent(f)) &&
+      typeof(f) == fmpq_abs_series && max_precision(parent(f)) == max_prec
+      # steal parent in case it is not cached
+      z.parent = parent(f)
+   else
+      z.parent = FmpqAbsSeriesRing(max_prec, s, cached)
+   end
    z.prec = max_prec
    return z
 end

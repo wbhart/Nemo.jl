@@ -116,9 +116,15 @@ characteristic(::FmpqRelSeriesRing) = 0
 ###############################################################################
 
 function similar(f::RelSeriesElem, R::FlintRationalField, max_prec::Int,
-                                 var::Symbol=var(parent(f)); cached::Bool=true)
+                                   s::Symbol=var(parent(f)); cached::Bool=true)
    z = fmpq_rel_series()
-   z.parent = FmpqRelSeriesRing(max_prec, var, cached)
+   if base_ring(f) === R && s == var(parent(f)) &&
+      typeof(f) == fmpq_rel_series && max_precision(parent(f)) == max_prec
+      # steal parent in case it is not cached
+      z.parent = parent(f)
+   else
+      z.parent = FmpqRelSeriesRing(max_prec, s, cached)
+   end
    z.prec = max_prec
    z.val = max_prec
    return z

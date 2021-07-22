@@ -99,11 +99,11 @@ end
       @test iszero(m)
       @test iszero(n)
 
-      @test parent(g) != parent(f)
-      @test parent(h) != parent(f)
-      @test parent(k) == parent(f)
-      @test parent(m) != parent(f)
-      @test parent(n) != parent(f)
+      @test parent(g) !== parent(f)
+      @test parent(h) !== parent(f)
+      @test parent(k) === parent(f)
+      @test parent(m) !== parent(f)
+      @test parent(n) !== parent(f)
 
       p = similar(f, cached=false)
       q = similar(f, "z", cached=false)
@@ -111,9 +111,9 @@ end
       s = similar(f)
       t = similar(f)
 
-      @test parent(p) != parent(f)
-      @test parent(q) != parent(r)
-      @test parent(s) == parent(t)
+      @test parent(p) === parent(f)
+      @test parent(q) !== parent(r)
+      @test parent(s) === parent(t)
    end
 end
 
@@ -121,7 +121,7 @@ end
    f = abs_series(QQ, [1, 2, 3], 3, 5, "y")
 
    @test isa(f, fmpq_abs_series)
-   @test base_ring(f) == QQ
+   @test base_ring(f) === QQ
    @test coeff(f, 0) == 1
    @test coeff(f, 2) == 3
    @test parent(f).S == :y
@@ -129,7 +129,7 @@ end
    g = abs_series(QQ, [1, 2, 3], 3, 5)
 
    @test isa(g, fmpq_abs_series)
-   @test base_ring(g) == QQ
+   @test base_ring(g) === QQ
    @test coeff(g, 0) == 1
    @test coeff(g, 2) == 3
    @test parent(g).S == :x
@@ -138,8 +138,8 @@ end
    k = abs_series(QQ, [1, 2, 3], 1, 6, cached=false)
    m = abs_series(QQ, [1, 2, 3], 3, 9, cached=false)
 
-   @test parent(h) == parent(g)
-   @test parent(k) != parent(m)
+   @test parent(h) === parent(g)
+   @test parent(k) !== parent(m)
 
    p = abs_series(QQ, fmpq[], 0, 4)
    q = abs_series(QQ, [], 0, 6)
