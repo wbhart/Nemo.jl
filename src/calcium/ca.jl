@@ -552,7 +552,7 @@ function //(a::ca, b::ca)
    return r
 end
 
-divexact(a::ca, b::ca) = a // b
+divexact(a::ca, b::ca; check::Bool=true) = a // b
 
 function inv(a::ca)
    C = a.parent
