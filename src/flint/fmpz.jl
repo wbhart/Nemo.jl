@@ -1132,7 +1132,7 @@ function Base.sqrt(x::fmpz)
 end
 
 @doc Markdown.doc"""
-    root(x::fmpz, n::Int)
+    root(x::fmpz, n::Int; check::Bool=true)
 
 Return the $n$-the root of $x$. We require $n > 0$ and that
 $x \geq 0$ if $n$ is even. By default the function tests whether the input was
@@ -1145,7 +1145,9 @@ function root(x::fmpz, n::Int; check::Bool=true)
    z = fmpz()
    res = ccall((:fmpz_root, libflint), Bool,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, n)
+#= Check disabled until flint-2.9 comes out
    check && !res && error("Not a perfect n-th power (n = $n)")
+=#
    return z
 end
 
