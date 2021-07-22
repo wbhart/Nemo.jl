@@ -516,8 +516,10 @@ end
    @test_throws DomainError root(-fmpz(1000), 4)
    @test_throws DomainError root(fmpz(1000), -3)
 
+#= Disabled until Flint-2.9 comes out
    @test_throws ErrorException root(fmpz(1100), 3; check=true)
    @test_throws ErrorException root(-fmpz(40), 3; check=true)
+=#
 
    @test iroot(fmpz(1000), 3) == 10
    @test iroot(fmpz(1100), 3) == 10
