@@ -647,10 +647,10 @@ end
 #
 ###############################################################################
 
-function divexact(a::($etype), b::($etype))
+function divexact(a::($etype), b::($etype); check::Bool=true)
    check_parent(a, b)
    b, q = divides(a, b)
-   !b && error("Division is not exact in divexact")
+   check && !b && error("Division is not exact in divexact")
    return q
 end
 
@@ -1110,20 +1110,20 @@ end #for
 #
 ################################################################################
 
-function divexact(f::gfp_mpoly, a::gfp_elem)
+function divexact(f::gfp_mpoly, a::gfp_elem; check::Bool=true)
   ainv = inv(a)
   return ainv * f
 end
 
-function divexact(f::gfp_mpoly, a::Union{fmpz, Integer})
+function divexact(f::gfp_mpoly, a::Union{fmpz, Integer}; check::Bool=true)
   return divexact(f, base_ring(f)(a))
 end
 
-function divexact(f::nmod_mpoly, a::nmod)
+function divexact(f::nmod_mpoly, a::nmod; check::Bool=true)
   return divexact(f, parent(f)(a))
 end
 
-function divexact(f::nmod_mpoly, a::Union{fmpz, Integer})
+function divexact(f::nmod_mpoly, a::Union{fmpz, Integer}; check::Bool=true)
   return divexact(f, base_ring(f)(a))
 end
 

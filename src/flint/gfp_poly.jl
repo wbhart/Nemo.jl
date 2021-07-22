@@ -166,7 +166,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::gfp_poly, y::gfp_poly)
+function divexact(x::gfp_poly, y::gfp_poly; check::Bool=true)
   check_parent(x, y)
   iszero(y) && throw(DivideError())
   z = parent(x)()
@@ -181,7 +181,7 @@ end
 #
 ################################################################################
 
-function divexact(x::gfp_poly, y::gfp_elem)
+function divexact(x::gfp_poly, y::gfp_elem; check::Bool=true)
   base_ring(x) != parent(y) && error("Elements must have same parent")
   iszero(y) && throw(DivideError())
   return divexact(x, parent(x)(y))

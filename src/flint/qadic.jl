@@ -457,7 +457,7 @@ end
 #
 ###############################################################################
 
-function divexact(a::qadic, b::qadic)
+function divexact(a::qadic, b::qadic; check::Bool=true)
    iszero(b) && throw(DivideError())
    return a * inv(b)
 end
@@ -468,17 +468,17 @@ end
 #
 ###############################################################################
 
-divexact(a::qadic, b::Integer) = a*(fmpz(1)//fmpz(b))
+divexact(a::qadic, b::Integer; check::Bool=true) = a*(fmpz(1)//fmpz(b))
 
-divexact(a::qadic, b::fmpz) = a*(1//b)
+divexact(a::qadic, b::fmpz; check::Bool=true) = a*(1//b)
 
-divexact(a::qadic, b::fmpq) = a*inv(b)
+divexact(a::qadic, b::fmpq; check::Bool=true) = a*inv(b)
 
-divexact(a::Integer, b::qadic) = fmpz(a)*inv(b)
+divexact(a::Integer, b::qadic; check::Bool=true) = fmpz(a)*inv(b)
 
-divexact(a::fmpz, b::qadic) = inv((fmpz(1)//a)*b)
+divexact(a::fmpz, b::qadic; check::Bool=true) = inv((fmpz(1)//a)*b)
 
-divexact(a::fmpq, b::qadic) = inv(inv(a)*b)
+divexact(a::fmpq, b::qadic; check::Bool=true) = inv(inv(a)*b)
 
 ###############################################################################
 #

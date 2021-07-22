@@ -518,7 +518,7 @@ divexact(x::acb_mat, y::BigFloat; check::Bool=true) = divexact(x, base_ring(x)(y
 
 divexact(x::acb_mat, y::Integer; check::Bool=true) = divexact(x, fmpz(y); check=check)
 
-divexact(x::acb_mat, y::Rational{T}; check::Bool=true) where T <: Union{Int, BigInt} = divexact(x, fmpq(y); check-check)
+divexact(x::acb_mat, y::Rational{T}; check::Bool=true) where T <: Union{Int, BigInt} = divexact(x, fmpq(y); check=check)
 
 ################################################################################
 #

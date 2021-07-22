@@ -420,7 +420,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::T, y::T) where {T <: Zmodn_fmpz_poly}
+function divexact(x::T, y::T; check::Bool=true) where {T <: Zmodn_fmpz_poly}
   check_parent(x, y)
   iszero(y) && throw(DivideError())
   d = fmpz()
@@ -441,7 +441,7 @@ Base.div(x::T, y::T) where {T <: Zmodn_fmpz_poly} = divexact(x,y)
 #
 ################################################################################
 
-function divexact(x::fmpz_mod_poly, y::fmpz_mod)
+function divexact(x::fmpz_mod_poly, y::fmpz_mod; check::Bool=true)
   base_ring(x) != parent(y) && error("Elements must have same parent")
   iszero(y) && throw(DivideError())
   q = parent(x)()
@@ -452,7 +452,7 @@ function divexact(x::fmpz_mod_poly, y::fmpz_mod)
   return q
 end
 
-function divexact(x::T, y::fmpz) where {T <: Zmodn_fmpz_poly}
+function divexact(x::T, y::fmpz; check::Bool=true) where {T <: Zmodn_fmpz_poly}
   iszero(y) && throw(DivideError())
   q = parent(x)()
   ccall((:fmpz_mod_poly_scalar_div_fmpz, libflint), Nothing,
@@ -461,7 +461,7 @@ function divexact(x::T, y::fmpz) where {T <: Zmodn_fmpz_poly}
   return q
 end
 
-function divexact(x::T, y::Int) where {T <: Zmodn_fmpz_poly}
+function divexact(x::T, y::Int; check::Bool=true) where {T <: Zmodn_fmpz_poly}
   y == 0 && throw(DivideError())
   q = parent(x)()
   ccall((:fmpz_mod_poly_scalar_div_fmpz, libflint), Nothing,

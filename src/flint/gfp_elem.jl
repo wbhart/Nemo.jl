@@ -282,7 +282,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::gfp_elem, y::gfp_elem)
+function divexact(x::gfp_elem, y::gfp_elem; check::Bool=true)
    check_parent(x, y)
    y == 0 && throw(DivideError())
    R = parent(x)

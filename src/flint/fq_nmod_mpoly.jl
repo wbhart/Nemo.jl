@@ -372,7 +372,7 @@ end
 
 *(a::Integer, b::fq_nmod_mpoly) = b*a
 
-divexact(a::fq_nmod_mpoly, b::Integer) = divexact(a, base_ring(parent(a))(b))
+divexact(a::fq_nmod_mpoly, b::Integer; check::Bool=true) = divexact(a, base_ring(parent(a))(b); check=check)
 
 ###############################################################################
 #
@@ -605,10 +605,10 @@ end
 #
 ###############################################################################
 
-function divexact(a::fq_nmod_mpoly, b::fq_nmod_mpoly)
+function divexact(a::fq_nmod_mpoly, b::fq_nmod_mpoly; check::Bool=true)
    check_parent(a, b)
    b, q = divides(a, b)
-   !b && error("Division is not exact in divexact")
+   check && !b && error("Division is not exact in divexact")
    return q
 end
 

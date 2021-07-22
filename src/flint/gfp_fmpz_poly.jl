@@ -196,7 +196,7 @@ end
 #
 ################################################################################
 
-function divexact(x::gfp_fmpz_poly, y::gfp_fmpz_elem)
+function divexact(x::gfp_fmpz_poly, y::gfp_fmpz_elem; check::Bool=true)
   base_ring(x) != parent(y) && error("Elements must have same parent")
   iszero(y) && throw(DivideError())
   q = parent(x)()

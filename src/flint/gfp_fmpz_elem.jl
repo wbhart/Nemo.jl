@@ -267,7 +267,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::gfp_fmpz_elem, y::gfp_fmpz_elem)
+function divexact(x::gfp_fmpz_elem, y::gfp_fmpz_elem; check::Bool=true)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    return x*inv(y)

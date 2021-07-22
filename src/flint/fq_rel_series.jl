@@ -487,7 +487,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::($etype), y::($etype))
+function divexact(x::($etype), y::($etype); check::Bool=true)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    yval = valuation(y)
@@ -498,7 +498,7 @@ function divexact(x::($etype), y::($etype))
          y = shift_right(y, yval)
       end
    end
-   !isunit(y) && error("Unable to invert power series")
+   check && !isunit(y) && error("Unable to invert power series")
    prec = min(x.prec - x.val, y.prec - y.val)
    z = parent(x)()
    z.val = xval - yval
@@ -518,7 +518,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::($etype), y::fq)
+function divexact(x::($etype), y::fq; check::Bool=true)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec
