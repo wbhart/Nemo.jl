@@ -44,11 +44,11 @@ provided for the `fq_nmod` finite field type, we simply document the former.
 
 ## Finite field functionality
 
-Finite fields in Nemo implement the entire AbstractAlgebra.jl field interface.
+Finite fields in Nemo provide all the field functionality described in AbstractAlgebra:
 
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/fields>
+<https://nemocas.github.io/AbstractAlgebra.jl/latest/field>
 
-Below we describe the functionality that is provided in addition to this interface.
+Below we describe the functionality that is provided in addition to this.
 
 ### Constructors
 

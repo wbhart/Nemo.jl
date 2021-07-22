@@ -29,12 +29,12 @@ all the integer ring parent object types belong to the abstract type `Ring`.
 
 ## Integer functionality
 
-Nemo integers implement the whole of the ring and Euclidean ring interfaces of
+Nemo integers provide all of the ring and Euclidean ring functionality of
 AbstractAlgebra.jl.
 
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/rings>
+<https://nemocas.github.io/AbstractAlgebra.jl/latest/ring>
 
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/euclidean.>
+<https://nemocas.github.io/AbstractAlgebra.jl/latest/euclidean_interface>
 
 Below, we describe the functionality that is specific to the Nemo/Flint integer ring.
 

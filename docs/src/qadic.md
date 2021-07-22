@@ -32,11 +32,12 @@ $q$-adic field element types belong to the `FieldElem` abstract type.
 
 ## P-adic functionality
 
-Q-adic fields in Nemo implement the AbstractAlgebra.jl field interface.
+Q-adic fields in Nemo provide all the functionality described in AbstractAlgebra
+for fields:.
 
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/fields>
+<https://nemocas.github.io/AbstractAlgebra.jl/latest/field>
 
-Below, we document all the additional function that is provide by Nemo for p-adic
+Below, we document all the additional function that is provide by Nemo for q-adic
 fields.
 
 ### Constructors

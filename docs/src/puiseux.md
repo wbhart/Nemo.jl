@@ -48,18 +48,16 @@ series in general in AbstractAlgebra.jl for details.
 
 ## Puiseux series functionality
 
-Puiseux series rings in Nemo implement the AbstractAlgebra.jl series interface, with the
-exception of the `pol_length` and `polcoeff` functions:
+Puiseux series rings in Nemo implement all the same functionality that is available for
+AbstractAlgebra series rings, with the exception of the `pol_length` and `polcoeff`
+functions:
 
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/series_rings>
+<https://nemocas.github.io/AbstractAlgebra.jl/latest/series>
 
-In addition, generic Puiseux series are provided by AbstractAlgebra.jl:
+In addition, generic Puiseux series are provided by AbstractAlgebra.jl
 
-<https://nemocas.github.io/AbstractAlgebra.jl/latest/puiseux.>
-
-Puiseux series rings in Nemo also implement this generic functionality. We list below only
-the functionality that differs from this generic functionality, for specific rings
-provided by Nemo.
+We list below only the functionality that differs from that described in AbstractAlgebra,
+for specific rings provided by Nemo.
 
 ### Special functions
 
