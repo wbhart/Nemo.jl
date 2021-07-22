@@ -364,25 +364,25 @@ end
 //(x::fmpq, y::acb) = parent(y)(x) // y
 ^(x::fmpq, y::acb) = parent(y)(x) ^ y
 
-divexact(x::acb, y::acb) = x // y
-divexact(x::fmpz, y::acb) = x // y
-divexact(x::acb, y::fmpz) = x // y
-divexact(x::Int, y::acb) = x // y
-divexact(x::acb, y::Int) = x // y
-divexact(x::UInt, y::acb) = x // y
-divexact(x::acb, y::UInt) = x // y
-divexact(x::fmpq, y::acb) = x // y
-divexact(x::acb, y::fmpq) = x // y
-divexact(x::arb, y::acb) = x // y
-divexact(x::acb, y::arb) = x // y
-divexact(x::Float64, y::acb) = x // y
-divexact(x::acb, y::Float64) = x // y
-divexact(x::BigFloat, y::acb) = x // y
-divexact(x::acb, y::BigFloat) = x // y
-divexact(x::Integer, y::acb) = x // y
-divexact(x::acb, y::Integer) = x // y
-divexact(x::Rational{T}, y::acb) where {T <: Integer} = x // y
-divexact(x::acb, y::Rational{T}) where {T <: Integer} = x // y
+divexact(x::acb, y::acb; check::Bool=true) = x // y
+divexact(x::fmpz, y::acb; check::Bool=true) = x // y
+divexact(x::acb, y::fmpz; check::Bool=true) = x // y
+divexact(x::Int, y::acb; check::Bool=true) = x // y
+divexact(x::acb, y::Int; check::Bool=true) = x // y
+divexact(x::UInt, y::acb; check::Bool=true) = x // y
+divexact(x::acb, y::UInt; check::Bool=true) = x // y
+divexact(x::fmpq, y::acb; check::Bool=true) = x // y
+divexact(x::acb, y::fmpq; check::Bool=true) = x // y
+divexact(x::arb, y::acb; check::Bool=true) = x // y
+divexact(x::acb, y::arb; check::Bool=true) = x // y
+divexact(x::Float64, y::acb; check::Bool=true) = x // y
+divexact(x::acb, y::Float64; check::Bool=true) = x // y
+divexact(x::BigFloat, y::acb; check::Bool=true) = x // y
+divexact(x::acb, y::BigFloat; check::Bool=true) = x // y
+divexact(x::Integer, y::acb; check::Bool=true) = x // y
+divexact(x::acb, y::Integer; check::Bool=true) = x // y
+divexact(x::Rational{T}, y::acb; check::Bool=true) where {T <: Integer} = x // y
+divexact(x::acb, y::Rational{T}; check::Bool=true) where {T <: Integer} = x // y
 
 /(x::acb, y::acb) = x // y
 /(x::fmpz, y::acb) = x // y

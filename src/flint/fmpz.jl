@@ -494,9 +494,9 @@ end
 #
 ###############################################################################
 
-divexact(x::fmpz, y::Integer) = divexact(x, fmpz(y))
+divexact(x::fmpz, y::Integer; check::Bool=true) = divexact(x, fmpz(y); check=check)
 
-divexact(x::Integer, y::fmpz) = divexact(fmpz(x), y)
+divexact(x::Integer, y::fmpz; check::Bool=true) = divexact(fmpz(x), y; check=check)
 
 ###############################################################################
 #

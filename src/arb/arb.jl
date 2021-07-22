@@ -886,21 +886,21 @@ end
 /(x::Rational{T}, y::arb) where {T <: Integer} = x // y
 /(x::arb, y::Rational{T}) where {T <: Integer} = x // y
 
-divexact(x::arb, y::arb) = x // y
-divexact(x::fmpz, y::arb) = x // y
-divexact(x::arb, y::fmpz) = x // y
-divexact(x::Int, y::arb) = x // y
-divexact(x::arb, y::Int) = x // y
-divexact(x::UInt, y::arb) = x // y
-divexact(x::arb, y::UInt) = x // y
-divexact(x::fmpq, y::arb) = x // y
-divexact(x::arb, y::fmpq) = x // y
-divexact(x::Float64, y::arb) = x // y
-divexact(x::arb, y::Float64) = x // y
-divexact(x::BigFloat, y::arb) = x // y
-divexact(x::arb, y::BigFloat) = x // y
-divexact(x::Rational{T}, y::arb) where {T <: Integer} = x // y
-divexact(x::arb, y::Rational{T}) where {T <: Integer} = x // y
+divexact(x::arb, y::arb; check::Bool=true) = x // y
+divexact(x::fmpz, y::arb; check::Bool=true) = x // y
+divexact(x::arb, y::fmpz; check::Bool=true) = x // y
+divexact(x::Int, y::arb; check::Bool=true) = x // y
+divexact(x::arb, y::Int; check::Bool=true) = x // y
+divexact(x::UInt, y::arb; check::Bool=true) = x // y
+divexact(x::arb, y::UInt; check::Bool=true) = x // y
+divexact(x::fmpq, y::arb; check::Bool=true) = x // y
+divexact(x::arb, y::fmpq; check::Bool=true) = x // y
+divexact(x::Float64, y::arb; check::Bool=true) = x // y
+divexact(x::arb, y::Float64; check::Bool=true) = x // y
+divexact(x::BigFloat, y::arb; check::Bool=true) = x // y
+divexact(x::arb, y::BigFloat; check::Bool=true) = x // y
+divexact(x::Rational{T}, y::arb; check::Bool=true) where {T <: Integer} = x // y
+divexact(x::arb, y::Rational{T}; check::Bool=true) where {T <: Integer} = x // y
 
 ################################################################################
 #

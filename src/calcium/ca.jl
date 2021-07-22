@@ -627,14 +627,14 @@ end
 
 //(a::qqbar, b::ca) = parent(b)(a) // b
 
-divexact(a::ca, b::Int) = a // b
-divexact(a::ca, b::fmpz) = a // b
-divexact(a::ca, b::fmpq) = a // b
-divexact(a::ca, b::qqbar) = a // b
-divexact(a::Int, b::ca) = a // b
-divexact(a::fmpz, b::ca) = a // b
-divexact(a::fmpq, b::ca) = a // b
-divexact(a::qqbar, b::ca) = a // b
+divexact(a::ca, b::Int; check::Bool=true) = a // b
+divexact(a::ca, b::fmpz; check::Bool=true) = a // b
+divexact(a::ca, b::fmpq; check::Bool=true) = a // b
+divexact(a::ca, b::qqbar; check::Bool=true) = a // b
+divexact(a::Int, b::ca; check::Bool=true) = a // b
+divexact(a::fmpz, b::ca; check::Bool=true) = a // b
+divexact(a::fmpq, b::ca; check::Bool=true) = a // b
+divexact(a::qqbar, b::ca; check::Bool=true) = a // b
 
 ###############################################################################
 #
