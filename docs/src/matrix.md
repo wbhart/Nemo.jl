@@ -36,7 +36,7 @@ one to write generic functions that can accept any Nemo matrix type.
 
 Note that the preferred way to create matrices is not to use the type
 constructors but to use the `matrix` function, see also the
-[Matrix element constructors](https://nemocas.github.io/AbstractAlgebra.jl/latest/matrix_spaces/#Matrix-element-constructors)
+[Matrix element constructors](https://nemocas.github.io/AbstractAlgebra.jl/latest/matrix/#Matrix-element-constructors)
 section of the AbstractAlgebra manual.
 
 ## Matrix functionality
