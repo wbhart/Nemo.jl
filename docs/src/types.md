@@ -16,7 +16,7 @@ parent objects of the given rings and structures.
      - `fmpz_mod` (FmpzModRing`)
      - `fq_nmod` (`FqNmodFiniteField`)
      - `gfp_elem` (`GaloisField`)
-     - `gfp_fmpz_elem` (`GFPFmpzField`)
+     - `gfp_fmpz_elem` (`GaloisFmpzField`)
      - `fq` (`FqFiniteField`)
      - `padic` (`FlintPadicField`)
      - `qadic` (`FlintQadicField`)
