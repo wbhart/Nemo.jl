@@ -605,7 +605,7 @@ end
 ################################################################################
 
 @doc Markdown.doc"""
-    modulus(k::FqNmodFiniteField)
+    modulus(k::FqNmodFiniteField, var::String="T")
 
 Return the modulus defining the finite field $k$.
 """
