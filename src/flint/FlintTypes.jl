@@ -93,6 +93,25 @@ end
 
 ###############################################################################
 #
+#   n_factor
+#
+###############################################################################
+
+mutable struct n_factor
+   num::Cint
+   exp::NTuple{15, Cint}
+   p::NTuple{15, UInt}
+ 
+   function n_factor()
+      z = new()
+      ccall((:n_factor_init, libflint), Nothing, (Ref{n_factor}, ), z)
+      # no finalizer needed
+      return z
+   end
+end
+
+###############################################################################
+#
 #   FlintRationalField / fmpq
 #
 ###############################################################################

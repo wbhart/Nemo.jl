@@ -1165,6 +1165,22 @@ function _factor(a::fmpz)
    return res, canonical_unit(a)
 end
 
+function factor(a::Union{Int, UInt})
+   if iszero(a)
+      throw(ArgumentError("Argument is not non-zero"))
+   end
+   u = sign(a)
+   a = u < 0 ? -a : a
+   F = n_factor()
+   ccall((:n_factor, libflint), Nothing, (Ref{n_factor}, UInt), F, a)
+   res = Dict{Int, Int}()
+   for i in 1:F.num
+     z = F.p[i]
+     res[z] = F.exp[i]
+   end
+   return Fac(u, res)
+end
+
 ################################################################################
 #
 #   ECM
@@ -1230,6 +1246,8 @@ end
 
 @doc Markdown.doc"""
     factor(a::fmpz)
+    factor(a::UInt)
+    factor(a::Int)
 
 Return a factorisation of $a$ using a `Fac` struct (see the documentation on
 factorisation in Nemo).
