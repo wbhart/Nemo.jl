@@ -523,6 +523,25 @@ end
 
 ###############################################################################
 #
+#   Lift
+#
+###############################################################################
+
+@doc Markdown.doc"""
+    lift(R::GFPFmpzPolyRing, x::fq)
+
+Lift the finite field element `x` to a polynomial over the prime field.
+"""
+function lift(R::GFPFmpzPolyRing, x::fq)
+   c = R()
+   ccall((:fq_get_fmpz_mod_poly, libflint), Nothing,
+         (Ref{gfp_fmpz_poly}, Ref{fq}, Ref{FqFiniteField}),
+                                                     c, x, parent(x))
+   return c
+end
+
+###############################################################################
+#
 #   Unsafe functions
 #
 ###############################################################################
