@@ -609,14 +609,13 @@ end
 
 Return the modulus defining the finite field $k$.
 """
-function modulus(k::FqNmodFiniteField)
+function modulus(k::FqNmodFiniteField, var::String="T")
     p::Int = characteristic(k)
-    R = PolynomialRing(ResidueRing(ZZ, p), "T")[1]
-    Q = R()
-    P = ccall((:fq_nmod_ctx_modulus, libflint), Ref{nmod_poly},
+    Q = polynomial(GF(p), [], var)
+    P = ccall((:fq_nmod_ctx_modulus, libflint), Ref{gfp_poly},
                  (Ref{FqNmodFiniteField},), k)
     ccall((:nmod_poly_set, libflint), Nothing,
-          (Ref{nmod_poly}, Ref{nmod_poly}),
+          (Ref{gfp_poly}, Ref{gfp_poly}),
           Q, P)
 
     return Q
