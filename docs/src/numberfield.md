@@ -53,7 +53,7 @@ constructors.
 ```@docs
 NumberField(::fmpq_poly, ::String)
 CyclotomicField(::Int, ::String)
-CyclotomicRealField(::Int, ::String)
+CyclotomicRealSubfield(::Int, ::String)
 ```
 
 Here are some examples of creating number fields and making use of the

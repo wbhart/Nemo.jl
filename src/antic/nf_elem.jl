@@ -6,7 +6,7 @@
 
 export AnticNumberField, defining_polynomial, nf_elem, norm,
        representation_matrix, representation_matrix_q, tr, CyclotomicField,
-       MaximalRealSubfield, add!, sub!, mul!, signature, sqr_classical,
+       CyclotomicRealSubfield, add!, sub!, mul!, signature, sqr_classical,
        isrational, isinteger
 
 ###############################################################################
@@ -1264,7 +1264,7 @@ end
 
 
 @doc Markdown.doc"""
-    MaximalRealSubfield(n::Int, s::AbstractString, t = "\$"; cached = true)
+    CyclotomicRealSubfield(n::Int, s::AbstractString, t = "\$"; cached = true)
 
 Return a tuple $R, x$ consisting of the parent object $R$ and generator $x$
 of the totally real subfield of the $n$-th cyclotomic field,
@@ -1274,7 +1274,7 @@ the generator of the polynomial ring from which the number field is
 constructed, should be printed. If it is not supplied, a default dollar sign
 will be used to represent the variable.
 """
-function MaximalRealSubfield(n::Int, s::AbstractString = "(z_$n + 1/z_$n)", t = "\$"; cached = true)
+function CyclotomicRealSubfield(n::Int, s::AbstractString = "(z_$n + 1/z_$n)", t = "\$"; cached = true)
    Zx, x = PolynomialRing(FlintZZ, string(gensym()); cached = cached)
    Qx, = PolynomialRing(FlintQQ, t; cached = cached)
    f = cos_minpoly(n, x)
