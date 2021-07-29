@@ -50,42 +50,11 @@ In order to construct number field elements in Nemo, one must first construct
 the number field itself. This is accomplished with one of the following
 constructors.
 
-```julia
-AnticNumberField(::fmpq_poly, ::AbstractString; cached = true)
+```@docs
+NumberField(::fmpq_poly, ::String)
+CyclotomicField(::Int, ::String)
+CyclotomicRealField(::Int, ::String)
 ```
-
-Return a tuple `K, a` consisting of the number field parent object $K$ and generator
-`a`. The generator will be printed as per the supplied string. By default number field
-parents are cached based on generator string and generating polynomial. If this is
-not desired, the optional argument `cached` can be set to false.
-
-```julia
-AnticCyclotomicField(::Int, ::AbstractString, AbstractString; cached = true)
-```
-
-Return a tuple `K, a` consisting of a parent object $K$ for the $n$-th cyclotomic
-field, and a generator $a$. By default number field parents are cached based on
-generator string and generating polynomial. If this is not desired, the optional
-argument `cached` can be set to false.
-
-```julia
-AnticMaximalRealSubfield(::Int, ::AbstractString, ::AbstractString; cached = true)
-```
-
-Return a tuple `K, a` consisting of a parent object $K$ for the real subfield of the
-$n$-th cyclotomic field, and a generator $a$. By default number field parents are
-cached based on generator string and generating polynomial. If this is not desired, the
-optional argument `cached` can be set to false.
-
-For convenience we define
-
-```
-NumberField = AnticNumberField
-CyclotomicField = AnticCyclotomicField
-MaximalRealSubfield = AnticMaximalRealSubfield
-```
-
-so that one can use the names on the left instead of those on the right.
 
 Here are some examples of creating number fields and making use of the
 resulting parent objects to coerce various elements into those fields.
@@ -96,7 +65,7 @@ resulting parent objects to coerce various elements into those fields.
 R, x = PolynomialRing(QQ, "x")
 K, a = NumberField(x^3 + 3x + 1, "a")
 L, b = CyclotomicField(5, "b")
-M, c = MaximalRealSubfield(5, "c", "y")
+M, c = CyclotomicRealField(5, "c")
 
 d = K(3)
 f = L(b)
