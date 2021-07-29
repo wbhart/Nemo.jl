@@ -72,6 +72,8 @@ end
    @test coeff(2x + 1, 1) == 2
 
    @test_throws DomainError coeff(2x + 1, -1)
+
+   @test isa(modulus(R), gfp_poly)
 end
 
 @testset "fq_nmod.unary_ops" begin

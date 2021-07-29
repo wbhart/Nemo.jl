@@ -104,7 +104,7 @@ order(::FqFiniteField)
 ```
 
 ```@docs
-modulus(::FqNmodFiniteField)
+modulus(::FqFiniteField)
 ```
 
 **Examples**
