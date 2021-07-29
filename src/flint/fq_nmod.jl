@@ -525,6 +525,29 @@ end
 
 # Base.length(F) and Base.eltype(F) are defined in AbstractAlgebra
 
+################################################################################
+#
+#   FqNmodFiniteField Modulus
+#
+################################################################################
+
+@doc Markdown.doc"""
+    modulus(k::FqNmodFiniteField, var::String="T")
+
+Return the modulus defining the finite field $k$.
+"""
+function modulus(k::FqNmodFiniteField, var::String="T")
+    p::Int = characteristic(k)
+    Q = polynomial(GF(p), [], var)
+    P = ccall((:fq_nmod_ctx_modulus, libflint), Ref{gfp_poly},
+                 (Ref{FqNmodFiniteField},), k)
+    ccall((:nmod_poly_set, libflint), Nothing,
+          (Ref{gfp_poly}, Ref{gfp_poly}),
+          Q, P)
+
+    return Q
+end
+
 ###############################################################################
 #
 #   Promotions
@@ -598,25 +621,3 @@ function FlintFiniteField(pol::Zmodn_poly, s::AbstractString; cached = true, che
    return parent_obj, gen(parent_obj)
 end
 
-################################################################################
-#
-#   FqNmodFiniteField Modulus
-#
-################################################################################
-
-@doc Markdown.doc"""
-    modulus(k::FqNmodFiniteField, var::String="T")
-
-Return the modulus defining the finite field $k$.
-"""
-function modulus(k::FqNmodFiniteField, var::String="T")
-    p::Int = characteristic(k)
-    Q = polynomial(GF(p), [], var)
-    P = ccall((:fq_nmod_ctx_modulus, libflint), Ref{gfp_poly},
-                 (Ref{FqNmodFiniteField},), k)
-    ccall((:nmod_poly_set, libflint), Nothing,
-          (Ref{gfp_poly}, Ref{gfp_poly}),
-          Q, P)
-
-    return Q
-end
