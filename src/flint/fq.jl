@@ -574,6 +574,29 @@ end
 
 Random.gentype(::Type{T}) where {T<:FinField} = elem_type(T)
 
+################################################################################
+#
+#   FqNmodFiniteField Modulus
+#
+################################################################################
+
+@doc Markdown.doc"""
+    modulus(k::FqFiniteField, var::String="T")
+
+Return the modulus defining the finite field $k$.
+"""
+function modulus(k::FqFiniteField, var::String="T")
+    p = characteristic(k)
+    Q = polynomial(GF(p), [], var)
+    P = ccall((:fq_ctx_modulus, libflint), Ref{gfp_fmpz_poly},
+                 (Ref{FqFiniteField},), k)
+    ccall((:fmpz_mod_poly_set, libflint), Nothing,
+          (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}, Ref{GaloisFmpzField}),
+          Q, P, base_ring(Q))
+
+    return Q
+end
+
 ###############################################################################
 #
 #   Promotions
