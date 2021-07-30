@@ -750,12 +750,12 @@ function atanh(a::fmpq_abs_series)
 end
 
 @doc Markdown.doc"""
-    sqrt(a::fmpq_abs_series)
+    sqrt(a::fmpq_abs_series; check::Bool=true)
 
 Return the power series square root of $a$. Requires a constant term equal to
 one.
 """
-function Base.sqrt(a::fmpq_abs_series)
+function Base.sqrt(a::fmpq_abs_series; check::Bool=true)
    !isone(coeff(a, 0)) && error("Constant term not one in sqrt")
    z = parent(a)()
    z.prec = a.prec

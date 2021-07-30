@@ -958,11 +958,11 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    sqrt(a::ca)
+    Base.sqrt(a::ca; check::Bool=true)
 
 Return the principal square root of `a`.
 """
-function Base.sqrt(a::ca)
+function Base.sqrt(a::ca; check::Bool=true)
    C = a.parent
    r = C()
    ccall((:ca_sqrt, libcalcium), Nothing,

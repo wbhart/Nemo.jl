@@ -518,14 +518,14 @@ end
       for iter = 1:10
          f = rand(S, 0:4, 0:5, -10:10)
 
-         g = square_root(f^2)
+         g = sqrt(f^2)
 
          @test g^2 == f^2
          @test issquare(f^2)
 
          if f != 0
             x = varlist[rand(1:num_vars)]
-            @test_throws ErrorException square_root(f^2*(x^2 - x))
+            @test_throws ErrorException sqrt(f^2*(x^2 - x))
             @test !issquare(f^2*(x^2 - x))
          end
       end

@@ -867,11 +867,11 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    sqrt(a::qqbar)
+    sqrt(a::qqbar; check::Bool=true)
 
 Return the principal square root of `a`.
 """
-function sqrt(a::qqbar)
+function sqrt(a::qqbar; check::Bool=true)
    z = qqbar()
    ccall((:qqbar_sqrt, libcalcium),
         Nothing, (Ref{qqbar}, Ref{qqbar}), z, a)

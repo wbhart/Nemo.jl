@@ -427,17 +427,17 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    square_root(x::fq)
+    sqrt(x::fq)
 
 Return a square root of $x$ in the finite field. If $x$ is not a square
 an exception is raised.
 """
-function square_root(x::fq)
+function sqrt(x::fq; check::Bool=true)
    z = parent(x)()
    res = Bool(ccall((:fq_sqrt, libflint), Cint,
                     (Ref{fq}, Ref{fq}, Ref{FqFiniteField}),
                     z, x, x.parent))
-   res || error("Not a square in square_root")
+   check && !res && error("Not a square")
    return z
 end
 
@@ -453,13 +453,13 @@ function issquare(x::fq)
 end
 
 @doc Markdown.doc"""
-    issquare_with_square_root(x::fq)
+    issquare_with_sqrt(x::fq)
 
 If $x$ is a square, return the tuple of `true` and a square root of $x$.
 Otherwise, return the tuple of `false` and an unspecified element of the
 finite field.
 """
-function issquare_with_square_root(x::fq)
+function issquare_with_sqrt(x::fq)
    z = parent(x)()
    flag = ccall((:fq_sqrt, libflint), Cint,
                 (Ref{fq}, Ref{fq}, Ref{FqFiniteField}),

@@ -502,14 +502,14 @@ end
 #
 ###############################################################################
 
-function Base.sqrt(a::fmpz_abs_series)
+function Base.sqrt(a::fmpz_abs_series; check::Bool=true)
     asqrt = parent(a)()
     v = valuation(a)
     asqrt.prec = a.prec - div(v, 2)
     flag = Bool(ccall((:fmpz_poly_sqrt_series, libflint), Cint,
                (Ref{fmpz_abs_series}, Ref{fmpz_abs_series}, Int),
                   asqrt, a, a.prec))
-    flag == false && error("Not a square in sqrt")
+    check && !flag && error("Not a square")
     return asqrt
 end
 

@@ -506,17 +506,17 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    sqrt(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
+    sqrt(a::FlintPuiseuxSeriesElem{T}; check::Bool=true) where T <: RingElem
 
 Return the square root of the given Puiseux series.
 """
-function sqrt(a::FlintPuiseuxSeriesElem{T}) where T <: RingElem
+function sqrt(a::FlintPuiseuxSeriesElem{T}; check::Bool=true) where T <: RingElem
    val = valuation(a.data)
    S = parent(a)
    if mod(val, 2) != 0
-      return S(sqrt(inflate(a.data, 2)), a.scale*2)
+      return S(sqrt(inflate(a.data, 2); check=check), a.scale*2)
    else
-      return S(sqrt(a.data), a.scale)
+      return S(sqrt(a.data; check=check), a.scale)
    end
 end
 

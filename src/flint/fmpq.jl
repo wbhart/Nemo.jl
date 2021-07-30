@@ -453,9 +453,9 @@ end
 #
 ###############################################################################
 
-function Base.sqrt(a::fmpq)
-    snum = sqrt(numerator(a))
-    sden = sqrt(denominator(a))
+function Base.sqrt(a::fmpq; check::Bool=true)
+    snum = sqrt(numerator(a); check=check)
+    sden = sqrt(denominator(a); check=check)
     return fmpq(snum, sden)
  end
 

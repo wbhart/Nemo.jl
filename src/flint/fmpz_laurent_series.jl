@@ -1093,13 +1093,13 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    sqrt(a::fmpz_laurent_series)
+    sqrt(a::fmpz_laurent_series; check::Bool=true)
 
 Return the square root of the power series $a$.
 """
-function sqrt(a::fmpz_laurent_series)
+function sqrt(a::fmpz_laurent_series; check::Bool=true)
    aval = valuation(a)
-   !iseven(aval) && error("Not a square in sqrt")
+   check && !iseven(aval) && error("Not a square in sqrt")
    R = base_ring(a)
    !isdomain_type(elem_type(R)) && error("Sqrt not implemented over non-integral domains")
    aval2 = div(aval, 2)
@@ -1119,7 +1119,7 @@ function sqrt(a::fmpz_laurent_series)
    flag = Bool(ccall((:fmpz_poly_sqrt_series, libflint), Cint,
           (Ref{fmpz_laurent_series}, Ref{fmpz_laurent_series}, Int),
                 asqrt, a, zlen))
-   flag == false && error("Not a square in sqrt")
+   check && flag == false && error("Not a square in sqrt")
    asqrt = set_scale!(asqrt, s)
    asqrt = rescale!(asqrt)
    return asqrt

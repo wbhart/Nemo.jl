@@ -42,9 +42,8 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        remove, root, size, isqrtrem, sqrtmod, trailing_zeros, divisor_sigma,
        euler_phi, fibonacci, moebius_mu, primorial, rising_factorial,
        number_of_partitions, canonical_unit, isunit, isequal, addeq!, mul!,
-       issquare, square_root, issquare_with_square_root, next_prime, ndivrem,
-       iszero, rand, rand_bits, binomial, factorial, rand_bits_prime, iroot,
-       isdivisible_by
+       issquare, sqrt, issquare_with_sqrt, next_prime, ndivrem,
+       iszero, rand, rand_bits, binomial, factorial, rand_bits_prime, iroot
 
 ###############################################################################
 #
@@ -1149,6 +1148,9 @@ gcdinv(a::Integer, b::fmpz) = gcdinv(fmpz(a), b)
 #
 ###############################################################################
 
+sqrt_moduli = [3, 5, 7, 8]
+sqrt_residues = [[0, 1], [0, 1, 4], [0, 1, 2, 4], [0, 1, 4]]
+
 @doc Markdown.doc"""
     isqrt(x::fmpz)
 
@@ -1179,17 +1181,58 @@ end
 @doc Markdown.doc"""
     sqrt(x::fmpz)
 
-Return the square root $s$ of $x$ if $x$ is a square, otherwise raise an
-exception. We require $x \geq 0$.
+Return the square root $s$ of $x$. By default the function will raise an
+exception if the input is not square. If `check=false` this check is omitted.
 """
-function Base.sqrt(x::fmpz)
+function Base.sqrt(x::fmpz; check=true)
     x < 0 && throw(DomainError(x, "Argument must be non-negative"))
+    if check
+       for i = 1:length(sqrt_moduli)
+          res = mod(x, sqrt_moduli[i])
+          !(res in sqrt_residues[i]) && error("Not a square")
+       end
+       s = fmpz()
+       r = fmpz()
+       ccall((:fmpz_sqrtrem, libflint), Nothing,
+          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), s, r, x)
+       !iszero(r) && error("Not a square")
+    else
+       s = fmpz()
+       ccall((:fmpz_sqrt, libflint), Nothing, (Ref{fmpz}, Ref{fmpz}), s, x)
+    end
+    return s
+end
+
+@doc Markdown.doc"""
+    issquare(x::fmpz)
+
+Return `true` if $x$ is a square, otherwise return `false`.
+"""
+issquare(x::fmpz) = Bool(ccall((:fmpz_is_square, libflint), Cint,
+                               (Ref{fmpz},), x))
+
+@doc Markdown.doc"""
+    issquare_with_sqrt(x::fmpz)
+
+Return `(flag, s)` where `flag = true` and `s` is the square root of `x`
+if `x` is a perfect square and where `flag = false` and `s = 0` otherwise.
+"""
+function issquare_with_sqrt(x::fmpz)
+    x < 0 && throw(DomainError(x, "Argument must be non-negative"))
+    for i = 1:length(sqrt_moduli)
+       res = mod(x, sqrt_moduli[i])
+       if !(res in sqrt_residues[i])
+          return false, zero(fmpz)
+       end
+    end
     s = fmpz()
     r = fmpz()
     ccall((:fmpz_sqrtrem, libflint), Nothing,
           (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), s, r, x)
-    r != 0 && error("Not a square in sqrt")
-    return s
+    if !iszero(r)
+       return false, zero(fmpz)
+    end
+    return true, s
 end
 
 @doc Markdown.doc"""
@@ -1397,14 +1440,6 @@ function divisors(a::fmpz)
 end
 
 divisors(a::Int) = Int.(divisors(FlintZZ(a)))
-
-@doc Markdown.doc"""
-    issquare(x::fmpz)
-
-Return `true` if $x$ is a square, otherwise return `false`.
-"""
-issquare(x::fmpz) = Bool(ccall((:fmpz_is_square, libflint), Cint,
-                               (Ref{fmpz},), x))
 
 @doc Markdown.doc"""
     prime_divisors(a::fmpz)
