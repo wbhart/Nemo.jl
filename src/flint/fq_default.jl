@@ -414,7 +414,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fq_default, y::fq_default)
+function divexact(x::fq_default, y::fq_default; check::Bool=true)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    z = parent(y)()
@@ -439,13 +439,13 @@ end
 #
 ###############################################################################
 
-divexact(x::fq_default, y::Integer) = divexact(x, parent(x)(y))
+divexact(x::fq_default, y::Integer; check::Bool=true) = divexact(x, parent(x)(y); check=check)
 
-divexact(x::fq_default, y::fmpz) = divexact(x, parent(x)(y))
+divexact(x::fq_default, y::fmpz; check::Bool=true) = divexact(x, parent(x)(y); check=check)
 
-divexact(x::Integer, y::fq_default) = divexact(parent(y)(x), y)
+divexact(x::Integer, y::fq_default; check::Bool=true) = divexact(parent(y)(x), y; check=check)
 
-divexact(x::fmpz, y::fq_default) = divexact(parent(y)(x), y)
+divexact(x::fmpz, y::fq_default; check::Bool=true) = divexact(parent(y)(x), y; check=check)
 
 ###############################################################################
 #
