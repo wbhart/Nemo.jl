@@ -962,7 +962,7 @@ end
 
 Return the principal square root of `a`.
 """
-function sqrt(a::ca)
+function Base.sqrt(a::ca)
    C = a.parent
    r = C()
    ccall((:ca_sqrt, libcalcium), Nothing,
