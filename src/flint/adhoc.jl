@@ -566,7 +566,7 @@ function divexact(x::MatElem, y::fmpz; check::Bool=true)
    z = similar(x)
    for i = 1:nrows(x)
       for j = 1:ncols(x)
-         z[i, j] = divexact(x[i, j], y; check)
+         z[i, j] = divexact(x[i, j], y; check=check)
       end
    end
    return z
