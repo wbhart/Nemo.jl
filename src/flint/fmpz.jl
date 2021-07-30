@@ -1391,7 +1391,10 @@ function next_prime(x::fmpz, proved::Bool = true)
 end
 
 function next_prime(x::UInt, proved::Bool = true)
-   x >= 0xffffffffffffffc5 && error("No larger single-limb prime exists")
+   if (Base.GMP.BITS_PER_LIMB == 64 && x >= 0xffffffffffffffc5) ||
+      (Base.GMP.BITS_PER_LIMB == 32 && x >= 0xfffffffb)
+         error("No larger single-limb prime exists")
+   end
    return ccall((:n_nextprime, libflint), UInt,
                 (UInt, Cint),
                 x, proved)
