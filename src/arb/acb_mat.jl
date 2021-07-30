@@ -468,7 +468,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::acb_mat, y::acb_mat)
+function divexact(x::acb_mat, y::acb_mat; check::Bool=true)
    ncols(x) != ncols(y) && error("Incompatible matrix dimensions")
    x*inv(y)
 end
@@ -479,7 +479,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::acb_mat, y::Int)
+function divexact(x::acb_mat, y::Int; check::Bool=true)
   y == 0 && throw(DivideError())
   z = similar(x)
   ccall((:acb_mat_scalar_div_si, libarb), Nothing,
@@ -488,7 +488,7 @@ function divexact(x::acb_mat, y::Int)
   return z
 end
 
-function divexact(x::acb_mat, y::fmpz)
+function divexact(x::acb_mat, y::fmpz; check::Bool=true)
   z = similar(x)
   ccall((:acb_mat_scalar_div_fmpz, libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{fmpz}, Int),
@@ -496,7 +496,7 @@ function divexact(x::acb_mat, y::fmpz)
   return z
 end
 
-function divexact(x::acb_mat, y::arb)
+function divexact(x::acb_mat, y::arb; check::Bool=true)
   z = similar(x)
   ccall((:acb_mat_scalar_div_arb, libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{arb}, Int),
@@ -504,7 +504,7 @@ function divexact(x::acb_mat, y::arb)
   return z
 end
 
-function divexact(x::acb_mat, y::acb)
+function divexact(x::acb_mat, y::acb; check::Bool=true)
   z = similar(x)
   ccall((:acb_mat_scalar_div_acb, libarb), Nothing,
               (Ref{acb_mat}, Ref{acb_mat}, Ref{acb}, Int),
@@ -512,13 +512,13 @@ function divexact(x::acb_mat, y::acb)
   return z
 end
 
-divexact(x::acb_mat, y::Float64) = divexact(x, base_ring(x)(y))
+divexact(x::acb_mat, y::Float64; check::Bool=true) = divexact(x, base_ring(x)(y); check=check)
 
-divexact(x::acb_mat, y::BigFloat) = divexact(x, base_ring(x)(y))
+divexact(x::acb_mat, y::BigFloat; check::Bool=true) = divexact(x, base_ring(x)(y); check=check)
 
-divexact(x::acb_mat, y::Integer) = divexact(x, fmpz(y))
+divexact(x::acb_mat, y::Integer; check::Bool=true) = divexact(x, fmpz(y); check=check)
 
-divexact(x::acb_mat, y::Rational{T}) where T <: Union{Int, BigInt} = divexact(x, fmpq(y))
+divexact(x::acb_mat, y::Rational{T}; check::Bool=true) where T <: Union{Int, BigInt} = divexact(x, fmpq(y); check=check)
 
 ################################################################################
 #

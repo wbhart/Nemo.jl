@@ -278,7 +278,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::nmod, y::nmod)
+function divexact(x::nmod, y::nmod; check::Bool=true)
    check_parent(x, y)
    fl, q = divides(x, y)
    if !fl

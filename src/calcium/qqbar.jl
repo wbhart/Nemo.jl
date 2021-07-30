@@ -509,7 +509,7 @@ function inv(a::qqbar)
    return z
 end
 
-function divexact(a::qqbar, b::qqbar)
+function divexact(a::qqbar, b::qqbar; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = qqbar()
    ccall((:qqbar_div, libcalcium), Nothing,
@@ -517,7 +517,7 @@ function divexact(a::qqbar, b::qqbar)
    return z
 end
 
-function divexact(a::qqbar, b::fmpq)
+function divexact(a::qqbar, b::fmpq; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = qqbar()
    ccall((:qqbar_div_fmpq, libcalcium), Nothing,
@@ -525,7 +525,7 @@ function divexact(a::qqbar, b::fmpq)
    return z
 end
 
-function divexact(a::qqbar, b::fmpz)
+function divexact(a::qqbar, b::fmpz; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = qqbar()
    ccall((:qqbar_div_fmpz, libcalcium), Nothing,
@@ -533,7 +533,7 @@ function divexact(a::qqbar, b::fmpz)
    return z
 end
 
-function divexact(a::qqbar, b::Int)
+function divexact(a::qqbar, b::Int; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = qqbar()
    ccall((:qqbar_div_si, libcalcium), Nothing,
@@ -541,7 +541,7 @@ function divexact(a::qqbar, b::Int)
    return z
 end
 
-function divexact(a::fmpq, b::qqbar)
+function divexact(a::fmpq, b::qqbar; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = qqbar()
    ccall((:qqbar_fmpq_div, libcalcium), Nothing,
@@ -549,7 +549,7 @@ function divexact(a::fmpq, b::qqbar)
    return z
 end
 
-function divexact(a::fmpz, b::qqbar)
+function divexact(a::fmpz, b::qqbar; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = qqbar()
    ccall((:qqbar_fmpz_div, libcalcium), Nothing,
@@ -557,7 +557,7 @@ function divexact(a::fmpz, b::qqbar)
    return z
 end
 
-function divexact(a::Int, b::qqbar)
+function divexact(a::Int, b::qqbar; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = qqbar()
    ccall((:qqbar_si_div, libcalcium), Nothing,

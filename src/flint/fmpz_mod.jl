@@ -259,7 +259,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpz_mod, y::fmpz_mod)
+function divexact(x::fmpz_mod, y::fmpz_mod; check::Bool=true)
    check_parent(x, y)
    fl, q = divides(x, y)
    if !fl

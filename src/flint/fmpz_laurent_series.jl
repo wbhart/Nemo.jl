@@ -970,11 +970,11 @@ Return `true` if $x == y$ arithmetically, otherwise return `false`.
 ###############################################################################
 
 @doc Markdown.doc"""
-    divexact(a::fmpz_laurent_series, b::fmpz_laurent_series)
+    divexact(a::fmpz_laurent_series, b::fmpz_laurent_series; check::Bool=true)
 
 Return $a/b$.
 """
-function divexact(a::fmpz_laurent_series, b::fmpz_laurent_series)
+function divexact(a::fmpz_laurent_series, b::fmpz_laurent_series; check::Bool=true)
    check_parent(a, b)
    lena = pol_length(a)
    lenb = pol_length(b)
@@ -1022,7 +1022,7 @@ end
 ###############################################################################
 
 @doc Markdown.doc"""
-    divexact(x::fmpz_laurent_series, y::Union{Integer, Rational, AbstractFloat})
+    divexact(x::fmpz_laurent_series, y::Union{Integer, Rational, AbstractFloat}; check::Bool=true)
 
 Return $x/y$ where the quotient is expected to be exact.
 """
@@ -1034,7 +1034,7 @@ function divexact(x::fmpz_laurent_series, y::Union{Integer, Rational, AbstractFl
    z = set_valuation!(z, valuation(x))
    z = set_scale!(z, scale(x))
    for i = 1:lenx
-      z = setcoeff!(z, i - 1, divexact(polcoeff(x, i - 1), y))
+      z = setcoeff!(z, i - 1, divexact(polcoeff(x, i - 1), y; check=check))
    end
    return z
 end
@@ -1044,7 +1044,7 @@ end
 
 Return $x/y$ where the quotient is expected to be exact.
 """
-function divexact(x::fmpz_laurent_series, y::T) where {T <: RingElem}
+function divexact(x::fmpz_laurent_series, y::T; check::Bool=true) where {T <: RingElem}
    iszero(y) && throw(DivideError())
    lenx = pol_length(x)
    z = parent(x)()
@@ -1052,7 +1052,7 @@ function divexact(x::fmpz_laurent_series, y::T) where {T <: RingElem}
    z = set_valuation!(z, valuation(x))
    z = set_scale!(z, scale(x))
    for i = 1:lenx
-      z = setcoeff!(z, i - 1, divexact(polcoeff(x, i - 1), y))
+      z = setcoeff!(z, i - 1, divexact(polcoeff(x, i - 1), y; check=check))
    end
    return z
 end

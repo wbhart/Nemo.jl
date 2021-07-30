@@ -411,12 +411,12 @@ end
 #
 ###############################################################################
 
-function divexact(a::FlintPuiseuxSeriesElem{T}, b::FlintPuiseuxSeriesElem{T}) where T <: RingElem
+function divexact(a::FlintPuiseuxSeriesElem{T}, b::FlintPuiseuxSeriesElem{T}; check::Bool=true) where T <: RingElem
     s = gcd(a.scale, b.scale)
     zscale = div(a.scale*b.scale, s)
     ainf = div(a.scale, s)
     binf = div(b.scale, s)
-    z = parent(a)(divexact(inflate(a.data, binf), inflate(b.data, ainf)), zscale)
+    z = parent(a)(divexact(inflate(a.data, binf), inflate(b.data, ainf); check=check), zscale)
     z = rescale!(z)
     return z
 end

@@ -481,7 +481,7 @@ function inv(a::fmpq)
 #
 ###############################################################################
 
-function divexact(a::fmpq, b::fmpq)
+function divexact(a::fmpq, b::fmpq; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = fmpq()
    ccall((:fmpq_div, libflint), Nothing,
@@ -502,7 +502,7 @@ end
 #
 ###############################################################################
 
-function divexact(a::fmpq, b::fmpz)
+function divexact(a::fmpq, b::fmpz; check::Bool=true)
    iszero(b) && throw(DivideError())
    z = fmpq()
    ccall((:fmpq_div_fmpz, libflint), Nothing,
@@ -510,21 +510,21 @@ function divexact(a::fmpq, b::fmpz)
    return z
 end
 
-function divexact(a::fmpz, b::fmpq)
+function divexact(a::fmpz, b::fmpq; check::Bool=true)
    iszero(b) && throw(DivideError())
    return inv(b)*a
 end
 
-divexact(a::fmpq, b::Integer) = divexact(a, fmpz(b))
+divexact(a::fmpq, b::Integer; check::Bool=true) = divexact(a, fmpz(b); check=check)
 
-function divexact(a::Integer, b::fmpq)
+function divexact(a::Integer, b::fmpq; check::Bool=true)
    iszero(b) && throw(DivideError())
    return inv(b)*a
 end
 
-divexact(a::fmpq, b::Rational{T}) where {T <: Integer} = divexact(a, fmpq(b))
+divexact(a::fmpq, b::Rational{T}; check::Bool=true) where {T <: Integer} = divexact(a, fmpq(b); check=check)
 
-divexact(a::Rational{T}, b::fmpq) where {T <: Integer} = divexact(fmpq(a), b)
+divexact(a::Rational{T}, b::fmpq; check::Bool=true) where {T <: Integer} = divexact(fmpq(a), b; check=check)
 
 //(a::fmpq, b::fmpz) = divexact(a, b)
 

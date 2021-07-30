@@ -426,10 +426,10 @@ end
 #
 ###############################################################################
 
-function divexact(x::nmod_poly, y::nmod_poly)
+function divexact(x::nmod_poly, y::nmod_poly; check::Bool=true)
   check_parent(x, y)
   iszero(y) && throw(DivideError())
-  !lead_isunit(y) && error("Impossible inverse in divexact")
+  check && !lead_isunit(y) && error("Impossible inverse in divexact")
   z = parent(x)()
   ccall((:nmod_poly_div, libflint), Nothing,
           (Ref{nmod_poly}, Ref{nmod_poly}, Ref{nmod_poly}), z, x, y)
@@ -442,20 +442,20 @@ end
 #
 ################################################################################
 
-function divexact(x::nmod_poly, y::nmod)
+function divexact(x::nmod_poly, y::nmod; check::Bool=true)
   base_ring(x) != parent(y) && error("Elements must have same parent")
   iszero(y) && throw(DivideError())
-  return divexact(x, parent(x)(y))
+  return divexact(x, parent(x)(y); check=check)
 end
 
-function divexact(x::T, y::fmpz) where T <: Zmodn_poly
+function divexact(x::T, y::fmpz; check::Bool=true) where T <: Zmodn_poly
   iszero(y) && throw(DivideError())
-  return divexact(x, parent(x)(y))
+  return divexact(x, parent(x)(y); check=check)
 end
 
-function divexact(x::T, y::Int) where T <: Zmodn_poly
+function divexact(x::T, y::Int; check::Bool=true) where T <: Zmodn_poly
   y == 0 && throw(DivideError())
-  return divexact(x, parent(x)(y))
+  return divexact(x, parent(x)(y); check=check)
 end
 
 ################################################################################

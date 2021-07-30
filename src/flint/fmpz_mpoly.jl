@@ -378,10 +378,9 @@ for (jT, cN, cT) in ((fmpz, :fmpz, Ref{fmpz}), (Int, :si, Int))
 
       *(a::($jT), b::fmpz_mpoly) = b * a
 
-      function divexact(a::fmpz_mpoly, b::($jT))
+      function divexact(a::fmpz_mpoly, b::($jT); check::Bool=true)
          z = parent(a)()
-         checked = true
-         if checked
+         if check
             divides = Bool(ccall(($(string(:fmpz_mpoly_scalar_divides_, cN)), libflint), Cint,
                                  (Ref{fmpz_mpoly}, Ref{fmpz_mpoly}, ($cT), Ref{FmpzMPolyRing}),
                                  z, a, b, parent(a)))
@@ -408,7 +407,7 @@ end
 
 *(a::Integer, b::fmpz_mpoly) = b * a
 
-divexact(a::fmpz_mpoly, b::Integer) = divexact(a, fmpz(b))
+divexact(a::fmpz_mpoly, b::Integer; check::Bool=true) = divexact(a, fmpz(b); check=check)
 
 ###############################################################################
 #
@@ -635,10 +634,10 @@ end
 #
 ###############################################################################
 
-function divexact(a::fmpz_mpoly, b::fmpz_mpoly)
+function divexact(a::fmpz_mpoly, b::fmpz_mpoly; check::Bool=true)
    check_parent(a, b)
    b, q = divides(a, b)
-   !b && error("Division is not exact in divexact")
+   check && !b && error("Division is not exact in divexact")
    return q
 end
 

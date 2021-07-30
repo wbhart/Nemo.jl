@@ -473,7 +473,7 @@ end
 #
 ###############################################################################
 
-function divexact(a::padic, b::padic)
+function divexact(a::padic, b::padic; check::Bool=true)
    iszero(b) && throw(DivideError())
    check_parent(a, b)
    ctx = parent(a)
@@ -491,17 +491,17 @@ end
 #
 ###############################################################################
 
-divexact(a::padic, b::Integer) = a*(fmpz(1)//fmpz(b))
+divexact(a::padic, b::Integer; check::Bool=true) = a*(fmpz(1)//fmpz(b))
 
-divexact(a::padic, b::fmpz) = a*(1//b)
+divexact(a::padic, b::fmpz; check::Bool=true) = a*(1//b)
 
-divexact(a::padic, b::fmpq) = a*inv(b)
+divexact(a::padic, b::fmpq; check::Bool=true) = a*inv(b)
 
-divexact(a::Integer, b::padic) = fmpz(a)*inv(b)
+divexact(a::Integer, b::padic; check::Bool=true) = fmpz(a)*inv(b)
 
-divexact(a::fmpz, b::padic) = inv((fmpz(1)//a)*b)
+divexact(a::fmpz, b::padic; check::Bool=true) = inv((fmpz(1)//a)*b)
 
-divexact(a::fmpq, b::padic) = inv(inv(a)*b)
+divexact(a::fmpq, b::padic; check::Bool=true) = inv(inv(a)*b)
 
 ###############################################################################
 #

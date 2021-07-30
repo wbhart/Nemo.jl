@@ -375,7 +375,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpz_poly, y::fmpz_poly)
+function divexact(x::fmpz_poly, y::fmpz_poly; check::Bool=true)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    z = parent(x)()
@@ -409,7 +409,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpz_poly, y::fmpz)
+function divexact(x::fmpz_poly, y::fmpz; check::Bool=true)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    ccall((:fmpz_poly_scalar_divexact_fmpz, libflint), Nothing,
@@ -417,7 +417,7 @@ function divexact(x::fmpz_poly, y::fmpz)
    return z
 end
 
-function divexact(x::fmpz_poly, y::Int)
+function divexact(x::fmpz_poly, y::Int; check::Bool=true)
    y == 0 && throw(DivideError())
    z = parent(x)()
    ccall((:fmpz_poly_scalar_divexact_si, libflint), Nothing,
@@ -425,7 +425,7 @@ function divexact(x::fmpz_poly, y::Int)
    return z
 end
 
-divexact(x::fmpz_poly, y::Integer) = divexact(x, fmpz(y))
+divexact(x::fmpz_poly, y::Integer; check::Bool=true) = divexact(x, fmpz(y); check=check)
 
 ###############################################################################
 #

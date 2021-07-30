@@ -426,7 +426,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fq_default_abs_series, y::fq_default_abs_series)
+function divexact(x::fq_default_abs_series, y::fq_default_abs_series; check::Bool=true)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    v2 = valuation(y)
@@ -437,7 +437,7 @@ function divexact(x::fq_default_abs_series, y::fq_default_abs_series)
          y = shift_right(y, v2)
       end
    end
-   !isunit(y) && error("Unable to invert power series")
+   check && !isunit(y) && error("Unable to invert power series")
    prec = min(x.prec, y.prec - v2 + v1)
    z = parent(x)()
    z.prec = prec
@@ -454,7 +454,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fq_default_abs_series, y::fq_default)
+function divexact(x::fq_default_abs_series, y::fq_default; check::Bool=true)
    iszero(y) && throw(DivideError())
    z = parent(x)()
    z.prec = x.prec

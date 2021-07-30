@@ -509,7 +509,7 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpz_mat, y::fmpz_mat)
+function divexact(x::fmpz_mat, y::fmpz_mat; check::Bool=true)
    ncols(x) != ncols(y) && error("Incompatible matrix dimensions")
    x*inv(y)
 end
@@ -520,21 +520,21 @@ end
 #
 ###############################################################################
 
-function divexact(x::fmpz_mat, y::Int)
+function divexact(x::fmpz_mat, y::Int; check::Bool=true)
    z = similar(x)
    ccall((:fmpz_mat_scalar_divexact_si, libflint), Nothing,
                 (Ref{fmpz_mat}, Ref{fmpz_mat}, Int), z, x, y)
    return z
 end
 
-function divexact(x::fmpz_mat, y::fmpz)
+function divexact(x::fmpz_mat, y::fmpz; check::Bool=true)
    z = similar(x)
    ccall((:fmpz_mat_scalar_divexact_fmpz, libflint), Nothing,
                 (Ref{fmpz_mat}, Ref{fmpz_mat}, Ref{fmpz}), z, x, y)
    return z
 end
 
-divexact(x::fmpz_mat, y::Integer) = divexact(x, fmpz(y))
+divexact(x::fmpz_mat, y::Integer; check::Bool=true) = divexact(x, fmpz(y); check=check)
 
 ###############################################################################
 #

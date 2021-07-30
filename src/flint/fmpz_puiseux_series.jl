@@ -24,8 +24,8 @@ end
 #
 ###############################################################################
 
-function divexact(x::FlintPuiseuxSeriesElem{fmpz_laurent_series}, y::fmpz)
-   return parent(x)(divexact(x.data, y), x.scale)
+function divexact(x::FlintPuiseuxSeriesElem{fmpz_laurent_series}, y::fmpz; check::Bool=true)
+   return parent(x)(divexact(x.data, y; check=check), x.scale)
 end
 
 ###############################################################################
