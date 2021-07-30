@@ -215,17 +215,17 @@ end
 
    @test issquare(a^2)
 
-   @test square_root(a^2)^2 == a^2
+   @test sqrt(a^2)^2 == a^2
 
-   @test issquare_with_square_root(a^2)[1]
+   @test issquare_with_sqrt(a^2)[1]
 
-   @test issquare_with_square_root(a^2)[2]^2 == a^2
+   @test issquare_with_sqrt(a^2)[2]^2 == a^2
 
    @test !issquare(x*a^2)
 
-   @test_throws ErrorException square_root(x*a^2)
+   @test_throws ErrorException sqrt(x*a^2)
 
-   @test !issquare_with_square_root(x*a^2)[1]
+   @test !issquare_with_sqrt(x*a^2)[1]
 end
 
 @testset "fq_default.rand" begin
