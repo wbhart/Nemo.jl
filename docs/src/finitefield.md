@@ -152,3 +152,22 @@ d = frobenius(a)
 f = frobenius(a, 3)
 g = pth_root(a)
 ```
+
+### Lift
+
+```@docs
+lift(::GFPFmpzPolyRing, ::fq)
+```
+
+**Examples**
+
+```julia
+R, x = FiniteField(23, 2, "x")
+S, y = PolynomialRing(GF(23), "y")
+
+f = 8x + 9
+
+lift(S, f)
+```
+
+```

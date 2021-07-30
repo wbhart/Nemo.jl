@@ -209,3 +209,11 @@ end
       Nemo.AbstractAlgebra.test_iterate(R)
    end
 end
+
+@testset "fq_nmod.lift" begin
+   R, x = FiniteField(23, 2, "x")
+   f = 8x + 9
+   S, y = PolynomialRing(GF(23), "y")
+   @test lift(S, f) == 8y + 9
+end
+
