@@ -34,8 +34,11 @@ end
 #
 ################################################################################
 
-length(x::fq_default_poly) = ccall((:fq_default_poly_length, libflint), Int,
-                                (Ref{fq_default_poly},), x)
+function length(x::fq_default_poly)
+   F = (x.parent).base_ring
+   ccall((:fq_default_poly_length, libflint), Int,
+                        (Ref{fq_default_poly}, Ref{FqDefaultFiniteField}), x, F)
+end
 
 function coeff(x::fq_default_poly, n::Int)
    n < 0 && throw(DomainError(n, "Index must be non-negative"))
