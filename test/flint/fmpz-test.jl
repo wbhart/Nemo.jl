@@ -695,7 +695,7 @@ end
 
    @test_throws ArgumentError factor(fmpz(0))
 
-   for (T, a) in [(Int, -3*5*7*11*13^5), (UInt, 3*5*7*11*13^5)]
+   for (T, a) in [(Int, -3*5*7*11*13^5), (UInt, UInt(3*5*7*11*13^5))]
       fact = factor(a)
 
       b = unit(fact)
@@ -706,13 +706,13 @@ end
 
       @test b == a
 
-      @test fact[3] == 1
-      @test fact[5] == 1
-      @test fact[7] == 1
-      @test fact[11] == 1
-      @test fact[13] == 5
-      @test 3 in fact
-      @test !(2 in fact)
+      @test fact[T(3)] == 1
+      @test fact[T(5)] == 1
+      @test fact[T(7)] == 1
+      @test fact[T(11)] == 1
+      @test fact[T(13)] == 5
+      @test T(3) in fact
+      @test !(T(2) in fact)
    end
 
    fact = factor(-1)
@@ -728,6 +728,9 @@ end
 
    @test_throws ArgumentError factor(0)
    @test_throws ArgumentError factor(UInt(0))
+
+   fact = factor(next_prime(3*UInt(2)^62))
+   @test length(fact.fac) == 1
 
    n = fmpz(2 * 1125899906842679)
    b, f = Nemo.ecm(n)

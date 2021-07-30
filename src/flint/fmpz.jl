@@ -1165,7 +1165,7 @@ function _factor(a::fmpz)
    return res, canonical_unit(a)
 end
 
-function factor(a::Union{Int, UInt})
+function factor(a::T) where T <: Union{Int, UInt}
    if iszero(a)
       throw(ArgumentError("Argument is not non-zero"))
    end
@@ -1173,7 +1173,7 @@ function factor(a::Union{Int, UInt})
    a = u < 0 ? -a : a
    F = n_factor()
    ccall((:n_factor, libflint), Nothing, (Ref{n_factor}, UInt), F, a)
-   res = Dict{Int, Int}()
+   res = Dict{T, Int}()
    for i in 1:F.num
      z = F.p[i]
      res[z] = F.exp[i]
@@ -1391,6 +1391,7 @@ function next_prime(x::fmpz, proved::Bool = true)
 end
 
 function next_prime(x::UInt, proved::Bool = true)
+   x >= 0xffffffffffffffc5 && error("No larger single-limb prime exists")
    return ccall((:n_nextprime, libflint), UInt,
                 (UInt, Cint),
                 x, proved)
