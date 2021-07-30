@@ -712,6 +712,43 @@ end
 
    @test_throws ArgumentError factor(fmpz(0))
 
+   for (T, a) in [(Int, -3*5*7*11*13^5), (UInt, UInt(3*5*7*11*13^5))]
+      fact = factor(a)
+
+      b = unit(fact)
+
+      for (p, e) in fact
+         b = b*p^e
+      end
+
+      @test b == a
+
+      @test fact[T(3)] == 1
+      @test fact[T(5)] == 1
+      @test fact[T(7)] == 1
+      @test fact[T(11)] == 1
+      @test fact[T(13)] == 5
+      @test T(3) in fact
+      @test !(T(2) in fact)
+   end
+
+   fact = factor(-1)
+
+   @test fact.fac == Dict{Int, Int}()
+
+   fact = factor(-2)
+
+   @test occursin("2", sprint(show, "text/plain", fact))
+
+   @test fact.fac == Dict(2 => 1)
+   @test unit(fact) == -1
+
+   @test_throws ArgumentError factor(0)
+   @test_throws ArgumentError factor(UInt(0))
+
+   fact = factor(next_prime(3*UInt(2)^62))
+   @test length(fact.fac) == 1
+
    n = fmpz(2 * 1125899906842679)
    b, f = Nemo.ecm(n)
    @test mod(n, f) == 0
