@@ -43,7 +43,7 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        euler_phi, fibonacci, moebius_mu, primorial, rising_factorial,
        number_of_partitions, canonical_unit, isunit, isequal, addeq!, mul!,
        issquare, square_root, issquare_with_square_root, next_prime,
-       iszero, rand, rand_bits, binomial, factorial, rand_bits_prime
+       iszero, rand, rand_bits, binomial, factorial, rand_bits_prime, iroot
 
 ###############################################################################
 #
@@ -1132,16 +1132,36 @@ function Base.sqrt(x::fmpz)
 end
 
 @doc Markdown.doc"""
-    root(x::fmpz, n::Int)
+    root(x::fmpz, n::Int; check::Bool=true)
 
-Return the floor of the $n$-the root of $x$. We require $n > 0$ and that
-$x \geq 0$ if $n$ is even.
+Return the $n$-the root of $x$. We require $n > 0$ and that
+$x \geq 0$ if $n$ is even. By default the function tests whether the input was
+a perfect $n$-th power and if not raises an exception. If `check=false` this
+check is omitted.
 """
-function root(x::fmpz, n::Int)
+function root(x::fmpz, n::Int; check::Bool=true)
    x < 0 && iseven(n) && throw(DomainError((x, n), "Argument `x` must be positive if exponent `n` is even"))
    n <= 0 && throw(DomainError(n, "Exponent must be positive"))
    z = fmpz()
-   ccall((:fmpz_root, libflint), Nothing,
+   res = ccall((:fmpz_root, libflint), Bool,
+         (Ref{fmpz}, Ref{fmpz}, Int), z, x, n)
+#= Check disabled until flint-2.9 comes out
+   check && !res && error("Not a perfect n-th power (n = $n)")
+=#
+   return z
+end
+
+@doc Markdown.doc"""
+    iroot(x::fmpz, n::Int)
+
+Return the integer truncation of the $n$-the root of $x$ (round towards zero).
+We require $n > 0$ and that $x \geq 0$ if $n$ is even.
+"""
+function iroot(x::fmpz, n::Int)
+   x < 0 && iseven(n) && throw(DomainError((x, n), "Argument `x` must be positive if exponent `n` is even"))
+   n <= 0 && throw(DomainError(n, "Exponent must be positive"))
+   z = fmpz()
+   ccall((:fmpz_root, libflint), Bool,
          (Ref{fmpz}, Ref{fmpz}, Int), z, x, n)
    return z
 end
