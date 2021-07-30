@@ -27,12 +27,12 @@ function embed_gens(k::FqNmodFiniteField, K::FqNmodFiniteField)
     a = k()
     b = K()
     p::Int = characteristic(k)
-    R = ResidueRing(ZZ, p)
+    R = GF(p)
     PR = PolynomialRing(R, "T")[1]
     P = PR()
 
     ccall((:fq_nmod_embed_gens, libflint), Nothing, (Ref{fq_nmod}, Ref{fq_nmod},
-    Ref{nmod_poly}, Ref{FqNmodFiniteField}, Ref{FqNmodFiniteField}), a, b,
+    Ref{gfp_poly}, Ref{FqNmodFiniteField}, Ref{FqNmodFiniteField}), a, b,
     P, k, K)
 
     return a, b, P
@@ -57,13 +57,13 @@ function embed_matrices(k::FqNmodFiniteField, K::FqNmodFiniteField)
     s1 = S1()
     s2 = S2()
 
-    ccall((:fq_nmod_embed_matrices, libflint), Nothing, (Ref{nmod_mat},
-    Ref{nmod_mat}, Ref{fq_nmod}, Ref{FqNmodFiniteField}, Ref{fq_nmod},
-    Ref{FqNmodFiniteField}, Ref{nmod_poly}), s1, s2, a, k, b, K, P)
+    ccall((:fq_nmod_embed_matrices, libflint), Nothing, (Ref{gfp_mat},
+    Ref{gfp_mat}, Ref{fq_nmod}, Ref{FqNmodFiniteField}, Ref{fq_nmod},
+    Ref{FqNmodFiniteField}, Ref{gfp_poly}), s1, s2, a, k, b, K, P)
     return s1, s2
 end
 
-function embed_matrices_pre(a::fq_nmod, b::fq_nmod, P::nmod_poly)
+function embed_matrices_pre(a::fq_nmod, b::fq_nmod, P::gfp_poly)
     k = parent(a)
     K = parent(b)
     m, n = degree(k), degree(K)
@@ -73,9 +73,9 @@ function embed_matrices_pre(a::fq_nmod, b::fq_nmod, P::nmod_poly)
     s1 = S1()
     s2 = S2()
 
-    ccall((:fq_nmod_embed_matrices, libflint), Nothing, (Ref{nmod_mat},
-    Ref{nmod_mat}, Ref{fq_nmod}, Ref{FqNmodFiniteField}, Ref{fq_nmod},
-    Ref{FqNmodFiniteField}, Ref{nmod_poly}), s1, s2, a, k, b, K, P)
+    ccall((:fq_nmod_embed_matrices, libflint), Nothing, (Ref{gfp_mat},
+    Ref{gfp_mat}, Ref{fq_nmod}, Ref{FqNmodFiniteField}, Ref{fq_nmod},
+    Ref{FqNmodFiniteField}, Ref{gfp_poly}), s1, s2, a, k, b, K, P)
     return s1, s2
 end
 
@@ -84,7 +84,7 @@ function coeff!(x::fq_nmod, j::Int, c::Int)
           (Ref{fq_nmod}, Int, UInt), x, j, c)
 end
 
-function embed_pre_mat(x::fq_nmod, K::FqNmodFiniteField, M::nmod_mat)
+function embed_pre_mat(x::fq_nmod, K::FqNmodFiniteField, M::gfp_mat)
 
     d = degree(parent(x))
     S = MatrixSpace(base_ring(M), d, 1)

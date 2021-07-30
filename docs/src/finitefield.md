@@ -103,6 +103,10 @@ characteristic(::FqFiniteField)
 order(::FqFiniteField)
 ```
 
+```@docs
+modulus(::FqFiniteField)
+```
+
 **Examples**
 
 ```julia
