@@ -630,7 +630,7 @@ end
 
 divexact(x::fmpq_rel_series, y::Integer; check::Bool=true) = divexact(x, fmpz(y); check=check)
 
-divexact(x::fmpq_rel_series, y::Rational{T}; check::Bool=true) where T <: Union{Int, BigInt} = divexact(x, fmpq(y); check)
+divexact(x::fmpq_rel_series, y::Rational{T}; check::Bool=true) where T <: Union{Int, BigInt} = divexact(x, fmpq(y); check=check)
 
 ###############################################################################
 #
