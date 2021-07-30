@@ -1632,8 +1632,8 @@ moebius_mu(x::Int) = moebius_mu(fmpz(x))
 @doc Markdown.doc"""
     jacobi_symbol(x::fmpz, y::fmpz)
 
-Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. If
-$y \leq 0$, we throw a `DomainError()`.
+Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. The modulus
+$y$ must be odd and positive, otherwise a `DomainError` is thrown.
 """
 function jacobi_symbol(x::fmpz, y::fmpz)
    (y <= 0 || iseven(y)) && throw(DomainError(y, "Modulus must be odd and positive"))
@@ -1647,8 +1647,8 @@ end
 @doc Markdown.doc"""
     jacobi_symbol(x::Int, y::Int)
 
-Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. If
-$y \leq 0$, we throw a `DomainError()`.
+Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. The modulus
+$y$ must be odd and positive, otherwise a `DomainError` is thrown.
 """
 function jacobi_symbol(x::Int, y::Int)
    (y <= 0 || mod(y, 2) == 0) && throw(DomainError(y, "Modulus must be odd and positive"))
