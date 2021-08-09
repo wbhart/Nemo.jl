@@ -4,7 +4,7 @@
 #
 ###############################################################################
 
-export fq_nmod, FqNmodFiniteField
+export fq_nmod, FqNmodFiniteField, coeffs_raw
 
 ###############################################################################
 #
@@ -47,6 +47,44 @@ function coeff(x::fq_nmod, n::Int)
    n < 0 && throw(DomainError(n, "Index must be non-negative"))
    return ccall((:nmod_poly_get_coeff_ui, libflint), UInt,
                 (Ref{fq_nmod}, Int), x, n)
+end
+
+function coeffs_raw(x::fq_nmod)
+   @GC.preserve x begin
+      len = degree(parent(x))
+      V = unsafe_wrap(Vector{UInt}, reinterpret(Ptr{UInt}, x.coeffs), x.length)
+      Vcopy = Vector{UInt}(undef, len)
+      for i = 1:x.length
+         Vcopy[i] = V[i]
+      end
+      for i = x.length + 1:len
+         Vcopy[i] = 0
+      end
+   end
+   return Vcopy
+end
+
+function setindex_raw!(x::fq_nmod, c::UInt, i::Int)
+   len = degree(parent(x))
+   V = unsafe_wrap(Vector{UInt}, reinterpret(Ptr{UInt}, x.coeffs), len)
+   if i + 1 > x.length
+      if !iszero(c)
+         for j = x.length + 1:i
+            V[j] = 0
+         end
+         V[i + 1] = c
+         x.length = i + 1
+      end
+   else
+      V[i + 1] = c
+      if i + 1 == x.length && iszero(c)
+         while i >= 0 && iszero(V[i + 1])
+            x.length -= 1
+            i -= 1
+         end
+      end
+   end
+   return x
 end
 
 function zero(a::FqNmodFiniteField)
@@ -613,6 +651,22 @@ function (a::FqNmodFiniteField)(b::fq_nmod)
         f = preimage_map(a, k)
         return f(b)
     end
+end
+
+function fq_nmod(a::FqNmodFiniteField, b::Vector{UInt})
+   r = a()
+   len = degree(a)
+   length(b) != len && error("Vector does not have correct length")
+   norm = 0
+   V = unsafe_wrap(Vector{UInt}, reinterpret(Ptr{UInt}, r.coeffs), len)
+   for i = 1:len
+      V[i] = b[i]
+      if b[i] != 0
+         norm = i
+      end
+   end
+   r.length = norm
+   return r
 end
 
 ###############################################################################
