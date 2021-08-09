@@ -1527,6 +1527,7 @@ Return the tuple $n, z$ such that $x = y^nz$ where $y$ and $z$ are coprime.
 """
 function remove(x::fmpz, y::fmpz)
    iszero(y) && throw(DivideError())
+   y <= 1 && error("Factor <= 1")
    z = fmpz()
    num = ccall((:fmpz_remove, libflint), Int,
                (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, y)
