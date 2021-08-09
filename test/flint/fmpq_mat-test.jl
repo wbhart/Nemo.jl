@@ -525,6 +525,14 @@ end
 
    @test X == Y
 
+   m2 = [ 1 0 ; 0 1; 0 1 ]
+   m2Z = matrix(ZZ, m2)
+   m2Q = matrix(QQ, m2);
+   
+   N = solve(m1Q, m2Q)
+
+   @test N == matrix(QQ, 2, 2, [0 1; 1 -1])
+
    for i in 1:10
       m = rand(0:10)
       n = rand(0:10)

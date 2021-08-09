@@ -611,12 +611,9 @@ end
 ###############################################################################
 
 function solve(a::fmpq_mat, b::fmpq_mat)
-   nrows(a) != ncols(a) && error("Not a square matrix in solve")
    nrows(b) != nrows(a) && error("Incompatible dimensions in solve")
-   z = similar(b)
-   nonsing = ccall((:fmpq_mat_solve, libflint), Bool,
-      (Ref{fmpq_mat}, Ref{fmpq_mat}, Ref{fmpq_mat}), z, a, b)
-   !nonsing && error("Singular matrix in solve")
+   fl, z = can_solve_with_solution(a, b)
+   !fl && error("System is inconsistent")
    return z
 end
 
@@ -639,8 +636,8 @@ end
 function can_solve_with_solution(a::fmpq_mat, b::fmpq_mat; side::Symbol = :right)
    if side == :left
       (ncols(a) != ncols(b)) && error("Matrices must have same number of columns")
-      (f, x) = can_solve_with_solution(a', b'; side=:right)
-      return (f, x')
+      (f, x) = can_solve_with_solution(transpose(a), transpose(b); side=:right)
+      return (f, transpose(x))
    elseif side == :right
       (nrows(a) != nrows(b)) && error("Matrices must have same number of rows")
       x = similar(a, ncols(a), ncols(b))
