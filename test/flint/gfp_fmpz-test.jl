@@ -295,6 +295,13 @@ end
          end
       end
    end
+
+   R =  GF(ZZ(23))
+
+   a = R(11)
+
+   @test a^ZZ(3) == 20
+   @test a^BigInt(3) == 20
 end
 
 @testset "gfp_fmpz.comparison" begin

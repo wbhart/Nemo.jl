@@ -219,6 +219,23 @@ function ^(x::gfp_fmpz_elem, y::Int)
    return gfp_fmpz_elem(d, R)
 end
 
+function ^(x::gfp_fmpz_elem, y::fmpz)
+   R = parent(x)
+   if y < 0
+      x = inv(x)
+      y = -y
+   end
+   d = fmpz()
+   ccall((:fmpz_mod_pow_fmpz, libflint), Nothing,
+	 (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz_mod_ctx_struct}),
+						 d, x.data, y, R.ninv)
+   return gfp_fmpz_elem(d, R)
+end
+
+function ^(x::gfp_fmpz_elem, y::Integer)
+   return x^fmpz(y)
+end
+
 ###############################################################################
 #
 #   Comparison
