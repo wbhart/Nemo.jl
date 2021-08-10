@@ -480,7 +480,7 @@ function divexact(x::($etype), y::$(mtype); check::Bool=true)
    yinv = inv(y)
    ccall(($(flint_fn*"_scalar_mul_nmod"), libflint), Nothing,
          (Ref{($etype)}, Ref{($etype)}, UInt),
-         z, x, y.data)
+         z, x, yinv.data)
    return z
 end
 
@@ -671,6 +671,43 @@ end
 
 end # eval
 end # for
+
+###############################################################################
+#
+#   Square root
+#
+###############################################################################
+
+@doc Markdown.doc"""
+    sqrt(a::gfp_abs_series; check::Bool=true)
+
+Return the power series square root of $a$.
+"""
+function Base.sqrt(a::gfp_abs_series; check::Bool=true)
+println("a = ", a)
+   v = valuation(a)
+   z = parent(a)()
+   z.prec = a.prec - div(v, 2)
+   if iszero(a)
+      return z
+   end
+   check && !iseven(v) && error("Not a square")
+   a = shift_right(a, v)
+   c = coeff(a, 0)
+   s = sqrt(c; check=check)
+   a = divexact(a, c)
+   z.prec = a.prec - div(v, 2)
+   ccall((:nmod_poly_sqrt_series, libflint), Nothing,
+                (Ref{gfp_abs_series}, Ref{gfp_abs_series}, Int),
+               z, a, a.prec)
+   if !isone(s)
+      z *= s
+   end
+   if !iszero(v)
+      z = shift_left(z, div(v, 2))
+   end
+   return z
+end
 
 ###############################################################################
 #

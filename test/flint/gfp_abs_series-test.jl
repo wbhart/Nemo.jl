@@ -367,6 +367,17 @@ end
    end
 end
 
+@testset "gfp_abs_series.square_root" begin
+   S = GF(31)
+   R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
+
+   for iter = 1:300
+      f = rand(R, 0:9)
+
+      @test sqrt(f^2) == f || sqrt(f^2) == -f
+   end
+end
+
 @testset "gfp_abs_series.unsafe_operators" begin
    S = GF(31)
    R, x = PowerSeriesRing(S, 30, "x", model=:capped_absolute)
