@@ -64,26 +64,12 @@ function coeffs_raw(x::fq_nmod)
    return Vcopy
 end
 
+# set the i-th coeff of x to c, internal use only
 function setindex_raw!(x::fq_nmod, c::UInt, i::Int)
    len = degree(parent(x))
-   V = unsafe_wrap(Vector{UInt}, reinterpret(Ptr{UInt}, x.coeffs), len)
-   if i + 1 > x.length
-      if !iszero(c)
-         for j = x.length + 1:i
-            V[j] = 0
-         end
-         V[i + 1] = c
-         x.length = i + 1
-      end
-   else
-      V[i + 1] = c
-      if i + 1 == x.length && iszero(c)
-         while i >= 0 && iszero(V[i + 1])
-            x.length -= 1
-            i -= 1
-         end
-      end
-   end
+   i > len - 1 && error("Index out of range")
+   ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
+         (Ref{fq_nmod}, Int, UInt), x, i, c)
    return x
 end
 
