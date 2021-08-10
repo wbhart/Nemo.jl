@@ -695,12 +695,28 @@ function atanh(a::fmpq_abs_series)
 end
 
 function Base.sqrt(a::fmpq_abs_series; check::Bool=true)
-   !isone(coeff(a, 0)) && error("Constant term not one in sqrt")
+   v = valuation(a)
    z = parent(a)()
-   z.prec = a.prec
+   z.prec = a.prec - div(v, 2)
+   if iszero(a)
+      return z
+   end
+   check && !iseven(v) && error("Not a square")
+   a = shift_right(a, v)
+   c = coeff(a, 0)
+   fl, s = issquare_with_sqrt(c)
+   check && !fl && error("Not a square")
+   a = divexact(a, c)
+   z.prec = a.prec - div(v, 2)
    ccall((:fmpq_poly_sqrt_series, libflint), Nothing,
                 (Ref{fmpq_abs_series}, Ref{fmpq_abs_series}, Int),
                z, a, a.prec)
+   if !isone(s)
+      z *= s
+   end
+   if !iszero(v)
+      z = shift_left(z, div(v, 2))
+   end
    return z
 end
 
