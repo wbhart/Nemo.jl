@@ -1722,17 +1722,18 @@ end
     kronecker_symbol(x::fmpz, y::fmpz)
     kronecker_symbol(x::Int, y::Int)
 
-Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. The modulus
-$y$ must be odd and positive, otherwise a `DomainError` is thrown.
+Return the value of the Kronecker symbol $\left(\frac{x}{y}\right)$.
 """
-function kronecker_symbol(x::T, y::T) where T <: Union{Int, fmpz}
-   y == 0 && throw(DomainError(y, "Modulus must be nonzero"))
+function kronecker_symbol(x::Int, y::Int)
+   if iszero(y)
+      return x == 1 || x == -1 ? 1 : 0
+   end
    yneg = y < 0
    y = yneg ? -y : y
    negate = yneg && x < 0
    if iseven(y)
       if iseven(x)
-         return zero(T)
+         return 0
       end
       xmod8 = mod(x, 8)
       ex, y = remove(y, 2)
@@ -1740,8 +1741,13 @@ function kronecker_symbol(x::T, y::T) where T <: Union{Int, fmpz}
          negate = !negate
       end
    end
-   r = jacobi_symbol(x, T(y))
+   r = jacobi_symbol(x, Int(y))
    return negate ? -r : r
+end
+
+function kronecker_symbol(x::fmpz, y::fmpz)
+   return Int(ccall((:fmpz_kronecker, libflint), Cint,
+                    (Ref{fmpz}, Ref{fmpz}), x, y))
 end
 
 @doc Markdown.doc"""
