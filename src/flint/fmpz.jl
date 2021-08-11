@@ -43,7 +43,8 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        euler_phi, fibonacci, moebius_mu, primorial, rising_factorial,
        number_of_partitions, canonical_unit, isunit, isequal, addeq!, mul!,
        issquare, sqrt, issquare_with_sqrt, next_prime, ndivrem,
-       iszero, rand, rand_bits, binomial, factorial, rand_bits_prime, iroot
+       iszero, rand, rand_bits, binomial, factorial, rand_bits_prime, iroot,
+       kronecker_symbol
 
 ###############################################################################
 #
@@ -1715,6 +1716,32 @@ function jacobi_symbol(x::Int, y::Int)
       x = mod(x, y)
    end
    return Int(ccall((:n_jacobi, libflint), Cint, (Int, UInt), x, UInt(y)))
+end
+
+@doc Markdown.doc"""
+    kronecker_symbol(x::fmpz, y::fmpz)
+    kronecker_symbol(x::Int, y::Int)
+
+Return the value of the Jacobi symbol $\left(\frac{x}{y}\right)$. The modulus
+$y$ must be odd and positive, otherwise a `DomainError` is thrown.
+"""
+function kronecker_symbol(x::T, y::T) where T <: Union{Int, fmpz}
+   y == 0 && throw(DomainError(y, "Modulus must be nonzero"))
+   yneg = y < 0
+   y = yneg ? -y : y
+   negate = yneg && x < 0
+   if iseven(y)
+      if iseven(x)
+         return zero(T)
+      end
+      xmod8 = mod(x, 8)
+      ex, y = remove(y, 2)
+      if isodd(ex) && (xmod8 == 3 || xmod8 == 5)
+         negate = !negate
+      end
+   end
+   r = jacobi_symbol(x, T(y))
+   return negate ? -r : r
 end
 
 @doc Markdown.doc"""

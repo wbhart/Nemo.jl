@@ -362,6 +362,7 @@ moebius_mu(::fmpz)
 ```@docs
 jacobi_symbol(::Int, ::Int)
 jacobi_symbol(::fmpz, ::fmpz)
+kronecker_symbol(::fmpz, ::fmpz)
 ```
 
 ```@docs
