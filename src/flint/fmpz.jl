@@ -1727,24 +1727,8 @@ The definition is as per Henri Cohen's book, "A Course in Computational
 Algebraic Number Theory", Definition 1.4.8.
 """
 function kronecker_symbol(x::Int, y::Int)
-   if iszero(y)
-      return x == 1 || x == -1 ? 1 : 0
-   end
-   yneg = y < 0
-   y = yneg ? -y : y
-   negate = yneg && x < 0
-   if iseven(y)
-      if iseven(x)
-         return 0
-      end
-      xmod8 = mod(x, 8)
-      ex, y = remove(y, 2)
-      if isodd(ex) && (xmod8 == 3 || xmod8 == 5)
-         negate = !negate
-      end
-   end
-   r = jacobi_symbol(x, Int(y))
-   return negate ? -r : r
+   return Int(ccall((:z_kronecker, libflint), Cint,
+                    (Int, Int), x, y))
 end
 
 function kronecker_symbol(x::fmpz, y::fmpz)
