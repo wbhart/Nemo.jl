@@ -606,6 +606,8 @@ end
 
    @test a == 8
 
+   @test tstbit(a, 3) == 1
+
    @test_throws DomainError combit!(a, -1)
 
    setbit!(a, 0)

@@ -452,14 +452,9 @@ trailing_zeros(::fmpz)
 
 ```@docs
 clrbit!(::fmpz, ::Int)
-```
-
-```@docs
 setbit!(::fmpz, ::Int)
-```
-
-```@docs
 combit!(::fmpz, ::Int)
+tstbit(::fmpz, ::Int)
 ```
 
 **Examples**
