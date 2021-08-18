@@ -638,7 +638,7 @@ function (a::FqDefaultAbsSeriesRing)(b::fq_default_abs_series)
    return b
 end
 
-function (a::FqDefaultAbsSeriesRing)(b::Array{fq_default, 1}, len::Int, prec::Int)
+function (a::FqDefaultAbsSeriesRing)(b::Vector{fq_default}, len::Int, prec::Int)
    ctx = base_ring(a)
    z = fq_default_abs_series(ctx, b, len, prec)
    z.parent = a

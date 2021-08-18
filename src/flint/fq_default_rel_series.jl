@@ -765,7 +765,7 @@ function (a::FqDefaultRelSeriesRing)(b::fq_default_rel_series)
    return b
 end
 
-function (a::FqDefaultRelSeriesRing)(b::Array{fq_default, 1}, len::Int, prec::Int, val::Int)
+function (a::FqDefaultRelSeriesRing)(b::Vector{fq_default}, len::Int, prec::Int, val::Int)
    ctx = base_ring(a)
    z = fq_default_rel_series(ctx, b, len, prec, val)
    z.parent = a
