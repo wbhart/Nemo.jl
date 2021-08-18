@@ -2196,8 +2196,8 @@ mutable struct FqDefaultFiniteField <: FinField
 
    var::String
    
-   overfields :: Dict{Int, Array{FinFieldMorphism, 1}}
-   subfields :: Dict{Int, Array{FinFieldMorphism, 1}}
+   overfields :: Dict{Int, Vector{FinFieldMorphism}}
+   subfields :: Dict{Int, Vector{FinFieldMorphism}}
    @declare_other
 
    function FqDefaultFiniteField(char::fmpz, deg::Int, s::Symbol, cached::Bool = true)
@@ -4307,7 +4307,7 @@ mutable struct fq_default_rel_series <: RelSeriesElem{fq_default}
       return z
    end
  
-   function fq_default_rel_series(ctx::FqDefaultFiniteField, a::Array{fq_default, 1}, len::Int, prec::Int, val::Int)
+   function fq_default_rel_series(ctx::FqDefaultFiniteField, a::Vector{fq_default}, len::Int, prec::Int, val::Int)
       z = new()
       ccall((:fq_default_poly_init2, libflint), Nothing,
             (Ref{fq_default_rel_series}, Int, Ref{FqDefaultFiniteField}), z, len, ctx)
@@ -4458,7 +4458,7 @@ mutable struct fq_default_abs_series <: AbsSeriesElem{fq_default}
       return z
    end
  
-   function fq_default_abs_series(ctx::FqDefaultFiniteField, a::Array{fq_default, 1}, len::Int, prec::Int)
+   function fq_default_abs_series(ctx::FqDefaultFiniteField, a::Vector{fq_default}, len::Int, prec::Int)
       z = new()
       ccall((:fq_default_poly_init2, libflint), Nothing,
             (Ref{fq_default_abs_series}, Int, Ref{FqDefaultFiniteField}), z, len, ctx)
@@ -5603,7 +5603,7 @@ mutable struct fq_default_poly <: PolyElem{fq_default}
       return z
    end
  
-   function fq_default_poly(a::Array{fq_default, 1}, ctx::FqDefaultFiniteField)
+   function fq_default_poly(a::Vector{fq_default}, ctx::FqDefaultFiniteField)
       z = new()
       ccall((:fq_default_poly_init2, libflint), Nothing,
             (Ref{fq_default_poly}, Int, Ref{FqDefaultFiniteField}),
@@ -5617,7 +5617,7 @@ mutable struct fq_default_poly <: PolyElem{fq_default}
       return z
    end
  
-   function fq_default_poly(a::Array{fmpz, 1}, ctx::FqDefaultFiniteField)
+   function fq_default_poly(a::Vector{fmpz}, ctx::FqDefaultFiniteField)
       z = new()
       temp = ctx()
       ccall((:fq_default_poly_init2, libflint), Nothing,
@@ -6044,7 +6044,7 @@ mutable struct FqDefaultMatSpace <: MatSpace{fq_default}
        return z
     end
  
-    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{fq_default, 2}, ctx::FqDefaultFiniteField)
+    function fq_default_mat(r::Int, c::Int, arr::AbstractMatrix{fq_default}, ctx::FqDefaultFiniteField)
        z = new()
        ccall((:fq_default_mat_init, libflint), Nothing,
              (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
@@ -6062,7 +6062,7 @@ mutable struct FqDefaultMatSpace <: MatSpace{fq_default}
        return z
     end
  
-    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{fq_default, 1}, ctx::FqDefaultFiniteField)
+    function fq_default_mat(r::Int, c::Int, arr::AbstractVector{fq_default}, ctx::FqDefaultFiniteField)
        z = new()
        ccall((:fq_default_mat_init, libflint), Nothing,
              (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
@@ -6080,7 +6080,7 @@ mutable struct FqDefaultMatSpace <: MatSpace{fq_default}
        return z
     end
  
-    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 2}, ctx::FqDefaultFiniteField)
+    function fq_default_mat(r::Int, c::Int, arr::AbstractMatrix{fmpz}, ctx::FqDefaultFiniteField)
        z = new()
        ccall((:fq_default_mat_init, libflint), Nothing,
              (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
@@ -6098,7 +6098,7 @@ mutable struct FqDefaultMatSpace <: MatSpace{fq_default}
        return z
     end
  
-    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{fmpz, 1}, ctx::FqDefaultFiniteField)
+    function fq_default_mat(r::Int, c::Int, arr::AbstractVector{fmpz}, ctx::FqDefaultFiniteField)
        z = new()
        ccall((:fq_default_mat_init, libflint), Nothing,
              (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
@@ -6116,7 +6116,7 @@ mutable struct FqDefaultMatSpace <: MatSpace{fq_default}
        return z
     end
  
-    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{T, 2}, ctx::FqDefaultFiniteField) where {T <: Integer}
+    function fq_default_mat(r::Int, c::Int, arr::AbstractMatrix{T}, ctx::FqDefaultFiniteField) where {T <: Integer}
        z = new()
        ccall((:fq_default_mat_init, libflint), Nothing,
              (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
@@ -6134,7 +6134,7 @@ mutable struct FqDefaultMatSpace <: MatSpace{fq_default}
        return z
     end
  
-    function fq_default_mat(r::Int, c::Int, arr::AbstractArray{T, 1}, ctx::FqDefaultFiniteField) where {T <: Integer}
+    function fq_default_mat(r::Int, c::Int, arr::AbstractVector{T}, ctx::FqDefaultFiniteField) where {T <: Integer}
        z = new()
        ccall((:fq_default_mat_init, libflint), Nothing,
              (Ref{fq_default_mat}, Int, Int, Ref{FqDefaultFiniteField}),
