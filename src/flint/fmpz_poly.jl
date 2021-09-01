@@ -379,8 +379,16 @@ function divexact(x::fmpz_poly, y::fmpz_poly; check::Bool=true)
    check_parent(x, y)
    iszero(y) && throw(DivideError())
    z = parent(x)()
-   ccall((:fmpz_poly_div, libflint), Nothing,
+   if check
+      r = parent(x)()
+      ccall((:fmpz_poly_divrem, libflint), Nothing,
+            (Ref{fmpz_poly}, Ref{fmpz_poly}, Ref{fmpz_poly}, Ref{fmpz_poly}),
+             z, r, x, y)
+      r != 0 && error("Not an exact division")
+   else
+      ccall((:fmpz_poly_div, libflint), Nothing,
             (Ref{fmpz_poly}, Ref{fmpz_poly}, Ref{fmpz_poly}), z, x, y)
+   end
    return z
 end
 

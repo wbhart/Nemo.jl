@@ -239,6 +239,8 @@ end
    g = x^3 + 3x + 1
 
    @test divexact(f*g, f) == g
+
+   @test_throws ErrorException divexact(1, R(2))
 end
 
 @testset "fmpz_poly.adhoc_exact_division" begin
