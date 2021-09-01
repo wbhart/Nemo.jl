@@ -320,12 +320,16 @@ for T in [Integer, fmpz, fmpq, Float64, BigFloat, arb]
       divexact(x::arb_poly, y::$T; check::Bool=true) = x * inv(base_ring(parent(x))(y))
 
       //(x::arb_poly, y::$T) = divexact(x, y)
+
+      /(x::arb_poly, y::$T) = divexact(x, y)
    end
 end
 
 divexact(x::arb_poly, y::Rational{T}; check::Bool=true) where {T <: Integer} = x * inv(base_ring(parent(x))(y))
 
 //(x::arb_poly, y::Rational{T}) where {T <: Integer} = divexact(x, y)
+
+/(x::arb_poly, y::Rational{T}) where {T <: Integer} = divexact(x, y)
 
 ###############################################################################
 #
