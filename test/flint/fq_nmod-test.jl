@@ -56,6 +56,31 @@ end
    test_rand(R, fmpz[3,9,2])
 end
 
+@testset "fq_nmod.unsafe_coeffs" begin
+   R, a = FiniteField(23, 2, "a")
+
+   b = R()
+   
+   @test Nemo.setindex_raw!(b, UInt(0), 0) == 0
+   @test Nemo.setindex_raw!(b, UInt(0), 1) == 0
+   @test Nemo.setindex_raw!(b, UInt(2), 1) == 2a
+   @test Nemo.setindex_raw!(b, UInt(3), 0) == 2a + 3
+
+   b = 2a + 3
+
+   @test Nemo.setindex_raw!(b, UInt(0), 1) == 3
+   @test Nemo.setindex_raw!(b, UInt(4), 0) == 4
+   @test Nemo.setindex_raw!(b, UInt(0), 0) == 0
+
+   @test fq_nmod(R, UInt[0, 0]) == 0
+   @test fq_nmod(R, UInt[2, 0]) == 2
+   @test fq_nmod(R, UInt[2, 3]) == 3a + 2
+
+   @test coeffs_raw(2a + 3) == UInt[3, 2]
+   @test coeffs_raw(R(3)) == UInt[3, 0]
+   @test coeffs_raw(R()) == UInt[0, 0]
+end
+
 @testset "fq_nmod.printing" begin
    R, x = FiniteField(7, 5, "x")
 
