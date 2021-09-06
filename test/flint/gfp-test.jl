@@ -17,6 +17,10 @@
 
    @test isa(R(a), Nemo.gfp_elem)
 
+   @test isa(R(fmpq(7, 11)), Nemo.gfp_elem)
+   @test R(fmpq(7, 11))*11 == 7
+   @test_throws ErrorException R(fmpq(7, 13))
+
    for i = 1:1000
       p = rand(UInt(1):typemax(UInt))
 

@@ -402,6 +402,19 @@ function (R::GaloisField)(a::fmpz)
    return gfp_elem(d, R)
 end
 
+function (R::GaloisField)(a::fmpq)
+   num = numerator(a, false)
+   den = denominator(a, false)
+   n = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt),
+             num, R.n)
+   d = ccall((:fmpz_fdiv_ui, libflint), UInt, (Ref{fmpz}, UInt),
+             den, R.n)
+   V = [UInt(0)]
+   g = ccall((:n_gcdinv, libflint), UInt, (Ptr{UInt}, UInt, UInt), V, d, R.n)
+   g != 1 && error("Unable to coerce")
+   return R(n)*R(V[1])
+end
+
 function (R::GaloisField)(a::gfp_elem)
    return a
 end
