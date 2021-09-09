@@ -122,9 +122,9 @@ implementations in `src`. All tests are currently combined in `test/generic`..
 
 The official repositories for AbstractAlgebra and Nemo are:
 
-https://github.com/Nemocas/AbstractAlgebra.jl
+<https://github.com/Nemocas/AbstractAlgebra.jl>
 
-https://github.com/Nemocas/Nemo.jl
+<https://github.com/Nemocas/Nemo.jl>
 
 If you wish to contribute to these projects, the first step is to fork them
 on GitHub. The button for this is in the upper right of the main project page.
@@ -219,7 +219,7 @@ online documentation.
 All developers of AbstractAlgebra and Nemo are welcome to write to our
 development list to ask questions and discuss development:
 
-https://groups.google.com/g/nemo-devel
+<https://groups.google.com/g/nemo-devel>
 
 ## Reporting bugs
 
@@ -235,7 +235,7 @@ AbstractAlgebra has a special roadmap ticket which lists the most important
 tickets that have been opened. If you want to contribute something high value
 this is the place to start:
 
-https://github.com/Nemocas/AbstractAlgebra.jl/issues/492
+<https://github.com/Nemocas/AbstractAlgebra.jl/issues/492>
 
 This ticket is updated every so often.
 
@@ -243,7 +243,7 @@ This ticket is updated every so often.
 
 Binaries of C libraries for Nemo are currently made in a separate repository:
 
-https://github.com/JuliaPackaging/Yggdrasil
+<https://github.com/JuliaPackaging/Yggdrasil>
 
 If code is added to any of the C libraries used by Nemo, this jll package must
 be updated first and the version updated in Nemo.jl before the new
@@ -262,5 +262,5 @@ Oscar project.
 
 See the Oscar website for further details:
 
-https://oscar.computeralgebra.de/
+<https://oscar.computeralgebra.de/>
 
