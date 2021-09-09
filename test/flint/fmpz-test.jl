@@ -925,6 +925,34 @@ end
 
    @test_throws DomainError jacobi_symbol(-5, 4)
 
+   for T in [Int, fmpz]
+      for iters = 1:1000
+         m1 = T(rand(-100:100))
+         n1 = T(rand(-100:100))
+         m2 = T(rand(-100:100))
+         n2 = T(rand(-100:100))
+
+         @test kronecker_symbol(m1*m2, n1*n2) ==
+                  kronecker_symbol(m1, n1)*kronecker_symbol(m1, n2)*
+                  kronecker_symbol(m2, n1)*kronecker_symbol(m2, n2)
+      end
+
+      @test kronecker_symbol(T(-5), T(-1)) == -1
+      @test kronecker_symbol(T(5), T(-1)) == 1
+      @test kronecker_symbol(T(4), T(10)) == 0
+      @test kronecker_symbol(T(1), T(2)) == 1
+      @test kronecker_symbol(T(7), T(2)) == 1
+      @test kronecker_symbol(T(3), T(2)) == -1
+      @test kronecker_symbol(T(5), T(2)) == -1
+      @test kronecker_symbol(T(3), T(4)) == 1
+      @test kronecker_symbol(T(5), T(4)) == 1
+      @test kronecker_symbol(T(2), T(0)) == 0
+      @test kronecker_symbol(T(-2), T(0)) == 0
+      @test kronecker_symbol(T(0), T(0)) == 0
+      @test kronecker_symbol(T(-1), T(0)) == 1
+      @test kronecker_symbol(T(1), T(0)) == 1
+   end
+
    if !Nemo.iswindows64()
 
       @test number_of_partitions(10) == 42

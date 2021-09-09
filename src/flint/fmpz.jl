@@ -43,7 +43,8 @@ export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
        euler_phi, fibonacci, moebius_mu, primorial, rising_factorial,
        number_of_partitions, canonical_unit, isunit, isequal, addeq!, mul!,
        issquare, sqrt, issquare_with_sqrt, next_prime, ndivrem,
-       iszero, rand, rand_bits, binomial, factorial, rand_bits_prime, iroot
+       iszero, rand, rand_bits, binomial, factorial, rand_bits_prime, iroot,
+       kronecker_symbol
 
 ###############################################################################
 #
@@ -1716,6 +1717,24 @@ function jacobi_symbol(x::Int, y::Int)
       x = mod(x, y)
    end
    return Int(ccall((:n_jacobi, libflint), Cint, (Int, UInt), x, UInt(y)))
+end
+
+@doc Markdown.doc"""
+    kronecker_symbol(x::fmpz, y::fmpz)
+    kronecker_symbol(x::Int, y::Int)
+
+Return the value of the Kronecker symbol $\left(\frac{x}{y}\right)$.
+The definition is as per Henri Cohen's book, "A Course in Computational
+Algebraic Number Theory", Definition 1.4.8.
+"""
+function kronecker_symbol(x::Int, y::Int)
+   return Int(ccall((:z_kronecker, libflint), Cint,
+                    (Int, Int), x, y))
+end
+
+function kronecker_symbol(x::fmpz, y::fmpz)
+   return Int(ccall((:fmpz_kronecker, libflint), Cint,
+                    (Ref{fmpz}, Ref{fmpz}), x, y))
 end
 
 @doc Markdown.doc"""
