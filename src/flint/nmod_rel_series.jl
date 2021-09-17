@@ -944,3 +944,33 @@ end
 
 end # eval
 end # for
+
+@doc Markdown.doc"""
+    sqrt(a::gfp_rel_series; check::Bool=true)
+
+Return the power series square root of $a$.
+"""
+function Base.sqrt(a::gfp_rel_series; check::Bool=true)
+   v = valuation(a)
+   z = parent(a)()
+   v2 = div(v, 2)
+   if iszero(a)
+      z.prec = v2
+      z.val = v2
+      return z
+   end
+   check && !iseven(v) && error("Not a square")
+   z.prec = a.prec - v2
+   z.val = v2
+   c = coeff(a, v)
+   s = sqrt(c; check=check)
+   a = divexact(a, c)
+   ccall((:nmod_poly_sqrt_series, libflint), Nothing,
+                (Ref{gfp_rel_series}, Ref{gfp_rel_series}, Int),
+               z, a, a.prec)
+   if !isone(s)
+      z *= s
+   end
+   return z
+end
+

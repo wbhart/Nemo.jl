@@ -514,6 +514,12 @@ end
    @test asinh(sinh(b)) == b
    @test atanh(tanh(b)) == b
    @test cosh(b)^2 - sinh(b)^2 == 1 + O(x^5)
+
+   for iter = 1:300
+      f = rand(R, 0:9, -10:10)
+
+      @test sqrt(f^2) == f || sqrt(f^2) == -f
+   end
 end
 
 @testset "fmpq_rel_series.unsafe_operators" begin

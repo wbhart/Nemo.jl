@@ -508,6 +508,17 @@ end
    @test isequal(divexact(R(5)*a, R(5)), a)
 end
 
+@testset "gfp_rel_series.square_root" begin
+   S = GF(31)
+   R, x = PowerSeriesRing(S, 30, "x")
+
+   for iter = 1:300
+      f = rand(R, 0:9)
+
+      @test sqrt(f^2) == f || sqrt(f^2) == -f
+   end
+end
+
 @testset "gfp_rel_series.special_functions" begin
    R = GF(17)
    S, x = PowerSeriesRing(R, 30, "x")
