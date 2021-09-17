@@ -525,8 +525,9 @@ end
 
    @test X == Y
 
+   m1 = [1 1; 1 0; 1 0]
    m2 = [ 1 0 ; 0 1; 0 1 ]
-   m2Z = matrix(ZZ, m2)
+   m1Q = matrix(QQ, m1)
    m2Q = matrix(QQ, m2);
    
    N = solve(m1Q, m2Q)
