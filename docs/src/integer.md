@@ -120,15 +120,18 @@ In the following table we list the division functions and their rounding
 behaviour. We also give the return value of the function, with $q$ representing
 return of the quotient and $r$ representing return of the remainder.
 
-Function                    | Return | Rounding
-----------------------------|--------|------------------------
-`mod`                       | r      | towards minus infinity
-`rem`                       | r      | towards zero
-`div`                       | q      | towards minus infinity
-`divrem(a::fmpz, b::fmpz)`  | q, r   | towards minus infinity 
-`tdivrem(a::fmpz, b::fmpz)` | q, r   | towards zero
-`fdivrem(a::fmpz, b::fmpz)` | q, r   | towards minus infinity 
-`ndivrem(a::fmpz, b::fmpz)` | q, r   | nearest integer, ties rounds toward zero
+Function                     | Return | Rounding of the quotient
+-----------------------------|--------|--------------------------------------------
+`mod`                        | r      | towards minus infinity
+`rem`                        | r      | towards zero
+`div`                        | q      | towards minus infinity
+`divrem(a::fmpz, b::fmpz)`   | q, r   | towards minus infinity
+`tdivrem(a::fmpz, b::fmpz)`  | q, r   | towards zero
+`fdivrem(a::fmpz, b::fmpz)`  | q, r   | towards minus infinity
+`cdivrem(a::fmpz, b::fmpz)`  | q, r   | towards plus infinity
+`ntdivrem(a::fmpz, b::fmpz)` | q, r   | nearest integer, ties toward zero
+`nfdivrem(a::fmpz, b::fmpz)` | q, r   | nearest integer, ties toward minus infinity
+`ncdivrem(a::fmpz, b::fmpz)` | q, r   | nearest integer, ties toward plus infinity
 
 N.B: the internal definition of `Nemo.div` and `Nemo.divrem` are the same as
 `fdiv` and `fdivrem`. The definitions in the table are of `Base.div` and
@@ -495,4 +498,23 @@ rand_bits_prime(::FlintIntegerRing, ::Int, ::Bool)
 ```julia
 a = rand_bits(ZZ, 23)
 b = rand_bits_prime(ZZ, 7)
+```
+
+# Complex Integers
+
+The Gaussian integer type in Nemo is provided by a pair of Flint integers.
+The associated ring of integers is represented by the constant parent object
+called `FlintZZi` or `ZZi`, and the fraction field is called `FlintQQi` or
+`QQi`.
+
+**Examples**
+
+```julia
+a = ZZ(5)*im
+b = ZZi(3, 4)
+
+isunit(a)
+factor(a)
+a//b
+abs2(a//b)
 ```

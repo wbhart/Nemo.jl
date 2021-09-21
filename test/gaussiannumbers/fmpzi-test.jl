@@ -47,6 +47,31 @@ end
    @test ZZi(0,1)^2 == -1
 end
 
+@testset "fmpzi.canonical_mod" begin
+   if VERSION >= v"1.4" # RoundNearestTiesUp
+      function test_ncdivrem(a, b)
+         @test Nemo.ncdivrem(fmpz(a), fmpz(b)) == divrem(a, b, RoundNearestTiesUp)
+      end
+      for i in -7:7, j in 1:5
+         test_ncdivrem(i, -j)
+         test_ncdivrem(i, +j)
+      end
+   end
+   for i in 1:30
+      m = rand_bits(ZZi, rand(2:6))
+      if iszero(m)
+         m = ZZi(1, 1)
+      end
+      n = abs2(m)
+      s = Set{fmpzi}([zero(ZZi)])
+      for j in 1:10*Int(n)
+         a = rand_bits(ZZi, rand(1:15))
+         push!(s, mod(a, m))
+         @test length(s) <= n
+      end
+   end
+end
+
 @testset "fmpzi.Euclidean" begin
    @test_throws Exception invmod(ZZi(1,1), ZZi(2))
    m = ZZi(3)
@@ -67,6 +92,10 @@ end
       @assert abs(real(b)) > abs(imag(b)) || real(b) == imag(b)
    end
 
+   @test gcd(2, ZZi(0,3)) == 1
+   @test gcd(2, ZZi(0,4)) == 2
+   @test gcd(ZZi(3,0), 2) == 1
+   @test gcd(ZZi(4,0), 2) == 2
    @test gcd(ZZ(2), ZZi(1,1)) == ZZi(1,1)
    @test gcd(ZZi(1,1), ZZ(2)) == ZZi(1,1)
    @test gcdx(ZZi(0), ZZi(0)) == (0, 0, 0)
