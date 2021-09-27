@@ -347,6 +347,10 @@ b = ldexp(x, -ZZ(15))
 ### Miscellaneous operations
 
 ```@docs
+add_error!(::arb, ::arb)
+```
+
+```@docs
 trim(::arb)
 ```
 

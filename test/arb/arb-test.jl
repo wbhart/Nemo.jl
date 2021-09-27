@@ -180,6 +180,11 @@ end
    @test radius(RR(3)) == 0
    @test midpoint(RR("3 +/- 0.25")) == 3
    @test radius(RR("3 +/- 0.25")) >= 0.25
+
+   x = RR("4 +/- 1")
+   add_error!(x, RR("2 +/- 1"))
+   @test midpoint(x) == 4
+   @test 3.999 <= radius(x) <= 4.001
 end
 
 @testset "arb.unary_ops" begin

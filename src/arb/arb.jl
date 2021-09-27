@@ -9,7 +9,7 @@
 
 import Base: ceil, isinteger
 
-export ball, radius, midpoint, contains, contains_zero, contains_negative,
+export add_error!, ball, radius, midpoint, contains, contains_zero, contains_negative,
        contains_positive, contains_nonnegative, contains_nonpositive, convert,
        iszero, isnonzero, isexact, ispositive, isfinite, isnonnegative,
        isnegative, isnonpositive, add!, mul!, sub!, div!, overlaps,
@@ -583,6 +583,15 @@ function midpoint(x::arb)
   z = parent(x)()
   ccall((:arb_get_mid_arb, libarb), Nothing, (Ref{arb}, Ref{arb}), z, x)
   return z
+end
+
+@doc Markdown.doc"""
+    add_error!(x::arb, y::arb)
+
+Adds the absolute values of the midpoint and radius of $y$ to the radius of $x$.
+"""
+function add_error!(x::arb, y::arb)
+  ccall((:arb_add_error, libarb), Nothing, (Ref{arb}, Ref{arb}), x, y)
 end
 
 ################################################################################
