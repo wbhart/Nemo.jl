@@ -7,11 +7,11 @@
 #
 ###############################################################################
 
-import Base: ceil
+import Base: ceil, isinteger
 
 export ball, radius, midpoint, contains, contains_zero, contains_negative,
        contains_positive, contains_nonnegative, contains_nonpositive, convert,
-       iszero, isnonzero, isexact, isint, ispositive, isfinite, isnonnegative,
+       iszero, isnonzero, isexact, ispositive, isfinite, isnonnegative,
        isnegative, isnonpositive, add!, mul!, sub!, div!, overlaps,
        unique_integer, accuracy_bits, trim, ldexp, setunion, setintersection,
        const_pi, const_e, const_log2, const_log10, const_euler, const_catalan,
@@ -105,9 +105,11 @@ Return $x$ as an `fmpz` if it represents an unique integer, else throws an
 error.
 """
 function fmpz(x::arb)
-  !isexact(x) && error("Argument must represent a unique integer")
-  (b, n) = unique_integer(x)
-  !b ? error("Argument must represent a unique integer") : return n
+   if isexact(x)
+      ok, z = unique_integer(x)
+      ok && return z
+   end
+   error("Argument must represent a unique integer")
 end
 
 BigInt(x::arb) = BigInt(fmpz(x))
@@ -499,11 +501,11 @@ function isexact(x::arb)
 end
 
 @doc Markdown.doc"""
-    isint(x::arb)
+    isinteger(x::arb)
 
 Return `true` if $x$ is an exact integer, otherwise return `false`.
 """
-function isint(x::arb)
+function isinteger(x::arb)
    return Bool(ccall((:arb_is_int, libarb), Cint, (Ref{arb},), x))
 end
 
@@ -946,15 +948,7 @@ function unique_integer(x::arb)
 end
 
 function (::FlintIntegerRing)(a::arb)
-   if !Nemo.isint(a)
-      error("Argument must be an integer.")
-   end
-   ui = unique_integer(a)
-   if ui[1] == false
-      error("Argument must be an integer.")
-   else
-      return ui[2]
-   end
+   return fmpz(a)
 end
 
 @doc Markdown.doc"""
@@ -1430,16 +1424,20 @@ function sinhcosh(x::arb)
   return (s, c)
 end
 
-@doc Markdown.doc"""
-    atan2(y::arb, x::arb)
-
-Return $\operatorname{atan2}(y,x) = \arg(x+yi)$.
-"""
-function atan2(y::arb, x::arb)
+function atan(y::arb, x::arb)
   z = parent(y)()
   ccall((:arb_atan2, libarb), Nothing,
               (Ref{arb}, Ref{arb}, Ref{arb}, Int), z, y, x, parent(y).prec)
   return z
+end
+
+@doc Markdown.doc"""
+    atan2(y::arb, x::arb)
+
+Return $\operatorname{atan2}(y,x) = \arg(x+yi)$. Same as `atan(y, x)`.
+"""
+function atan2(y::arb, x::arb)
+  return atan(y, x)
 end
 
 @doc Markdown.doc"""

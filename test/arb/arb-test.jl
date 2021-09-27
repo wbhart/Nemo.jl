@@ -47,6 +47,8 @@ end
    c = 0.12
    @test fmpz(RR(a)) == a
    @test_throws ErrorException fmpz(RR(c))
+   @test ZZ(RR(a)) == a
+   @test_throws ErrorException ZZ(RR(c))
    @test BigInt(RR(a)) == a
    @test_throws ErrorException BigInt(RR(c))
    @test Int(RR(a)) == a
@@ -159,8 +161,8 @@ end
    @test isexact(RR(QQ(1,4)))
    @test !isexact(RR(QQ(1,3)))
 
-   @test isint(RR(3))
-   @test !isint(RR("3 +/- 0.01"))
+   @test isinteger(RR(3))
+   @test !isinteger(RR("3 +/- 0.01"))
 
    @test ispositive(RR(3))
    @test isnonnegative(RR(3))
