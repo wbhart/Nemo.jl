@@ -395,8 +395,14 @@ function (R::GaloisFmpzField)(a::fmpz)
    return gfp_fmpz_elem(d, R)
 end
 
-function (R::GaloisFmpzField)(a::gfp_fmpz_elem)
-   return a
+function (R::GaloisFmpzField)(a::Union{gfp_elem, nmod, gfp_fmpz_elem, fmpz_mod})
+   S = parent(a)
+   if S === R
+      return a
+   else
+      isdivisible_by(modulus(S), modulus(R)) || error("incompatible parents")
+      return R(data(a))
+   end
 end
 
 ###############################################################################
