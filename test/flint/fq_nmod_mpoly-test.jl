@@ -68,6 +68,20 @@ end
    @test string(S(a)) == "a"
    @test string(x) == "x"
    @test string(y) == "y"
+
+   a = fmpz(3)^100
+   b = fmpz(2)^100
+   @test string(x^a + y^b) == "x^$a + y^$b"
+end
+
+@testset "fq_nmod_mpoly.hash" begin
+   R, a = FiniteField(23, 5, "a")
+   S, (x, y) = PolynomialRing(R, ["x", "y"])
+
+   p = y^fmpz(2)^100
+
+   @test hash(x) == hash((x + y) - y)
+   @test hash(x) == hash((x + p) - p)
 end
 
 @testset "fq_nmod_mpoly.manipulation" begin
@@ -120,6 +134,8 @@ end
       f = rand(S, 1:5, 0:100)
 
       if length(f) > 0
+        @test f == sum((coeff(f, i) * S([R(1)], [Nemo.exponent_vector(f, i)])  for i in 1:length(f)))
+        @test f == sum((coeff(f, i) * S([R(1)], [Nemo.exponent_vector_ui(f, i)])  for i in 1:length(f)))
         @test f == sum((coeff(f, i) * S([R(1)], [Nemo.exponent_vector_fmpz(f, i)])  for i in 1:length(f)))
       end
 
@@ -718,7 +734,9 @@ end
         end
      end
 
-     f = rand(vars_R)^(fmpz(2)^64)
+     f = rand(vars_R)^(fmpz(typemax(UInt)) + 1)
+     @test !exponent_vector_fits_int(f, 1)
+     @test !exponent_vector_fits_ui(f, 1)
      @test_throws DomainError exponent_vector(f, 1)
   end
 end
