@@ -643,6 +643,8 @@ end
   a = fmpz(32)
   b = fmpz(23)
   c = one(FlintZZ)
+  d = fmpz(-3)
+  r = fmpz()
   b_copy = deepcopy(b)
   c_copy = deepcopy(c)
 
@@ -667,6 +669,12 @@ end
 
   addmul!(a, a, c)
   @test a == 2 * (1 + b + b^2) * b * 3
+
+  Nemo.fmma!(r, a, b, c, d)
+  @test r == a * b + c * d
+
+  Nemo.fmms!(r, a, b, c, d)
+  @test r == a * b - c * d
 
   @test b_copy == b
   @test c_copy == c

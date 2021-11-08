@@ -32,20 +32,19 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # do not export div and divrem
-export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash,
-       bell, isprime, fdiv, cdiv, tdiv, rem, mod, gcd, lcm, invmod,
-       powermod, abs, isqrt, popcount, prevpow2, nextpow2, ndigits, dec,
-       bin, oct, hex, base, one, zero, divexact, fits, sign, nbits, deepcopy,
-       tdivpow2, fdivpow2, cdivpow2, flog, clog, cmpabs, clrbit!, setbit!,
-       combit!, crt, divisible, divisors, prime_divisors, divisor_lenstra,
-       fmodpow2, gcdinv, isprobable_prime, jacobi_symbol, kronecker_symbol,
-       remove, root, size, isqrtrem, sqrtmod, trailing_zeros, divisor_sigma,
-       euler_phi, fibonacci, moebius_mu, primorial, rising_factorial,
-       number_of_partitions, canonical_unit, isunit, isequal, addeq!, mul!,
-       issquare, sqrt, issquare_with_sqrt, next_prime, ndivrem,
-       iszero, rand, rand_bits, binomial, factorial, rand_bits_prime, iroot,
-       tdivrem, fdivrem, cdivrem, ntdivrem, nfdivrem, ncdivrem,
-       tstbit
+export fmpz, FlintZZ, FlintIntegerRing, parent, show, convert, hash, bell,
+       isprime, fdiv, cdiv, tdiv, rem, mod, gcd, lcm, invmod, powermod, abs,
+       isqrt, popcount, prevpow2, nextpow2, ndigits, dec, bin, oct, hex, base,
+       one, zero, divexact, fits, sign, nbits, deepcopy, tdivpow2, fdivpow2,
+       cdivpow2, flog, clog, cmpabs, clrbit!, setbit!, combit!, crt, divisible,
+       divisors, prime_divisors, divisor_lenstra, fmodpow2, gcdinv,
+       isprobable_prime, jacobi_symbol, kronecker_symbol, remove, root, size,
+       isqrtrem, sqrtmod, trailing_zeros, divisor_sigma, euler_phi, fibonacci,
+       moebius_mu, primorial, rising_factorial, number_of_partitions,
+       canonical_unit, isunit, isequal, addeq!, mul!, fmma!, fmms!, issquare,
+       sqrt, issquare_with_sqrt, next_prime, ndivrem, iszero, rand, rand_bits,
+       binomial, factorial, rand_bits_prime, iroot, tdivrem, fdivrem, cdivrem,
+       ntdivrem, nfdivrem, ncdivrem, tstbit
 
 ###############################################################################
 #
@@ -2246,6 +2245,28 @@ function submul!(z::fmpz, a::fmpz, b::fmpz)
          (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}),
          z, a, b)
    return z
+end
+
+@doc Markdown.doc"""
+    fmma!(r::fmpz, a::fmpz, b::fmpz, c::fmpz, d::fmpz)
+
+Return $r = a b + c d$, changing $r$ in-place.
+"""
+function fmma!(r::fmpz, a::fmpz, b::fmpz, c::fmpz, d::fmpz)
+   ccall((:fmpz_fmma, libflint), Nothing,
+         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), r, a, b, c, d)
+   return r
+end
+
+@doc Markdown.doc"""
+    fmms!(r::fmpz, a::fmpz, b::fmpz, c::fmpz, d::fmpz)
+
+Return $r = a b - c d$, changing $r$ in-place.
+"""
+function fmms!(r::fmpz, a::fmpz, b::fmpz, c::fmpz, d::fmpz)
+   ccall((:fmpz_fmms, libflint), Nothing,
+         (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), r, a, b, c, d)
+   return r
 end
 
 function divexact!(z::fmpz, a::fmpz, b::fmpz)
