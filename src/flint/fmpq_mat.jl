@@ -846,7 +846,7 @@ end
 
 ###############################################################################
 #
-#   Promotions
+#   Promotions and convert
 #
 ###############################################################################
 
@@ -933,6 +933,13 @@ function identity_matrix(R::FlintRationalField, n::Int)
    z.base_ring = FlintQQ
    return z
 end
+
+function Base.convert{T<:Integer}(::Type{Matrix{Rational{T}}}, A::fmpq_mat)
+    m,n = size(A)
+    mat::Matrix{Rational{T}} = [Rational{T}(A[i,j]) for i = 1:m, j = 1:n]
+    return mat
+end
+
 
 ###############################################################################
 #
