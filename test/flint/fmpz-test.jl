@@ -936,6 +936,7 @@ end
    @test_throws DomainError primorial(-7)
 
    @test binomial(ZZ(12), ZZ(5)) == 792
+   @test binomial(UInt(12), UInt(5), ZZ) == 792
 
    @test bell(12) == 4213597
 

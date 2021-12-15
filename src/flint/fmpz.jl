@@ -1755,6 +1755,18 @@ function binomial(n::fmpz, k::fmpz)
 end
 
 @doc Markdown.doc"""
+    binomial(n::UInt, k::UInt, ::FlintIntegerRing)
+
+Return the binomial coefficient $\frac{n!}{(n - k)!k!}$ as an `fmpz`.
+"""
+function binomial(n::UInt, k::UInt, ::FlintIntegerRing)
+    z = fmpz()
+    ccall((:fmpz_bin_uiui, libflint), Nothing,
+          (Ref{fmpz}, UInt, UInt), z, n, k)
+    return z
+end
+
+@doc Markdown.doc"""
     moebius_mu(x::fmpz)
 
 Return the Moebius mu function of $x$ as an `Int`. The value
