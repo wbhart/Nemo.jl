@@ -555,7 +555,9 @@ end
    @test issquare_with_sqrt(fmpz(5)) == (false, 0)
    @test issquare_with_sqrt(fmpz(4)) == (true, 2)
 
-   @test_throws DomainError issquare_with_sqrt(-fmpz(1))
+   f1, s1 = issquare_with_sqrt(-fmpz(1))
+
+   @test !f1
    
    @test isqrt(fmpz(12)) == 3
 

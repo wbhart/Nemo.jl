@@ -1219,7 +1219,9 @@ issquare(x::fmpz) = Bool(ccall((:fmpz_is_square, libflint), Cint,
                                (Ref{fmpz},), x))
 
 function issquare_with_sqrt(x::fmpz)
-    x < 0 && throw(DomainError(x, "Argument must be non-negative"))
+    if x < 0
+       return false, zero(fmpz)
+    end
     for i = 1:length(sqrt_moduli)
        res = mod(x, sqrt_moduli[i])
        if !(res in sqrt_residues[i])
