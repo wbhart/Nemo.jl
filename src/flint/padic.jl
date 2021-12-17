@@ -525,6 +525,44 @@ function Base.sqrt(a::padic; check::Bool=true)
    return z
 end
 
+function issquare(a::padic)
+   if iszero(a)
+      return true
+   end
+   if (a.v % 2) != 0
+      return false
+   end
+   R = parent(a)
+   u = fmpz()
+   ccall((:padic_get_unit, libflint), Nothing,
+          (Ref{fmpz}, Ref{padic}), u, a)
+   p = prime(R)
+   if p == 2
+      umod = mod(u, 8)
+      return umod == 1
+   else
+      umod = mod(u, p)
+      r = ccall((:n_jacobi, libflint), Cint, (UInt, UInt), umod, p)
+      return isone(r)
+   end 
+end
+
+function issquare_with_sqrt(a::padic)
+   R = parent(a)
+   if (a.v % 2) != 0
+      return false, zero(R)
+   end
+   ctx = parent(a)
+   z = padic(a.N - div(a.v, 2))
+   z.parent = ctx
+   res = Bool(ccall((:padic_sqrt, libflint), Cint,
+                    (Ref{padic}, Ref{padic}, Ref{FlintPadicField}), z, a, ctx))
+   if !res
+      return false, zero(R)
+   end
+   return true, z
+end
+
 ###############################################################################
 #
 #   Special functions
