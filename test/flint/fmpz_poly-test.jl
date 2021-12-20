@@ -409,6 +409,37 @@ end
   g = f^2
 
   @test sqrt(g)^2 == g
+
+  f = 2*x^4 + x^3 + 2*x^2 - 6*x - 9
+
+  @test issquare(f^2)
+
+  for i = 1:5000
+    f = rand(R, -1:5, -10:10)
+    while issquare(f)
+      f = rand(R, -1:5, -10:10)
+    end
+
+    g0 = rand(R, -1:5, -10:10)
+    g = g0^2
+
+    @test issquare(g)
+
+    f0, s0 = issquare_with_sqrt(g)
+
+    @test f0 && s0^2 == g
+
+    @test iszero(g) || !issquare(-g)
+    @test iszero(g) || !issquare(f*g)
+
+    f1, s1 = issquare_with_sqrt(-g)
+
+    @test iszero(g) || !f1
+
+    f2, s2 = issquare_with_sqrt(f*g)
+
+    @test iszero(g) || !f2
+  end
 end
 
 @testset "fmpz_poly.special" begin
