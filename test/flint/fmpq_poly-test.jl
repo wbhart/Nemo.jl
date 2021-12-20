@@ -500,6 +500,44 @@ end
    @test signature(f) == (1, 1)
 end
 
+@testset "fmpq_poly.square_root"  begin
+   R, x = PolynomialRing(QQ, "x")
+
+   for i = 1:1000
+      f = rand(R, -1:4, -5:5)
+      while issquare(f)
+         f = rand(R, -1:4, -5:5)
+      end
+
+      g0 = rand(R, -1:4, -5:5)
+      g = g0^2
+
+      @test sqrt(g)^2 == g
+
+      if !iszero(g)
+         @test_throws ErrorException sqrt(-g)
+         @test_throws ErrorException sqrt(f*g)
+      end
+
+      @test issquare(g)
+
+      f0, s0 = issquare_with_sqrt(g)
+
+      @test f0 && s0^2 == g
+
+      @test iszero(g) || !issquare(-g)
+      @test iszero(g) || !issquare(f*g)
+
+      f1, s1 = issquare_with_sqrt(-g)
+
+      @test iszero(g) || !f1
+
+      f2, s2 = issquare_with_sqrt(f*g)
+
+      @test iszero(g) || !f2
+   end
+end
+
 @testset "fmpq_poly.special" begin
    S, y = PolynomialRing(QQ, "y")
 
