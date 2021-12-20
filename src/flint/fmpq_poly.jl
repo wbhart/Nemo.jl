@@ -635,6 +635,56 @@ function gcdx(x::fmpq_poly, y::fmpq_poly)
    return (z, u, v)
 end
 
+###############################################################################
+#
+#   Square root
+#
+###############################################################################
+
+function sqrt(x::fmpq_poly; check::Bool=true)
+   R = parent(x)
+   d = denominator(x)
+   sd = sqrt(d; check=check)
+   n = polynomial(ZZ, [])
+   ccall((:fmpq_poly_get_numerator, libflint), Nothing,
+         (Ref{fmpz_poly}, Ref{fmpq_poly}), n, x)
+   sn = sqrt(n; check=check)
+   s = R(sn)
+   return divexact(s, sd)
+end
+
+function issquare(x::fmpq_poly)
+   d = denominator(x)
+   if !issquare(d)
+      return false
+   end
+   n = polynomial(ZZ, [])
+   ccall((:fmpq_poly_get_numerator, libflint), Nothing,
+         (Ref{fmpz_poly}, Ref{fmpq_poly}), n, x)
+   if !issquare(n)
+      return false
+   end
+   return true
+end
+
+function issquare_with_sqrt(x::fmpq_poly)
+   R = parent(x)
+   d = denominator(x)
+   f1, s1 = issquare_with_sqrt(d)
+   if !f1
+      return false, zero(R)
+   end
+   n = polynomial(ZZ, [])
+   ccall((:fmpq_poly_get_numerator, libflint), Nothing,
+         (Ref{fmpz_poly}, Ref{fmpq_poly}), n, x)
+   f2, s2 = issquare_with_sqrt(n)
+   if !f2
+      return false, zero(R)
+   end
+   s = R(s2)
+   return true, divexact(s, s1)
+end
+
 ################################################################################
 #
 #   Factorization

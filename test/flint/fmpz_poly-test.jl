@@ -414,13 +414,13 @@ end
 
   @test issquare(f^2)
 
-  for i = 1:5000
-    f = rand(R, -1:5, -10:10)
+  for i = 1:500
+    f = rand(R, -1:5, -5:5)
     while issquare(f)
-      f = rand(R, -1:5, -10:10)
+      f = rand(R, -1:5, -5:5)
     end
 
-    g0 = rand(R, -1:5, -10:10)
+    g0 = rand(R, -1:5, -5:5)
     g = g0^2
 
     @test issquare(g)
