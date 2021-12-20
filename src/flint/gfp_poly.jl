@@ -362,6 +362,49 @@ end
 
 ################################################################################
 #
+#  Square root
+#
+################################################################################
+
+function sqrt(x::gfp_poly; check::Bool=true)
+   R = parent(x)
+   s = R()
+   flag = Bool(ccall((:nmod_poly_sqrt, libflint), Cint,
+                     (Ref{gfp_poly}, Ref{gfp_poly}), s, x))
+   check && !flag && error("Not a square in sqrt")
+   return s
+end
+
+function issquare(x::gfp_poly)
+   if iszero(x)
+      return true
+   end
+   if !iseven(degree(x))
+      return false
+   end
+   R = parent(x)
+   s = R()
+   flag = Bool(ccall((:nmod_poly_sqrt, libflint), Cint,
+                     (Ref{gfp_poly}, Ref{gfp_poly}), s, x))
+   return flag
+end
+
+function issquare_with_sqrt(x::gfp_poly)
+   R = parent(x)
+   if iszero(x)
+      return true, zero(R)
+   end
+   if !iseven(degree(x))
+      return false, zero(R)
+   end
+   s = R()
+   flag = Bool(ccall((:nmod_poly_sqrt, libflint), Cint,
+                     (Ref{gfp_poly}, Ref{gfp_poly}), s, x))
+   return flag, s
+end
+
+################################################################################
+#
 #  Factorization
 #
 ################################################################################
