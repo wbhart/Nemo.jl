@@ -516,47 +516,7 @@ function Base.sqrt(x::fmpz_poly; check::Bool=true)
     return z
 end
 
-# internal use
-# false = definitely not a square
-# true  = may be a square
-# assumes x is not zero
-function issquare_heuristic(x::fmpz_poly)
-    if isodd(degree(x))
-        return false
-    end
-    # evaluate at zero
-    if !issquare(constant_coefficient(x))
-        return false
-    end
-    if length(x) > 1
-        # evaluate at infty
-        if !issquare(leading_coefficient(x))
-            return false
-        end
-        # evaluate at 1
-        s1 = sum(coeff(x, i) for i in 0:length(x) - 1)
-        if !issquare(s1)
-            return false
-        end
-        # evaluate at -1
-        s2 = sum(iseven(i) ? coeff(x, i) : -coeff(x, i) for i in 0:length(x) - 1)
-        if !issquare(s2)
-            return false
-        end
-    end
-    return true
-end
-
 function issquare(x::fmpz_poly)
-    if iszero(x)
-        return true
-    end
-    if !issquare_heuristic(x)
-        return false
-    end
-    if length(x) == 1
-        return true
-    end
     z = parent(x)()
     flag = Bool(ccall((:fmpz_poly_sqrt, libflint), Cint,
           (Ref{fmpz_poly}, Ref{fmpz_poly}), z, x))
@@ -565,12 +525,6 @@ end
 
 function issquare_with_sqrt(x::fmpz_poly)
     R = parent(x)
-    if iszero(x)
-        return true, zero(R)
-    end
-    if !issquare_heuristic(x)
-        return false, zero(R)
-    end
     z = R()
     flag = Bool(ccall((:fmpz_poly_sqrt, libflint), Cint,
           (Ref{fmpz_poly}, Ref{fmpz_poly}), z, x))
