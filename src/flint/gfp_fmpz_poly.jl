@@ -271,6 +271,37 @@ end
 
 ################################################################################
 #
+#  Square root
+#
+################################################################################
+
+function Base.sqrt(x::gfp_fmpz_poly; check::Bool=true)
+   s = parent(x)()
+   flag = Bool(ccall((:fmpz_mod_poly_sqrt, libflint), Cint,
+                     (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}, Ref{fmpz_mod_ctx_struct}),
+                      s, x, x.parent.base_ring.ninv))
+   check && !flag && error("Not a square in sqrt")
+   return s
+end
+
+function issquare(x::gfp_fmpz_poly)
+   s = parent(x)()
+   flag = Bool(ccall((:fmpz_mod_poly_sqrt, libflint), Cint,
+                     (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}, Ref{fmpz_mod_ctx_struct}),
+                      s, x, x.parent.base_ring.ninv))
+   return flag
+end
+
+function issquare_with_sqrt(x::gfp_fmpz_poly)
+   s = parent(x)()
+   flag = Bool(ccall((:fmpz_mod_poly_sqrt, libflint), Cint,
+                     (Ref{gfp_fmpz_poly}, Ref{gfp_fmpz_poly}, Ref{fmpz_mod_ctx_struct}),
+                      s, x, x.parent.base_ring.ninv))
+   return flag, s
+end
+
+################################################################################
+#
 #  Factorization
 #
 ################################################################################
