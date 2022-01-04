@@ -514,7 +514,25 @@ function Base.sqrt(x::fmpz_poly; check::Bool=true)
           (Ref{fmpz_poly}, Ref{fmpz_poly}), z, x))
     check && flag == false && error("Not a square in sqrt")
     return z
- end
+end
+
+function issquare(x::fmpz_poly)
+    z = parent(x)()
+    flag = Bool(ccall((:fmpz_poly_sqrt, libflint), Cint,
+          (Ref{fmpz_poly}, Ref{fmpz_poly}), z, x))
+    return flag
+end
+
+function issquare_with_sqrt(x::fmpz_poly)
+    R = parent(x)
+    z = R()
+    flag = Bool(ccall((:fmpz_poly_sqrt, libflint), Cint,
+          (Ref{fmpz_poly}, Ref{fmpz_poly}), z, x))
+    if !flag
+        return false, zero(R)
+    end
+    return true, z
+end
 
 ###############################################################################
 #
