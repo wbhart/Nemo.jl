@@ -645,7 +645,7 @@ function sqrt(x::fmpq_poly; check::Bool=true)
    R = parent(x)
    d = denominator(x)
    sd = sqrt(d; check=check)
-   n = polynomial(ZZ, [])
+   n = polynomial(ZZ, [], cached = false)
    ccall((:fmpq_poly_get_numerator, libflint), Nothing,
          (Ref{fmpz_poly}, Ref{fmpq_poly}), n, x)
    sn = sqrt(n; check=check)
