@@ -576,6 +576,40 @@ end
   @test issquarefree((x+1)*(x+2)*(x+3))
 end
 
+@testset "gfp_poly.square_root" begin
+   for R in [GF(2), GF(23)]
+      S, x = PolynomialRing(R, "x")
+
+      for iter in 1:1000
+         f = rand(S, -1:10)
+         while issquare(f)
+            f = rand(S, -1:10)
+         end
+
+         g0 = rand(S, -1:10)
+         g = g0^2
+
+         @test issquare(g)
+         @test sqrt(g)^2 == g
+
+         if !iszero(g)
+            @test !issquare(f*g)
+            @test_throws ErrorException sqrt(f*g)
+         end
+
+         f1, s1 = issquare_with_sqrt(g)
+
+         @test f1 && s1^2 == g
+
+         if !iszero(g)
+            f2, s2 = issquare_with_sqrt(f*g)
+
+            @test !f2
+         end
+      end
+   end
+end
+
 @testset "gfp_poly.factor" begin
   R = GF(23)
   Rx, x = PolynomialRing(R, "x")
