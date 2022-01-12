@@ -370,8 +370,6 @@ end
 
 parent(x::arb_poly) = x.parent
 
-elem_type(x::ArbPolyRing) = arb_poly
-
 var(x::ArbPolyRing) = x.S
 
 precision(x::ArbPolyRing) = precision(x.base_ring)
@@ -488,8 +486,6 @@ function _acb_poly_clear_fn(x::acb_poly)
 end
 
 parent(x::acb_poly) = x.parent
-
-elem_type(x::AcbPolyRing) = acb_poly
 
 var(x::AcbPolyRing) = x.S
 
