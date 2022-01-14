@@ -360,6 +360,41 @@ end
    @test gcdinv(r, s) == (1, 3*y^4+8*y^3+18*y^2+4*y+2)
 end
 
+@testset "fq_poly.square_root" begin
+   for p in [2, 23]
+      R, x = FiniteField(fmpz(p), 3, "x")
+      S, y = PolynomialRing(R, "y")
+
+      for iter in 1:1000
+         f = rand(S, -1:10)
+         while issquare(f)
+            f = rand(S, -1:10)
+         end
+
+         g0 = rand(S, -1:10)
+         g = g0^2
+
+         @test issquare(g)
+         @test sqrt(g)^2 == g
+
+         if !iszero(g)
+            @test !issquare(f*g)
+            @test_throws ErrorException sqrt(f*g)
+         end
+
+         f1, s1 = issquare_with_sqrt(g)
+
+         @test f1 && s1^2 == g
+
+         if !iszero(g)
+            f2, s2 = issquare_with_sqrt(f*g)
+
+            @test !f2
+         end
+      end
+   end
+end
+
 @testset "fq_poly.evaluation" begin
    R, x = FiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")

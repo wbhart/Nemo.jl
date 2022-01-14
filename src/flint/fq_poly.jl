@@ -399,6 +399,52 @@ end
 
 ################################################################################
 #
+#  Square root
+#
+################################################################################
+
+function sqrt(x::fq_poly; check::Bool=true)
+   R = parent(x)
+   s = R()
+   flag = Bool(ccall((:fq_poly_sqrt, libflint), Cint,
+                     (Ref{fq_poly}, Ref{fq_poly}, Ref{FqFiniteField}),
+                      s, x, base_ring(parent(x))))
+   check && !flag && error("Not a square in sqrt")
+   return s
+end
+
+function issquare(x::fq_poly)
+   if iszero(x)
+      return true
+   end
+   if !iseven(degree(x))
+      return false
+   end
+   R = parent(x)
+   s = R()
+   flag = Bool(ccall((:fq_poly_sqrt, libflint), Cint,
+                     (Ref{fq_poly}, Ref{fq_poly}, Ref{FqFiniteField}),
+                      s, x, base_ring(parent(x))))
+   return flag
+end
+
+function issquare_with_sqrt(x::fq_poly)
+   R = parent(x)
+   if iszero(x)
+      return true, zero(R)
+   end
+   if !iseven(degree(x))
+      return false, zero(R)
+   end
+   s = R()
+   flag = Bool(ccall((:fq_poly_sqrt, libflint), Cint,
+                     (Ref{fq_poly}, Ref{fq_poly}, Ref{FqFiniteField}),
+                      s, x, base_ring(parent(x))))
+   return flag, s
+end
+
+################################################################################
+#
 #   Remove and valuation
 #
 ################################################################################
