@@ -678,22 +678,49 @@ end # for
 #
 ###############################################################################
 
-@doc Markdown.doc"""
-    sqrt(a::gfp_abs_series; check::Bool=true)
+function sqrt_classical_char2(a::gfp_abs_series; check::Bool=true)
+  S = parent(a)
+  asqrt = S()
+  prec = div(precision(a) + 1, 2)
+  asqrt = set_precision!(asqrt, prec)
+  if check
+    for i = 1:2:precision(a) - 1 # series must have even exponents
+      if !iszero(coeff(a, i))
+        return false, S()
+      end
+    end
+  end
+  for i = 0:prec - 1
+    asqrt = setcoeff!(asqrt, i, coeff(a, 2*i))
+  end
+  return true, asqrt
+end
 
-Return the power series square root of $a$.
-"""
-function Base.sqrt(a::gfp_abs_series; check::Bool=true)
+function sqrt_classical(a::gfp_abs_series; check::Bool=true)
+   R = base_ring(a)
+   S = parent(a)
+   if characteristic(R) == 2
+      return sqrt_classical_char2(a; check=check)
+   end
    v = valuation(a)
-   z = parent(a)()
+   z = S()
    z.prec = a.prec - div(v, 2)
    if iszero(a)
-      return z
+      return true, z
    end
-   check && !iseven(v) && error("Not a square")
+   if check && !iseven(v)
+     return false, S()
+   end
    a = shift_right(a, v)
    c = coeff(a, 0)
-   s = sqrt(c; check=check)
+   if check
+     flag, s = issquare_with_sqrt(c)
+     if !flag
+       return false, S()
+     end
+   else
+     s = sqrt(c; check=check)
+   end
    a = divexact(a, c)
    z.prec = a.prec - div(v, 2)
    ccall((:nmod_poly_sqrt_series, libflint), Nothing,
@@ -705,7 +732,27 @@ function Base.sqrt(a::gfp_abs_series; check::Bool=true)
    if !iszero(v)
       z = shift_left(z, div(v, 2))
    end
-   return z
+   return true, z
+end
+
+@doc Markdown.doc"""
+    sqrt(a::gfp_abs_series; check::Bool=true)
+
+Return the power series square root of $a$.
+"""
+function Base.sqrt(a::gfp_abs_series; check::Bool=true)
+  flag, s = sqrt_classical(a; check=check)
+  check && !flag && error("Not a square")
+  return s
+end
+ 
+function issquare(a::gfp_abs_series)
+  flag, s = sqrt_classical(a; check=true)
+  return flag
+end
+
+function issquare_with_sqrt(a::gfp_abs_series)
+  return sqrt_classical(a; check=true)
 end
 
 ###############################################################################
