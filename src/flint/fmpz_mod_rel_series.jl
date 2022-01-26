@@ -969,7 +969,6 @@ function sqrt_classical_char2(a::gfp_fmpz_rel_series; check::Bool=true)
    end
    aval2 = div(aval, 2)
    asqrt = parent(a)()
-   fit!(asqrt, prec)
    asqrt = set_precision!(asqrt, prec)
    asqrt = set_valuation!(asqrt, aval2)
    if check
@@ -991,6 +990,7 @@ end
 
 function sqrt_classical(a::gfp_fmpz_rel_series; check::Bool=true)
    S = parent(a)
+   R = base_ring(a)
    v = valuation(a)
    z = S()
    v2 = div(v, 2)
@@ -1001,6 +1001,9 @@ function sqrt_classical(a::gfp_fmpz_rel_series; check::Bool=true)
    end
    if check && !iseven(v)
       return false, S()
+   end
+   if characteristic(R) == 2
+      return sqrt_classical_char2(a; check=check)
    end
    z.prec = a.prec - v2
    z.val = v2
