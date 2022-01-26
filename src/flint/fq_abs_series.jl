@@ -499,6 +499,84 @@ end
 
 ###############################################################################
 #
+#   Square root
+#
+###############################################################################
+
+function sqrt_classical_char2(a::($etype); check::Bool=true)
+   S = parent(a)
+   asqrt = S()
+   prec = div(precision(a) + 1, 2)
+   asqrt = set_precision!(asqrt, prec)
+   if check
+     for i = 1:2:precision(a) - 1 # series must have even exponents
+       if !iszero(coeff(a, i))
+         return false, S()
+       end
+     end
+   end
+   for i = 0:prec - 1
+     asqrt = setcoeff!(asqrt, i, coeff(a, 2*i))
+   end
+   return true, asqrt
+end
+ 
+function sqrt_classical(a::($etype); check::Bool=true)
+   R = base_ring(a)
+   S = parent(a)
+   if characteristic(R) == 2
+      return sqrt_classical_char2(a; check=check)
+   end
+   v = valuation(a)
+   z = S()
+   z.prec = a.prec - div(v, 2)
+   if iszero(a)
+      return true, z
+   end
+   if check && !iseven(v)
+      return false, S()
+   end
+   a = shift_right(a, v)
+   c = coeff(a, 0)
+   if check
+      flag, s = issquare_with_sqrt(c)
+      if !flag
+         return false, S()
+      end
+   else
+      s = sqrt(c; check=check)
+   end
+   a = divexact(a, c)
+   z.prec = a.prec - div(v, 2)
+   ccall(($(flint_fn*"_sqrt_series"), libflint), Nothing,
+         (Ref{($etype)}, Ref{($etype)}, Int, Ref{($ctype)}),
+                z, a, a.prec, base_ring(a))
+   if !isone(s)
+      z *= s
+   end
+   if !iszero(v)
+      z = shift_left(z, div(v, 2))
+   end
+   return true, z
+end
+ 
+function Base.sqrt(a::Ref{($etype)}; check::Bool=true)
+   flag, s = sqrt_classical(a; check=check)
+   check && !flag && error("Not a square")
+   return s
+end
+  
+function issquare(a::Ref{($etype)})
+   flag, s = sqrt_classical(a; check=true)
+   return flag
+end
+ 
+function issquare_with_sqrt(a::Ref{($etype)})
+   return sqrt_classical(a; check=true)
+end
+
+###############################################################################
+#
 #   Unsafe functions
 #
 ###############################################################################
