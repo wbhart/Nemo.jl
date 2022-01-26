@@ -979,11 +979,7 @@ function sqrt_classical_char2(a::gfp_fmpz_rel_series; check::Bool=true)
       end
    end
    for i = 0:prec - aval2 - 1
-      c = polcoeff(a, 2*i)
-      if check && !issquare(c)
-         return false, S()
-      end
-      asqrt = setcoeff!(asqrt, i, sqrt(c; check=false))
+      asqrt = setcoeff!(asqrt, i, polcoeff(a, 2*i))
    end
    return true, asqrt
 end
