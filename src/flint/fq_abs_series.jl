@@ -560,18 +560,18 @@ function sqrt_classical(a::($etype); check::Bool=true)
    return true, z
 end
  
-function Base.sqrt(a::Ref{($etype)}; check::Bool=true)
+function Base.sqrt(a::($etype); check::Bool=true)
    flag, s = sqrt_classical(a; check=check)
    check && !flag && error("Not a square")
    return s
 end
   
-function issquare(a::Ref{($etype)})
+function issquare(a::($etype))
    flag, s = sqrt_classical(a; check=true)
    return flag
 end
  
-function issquare_with_sqrt(a::Ref{($etype)})
+function issquare_with_sqrt(a::($etype))
    return sqrt_classical(a; check=true)
 end
 
