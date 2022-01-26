@@ -521,7 +521,7 @@ function divexact(x::($etype), y::$(mtype); check::Bool=true)
    ccall(($(flint_fn*"_scalar_div_fmpz"), libflint), Nothing,
          (Ref{($etype)}, Ref{($etype)}, Ref{fmpz},
           Ref{($ctype)}),
-         z, x, y, x.parent.base_ring.ninv)
+         z, x, data(y), x.parent.base_ring.ninv)
    return z
 end
 
