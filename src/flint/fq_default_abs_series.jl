@@ -493,14 +493,21 @@ function sqrt_classical_char2(a::fq_default_abs_series; check::Bool=true)
    prec = div(precision(a) + 1, 2)
    asqrt = set_precision!(asqrt, prec)
    if check
-     for i = 1:2:precision(a) - 1 # series must have even exponents
-       if !iszero(coeff(a, i))
-         return false, S()
-       end
-     end
+      for i = 1:2:precision(a) - 1 # series must have even exponents
+         if !iszero(coeff(a, i))
+            return false, S()
+         end
+      end
    end
    for i = 0:prec - 1
-     asqrt = setcoeff!(asqrt, i, coeff(a, 2*i))
+      if check
+         flag, c = issquare_with_sqrt(coeff(a, 2*i))
+         !flag && error("Not a square")
+      else
+         # degree of finite field could be > 1 so sqrt necessary here
+         c = sqrt(coeff(a, 2*i); check=check)
+      end
+      asqrt = setcoeff!(asqrt, i, c)
    end
    return true, asqrt
 end
