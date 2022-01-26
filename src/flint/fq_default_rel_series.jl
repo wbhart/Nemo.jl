@@ -536,6 +536,103 @@ end
 
 ###############################################################################
 #
+#   Square root
+#
+###############################################################################
+
+function sqrt_classical_char2(a::fq_default_rel_series; check::Bool=true)
+   S = parent(a)
+   R = base_ring(a)
+   prec = div(precision(a) + 1, 2)
+   if iszero(a)
+      asqrt = parent(a)()
+      asqrt = set_precision!(asqrt, prec)
+      asqrt = set_valuation!(asqrt, prec)
+      return true, asqrt
+   end
+   aval = valuation(a)
+   if check && !iseven(aval)
+      return false, S()
+   end
+   aval2 = div(aval, 2)
+   asqrt = parent(a)()
+   asqrt = set_precision!(asqrt, prec)
+   asqrt = set_valuation!(asqrt, aval2)
+   if check
+      for i = 1:2:precision(a) - aval - 1 # series must have even exponents
+         if !iszero(polcoeff(a, i))
+            return false, S()
+         end
+      end
+   end
+   for i = 0:prec - aval2 - 1
+      c = polcoeff(a, 2*i)
+      if check && !issquare(c)
+         return false, S()
+      end
+      asqrt = setcoeff!(asqrt, i, sqrt(c; check=false))
+   end
+   return true, asqrt
+end
+
+function sqrt_classical(a::fq_default_rel_series; check::Bool=true)
+   S = parent(a)
+   R = base_ring(a)
+   v = valuation(a)
+   z = S()
+   v2 = div(v, 2)
+   if iszero(a)
+      z.prec = v2
+      z.val = v2
+      return true, z
+   end
+   if check && !iseven(v)
+      return false, S()
+   end
+   if characteristic(R) == 2
+      return sqrt_classical_char2(a; check=check)
+   end
+   z.prec = a.prec - v2
+   z.val = v2
+   c = coeff(a, v)
+   if check
+      flag, s = issquare_with_sqrt(c)
+      if !flag
+         return false, S()
+      end
+   else
+      s = sqrt(c; check=check)
+   end
+   a = divexact(a, c)
+   ccall((:fq_default_poly_sqrt_series, libflint), Nothing,
+                (Ref{fq_default_rel_series}, Ref{fq_default_rel_series},
+                 Int, Ref{FqDefaultFiniteField}),
+               z, a, a.prec, base_ring(a))
+   if !isone(s)
+      z *= s
+   end
+   return true, z
+end
+
+function Base.sqrt(a::fq_default_rel_series; check::Bool=true)
+   flag, q = sqrt_classical(a; check=check)
+   if check && !flag
+      error("Not a square in sqrt")
+   end
+   return q
+end
+
+function issquare(a::fq_default_rel_series)
+   flag, q = sqrt_classical(a; check=true)
+   return flag
+end
+
+function issquare_with_sqrt(a::fq_default_rel_series)
+   return sqrt_classical(a; check=true)
+end
+
+###############################################################################
+#
 #   Unsafe functions
 #
 ###############################################################################
