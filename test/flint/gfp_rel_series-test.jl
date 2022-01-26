@@ -517,6 +517,36 @@ end
 
       @test sqrt(f^2) == f || sqrt(f^2) == -f
    end
+
+   for p in [2, 7, 19, 65537]
+      R = GF(p)
+
+      S, x = PowerSeriesRing(R, 10, "x")
+
+      for iter = 1:10
+         f = rand(S, 0:10, 0:Int(p))
+
+         s = f^2
+
+         @test issquare(s)
+
+         q = sqrt(s)
+
+         @test q^2 == s
+
+         q = sqrt(s; check=false)
+
+         @test q^2 == s
+
+         f1, s1 = issquare_with_sqrt(s)
+
+         @test f1 && s1^2 == s
+
+         if s*x != 0
+            @test_throws ErrorException sqrt(s*x)
+         end
+      end
+   end
 end
 
 @testset "gfp_rel_series.special_functions" begin

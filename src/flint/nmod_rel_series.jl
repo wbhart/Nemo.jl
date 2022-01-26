@@ -988,8 +988,9 @@ function sqrt_classical_char2(a::gfp_rel_series; check::Bool=true)
 end
 
 function sqrt_classical(a::gfp_rel_series; check::Bool=true)
+   S = parent(a)
    v = valuation(a)
-   z = parent(a)()
+   z = S()
    v2 = div(v, 2)
    if iszero(a)
       z.prec = v2
