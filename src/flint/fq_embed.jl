@@ -1,6 +1,6 @@
 ###############################################################################
 #
-#   fq_nmod_embed.jl : Flint finite fields embeddings
+#   fq_embed.jl : Flint finite fields embeddings
 #
 ###############################################################################
 
@@ -10,10 +10,11 @@
 #
 ###############################################################################
 
-function linear_factor(x::fq_nmod_poly)
+function linear_factor(x::fq_poly)
     y = parent(x)()
-    ccall((:fq_nmod_poly_factor_split_single, libflint), Nothing, (Ref{fq_nmod_poly},
-          Ref{fq_nmod_poly}, Ref{FqNmodFiniteField}), y, x, base_ring(x))
+    ccall((:fq_poly_factor_split_single, libflint), Nothing,
+          (Ref{fq_poly}, Ref{fq_poly}, Ref{FqFiniteField}),
+           y, x, base_ring(x))
     return y
 end
 
@@ -23,22 +24,23 @@ end
 #
 ###############################################################################
 
-function embed_gens(k::FqNmodFiniteField, K::FqNmodFiniteField)
+function embed_gens(k::FqFiniteField, K::FqFiniteField)
     a = k()
     b = K()
-    p::Int = characteristic(k)
+    p = fmpz(characteristic(k))::fmpz
     R = GF(p)
     PR = PolynomialRing(R, "T")[1]
     P = PR()
 
-    ccall((:fq_nmod_embed_gens, libflint), Nothing, (Ref{fq_nmod}, Ref{fq_nmod},
-    Ref{gfp_poly}, Ref{FqNmodFiniteField}, Ref{FqNmodFiniteField}), a, b,
-    P, k, K)
+    ccall((:fq_embed_gens, libflint), Nothing,
+          (Ref{fq}, Ref{fq}, Ref{gfp_fmpz_poly}, Ref{FqFiniteField},
+                                                         Ref{FqFiniteField}),
+          a, b, P, k, K)
 
     return a, b, P
 end
 
-function embed_matrices(k::FqNmodFiniteField, K::FqNmodFiniteField)
+function embed_matrices(k::FqFiniteField, K::FqFiniteField)
 
     m, n = degree(k), degree(K)
     if m == n
@@ -57,13 +59,14 @@ function embed_matrices(k::FqNmodFiniteField, K::FqNmodFiniteField)
     s1 = S1()
     s2 = S2()
 
-    ccall((:fq_nmod_embed_matrices, libflint), Nothing, (Ref{gfp_mat},
-    Ref{gfp_mat}, Ref{fq_nmod}, Ref{FqNmodFiniteField}, Ref{fq_nmod},
-    Ref{FqNmodFiniteField}, Ref{gfp_poly}), s1, s2, a, k, b, K, P)
+    ccall((:fq_embed_matrices, libflint), Nothing,
+          (Ref{gfp_fmpz_mat}, Ref{gfp_fmpz_mat}, Ref{fq}, Ref{FqFiniteField},
+                             Ref{fq}, Ref{FqFiniteField}, Ref{gfp_fmpz_poly}),
+          s1, s2, a, k, b, K, P)
     return s1, s2
 end
 
-function embed_matrices_pre(a::fq_nmod, b::fq_nmod, P::gfp_poly)
+function embed_matrices_pre(a::fq, b::fq, P::gfp_fmpz_poly)
     k = parent(a)
     K = parent(b)
     m, n = degree(k), degree(K)
@@ -73,18 +76,20 @@ function embed_matrices_pre(a::fq_nmod, b::fq_nmod, P::gfp_poly)
     s1 = S1()
     s2 = S2()
 
-    ccall((:fq_nmod_embed_matrices, libflint), Nothing, (Ref{gfp_mat},
-    Ref{gfp_mat}, Ref{fq_nmod}, Ref{FqNmodFiniteField}, Ref{fq_nmod},
-    Ref{FqNmodFiniteField}, Ref{gfp_poly}), s1, s2, a, k, b, K, P)
+    ccall((:fq_embed_matrices, libflint), Nothing,
+          (Ref{gfp_fmpz_mat}, Ref{gfp_fmpz_mat}, Ref{fq}, Ref{FqFiniteField},
+                              Ref{fq}, Ref{FqFiniteField}, Ref{gfp_fmpz_poly}),
+           s1, s2, a, k, b, K, P)
     return s1, s2
 end
 
-function setcoeff!(x::fq_nmod, j::Int, c::Int)
-    ccall((:nmod_poly_set_coeff_ui, libflint), Nothing,
-          (Ref{fq_nmod}, Int, UInt), x, j, c)
+# dirty: internally in flint an fq_struct is just an fmpz_poly_struct
+function setcoeff!(x::fq, j::Int, c::fmpz)
+    ccall((:fmpz_poly_set_coeff_fmpz, libflint), Nothing,
+          (Ref{fq}, Int, Ref{fmpz}), x, j, c)
 end
 
-function embed_pre_mat(x::fq_nmod, K::FqNmodFiniteField, M::gfp_mat)
+function embed_pre_mat(x::fq, K::FqFiniteField, M::gfp_fmpz_mat)
 
     d = degree(parent(x))
     S = MatrixSpace(base_ring(M), d, 1)
@@ -98,7 +103,7 @@ function embed_pre_mat(x::fq_nmod, K::FqNmodFiniteField, M::gfp_mat)
     res = K()
 
     for j in degree(K):-1:1
-        setcoeff!(res, j - 1, Int(data(product[j, 1])))
+        setcoeff!(res, j - 1, data(product[j, 1]))
     end
 
     return res
@@ -110,7 +115,7 @@ end
 #
 ################################################################################
 
-function embed_polynomial(P::fq_nmod_poly, f::FinFieldMorphism)
+function embed_polynomial(P::fq_poly, f::FinFieldMorphism)
     S = PolynomialRing(codomain(f), "T")[1]
     return S([f(coeff(P, j)) for j in 0:degree(P)])
 end
