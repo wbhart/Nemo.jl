@@ -404,6 +404,10 @@ end
          if s*x != 0
             @test_throws ErrorException sqrt(s*x)
          end
+
+         if mod(p, 4) == 3
+            @test !issquare(-one(S))
+         end
       end
    end
 end
