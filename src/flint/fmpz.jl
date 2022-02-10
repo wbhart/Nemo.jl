@@ -917,7 +917,7 @@ function sqrtmod(x::fmpz, m::fmpz)
     z = fmpz()
     if (ccall((:fmpz_sqrtmod, libflint), Cint,
               (Ref{fmpz}, Ref{fmpz}, Ref{fmpz}), z, x, m) == 0)
-        error("no square root exists")
+        error("no square root exists or modulus is not prime")
     end
     return z
 end
