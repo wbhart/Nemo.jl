@@ -750,6 +750,8 @@ end
 
    @test_throws DomainError sqrtmod(fmpz(12), fmpz(-13))
 
+   @test_throws ErrorException sqrtmod(fmpz(-7), fmpz(1024))
+
    @test crt(fmpz(5), fmpz(13), fmpz(7), fmpz(37), true) == 44
 
    @test crt(fmpz(5), fmpz(13), 7, 37, false) == 44
