@@ -411,6 +411,7 @@ end
    @test_throws ErrorException root(-fmpq(40, 27), 3; check=true)
    @test_throws ErrorException root(-fmpq(27, 7), 3; check=true)
 =#
+end
 
 @testset "fmpq.rational_reconstruction" begin
    @test reconstruct(7, 13) == fmpz(1)//2
