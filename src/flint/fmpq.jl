@@ -446,6 +446,20 @@ function issquare_with_sqrt(a::fmpq)
     return true, fmpq(s1, s2)
 end
 
+@doc Markdown.doc"""
+    root(x::fmpq, n::Int; check::Bool=true)
+
+Return the $n$-the root of $x$. We require $n > 0$ and that
+$x \geq 0$ if $n$ is even. By default the function tests whether the input was
+a perfect $n$-th power and if not raises an exception. If `check=false` this
+check is omitted.
+"""
+function root(x::fmpq, n::Int; check::Bool=true)
+   num = root(numerator(x), n; check=check)
+   den = root(denominator(x), n; check=check)
+   return fmpq(num, den)
+end
+
 ###############################################################################
 #
 #   Inversion

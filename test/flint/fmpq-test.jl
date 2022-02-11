@@ -397,6 +397,22 @@ end
    @test f2 && s3 == fmpz(2)//3
 end
 
+@testset "fmpq.roots" begin
+   @test root(fmpq(1000, 27), 3) == fmpq(10, 3)
+   @test root(-fmpq(27, 8), 3) == -3//2
+   @test root(fmpq(27, 8), 3; check=true) == 3//2
+
+   @test_throws DomainError root(-fmpq(1000, 27), 4)
+   @test_throws DomainError root(fmpq(1000, 27), -3)
+
+#= Disabled until Flint-2.9 comes out
+   @test_throws ErrorException root(fmpq(1100, 27), 3; check=true)
+   @test_throws ErrorException root(fmpq(27, 7), 3; check=true)
+   @test_throws ErrorException root(-fmpq(40, 27), 3; check=true)
+   @test_throws ErrorException root(-fmpq(27, 7), 3; check=true)
+=#
+end
+
 @testset "fmpq.rational_reconstruction" begin
    @test reconstruct(7, 13) == fmpz(1)//2
 
