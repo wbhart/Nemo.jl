@@ -447,8 +447,14 @@ mutable struct fmpz_mod_ctx_struct
    ninv_limbs::Tuple{UInt, UInt, UInt}
 
    function fmpz_mod_ctx_struct()
-      return new()
+      z = new()
+      finalizer(_fmpz_mod_ctx_clear_fn, z)
+      return z
    end
+end
+
+function _fmpz_mod_ctx_clear_fn(a::fmpz_mod_ctx_struct)
+   ccall((:fmpz_mod_ctx_clear, libflint), Nothing, (Ref{fmpz_mod_ctx_struct},), a)
 end
 
 mutable struct FmpzModRing <: Ring
