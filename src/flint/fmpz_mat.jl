@@ -1020,7 +1020,7 @@ function nullspace(x::fmpz_mat)
       end
     end
   end
-  return 0, similar(x, ncols(x), 0)
+  return ncols(x), identity_matrix(x, ncols(x))
 end
 
 @doc Markdown.doc"""
