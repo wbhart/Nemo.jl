@@ -1515,3 +1515,17 @@ end
 function MatrixSpace(R::FlintIntegerRing, r::Int, c::Int, cached::Bool = true)
    return FmpzMatSpace(r, c, cached)
 end
+
+###############################################################################
+#
+#   Conversion
+#
+###############################################################################
+
+function Base.convert(::Type{Matrix{Int}}, x::Nemo.fmpz_mat)
+    m,n = size(x)
+    mat = Int[x[i,j] for i = 1:m, j = 1:n]
+    return mat
+end
+
+Base.convert(::Type{Matrix}, x::Nemo.fmpz_mat) = convert(Matrix{Int}, x)
