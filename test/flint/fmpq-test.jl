@@ -95,6 +95,12 @@ end
    @test_throws Exception ZZ(fmpq(3, 2))
 end
 
+@testset "fmpq.vector_arithmetics" begin
+   @test fmpq[1, 2, 3] // fmpq(2) == fmpq[1//2, 1, 3//2]
+   @test fmpq(2) * fmpq[1, 2, 3] == fmpq[2, 4, 6]
+   @test fmpq[1, 2, 3] * fmpq(2) == fmpq[2, 4, 6]
+end
+
 @testset "fmpq.manipulation" begin
    R = FractionField(ZZ)
 

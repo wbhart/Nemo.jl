@@ -983,6 +983,18 @@ function Rational(z::fmpz)
    return Rational{BigInt}(BigInt(z))
 end
 
+
+###############################################################################
+#
+#   Convenience methods for arithmetics (since `fmpq` is not a `Number` type)
+#
+###############################################################################
+
+//(v::Vector{fmpq}, x::fmpq) = v .// x
+*(x::fmpq, v::Vector{fmpq}) = x .* v
+*(v::Vector{fmpq}, x::fmpq) = v .* x
+
+
 ###############################################################################
 #
 #   FractionField constructor

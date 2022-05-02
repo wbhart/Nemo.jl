@@ -2588,3 +2588,14 @@ convert(::Type{BigFloat}, n::fmpz) = BigFloat(n)
 Base.promote_rule(::Type{fmpz}, ::Type{T}) where {T <: Integer} = fmpz
 
 promote_rule(::Type{fmpz}, ::Type{T}) where {T <: Integer} = fmpz
+
+
+###############################################################################
+#
+#   Convenience methods for arithmetics (since `fmpz` is not a `Number` type)
+#
+###############################################################################
+
+//(v::Vector{fmpz}, x::fmpz) = v .// x
+*(x::fmpz, v::Vector{fmpz}) = x .* v
+*(v::Vector{fmpz}, x::fmpz) = v .* x
