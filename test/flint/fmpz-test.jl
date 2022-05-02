@@ -123,6 +123,12 @@ end
    @test_throws InexactError UInt(fmpz(typemin(Int)))
 end
 
+@testset "fmpz.vector_arithmetics" begin
+   @test fmpz[1, 2, 3] // fmpz(2) == fmpq[1//2, 1, 3//2]
+   @test fmpz(2) * fmpz[1, 2, 3] == fmpz[2, 4, 6]
+   @test fmpz[1, 2, 3] * fmpz(2) == fmpz[2, 4, 6]
+end
+
 @testset "fmpz.manipulation" begin
    a = one(FlintIntegerRing())
    b = zero(FlintIntegerRing())
