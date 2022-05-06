@@ -1,45 +1,3 @@
-function istriu(A::Generic.Mat)
-   m = nrows(A)
-   n = ncols(A)
-   d = 0
-   for c = 1:n
-      for r = m:-1:1
-         if !iszero(A[r,c])
-            if r < d
-               return false
-            end
-            d = r
-            break
-         end
-      end
-   end
-   return true
-end
-
-function is_snf(A::Generic.Mat)
-   m = nrows(A)
-   n = ncols(A)
-   a = A[1,1]
-   for i = 2:min(m,n)
-      q, r = divrem(A[i,i], a)
-      if !iszero(r)
-         return false
-      end
-      a = A[i,i]
-   end
-   for i = 1:n
-      for j = 1:m
-         if i == j
-            continue
-         end
-         if !iszero(A[j,i])
-            return false
-         end
-      end
-   end
-   return true
-end
-
 @testset "Matrix.binary_ops_delayed_reduction" begin
    R, t = PolynomialRing(QQ, "t")
    K, a = NumberField(t^3 + 3t + 1, "a")
@@ -214,8 +172,8 @@ end
 
       H, U = hnf_cohen_with_transform(A)
 
-      @test istriu(H)
-      @test isunit(det(U))
+      @test is_upper_triangular(H)
+      @test is_unit(det(U))
       @test U*A == H
    end
 
@@ -224,8 +182,8 @@ end
 
       H, U = hnf_minors_with_transform(A)
 
-      @test istriu(H)
-      @test isunit(det(U))
+      @test is_upper_triangular(H)
+      @test is_unit(det(U))
       @test U*A == H
    end
 
@@ -234,8 +192,8 @@ end
 
       H, U = hnf_kb_with_transform(A)
 
-      @test istriu(H)
-      @test isunit(det(U))
+      @test is_upper_triangular(H)
+      @test is_unit(det(U))
       @test U*A == H
    end
 end
@@ -251,8 +209,8 @@ end
       T, U, K = Generic.snf_kb_with_transform(A)
 
       @test is_snf(T)
-      @test isunit(det(U))
-      @test isunit(det(K))
+      @test is_unit(det(U))
+      @test is_unit(det(K))
       @test U*A*K == T
    end
 end

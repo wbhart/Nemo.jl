@@ -21,7 +21,7 @@
 
    for i = 1:1000
       p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
-      if Nemo.isprobable_prime(ZZ(p))
+      if Nemo.is_probable_prime(ZZ(p))
          R = GF(ZZ(p))
 
          a = R(rand(Int))
@@ -33,7 +33,7 @@
 
    for i = 1:1000
       p = rand(1:24)
-      if Nemo.isprime(ZZ(p))
+      if Nemo.is_prime(ZZ(p))
          R = GF(ZZ(p))
 
          a = R(rand(Int))
@@ -88,8 +88,8 @@ end
 
    @test modulus(R) == UInt(13)
 
-   @test !isunit(R())
-   @test isunit(R(3))
+   @test !is_unit(R())
+   @test is_unit(R(3))
 
    @test deepcopy(R(3)) == R(3)
 
@@ -122,7 +122,7 @@ end
 @testset "gfp_fmpz.unary_ops" begin
    for i = 1:1000
       p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
-      if Nemo.isprobable_prime(ZZ(p))
+      if Nemo.is_probable_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:1000
@@ -135,7 +135,7 @@ end
 
    for i = 1:100
       p = rand(1:24)
-      if Nemo.isprime(ZZ(p))
+      if Nemo.is_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -150,7 +150,7 @@ end
 @testset "gfp_fmpz.binary_ops" begin
    for i = 1:100
       p = rand(1:24)
-      if Nemo.isprime(ZZ(p))
+      if Nemo.is_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -172,7 +172,7 @@ end
 
    for i = 1:1000
       p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
-      if Nemo.isprobable_prime(ZZ(p))
+      if Nemo.is_probable_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -196,7 +196,7 @@ end
 @testset "gfp_fmpz.adhoc_binary" begin
    for i = 1:100
       p = rand(1:24)
-      if Nemo.isprime(ZZ(p))
+      if Nemo.is_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -221,7 +221,7 @@ end
 
    for i = 1:1000
       p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
-      if Nemo.isprobable_prime(ZZ(p))
+      if Nemo.is_probable_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -248,7 +248,7 @@ end
 @testset "gfp_fmpz.powering" begin
   for i = 1:100
       p = rand(1:24)
-      if Nemo.isprime(ZZ(p))
+      if Nemo.is_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -267,7 +267,7 @@ end
             a = R(1)
 
             r = rand(R)
-            while !isunit(r)
+            while !is_unit(r)
                r = rand(R)
             end
 
@@ -284,7 +284,7 @@ end
 
    for i = 1:1000
       p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
-      if Nemo.isprobable_prime(ZZ(p))
+      if Nemo.is_probable_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -303,7 +303,7 @@ end
             a = R(1)
 
             r = rand(R)
-            while !isunit(r)
+            while !is_unit(r)
                r = rand(R)
             end
 
@@ -330,7 +330,7 @@ end
 @testset "gfp_fmpz.comparison" begin
   for i = 1:100
       p = rand(1:24)
-      if Nemo.isprime(ZZ(p))
+      if Nemo.is_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -349,7 +349,7 @@ end
 
    for i = 1:1000
       p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
-      if Nemo.isprobable_prime(ZZ(p))
+      if Nemo.is_probable_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -370,7 +370,7 @@ end
 @testset "gfp_fmpz.adhoc_comparison" begin
   for i = 1:100
       p = rand(1:24)
-      if Nemo.isprime(ZZ(p))
+      if Nemo.is_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -387,7 +387,7 @@ end
 
    for i = 1:1000
       p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
-      if Nemo.isprobable_prime(ZZ(p))
+      if Nemo.is_probable_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -406,30 +406,30 @@ end
 @testset "gfp_fmpz.inversion" begin
   for i = 1:100
       p = rand(1:24)
-      if Nemo.isprime(ZZ(p))
+      if Nemo.is_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
             a = rand(R)
 
-            @test !isunit(a) || inv(inv(a)) == a
+            @test !is_unit(a) || inv(inv(a)) == a
 
-            @test !isunit(a) || a*inv(a) == one(R)
+            @test !is_unit(a) || a*inv(a) == one(R)
          end
       end
    end
 
    for i = 1:1000
       p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
-      if Nemo.isprobable_prime(ZZ(p))
+      if Nemo.is_probable_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
             a = rand(R)
 
-            @test !isunit(a) || inv(inv(a)) == a
+            @test !is_unit(a) || inv(inv(a)) == a
 
-            @test !isunit(a) || a*inv(a) == one(R)
+            @test !is_unit(a) || a*inv(a) == one(R)
          end
       end
    end
@@ -438,7 +438,7 @@ end
 @testset "gfp_fmpz.exact_division" begin
   for i = 1:100
       p = rand(1:24)
-      if Nemo.isprime(ZZ(p))
+      if Nemo.is_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -460,7 +460,7 @@ end
 
    for i = 1:1000
       p = rand(BigInt(1):BigInt(4273673264873254848326487))*6 + 1
-      if Nemo.isprobable_prime(ZZ(p))
+      if Nemo.is_probable_prime(ZZ(p))
          R = GF(ZZ(p))
 
          for iter = 1:100
@@ -480,12 +480,12 @@ end
 @testset "gfp_fmpz.square_root" begin
    for i = 1:100
       p = rand(1:65537)
-      if Nemo.isprime(ZZ(p))
+      if Nemo.is_prime(ZZ(p))
          R = GF(ZZ(p))
 
          z = rand(R)
          if p != 2
-            while issquare(z)
+            while is_square(z)
                z = rand(R)
             end
          end
@@ -493,20 +493,20 @@ end
          for iter = 1:100
             a = rand(R)
 
-            @test issquare(a^2)
+            @test is_square(a^2)
 
             s = sqrt(a^2)
 
             @test s^2 == a^2
 
-            f1, s1 = issquare_with_sqrt(a^2)
+            f1, s1 = is_square_with_sqrt(a^2)
 
             @test f1 && s1^2 == a^2
 
             if p != 2 && !iszero(a)
-               @test !issquare(z*a^2)
+               @test !is_square(z*a^2)
 
-               f2, s2 = issquare_with_sqrt(z*a^2)
+               f2, s2 = is_square_with_sqrt(z*a^2)
 
                @test !f2
             end

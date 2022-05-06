@@ -7,7 +7,7 @@
 export AnticNumberField, defining_polynomial, nf_elem, norm,
        representation_matrix, representation_matrix_q, tr, CyclotomicField,
        CyclotomicRealSubfield, add!, sub!, mul!, signature, sqr_classical,
-       isrational, isinteger
+       is_rational, isinteger
 
 ###############################################################################
 #
@@ -40,7 +40,7 @@ Returns `Union{}` since a number field doesn't depend on any ring.
 """
 base_ring(a::nf_elem) = Union{}
 
-isdomain_type(::Type{nf_elem}) = true
+is_domain_type(::Type{nf_elem}) = true
 
 @doc Markdown.doc"""
     var(a::AnticNumberField)
@@ -150,12 +150,12 @@ function zero(a::AnticNumberField)
 end
 
 @doc Markdown.doc"""
-    isgen(a::nf_elem)
+    is_gen(a::nf_elem)
 
 Return `true` if the given number field element is the generator of the
 number field, otherwise return `false`.
 """
-function isgen(a::nf_elem)
+function is_gen(a::nf_elem)
    return ccall((:nf_elem_is_gen, libantic), Bool,
                 (Ref{nf_elem}, Ref{AnticNumberField}), a, a.parent)
 end
@@ -183,12 +183,12 @@ function iszero(a::nf_elem)
 end
 
 @doc Markdown.doc"""
-    isunit(a::nf_elem)
+    is_unit(a::nf_elem)
 
 Return `true` if the given number field element is invertible, i.e. nonzero,
 otherwise return `false`.
 """
-isunit(a::nf_elem) = !iszero(a)
+is_unit(a::nf_elem) = !iszero(a)
 
 @doc Markdown.doc"""
     isinteger(a::nf_elem)
@@ -203,12 +203,12 @@ function isinteger(a::nf_elem)
 end
 
 @doc Markdown.doc"""
-    isrational(a::nf_elem)
+    is_rational(a::nf_elem)
 
 Return `true` if the given number field element is a rational number,
 otherwise `false`.
 """
-function isrational(a::nf_elem)
+function is_rational(a::nf_elem)
    b = ccall((:nf_elem_is_rational, libantic), Cint,
              (Ref{nf_elem}, Ref{AnticNumberField}), a, a.parent)
    return Bool(b)
@@ -258,11 +258,11 @@ function deepcopy_internal(d::nf_elem, dict::IdDict)
    return z
 end
 
-function iscyclo_type(K::AnticNumberField)
+function is_cyclo_type(K::AnticNumberField)
   return !(get_attribute(K, :cyclo) === nothing) ::Bool
 end
 
-function ismaxreal_type(K::AnticNumberField)
+function is_maxreal_type(K::AnticNumberField)
   return get_attribute(K, :maxreal)::Bool
 end
 
@@ -1208,7 +1208,7 @@ function CyclotomicField(n::Int, s::Union{AbstractString, Char, Symbol} = "z_$n"
 end
 
 function show_cyclo(io::IO, a::AnticNumberField)
-  @assert iscyclo_type(a)
+  @assert is_cyclo_type(a)
   print(io, "Cyclotomic field of order $(get_attribute(a, :cyclo))")
 end
 

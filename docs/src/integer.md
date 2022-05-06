@@ -97,7 +97,7 @@ numerator(::fmpz)
 ```
 a = ZZ(12)
 
-isunit(a)
+is_unit(a)
 sign(a)
 s = size(a)
 fits(Int, a)
@@ -316,15 +316,15 @@ divisible(::fmpz, ::fmpz)
 ```
 
 ```@docs
-issquare(::fmpz)
+is_square(::fmpz)
 ```
 
 ```@docs
-isprime(::fmpz)
+is_prime(::fmpz)
 ```
 
 ```@docs
-isprobable_prime(::fmpz)
+is_probable_prime(::fmpz)
 ```
 
 ```@docs
@@ -395,7 +395,7 @@ number_of_partitions(::fmpz)
 **Examples**
 
 ```julia
-isprime(ZZ(13))
+is_prime(ZZ(13))
 n = factorial(ZZ(100))
 s = divisor_sigma(ZZ(128), 10)
 a = euler_phi(ZZ(12480))
@@ -509,7 +509,7 @@ called `FlintZZi` or `ZZi`, and the fraction field is called `FlintQQi` or
 a = ZZ(5)*im
 b = ZZi(3, 4)
 
-isunit(a)
+is_unit(a)
 factor(a)
 a//b
 abs2(a//b)
