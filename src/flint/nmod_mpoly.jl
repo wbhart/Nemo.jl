@@ -33,6 +33,8 @@ function check_parent(a::($etype), b::($etype))
       error("Incompatible polynomial rings in polynomial operation")
 end
 
+mpoly_type(::Type{$ctype}) = $etype
+
 nvars(a::($rtype)) = a.nvars
 
 base_ring(a::($rtype)) = a.base_ring

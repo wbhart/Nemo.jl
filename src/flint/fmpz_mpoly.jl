@@ -27,6 +27,8 @@ function check_parent(a::fmpz_mpoly, b::fmpz_mpoly)
       error("Incompatible polynomial rings in polynomial operation")
 end
 
+mpoly_type(::Type{fmpz}) = fmpz_mpoly
+
 nvars(a::FmpzMPolyRing) = ccall((:fmpz_mpoly_ctx_nvars, libflint), Int,
                                 (Ref{FmpzMPolyRing}, ), a)
 

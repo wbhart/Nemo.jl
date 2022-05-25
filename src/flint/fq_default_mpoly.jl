@@ -18,6 +18,8 @@ symbols(a::FqDefaultMPolyRing) = symbols(a.data)
 
 parent(a::fq_default_mpoly) = a.parent
 
+mpoly_type(::Type{fq_default}) = fq_default_mpoly
+
 nvars(a::FqDefaultMPolyRing) = nvars(a.data)
 
 base_ring(a::FqDefaultMPolyRing) = a.base_ring

@@ -9,7 +9,7 @@ export FmpqMPolyRing, fmpq_mpoly, degrees, symbols, degree_fmpz,
        exponent_vector_fits_int, exponent_vector_fits_ui,
        exponent_vector, exponent_vector_ui, exponent_vector_fmpz,
        exponent_vectors, exponent_vectors_fmpz, set_exponent_vector!,
-       combine_like_terms!, sort_terms!
+       combine_like_terms!, mpoly_type, sort_terms!
 
 ###############################################################################
 #
@@ -31,6 +31,8 @@ function check_parent(a::fmpq_mpoly, b::fmpq_mpoly)
    parent(a) != parent(b) &&
       error("Incompatible polynomial rings in polynomial operation")
 end
+
+mpoly_type(::Type{fmpq}) = fmpq_mpoly
 
 nvars(a::FmpqMPolyRing) = ccall((:fmpq_mpoly_ctx_nvars, libflint), Int,
                                 (Ref{FmpqMPolyRing}, ), a)

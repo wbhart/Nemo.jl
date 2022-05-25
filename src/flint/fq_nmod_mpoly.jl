@@ -27,6 +27,8 @@ function check_parent(a::fq_nmod_mpoly, b::fq_nmod_mpoly)
       error("Incompatible polynomial rings in polynomial operation")
 end
 
+mpoly_type(::Type{fq_nmod}) = fq_nmod_mpoly
+
 nvars(a::FqNmodMPolyRing) = a.nvars
 
 base_ring(a::FqNmodMPolyRing) = a.base_ring
