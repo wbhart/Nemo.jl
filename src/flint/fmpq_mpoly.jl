@@ -406,7 +406,7 @@ for (jT, cN, cT) in ((fmpq, :fmpq, Ref{fmpq}), (fmpz, :fmpz, Ref{fmpz}),
          return z
       end
 
-      //(a::fmpq_mpoly, b::($jT)) = divexact(a, b)
+      //(a::fmpq_mpoly, b::($jT)) = a//parent(a)(b)
    end
 end
 
