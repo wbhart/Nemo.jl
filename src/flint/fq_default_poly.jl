@@ -85,6 +85,23 @@ end
 
 characteristic(R::FqDefaultPolyRing) = characteristic(base_ring(R))
 
+###############################################################################
+#
+#   Similar
+#
+###############################################################################
+
+function similar(f::PolyElem, R::FqDefaultFiniteField, s::Symbol=var(parent(f)); cached::Bool=true)
+   z = fq_default_poly(R)
+   if base_ring(f) === R && s == var(parent(f)) && typeof(f) == fq_default_poly
+      # steal parent in case it is not cached
+      z.parent = parent(f)
+   else
+      z.parent = FqDefaultPolyRing(R, s, cached)
+   end
+   return z
+end
+
 ################################################################################
 #
 #   Canonicalisation

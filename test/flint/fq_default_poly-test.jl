@@ -108,6 +108,21 @@ end
    @test deepcopy(h) == h
 end
 
+@testset "fq_default_poly.similar" begin
+   R, a = NGFiniteField(23, 3, "a")
+
+   f = polynomial(R, [1, 2, 3])
+   g = similar(f)
+   h = similar(f, "y")
+
+   @test isa(g, fq_default_poly)
+   @test isa(h, fq_default_poly)
+
+   q = similar(g, cached=false)
+
+   @test parent(g) === parent(q)
+end
+
 @testset "fq_default_poly.binary_ops" begin
    R, x = NGFiniteField(fmpz(23), 5, "x")
    S, y = PolynomialRing(R, "y")
