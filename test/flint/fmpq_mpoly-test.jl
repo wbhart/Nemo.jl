@@ -506,10 +506,10 @@ end
       @test a == unit(f) * prod([p^e for (p, e) in f])
    end
 
-   check_factor((x^2-y^2*z^3//3)*(x+y+z)^2*(2*x+y-z)^3, 6)
-   fac = factor((x^2-y^2*z^3//3)*(x+y+z)^2*(2*x+y-z)^3)
+   check_factor((x^2-1//3*y^2*z^3)*(x+y+z)^2*(2*x+y-z)^3, 6)
+   fac = factor((x^2-1//3*y^2*z^3)*(x+y+z)^2*(2*x+y-z)^3)
    @test occursin("x", sprint(show, "text/plain", fac))
-   check_factor(x^99-y^99*z^33//8, 2)
+   check_factor(x^99-1//8*y^99*z^33, 2)
 end
 
 @testset "fmpq_mpoly.sqrt" begin
