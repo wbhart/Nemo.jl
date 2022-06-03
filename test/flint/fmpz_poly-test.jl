@@ -390,6 +390,11 @@ end
   @test f in fac
   @test !(x in fac)
 
+  fac = factor_squarefree(-10*f^10 * g^20)
+
+  @test -10*f^10 * g^20 == unit(fac) * prod([ p^e for (p, e) in fac])
+  @test length(fac.fac) == 4
+
   @test is_irreducible(Rx(2))
   @test is_irreducible(x^4 + 1)
   @test is_irreducible(x + 1)

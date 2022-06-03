@@ -696,33 +696,41 @@ end
 #
 ################################################################################
 
-function factor(x::fmpz_poly)
-  fac, z = _factor(x)
-  ffac = factor(z)
+for (factor_fn, factor_fn_inner, flint_fn) in 
+             [(:factor, :_factor, "fmpz_poly_factor"),
+              (:factor_squarefree, :_factor_squarefree, "fmpz_poly_factor_squarefree")]
+  eval(quote
+    
+    function $factor_fn(x::fmpz_poly)
+      fac, z = $factor_fn_inner(x)
+      ffac = factor(z)
 
-  for (p, e) in ffac
-    fac[parent(x)(p)] = e
-  end
+      for (p, e) in ffac
+        fac[parent(x)(p)] = e
+      end
 
-  return Fac(parent(x)(unit(ffac)), fac)
-end
+      return Fac(parent(x)(unit(ffac)), fac)
+    end
 
-function _factor(x::fmpz_poly)
-  fac = fmpz_poly_factor()
-  ccall((:fmpz_poly_factor, libflint), Nothing,
+    function $factor_fn_inner(x::fmpz_poly)
+      fac = fmpz_poly_factor()
+      ccall(($flint_fn, libflint), Nothing,
               (Ref{fmpz_poly_factor}, Ref{fmpz_poly}), fac, x)
-  res = Dict{fmpz_poly,Int}()
-  z = fmpz()
-  ccall((:fmpz_poly_factor_get_fmpz, libflint), Nothing,
+      res = Dict{fmpz_poly,Int}()
+      z = fmpz()
+      ccall((:fmpz_poly_factor_get_fmpz, libflint), Nothing,
             (Ref{fmpz}, Ref{fmpz_poly_factor}), z, fac)
-  for i in 1:fac.num
-    f = parent(x)()
-    ccall((:fmpz_poly_factor_get_fmpz_poly, libflint), Nothing,
+      for i in 1:fac.num
+        f = parent(x)()
+        ccall((:fmpz_poly_factor_get_fmpz_poly, libflint), Nothing,
             (Ref{fmpz_poly}, Ref{fmpz_poly_factor}, Int), f, fac, i - 1)
-    e = unsafe_load(fac.exp, i)
-    res[f] = e
-  end
-  return res, z
+        e = unsafe_load(fac.exp, i)
+        res[f] = e
+      end
+      return res, z
+    end
+
+  end)
 end
 
 function is_irreducible(x::fmpz_poly)

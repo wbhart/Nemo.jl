@@ -490,6 +490,10 @@ end
 
    @test f == unit(fac) * prod([ p^e for (p, e) in fac])
    @test occursin("y", sprint(show, "text/plain", fac))
+
+   fac = factor_squarefree(f)
+
+   @test f == unit(fac) * prod([ p^e for (p, e) in fac])
 end
 
 @testset "fmpq_poly.signature" begin
