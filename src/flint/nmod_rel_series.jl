@@ -985,6 +985,9 @@ end
 
 function sqrt_classical(a::gfp_rel_series; check::Bool=true)
    S = parent(a)
+   if characteristic(S) == 2
+      return sqrt_classical_char2(a; check=check)
+   end
    v = valuation(a)
    z = S()
    v2 = div(v, 2)
